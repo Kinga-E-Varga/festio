@@ -111,6 +111,9 @@ Structure is fixed by invitation type; design varies per template.
 
 Desktop-first, fully mobile responsive. Nav collapses to a drawer on mobile. Smooth transitions, card hover states, toasts for user actions, loading skeletons for async content.
 
+Base app fonts — for the app's UI use the combination of Kantumruy Pro and Libre Baskerville google fonts fonts.
+**Invitations have their own independent fonts and are not bound by this.**
+
 Base app palette — a starting point, not a restriction; add or drop colours as suitable. **Invitations have their own independent palettes and are not bound by this.**
 
 ```
@@ -149,6 +152,14 @@ Semantic
 #4e7a4a
 #4a6b75
 ```
+
+**The color #d88e5f should be used as an accent color only, do not use it as a "error/warning/attention" color because it's used in the app's logo as brand color.**
+
+### Design reference
+
+Refer to the screenshot below as a base for the dashboard UI. It does not have to be exact. Use it as a reference:
+
+- @context/screenshots/dashboard-ui.png
 
 ## Out of scope for v1
 
