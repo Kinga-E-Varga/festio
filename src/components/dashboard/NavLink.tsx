@@ -17,21 +17,22 @@ export function NavLink({ item }: { item: NavItem }) {
     <Link
       href={item.href}
       aria-current={isCurrent ? "page" : undefined}
-      className={`flex items-center gap-2.5 border-l-2 px-4 py-2 transition-colors ${
+      // The left edge is always four pixels wide, so hovering colours it in
+      // rather than shifting the label sideways.
+      className={`flex items-center gap-3 border-l-4 py-[9px] pr-6 pl-5 transition-colors ${
         isCurrent
-          ? "border-sage-600 bg-sage-100 font-medium text-sage-800"
-          : "border-transparent hover:bg-sage-100/60"
+          ? "border-transparent bg-forest-500 font-semibold text-neutral-50"
+          : "border-transparent hover:border-forest-500 hover:bg-forest-200"
       }`}
     >
-      <Icon
-        name={item.icon}
-        className={`size-4 shrink-0 ${
-          isCurrent ? "text-sage-600" : "text-stone-500"
-        }`}
-      />
+      <Icon name={item.icon} className="size-[17px] shrink-0" />
       <span className="truncate">{item.label}</span>
       {item.badge ? (
-        <span className="ml-auto text-xs text-stone-500 tabular-nums">
+        <span
+          className={`ml-auto text-xs tabular-nums ${
+            isCurrent ? "text-forest-200" : "text-neutral-700"
+          }`}
+        >
           {item.badge}
         </span>
       ) : null}

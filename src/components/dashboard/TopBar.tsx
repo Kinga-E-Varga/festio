@@ -11,7 +11,11 @@ interface TopBarProps {
 }
 
 const ICON_BUTTON =
-  "relative grid size-9 place-items-center rounded-md transition-colors hover:bg-sage-50";
+  "relative grid size-[38px] place-items-center rounded-full text-mustard-50 transition-colors hover:bg-mustard-50/15";
+
+/** Count bubbles on the bell and the cart share everything but their colour. */
+const BADGE =
+  "absolute top-0.5 right-0.5 grid h-4 min-w-4 place-items-center rounded-full px-1 text-[10px] font-semibold text-mustard-50";
 
 export function TopBar({
   navOpen,
@@ -20,38 +24,54 @@ export function TopBar({
   onToggleNotices,
 }: TopBarProps) {
   return (
-    <header className="sticky top-0 z-30 flex h-14 shrink-0 items-center gap-2 border-b border-linen-200 bg-cream-50 px-3 lg:px-5">
+    <header className="sticky top-0 z-40 flex h-topbar shrink-0 items-center gap-3.5 border-b border-mustard-500 bg-neutral-900 px-6">
+      {/*
+       * Pulled out by the 8px the glyph is inset inside its 38px hit area, so
+       * the menu mark sits the same 24px off the edge as the avatar circle
+       * does on the other side.
+       */}
       <button
         type="button"
         onClick={onToggleNav}
         aria-expanded={navOpen}
         aria-label="Open dashboard menu"
-        className={`${ICON_BUTTON} lg:hidden`}
+        className={`${ICON_BUTTON} -ml-2 nav:hidden`}
       >
-        <Icon name="menu" className="size-5" />
+        <Icon name="menu" className="size-[22px]" />
       </button>
 
-      <Link href="/dashboard" className="flex items-center py-1">
+      <Link href="/dashboard" className="flex items-center">
+        {/*
+         * One-colour artwork, so inverting it is cheaper than shipping a
+         * second file that would drift from the original.
+         */}
         <Image
           src="/festio-lockup.svg"
           alt="Festio"
-          width={106}
-          height={24}
+          width={148}
+          height={32}
           priority
-          className="h-6 w-auto"
+          className="h-8 w-auto brightness-0 invert"
         />
       </Link>
 
+      {/*
+       * Bell and cart pair up tightly. The gap looks smaller than it reads:
+       * each 22px glyph carries 8px of hit area either side, so 4px here is
+       * 20px of visible space between the two marks.
+       */}
       <div className="ml-auto flex items-center gap-1">
         <button
           type="button"
           onClick={onToggleNotices}
           aria-expanded={noticesOpen}
-          aria-label={`Notifications, ${ATTENTION_NOTICES.length} need attention`}
-          className={`${ICON_BUTTON} xl:hidden`}
+          aria-label={`Activity, ${ATTENTION_NOTICES.length} items need attention`}
+          className={`${ICON_BUTTON} rail:hidden`}
         >
-          <Icon name="bell" className="size-5" />
-          <span className="absolute top-2 right-2.5 size-1.5 rounded-full bg-clay-500" />
+          <Icon name="bell" className="size-[22px]" />
+          <span aria-hidden="true" className={`${BADGE} bg-rust-500`}>
+            {ATTENTION_NOTICES.length}
+          </span>
         </button>
 
         <button
@@ -59,8 +79,8 @@ export function TopBar({
           aria-label="Cart, 1 invitation awaiting payment"
           className={ICON_BUTTON}
         >
-          <Icon name="cart" className="size-5" />
-          <span className="absolute top-1 right-1 grid size-4 place-items-center rounded-full bg-brand-400 text-[10px] font-medium text-ink-900">
+          <Icon name="cart" className="size-[22px]" />
+          <span aria-hidden="true" className={`${BADGE} bg-terracotta-500`}>
             1
           </span>
         </button>
@@ -68,7 +88,7 @@ export function TopBar({
         <button
           type="button"
           aria-label="Your account"
-          className="grid size-8 place-items-center rounded-full bg-sage-300 text-xs font-medium text-sage-800 transition-colors hover:bg-sage-400"
+          className="ml-2.5 grid size-[34px] place-items-center rounded-full bg-mustard-500 text-xs font-semibold tracking-[0.06em] text-neutral-950 transition-colors hover:bg-mustard-400"
         >
           {HOST.initials}
         </button>

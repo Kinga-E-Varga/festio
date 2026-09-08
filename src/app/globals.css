@@ -4,84 +4,135 @@
   --font-sans: var(--font-kantumruy-pro), ui-sans-serif, system-ui, sans-serif;
   --font-serif: var(--font-libre-baskerville), ui-serif, Georgia, serif;
 
-  /* Surfaces */
-  --color-cream-50: #fffef1;
-  --color-cream-100: #fefce5;
-  --color-cream-200: #f8f1ca;
-  --color-peach-100: #fae3c7;
+  /* The two columns dock at the width each one stops crowding the content. */
+  --breakpoint-nav: 820px;
+  --breakpoint-rail: 1400px;
 
-  /* Greens — base accent */
-  --color-sage-50: #e9efdc;
-  --color-sage-100: #d7dfbe;
-  --color-sage-300: #adbd8f;
-  --color-sage-400: #97ab78;
-  --color-sage-500: #788a5c;
-  --color-sage-600: #606f4b;
-  --color-sage-800: #3d4a30;
+  --spacing-side: 242px;
+  --spacing-rail: 368px;
+  --spacing-topbar: 64px;
 
-  /* Secondary accents — brand-400 is logo colour, accent use only */
-  --color-honey-200: #eddb91;
-  --color-honey-300: #e9c07f;
-  --color-brand-400: #d88e5f;
-  --color-clay-500: #bb6040;
-  --color-clay-600: #9c4a2f;
+  /*
+   * Drop Tailwind's stock colours so the app can only reach for the palette
+   * below — `bg-blue-500` and friends simply produce no class. Keyword values
+   * survive because they carry no colour of their own.
+   */
+  --color-*: initial;
+  --color-transparent: transparent;
+  --color-current: currentColor;
+  --color-inherit: inherit;
 
-  /* Neutrals and ink */
-  --color-linen-100: #f6e2d8;
-  --color-linen-200: #ded7c6;
-  --color-stone-400: #b5ada0;
-  --color-stone-500: #7d7466;
-  --color-ink-700: #4f3736;
-  --color-ink-900: #2b2422;
+  /* Neutral — surfaces, ink, and the dark chrome. */
+  --color-neutral-50: #faf7f3;
+  --color-neutral-100: #f5f0eb;
+  --color-neutral-200: #ece5dd;
+  --color-neutral-300: #dcd3c7;
+  --color-neutral-400: #cabdae;
+  --color-neutral-500: #ae9f8c;
+  --color-neutral-600: #8d7d6a;
+  --color-neutral-700: #6b5e4e;
+  --color-neutral-800: #4c4236;
+  --color-neutral-900: #2f281f;
+  --color-neutral-950: #17130e;
 
-  /* Semantic */
-  --color-danger: #a33529;
-  --color-success: #4e7a4a;
-  --color-info: #4a6b75;
+  /* Steel teal — informational accents. */
+  --color-steel-50: #f3f7f9;
+  --color-steel-100: #edf6f8;
+  --color-steel-200: #daecf0;
+  --color-steel-300: #adccd4;
+  --color-steel-400: #7cadba;
+  --color-steel-500: #478797;
+  --color-steel-600: #275d6a;
+
+  /* Terracotta — deadlines, countdowns, retention notice. */
+  --color-terracotta-50: #fdf2eb;
+  --color-terracotta-100: #fceee4;
+  --color-terracotta-200: #f6dbc7;
+  --color-terracotta-300: #eec09e;
+  --color-terracotta-400: #e4a372;
+  --color-terracotta-500: #c8711f;
+  --color-terracotta-600: #924c00;
+
+  /* Mustard — brand gold; nav section labels and the logo mark. */
+  --color-mustard-50: #f9f5ea;
+  --color-mustard-100: #f8f2e0;
+  --color-mustard-200: #f0e6c9;
+  --color-mustard-300: #dbcda1;
+  --color-mustard-400: #c6b379;
+  --color-mustard-500: #af974b;
+  --color-mustard-600: #7c682a;
+
+  /* Forest green — primary accent: active nav, stats, positive progress. */
+  --color-forest-50: #f2f7f0;
+  --color-forest-100: #eaf1e7;
+  --color-forest-200: #d6e2d2;
+  --color-forest-300: #aabaa4;
+  --color-forest-400: #7e9277;
+  --color-forest-500: #51644a;
+  --color-forest-600: #2f402a;
+
+  /* Rust red — warnings and unmatched-guest flags. */
+  --color-rust-50: #fcf0f0;
+  --color-rust-100: #fbeae9;
+  --color-rust-200: #f6dbda;
+  --color-rust-300: #e1aead;
+  --color-rust-400: #cd8080;
+  --color-rust-500: #b75759;
+  --color-rust-600: #7b2c30;
 }
 
 @layer base {
   body {
-    background-color: var(--color-cream-100);
-    color: var(--color-ink-900);
+    background-color: var(--color-mustard-50);
+    color: var(--color-neutral-900);
     font-family: var(--font-sans);
+  }
+
+  /*
+   * Tailwind v4's Preflight leaves buttons on the default arrow. Every button
+   * here is a real control, so hand the pointer back — disabled ones keep the
+   * arrow and say `cursor-not-allowed` for themselves.
+   */
+  button:not(:disabled),
+  [role="button"]:not([aria-disabled="true"]) {
+    cursor: pointer;
   }
 
   /* Keyboard focus stays visible everywhere in the app shell. */
   :focus-visible {
-    outline: 2px solid var(--color-sage-600);
+    outline: 2px solid var(--color-forest-500);
     outline-offset: 2px;
   }
 }
 
 @layer components {
   /*
-   * Attendee-safeguard meter. A native <progress> keeps the fill width out of
-   * an inline style and carries the value semantics for free.
+   * Attendee-safeguard bar: replies that said yes, then replies that said no,
+   * both measured against the cap. Every colour and dimension lives here, so
+   * the component hands over only the two percentages as custom properties
+   * and no presentation ends up in an inline style.
    */
-  .meter {
-    appearance: none;
-    inline-size: 100%;
-    block-size: 0.375rem;
-    border: 0;
-    border-radius: 9999px;
+  .safeguard {
+    display: flex;
+    block-size: 6px;
     overflow: hidden;
-    background-color: var(--color-linen-200);
-    color: var(--color-sage-500);
-  }
-
-  .meter::-webkit-progress-bar {
-    background-color: var(--color-linen-200);
-  }
-
-  .meter::-webkit-progress-value {
-    background-color: currentColor;
     border-radius: 9999px;
+    background-color: var(--color-mustard-200);
   }
 
-  .meter::-moz-progress-bar {
-    background-color: currentColor;
-    border-radius: 9999px;
+  .safeguard span {
+    display: block;
+    block-size: 100%;
+  }
+
+  .safeguard .attending {
+    inline-size: var(--attending);
+    background-color: var(--color-forest-400);
+  }
+
+  .safeguard .declined {
+    inline-size: var(--declined);
+    background-color: var(--color-terracotta-400);
   }
 }
 

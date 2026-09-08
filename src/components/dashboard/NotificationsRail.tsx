@@ -3,25 +3,21 @@ import { GUEST_DATA_RETENTION_DAYS } from "@/lib/config";
 import { ATTENTION_NOTICES, RECENT_RSVPS } from "@/mock/dashboard";
 import type { NoticeTone } from "@/types/dashboard";
 
-const TONE_BAR: Record<NoticeTone, string> = {
-  unmatched: "bg-clay-600",
-  deadline: "bg-honey-300",
-  safeguard: "bg-sage-500",
-  billing: "bg-info",
+/** Each notice's edge colour carries through to its call to action. */
+const TONE: Record<NoticeTone, string> = {
+  unmatched: "border-rust-500 text-rust-600",
+  deadline: "border-mustard-500 text-mustard-600",
+  safeguard: "border-terracotta-500 text-terracotta-600",
+  billing: "border-steel-500 text-steel-600",
 };
 
-function RailCard({
-  label,
-  children,
-}: {
-  label: string;
-  children: ReactNode;
-}) {
+const PANEL_LABEL =
+  "mb-3.5 text-[10px] font-semibold tracking-[0.18em] text-mustard-500 uppercase";
+
+function Panel({ label, children }: { label: string; children: ReactNode }) {
   return (
-    <section className="overflow-hidden rounded-lg border border-linen-200 bg-cream-50">
-      <h2 className="border-b border-linen-200 px-4 py-2.5 text-[11px] font-medium tracking-[0.14em] text-stone-500 uppercase">
-        {label}
-      </h2>
+    <section className="mb-[22px] border-b border-mustard-400 pb-[22px] last:mb-0 last:border-b-0 last:pb-0">
+      <h2 className={PANEL_LABEL}>{label}</h2>
       {children}
     </section>
   );
@@ -29,94 +25,95 @@ function RailCard({
 
 export function NotificationsRail() {
   return (
-    <div className="flex flex-col gap-4">
-      <RailCard label="Needs your attention">
-        <ul className="divide-y divide-linen-200">
+    <div>
+      <Panel label="Needs your attention">
+        <ul>
           {ATTENTION_NOTICES.map((notice) => (
-            <li key={notice.id} className="flex gap-3 px-3 py-3">
-              <span
-                aria-hidden="true"
-                className={`w-0.5 shrink-0 rounded-full ${TONE_BAR[notice.tone]}`}
-              />
-              <div className="min-w-0">
-                <p className="font-medium">
-                  {notice.title}
-                  {notice.context ? (
-                    <span className="font-normal text-stone-500">
-                      {" "}
-                      {notice.context}
-                    </span>
-                  ) : null}
-                </p>
-                <p className="mt-1 text-xs leading-relaxed text-stone-500">
-                  {notice.body}
-                </p>
-                <button
-                  type="button"
-                  className="mt-1.5 text-xs font-medium text-sage-600 underline decoration-sage-300 underline-offset-2 transition-colors hover:text-sage-800 hover:decoration-sage-600"
-                >
-                  {notice.actionLabel}
-                </button>
-              </div>
+            <li
+              key={notice.id}
+              className={`mb-3.5 border-l-4 pb-3.5 pl-3.5 last:mb-0 last:pb-0 ${TONE[notice.tone]}`}
+            >
+              <p className="mb-[3px] font-semibold text-neutral-900">
+                {notice.title}
+                {notice.context ? (
+                  <span className="font-normal"> {notice.context}</span>
+                ) : null}
+              </p>
+              <p className="mb-1.5 text-[12.5px] leading-[1.45] text-neutral-700">
+                {notice.body}
+              </p>
+              <button
+                type="button"
+                className="text-[12.5px] font-semibold text-current underline underline-offset-[3px] transition-colors hover:text-neutral-900"
+              >
+                {notice.actionLabel}
+              </button>
             </li>
           ))}
         </ul>
-      </RailCard>
+      </Panel>
 
-      <RailCard label="Recent RSVPs">
-        <ul className="divide-y divide-linen-200">
+      <Panel label="Recent RSVPs">
+        <ul>
           {RECENT_RSVPS.map((entry) => (
-            <li key={entry.id} className="flex gap-3 px-4 py-3">
+            <li
+              key={entry.id}
+              className="flex gap-[11px] border-t border-neutral-300 py-3 first:border-t-0 first:pt-0"
+            >
               <span
                 aria-hidden="true"
-                className="grid size-6 shrink-0 place-items-center rounded-full bg-sage-100 text-[10px] font-medium text-sage-800"
+                className={`grid size-7 shrink-0 place-items-center rounded-full text-[10px] font-semibold ${
+                  entry.tag
+                    ? "bg-terracotta-200 text-terracotta-600"
+                    : "bg-forest-200 text-forest-600"
+                }`}
               >
                 {entry.initials}
               </span>
-              <div className="min-w-0">
-                <p className="leading-snug">
-                  <span className="font-medium">{entry.actor}</span>{" "}
+              <div className="min-w-0 text-[12.5px] leading-[1.45] text-neutral-700">
+                <p>
+                  <span className="font-semibold text-neutral-900">
+                    {entry.actor}
+                  </span>{" "}
                   {entry.summary}
                   {entry.subject ? (
                     <>
                       {" "}
-                      <span className="font-medium">{entry.subject}</span>
+                      <span className="font-semibold text-neutral-900">
+                        {entry.subject}
+                      </span>
                     </>
                   ) : null}
                   {entry.tag ? (
                     <>
                       {" "}
-                      <span className="rounded-sm border border-clay-500/40 bg-peach-100 px-1.5 py-0.5 text-[10px] font-medium tracking-[0.08em] text-clay-600">
+                      <span className="inline-block border border-terracotta-400 bg-terracotta-200 px-1.5 py-px align-[1px] text-[9.5px] font-semibold tracking-[0.1em] text-terracotta-600">
                         {entry.tag}
                       </span>
                     </>
                   ) : null}
                 </p>
-                <p className="mt-1 text-xs text-stone-500">
-                  {entry.meta.join(" · ")}
-                </p>
+                <p className="mt-0.5 text-[11.5px]">{entry.meta.join(" · ")}</p>
               </div>
             </li>
           ))}
         </ul>
-      </RailCard>
+      </Panel>
 
-      <section className="rounded-lg border border-honey-200 bg-cream-200 px-4 py-3.5">
-        <h2 className="text-[11px] font-medium tracking-[0.14em] text-ink-700 uppercase">
-          Data retention
-        </h2>
-        <p className="mt-2 text-xs leading-relaxed text-ink-700">
+      <section className="border border-terracotta-400 bg-terracotta-200 p-5 text-terracotta-600">
+        <h2 className={`${PANEL_LABEL} text-terracotta-600`}>Data retention</h2>
+        <p className="mb-3 text-[12.5px] leading-[1.5]">
           Each invitation and all its guest data is deleted automatically{" "}
-          <span className="font-serif text-lg leading-none">
+          <span className="font-serif text-[22px] align-[-2px]">
             {GUEST_DATA_RETENTION_DAYS}
           </span>{" "}
           days after the event date. Your account and printable PNGs stay.
         </p>
-        <p className="mt-2 text-xs leading-relaxed text-ink-700">
+        <p className="text-[12.5px] leading-[1.5]">
           You are the data controller; Festio processes on your behalf under the{" "}
           <a
             href="/legal/terms"
-            className="font-medium underline decoration-ink-700/40 underline-offset-2 hover:decoration-ink-700"
+            className="font-bold underline underline-offset-[3px]"
           >
             DPA in the Terms
           </a>

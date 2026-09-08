@@ -24,7 +24,7 @@ export function EventTabs({ tabs }: { tabs: EventTab[] }) {
       <div
         role="tablist"
         aria-label="Event status"
-        className="flex flex-wrap items-center gap-1.5 border-b border-linen-200 pb-2"
+        className="flex flex-wrap items-center gap-1 border-b border-forest-400"
       >
         {tabs.map((tab, index) => {
           const isActive = tab.id === activeId;
@@ -48,18 +48,16 @@ export function EventTabs({ tabs }: { tabs: EventTab[] }) {
                   selectByOffset(index, -1);
                 }
               }}
-              className={`flex items-center gap-2 rounded-md px-3.5 py-1.5 transition-colors ${
+              // The active tab hangs a pixel below the list so its own bottom
+              // border sits on the divider rather than doubling it.
+              className={`-mb-px flex items-center gap-1.5 border-b-2 px-4 py-[9px] text-forest-600 transition-colors ${
                 isActive
-                  ? "border border-linen-200 bg-cream-50 font-medium text-ink-900"
-                  : "border border-transparent text-stone-500 hover:bg-cream-50/70 hover:text-ink-900"
+                  ? "border-forest-400 bg-forest-300 font-semibold"
+                  : "border-transparent hover:bg-forest-100"
               }`}
             >
               {tab.label}
-              <span
-                className={`text-xs tabular-nums ${
-                  isActive ? "text-sage-600" : "text-stone-400"
-                }`}
-              >
+              <span className="text-xs text-forest-500 tabular-nums">
                 {tab.count}
               </span>
             </button>
@@ -74,7 +72,7 @@ export function EventTabs({ tabs }: { tabs: EventTab[] }) {
           role="tabpanel"
           aria-labelledby={`tab-${tab.id}`}
           hidden={tab.id !== activeId}
-          className="pt-4"
+          className="pt-5"
         >
           {tab.panel}
         </div>

@@ -50,27 +50,27 @@ export default function DashboardPage() {
   ];
 
   return (
-    <div className="mx-auto flex max-w-6xl flex-col gap-7">
+    <div>
       <header>
-        <p className="text-[11px] font-medium tracking-[0.14em] text-stone-500 uppercase">
+        <p className="text-[11px] font-semibold tracking-[0.16em] text-forest-500 uppercase">
           {HOST.todayLabel}
         </p>
-        <h1 className="mt-2 font-serif text-4xl leading-tight sm:text-5xl">
+        <h1 className="mt-1.5 font-serif text-[34px] leading-[1.05] text-neutral-900 nav:text-[46px]">
           {HOST.greeting}
         </h1>
-        <p className="mt-2 max-w-prose text-stone-500">{HOST.lede}</p>
+        <p className="mt-2 mb-[26px] max-w-[62ch] text-neutral-700">
+          {HOST.lede}
+        </p>
       </header>
 
       <StatStrip />
 
       <section>
-        <h2 className="flex items-center gap-4 font-serif text-base tracking-[0.18em] uppercase">
+        <h2 className="mt-[34px] mb-3.5 flex items-center gap-[18px] font-serif text-xl tracking-[0.14em] text-neutral-900 uppercase">
           Your events
-          <span aria-hidden="true" className="h-px flex-1 bg-linen-200" />
+          <span aria-hidden="true" className="h-px flex-1 bg-forest-400" />
         </h2>
-        <div className="mt-4">
-          <EventTabs tabs={tabs} />
-        </div>
+        <EventTabs tabs={tabs} />
       </section>
     </div>
   );

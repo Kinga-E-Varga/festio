@@ -114,46 +114,21 @@ Desktop-first, fully mobile responsive. Nav collapses to a drawer on mobile. Smo
 Base app fonts — for the app's UI use the combination of Kantumruy Pro and Libre Baskerville google fonts fonts.
 **Invitations have their own independent fonts and are not bound by this.**
 
-Base app palette — a starting point, not a restriction; add or drop colours as suitable. **Invitations have their own independent palettes and are not bound by this.**
+Base app palette, only use these. **Invitations have their own independent palettes and are not bound by this.**
 
 ```
-Surfaces
-#fffef1
-#fefce5
-#f8f1ca
-#fae3c7
-#e9efdc
+Neutral: #FAF7F3 #F5F0EB, #ECE5DD, #DCD3C7, #CABDAE, #AE9F8C, #8D7D6A, #6B5E4E, #4C4236, #2F281F, #17130E
 
-Greens - base accent color for the app
-#d7dfbe
-#adbd8f
-#97ab78
-#788a5c
-#606f4b
-#3d4a30
+Steel teal: #F3F7F9, #EDF6F8, #DAECF0, #ADCCD4, #7CADBA, #478797, #275D6A
 
-Secondary accent colors
-#eddb91
-#e9c07f
-#d88e5f
-#bb6040
-#9c4a2f
+Terracotta: #FDF2EB, #FCEEE4, #F6DBC7, #EEC09E, #E4A372, #C8711F, #924C00
 
-Neutrals and ink
-#f6e2d8
-#ded7c6
-#b5ada0
-#7d7466
-#4f3736
-#2b2422
+Mustard: #F9F5EA, #F8F2E0, #F0E6C9, #DBCDA1, #C6B379, #AF974B, #7C682A
 
-Semantic
-#a33529
-#4e7a4a
-#4a6b75
+Forest green: #F2F7F0, #EAF1E7, #D6E2D2, #AABAA4, #7E9277, #51644A, #2F402A
+
+Rust red: #FCF0F0, #FBEAE9, #F6DBDA, #E1AEAD, #CD8080, #B75759, #7B2C30
 ```
-
-**The color #d88e5f should be used as an accent color only, do not use it as a "error/warning/attention" color because it's used in the app's logo as brand color.**
 
 ### Design reference
 

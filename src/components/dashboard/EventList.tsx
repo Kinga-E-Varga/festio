@@ -10,14 +10,14 @@ interface EventListProps {
 export function EventList({ events, emptyMessage }: EventListProps) {
   if (events.length === 0) {
     return (
-      <p className="rounded-lg border border-dashed border-stone-400 bg-cream-50 px-4 py-10 text-center text-stone-500">
+      <p className="border border-dashed border-mustard-300 bg-mustard-100 px-6 py-11 text-center text-neutral-700">
         {emptyMessage}
       </p>
     );
   }
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col gap-5">
       {events.map((event) => (
         <EventCard key={event.id} event={event} />
       ))}

@@ -33,13 +33,13 @@ export function CopyButton({ value, label }: CopyButtonProps) {
         type="button"
         onClick={copy}
         aria-label={label}
-        className="grid size-6 place-items-center rounded transition-colors hover:bg-cream-200"
+        className="text-neutral-700 transition-colors hover:text-forest-500"
       >
-        <Icon name="copy" className="size-3.5 text-stone-500" />
+        <Icon name="copy" className="size-3.5" />
       </button>
       <span
         role="status"
-        className={`pointer-events-none absolute -top-6 right-0 rounded bg-ink-900 px-1.5 py-0.5 text-[10px] whitespace-nowrap text-cream-50 transition-opacity ${
+        className={`pointer-events-none absolute -top-7 right-0 bg-forest-600 px-2.5 py-1 text-[10px] whitespace-nowrap text-neutral-50 transition-opacity ${
           copied ? "opacity-100" : "opacity-0"
         }`}
       >

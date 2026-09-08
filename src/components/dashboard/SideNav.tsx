@@ -7,12 +7,12 @@ export function SideNav() {
   return (
     <nav
       aria-label="Dashboard sections"
-      className="flex h-full flex-col bg-sage-50 text-ink-900"
+      className="flex h-full flex-col bg-mustard-100 pb-4 text-neutral-900"
     >
-      <div className="flex-1 overflow-y-auto pb-6">
+      <div className="min-h-0 flex-1 overflow-y-auto pt-[22px] pb-3">
         {NAV_SECTIONS.map((section) => (
-          <div key={section.label} className="pt-5 first:pt-4">
-            <h2 className="px-4 pb-1.5 text-[11px] font-medium tracking-[0.14em] text-stone-500 uppercase">
+          <div key={section.label} className="pb-[22px] last:pb-0">
+            <h2 className="px-6 pb-2 text-[10px] font-semibold tracking-[0.18em] text-mustard-500 uppercase">
               {section.label}
             </h2>
             <ul>
@@ -28,11 +28,10 @@ export function SideNav() {
 
       <Link
         href="/"
-        className="flex items-center gap-2.5 bg-sage-600 px-4 py-3 text-cream-50 transition-colors hover:bg-sage-800"
+        className="mx-4 flex items-center gap-3 rounded-[10px] bg-mustard-300 px-4 py-[13px] font-semibold text-neutral-900 transition-colors hover:bg-mustard-500"
       >
-        <Icon name="home" className="size-4 shrink-0" />
-        <span className="font-medium">Festio home</span>
-        <Icon name="arrowUpRight" className="ml-auto size-3.5" />
+        <Icon name="arrowUpRight" className="size-[17px] shrink-0" />
+        <span>Quit dashboard</span>
       </Link>
     </nav>
   );
