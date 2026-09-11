@@ -28,7 +28,7 @@ export function SideNav() {
 
       <Link
         href="/"
-        className="mx-4 flex items-center gap-3 rounded-[10px] bg-mustard-300 px-4 py-[13px] font-semibold text-neutral-900 transition-colors hover:bg-mustard-500"
+        className="mx-4 flex items-center gap-3 rounded-[10px] bg-mustard-500 px-4 py-[13px] font-semibold text-neutral-950 transition-colors hover:bg-mustard-400"
       >
         <Icon name="arrowUpRight" className="size-[17px] shrink-0" />
         <span>Quit dashboard</span>

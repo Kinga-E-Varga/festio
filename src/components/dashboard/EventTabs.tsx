@@ -24,7 +24,7 @@ export function EventTabs({ tabs }: { tabs: EventTab[] }) {
       <div
         role="tablist"
         aria-label="Event status"
-        className="flex flex-wrap items-center gap-1 border-b border-forest-400"
+        className="flex flex-wrap items-center gap-1 border-b border-forest-500"
       >
         {tabs.map((tab, index) => {
           const isActive = tab.id === activeId;
@@ -50,14 +50,21 @@ export function EventTabs({ tabs }: { tabs: EventTab[] }) {
               }}
               // The active tab hangs a pixel below the list so its own bottom
               // border sits on the divider rather than doubling it.
-              className={`-mb-px flex items-center gap-1.5 border-b-2 px-4 py-[9px] text-forest-600 transition-colors ${
+              // Colour lives in both branches rather than on the base: two
+              // text-colour utilities on one element resolve by stylesheet
+              // order, not by the order they are written.
+              className={`-mb-px flex items-center gap-1.5 border-b-2 px-4 py-[9px] transition-colors ${
                 isActive
-                  ? "border-forest-400 bg-forest-300 font-semibold"
-                  : "border-transparent hover:bg-forest-100"
+                  ? "border-forest-500 bg-forest-500 font-semibold text-mustard-50"
+                  : "border-transparent text-forest-600"
               }`}
             >
               {tab.label}
-              <span className="text-xs text-forest-500 tabular-nums">
+              <span
+                className={`text-xs tabular-nums ${
+                  isActive ? "text-mustard-50" : "text-forest-500"
+                }`}
+              >
                 {tab.count}
               </span>
             </button>

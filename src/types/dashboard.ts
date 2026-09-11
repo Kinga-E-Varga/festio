@@ -24,6 +24,15 @@ export type IconName =
   | "alert"
   | "globe"
   | "arrowUpRight"
+  | "arrowLeft"
+  | "arrowRight"
+  | "calendar"
+  | "layers"
+  | "plus"
+  | "info"
+  | "ban"
+  | "trash"
+  | "check"
   | "search"
   | "menu"
   | "close";
@@ -40,6 +49,28 @@ export interface NavSection {
   label: string;
   items: NavItem[];
 }
+
+/** Tier is per invitation and can only ever go up (project spec). */
+export type TierId = 1 | 2 | 3;
+
+export interface Tier {
+  name: string;
+  price: string;
+  seating: boolean;
+  blurb: string;
+  /** Shown on the tile offering the next tier up; absent on the top tier. */
+  upsell?: string;
+}
+
+/** Occasion drives which templates are offered first. */
+export type EventKind =
+  | "wedding"
+  | "christening"
+  | "birthday"
+  | "comingOfAge"
+  | "cumetrie"
+  | "newYear"
+  | "other";
 
 /** Per-invitation visibility (project spec: Hidden / Public / Protected). */
 export type Visibility = "hidden" | "public" | "protected";
@@ -69,27 +100,49 @@ export interface EventNote {
 export interface DashboardEvent {
   id: string;
   title: string;
-  /** Pre-formatted for display; no date maths in this layout-only pass. */
+  kind: EventKind;
+  /** ISO `YYYY-MM-DD`; the editor computes every deadline from it. */
+  date: string;
+  /** 24h `HH:MM` start time. */
+  time: string;
+  /** Pre-formatted for display; the list does no date maths of its own. */
   dateLabel: string;
   countdownLabel: string;
   isNextUp?: boolean;
+  venue: string;
+  address: string;
   visibility: Visibility;
-  /** Host-facing tier name shown on the card. */
-  tierLabel: string;
+  tier: TierId;
+  /** 1 = fixed template, text only. 2 = modular sections. */
+  invitationType: 1 | 2;
+  paid: boolean;
   /** Set while the 24h content freeze is in sight. */
   editLockLabel?: string;
-  link: string;
+  /** The host-editable half of the link. */
+  slug: string;
+  /** Festio's four random digits, which keep the link unguessable. */
+  digits: string;
   /** Set only on Protected invitations; min 4 chars, letters or digits. */
   password?: string;
   /** Replaces the copy row when there is nothing to share yet. */
   linkNote?: string;
   rsvp: RsvpTally;
   safeguard: AttendeeSafeguard;
+  /** Replies that matched no name on the pre-loaded list. */
+  unmatched: number;
+  preloaded: boolean;
+  preloadedCount: number;
   note?: EventNote;
   preview: StaticImageData;
   previewAlt: string;
   status: EventStatus;
   seatingAvailable: boolean;
+  /** True once the content freeze has passed; nothing is editable after it. */
+  locked: boolean;
+  /** How long until the freeze, while it is still ahead. */
+  locksInLabel?: string;
+  /** True once the retention window has run out and the guest data is gone. */
+  dataDeleted: boolean;
 }
 
 export interface DashboardStat {

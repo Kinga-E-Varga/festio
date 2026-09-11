@@ -21,9 +21,11 @@ This is the common workflow that we will use for every single feature/fix:
 7. **Merge** - Merge to main
 8. **Delete Branch** - Delete branch after merge
 9. **Review** - Review AI-generated code periodically and on demand.
-10. Mark as completed in @context/current-feature.md and add to history
+10. **Close out** - Mark as completed in @context/current-feature.md and add to history. Leave this edit uncommitted — it is not a commit of its own, and it rides along with the next feature's commit at step 6. Writing it only after the merge keeps the history entry honest.
 
 Do NOT commit without permission and until the build passes. If build fails, fix the issues first.
+
+One feature/fix = one commit. The close-out edit above is the only change allowed to sit uncommitted between features.
 
 ## Branching
 

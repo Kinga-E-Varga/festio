@@ -1,38 +1,34 @@
 import Image from "next/image";
+import Link from "next/link";
 import type { CSSProperties } from "react";
 import { CopyButton } from "@/components/dashboard/CopyButton";
 import { PasswordField } from "@/components/dashboard/PasswordField";
+import { VISIBILITY } from "@/components/dashboard/EventMeta";
 import { Icon } from "@/components/icons";
-import type {
-  DashboardEvent,
-  EventStatus,
-  IconName,
-  Visibility,
-} from "@/types/dashboard";
-
-const VISIBILITY: Record<Visibility, { label: string; icon: IconName }> = {
-  hidden: { label: "Hidden", icon: "eyeOff" },
-  public: { label: "Public", icon: "globe" },
-  protected: { label: "Protected", icon: "shield" },
-};
+import { invitationLink } from "@/lib/event";
+import { TIERS } from "@/mock/dashboard";
+import type { DashboardEvent, EventStatus } from "@/types/dashboard";
 
 /** The card's left edge says at a glance which pile the event is in. */
 const STATUS_EDGE: Record<EventStatus, string> = {
-  active: "border-l-forest-400",
+  active: "border-l-forest-500",
   draft: "border-l-terracotta-500",
   past: "border-l-neutral-600 opacity-[0.86]",
 };
 
 const ACTION =
-  "flex items-center justify-center gap-[9px] rounded-md border border-forest-400 bg-mustard-50 px-2 py-[11px] text-forest-600 transition-colors hover:border-forest-500 hover:bg-forest-200";
+  "flex items-center justify-center gap-[9px] rounded-md border border-forest-500 bg-mustard-50 px-2 py-[11px] text-forest-600 transition-colors hover:border-forest-600 hover:bg-forest-200";
 const ACTION_DISABLED =
-  "flex cursor-not-allowed items-center justify-center gap-[9px] rounded-md border border-forest-400 bg-mustard-100 px-2 py-[11px] text-neutral-700 opacity-[0.65]";
+  "flex cursor-not-allowed items-center justify-center gap-[9px] rounded-md border border-forest-500 bg-mustard-100 px-2 py-[11px] text-neutral-700 opacity-[0.65]";
 /** Two wide buttons then three narrow ones, until there is room for five. */
 const ACTION_WIDE = "col-span-3 @xl:col-span-1";
 const ACTION_NARROW = "col-span-2 @xl:col-span-1";
 
-const FIELD =
-  "flex items-center gap-[9px] border border-mustard-300 bg-mustard-50 px-3 py-2 text-[13px] text-neutral-900";
+const FIELD_BASE =
+  "flex items-center gap-[9px] border border-mustard-300 px-3 py-2 text-[13px] text-neutral-900";
+const FIELD = `${FIELD_BASE} bg-mustard-50`;
+/** Stands in for the link row when there is nothing to share yet. */
+const FIELD_NOTE = `${FIELD_BASE} bg-terracotta-200`;
 
 function Tally({
   label,
@@ -63,6 +59,7 @@ function Tally({
 
 export function EventCard({ event }: { event: DashboardEvent }) {
   const visibility = VISIBILITY[event.visibility];
+  const link = invitationLink(event);
   const { confirmed, cap } = event.safeguard;
   const safeguardPercent = cap > 0 ? Math.round((confirmed / cap) * 100) : 0;
 
@@ -143,7 +140,7 @@ export function EventCard({ event }: { event: DashboardEvent }) {
                   <Icon name={visibility.icon} className="size-3.5" />
                   {visibility.label}
                 </span>
-                <span>{event.tierLabel}</span>
+                <span>{TIERS[event.tier].name}</span>
                 {event.editLockLabel ? (
                   <span className="flex items-center gap-1.5 border border-terracotta-400 bg-terracotta-200 px-2.5 py-1 text-xs font-semibold text-terracotta-600">
                     <Icon name="clock" className="size-3.5" />
@@ -159,9 +156,9 @@ export function EventCard({ event }: { event: DashboardEvent }) {
                     name="link"
                     className="size-3.5 shrink-0 text-forest-500"
                   />
-                  <span className="flex-1 truncate">{event.link}</span>
+                  <span className="flex-1 truncate">{link}</span>
                   <CopyButton
-                    value={`https://${event.link}`}
+                    value={`https://${link}`}
                     label={`Copy invitation link for ${event.title}`}
                   />
                 </span>
@@ -171,7 +168,7 @@ export function EventCard({ event }: { event: DashboardEvent }) {
                 ) : null}
 
                 {event.linkNote ? (
-                  <span className={FIELD}>
+                  <span className={FIELD_NOTE}>
                     <Icon
                       name="eyeOff"
                       className="size-3.5 shrink-0 text-neutral-700"
@@ -245,7 +242,7 @@ export function EventCard({ event }: { event: DashboardEvent }) {
                   </p>
                 </div>
               ) : (
-                <p className="mt-4 border-l-[3px] border-forest-500 py-0.5 pl-3 text-[12.5px] text-neutral-700">
+                <p className="mt-4 border-l-[3px] border-neutral-600 py-0.5 pl-3 text-[12.5px] text-neutral-700">
                   {event.note.text}
                 </p>
               )
@@ -254,10 +251,13 @@ export function EventCard({ event }: { event: DashboardEvent }) {
         </div>
 
         <div className="mx-4 grid grid-cols-6 gap-2.5 border-t border-mustard-300 pt-[18px] pb-[22px] @2xl:mx-6 @2xl:gap-3.5 @xl:grid-cols-5">
-          <button type="button" className={`${ACTION} ${ACTION_WIDE}`}>
+          <Link
+            href={`/dashboard/events/${event.id}`}
+            className={`${ACTION} ${ACTION_WIDE}`}
+          >
             <Icon name="pencil" className="size-[15px]" />
             Edit
-          </button>
+          </Link>
           <button type="button" className={`${ACTION} ${ACTION_WIDE}`}>
             <Icon name="eye" className="size-[15px]" />
             View

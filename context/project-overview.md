@@ -130,12 +130,6 @@ Forest green: #F2F7F0, #EAF1E7, #D6E2D2, #AABAA4, #7E9277, #51644A, #2F402A
 Rust red: #FCF0F0, #FBEAE9, #F6DBDA, #E1AEAD, #CD8080, #B75759, #7B2C30
 ```
 
-### Design reference
-
-Refer to the screenshot below as a base for the dashboard UI. It does not have to be exact. Use it as a reference:
-
-- @context/screenshots/dashboard-ui.png
-
 ## Out of scope for v1
 
 Conditional RSVP logic, PDF export, add-to-calendar / guest reminders, photo gallery, free-form print layouts.

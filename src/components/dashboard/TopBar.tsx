@@ -40,7 +40,8 @@ export function TopBar({
         <Icon name="menu" className="size-[22px]" />
       </button>
 
-      <Link href="/dashboard" className="flex items-center">
+      {/* The menu mark takes the corner once the nav collapses into it. */}
+      <Link href="/dashboard" className="hidden items-center nav:flex">
         {/*
          * One-colour artwork, so inverting it is cheaper than shipping a
          * second file that would drift from the original.
@@ -51,7 +52,7 @@ export function TopBar({
           width={148}
           height={32}
           priority
-          className="h-8 w-auto brightness-0 invert"
+          className="h-7 w-auto brightness-0 invert"
         />
       </Link>
 

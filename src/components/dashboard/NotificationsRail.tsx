@@ -16,7 +16,7 @@ const PANEL_LABEL =
 
 function Panel({ label, children }: { label: string; children: ReactNode }) {
   return (
-    <section className="mb-[22px] border-b border-mustard-400 pb-[22px] last:mb-0 last:border-b-0 last:pb-0">
+    <section className="mb-[22px] border-b border-mustard-300 pb-[22px] last:mb-0 last:border-b-0 last:pb-0">
       <h2 className={PANEL_LABEL}>{label}</h2>
       {children}
     </section>
@@ -58,7 +58,7 @@ export function NotificationsRail() {
           {RECENT_RSVPS.map((entry) => (
             <li
               key={entry.id}
-              className="flex gap-[11px] border-t border-neutral-300 py-3 first:border-t-0 first:pt-0"
+              className="flex gap-[11px] border-t border-dotted border-mustard-300 py-3 first:border-t-0 first:pt-0"
             >
               <span
                 aria-hidden="true"
@@ -107,7 +107,7 @@ export function NotificationsRail() {
           <span className="font-serif text-[22px] align-[-2px]">
             {GUEST_DATA_RETENTION_DAYS}
           </span>{" "}
-          days after the event date. Your account and printable PNGs stay.
+          days after the event date. Your account stays.
         </p>
         <p className="text-[12.5px] leading-[1.5]">
           You are the data controller; Festio processes on your behalf under the{" "}

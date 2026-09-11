@@ -134,6 +134,26 @@
     inline-size: var(--declined);
     background-color: var(--color-terracotta-400);
   }
+
+  /*
+   * The editor's safeguard meter: one fill against the cap the host is
+   * setting. Same reasoning as above — the component hands over a percentage
+   * and nothing else, so no presentation ends up in an inline style.
+   */
+  .meter {
+    display: flex;
+    block-size: 9px;
+    overflow: hidden;
+    border-radius: 9999px;
+    background-color: var(--color-mustard-200);
+  }
+
+  .meter span {
+    display: block;
+    block-size: 100%;
+    inline-size: var(--fill);
+    background-color: var(--color-forest-400);
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {

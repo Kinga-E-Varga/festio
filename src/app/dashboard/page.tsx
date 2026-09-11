@@ -68,7 +68,7 @@ export default function DashboardPage() {
       <section>
         <h2 className="mt-[34px] mb-3.5 flex items-center gap-[18px] font-serif text-xl tracking-[0.14em] text-neutral-900 uppercase">
           Your events
-          <span aria-hidden="true" className="h-px flex-1 bg-forest-400" />
+          <span aria-hidden="true" className="h-px flex-1 bg-forest-500" />
         </h2>
         <EventTabs tabs={tabs} />
       </section>
