@@ -1,5 +1,5 @@
 import Image from "next/image";
-import type { CSSProperties, ReactNode } from "react";
+import type { ReactNode } from "react";
 import {
   BTN_GHOST,
   BTN_PRIMARY,
@@ -10,6 +10,7 @@ import {
   deletionDate,
   formatEventDate,
   formatStamp,
+  safeguardBarVars,
 } from "@/lib/event";
 import { GUEST_DATA_RETENTION_DAYS } from "@/lib/config";
 import type { DashboardEvent } from "@/types/dashboard";
@@ -73,13 +74,7 @@ function Replies({ event }: { event: DashboardEvent }) {
   }
 
   const { cap } = event.safeguard;
-  const attending = cap > 0 ? Math.min(100, (event.rsvp.attending / cap) * 100) : 0;
-  const declined =
-    cap > 0 ? Math.min(100 - attending, (event.rsvp.declined / cap) * 100) : 0;
-  const barVars = {
-    "--attending": `${attending}%`,
-    "--declined": `${declined}%`,
-  } as CSSProperties;
+  const barVars = safeguardBarVars(event);
 
   return (
     <>

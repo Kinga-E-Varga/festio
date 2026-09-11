@@ -1,11 +1,10 @@
 import Image from "next/image";
 import Link from "next/link";
-import type { CSSProperties } from "react";
 import { CopyButton } from "@/components/dashboard/CopyButton";
 import { PasswordField } from "@/components/dashboard/PasswordField";
 import { VISIBILITY } from "@/components/dashboard/EventMeta";
 import { Icon } from "@/components/icons";
-import { invitationLink } from "@/lib/event";
+import { invitationLink, safeguardBarVars } from "@/lib/event";
 import { TIERS } from "@/mock/dashboard";
 import type { DashboardEvent, EventStatus } from "@/types/dashboard";
 
@@ -62,17 +61,7 @@ export function EventCard({ event }: { event: DashboardEvent }) {
   const link = invitationLink(event);
   const { confirmed, cap } = event.safeguard;
   const safeguardPercent = cap > 0 ? Math.round((confirmed / cap) * 100) : 0;
-
-  // Yes and no stack against the same cap, so the bar shows how much of the
-  // safeguard is already spoken for and how much is still open.
-  const attending =
-    cap > 0 ? Math.min(100, (event.rsvp.attending / cap) * 100) : 0;
-  const declined =
-    cap > 0 ? Math.min(100 - attending, (event.rsvp.declined / cap) * 100) : 0;
-  const barVars = {
-    "--attending": `${attending}%`,
-    "--declined": `${declined}%`,
-  } as CSSProperties;
+  const barVars = safeguardBarVars(event);
 
   return (
     <article

@@ -1,7 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { Icon } from "@/components/icons";
-import { ATTENTION_NOTICES, HOST } from "@/mock/dashboard";
+import { ATTENTION_NOTICES, EVENTS, HOST } from "@/mock/dashboard";
 
 interface TopBarProps {
   navOpen: boolean;
@@ -23,6 +23,10 @@ export function TopBar({
   onToggleNav,
   onToggleNotices,
 }: TopBarProps) {
+  // An invitation is only live once it is paid for, so the unpaid ones are
+  // exactly what is sitting in the cart.
+  const awaitingPayment = EVENTS.filter((event) => !event.paid).length;
+
   return (
     <header className="sticky top-0 z-40 flex h-topbar shrink-0 items-center gap-3.5 border-b border-mustard-500 bg-neutral-900 px-6">
       {/*
@@ -77,12 +81,14 @@ export function TopBar({
 
         <button
           type="button"
-          aria-label="Cart, 1 invitation awaiting payment"
+          aria-label={`Cart, ${awaitingPayment} ${
+            awaitingPayment === 1 ? "invitation" : "invitations"
+          } awaiting payment`}
           className={ICON_BUTTON}
         >
           <Icon name="cart" className="size-[22px]" />
           <span aria-hidden="true" className={`${BADGE} bg-terracotta-500`}>
-            1
+            {awaitingPayment}
           </span>
         </button>
 

@@ -1,3 +1,4 @@
+import type { CSSProperties } from "react";
 import { GUEST_DATA_RETENTION_DAYS } from "@/lib/config";
 
 /** The guest-facing address: the host's slug plus Festio's four random digits. */
@@ -11,6 +12,26 @@ export function normalizeSlug(value: string): string {
     .toLowerCase()
     .replace(/[^a-z0-9-]/g, "-")
     .replace(/-+/g, "-");
+}
+
+/**
+ * Yes and no stack against the same cap, so the bar shows how much of the
+ * safeguard is already spoken for and how much is still open.
+ */
+export function safeguardBarVars(event: {
+  rsvp: { attending: number; declined: number };
+  safeguard: { cap: number };
+}): CSSProperties {
+  const { cap } = event.safeguard;
+  const attending =
+    cap > 0 ? Math.min(100, (event.rsvp.attending / cap) * 100) : 0;
+  const declined =
+    cap > 0 ? Math.min(100 - attending, (event.rsvp.declined / cap) * 100) : 0;
+
+  return {
+    "--attending": `${attending}%`,
+    "--declined": `${declined}%`,
+  } as CSSProperties;
 }
 
 const DAY_MS = 86_400_000;
