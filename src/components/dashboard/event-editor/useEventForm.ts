@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useForm, useWatch } from "react-hook-form";
 import {
   contentFreeze,
   deletionDate,
@@ -34,24 +35,52 @@ const SLUG_MIN = 6;
 const SLUG_MAX = 32;
 const PASSWORD_PATTERN = /^[A-Za-z0-9]{4,}$/;
 
+interface EventFieldValues {
+  title: string;
+  kind: EventKind;
+  date: string;
+  closeEarly: boolean;
+  closeAt: string;
+  slug: string;
+  visibility: Visibility;
+  password: string;
+  cap: string;
+  preloaded: boolean;
+}
+
 export function useEventForm(event: DashboardEvent) {
   const original = {
     slug: event.slug,
     password: event.password ?? "",
   };
 
-  const [title, setTitle] = useState(event.title);
-  const [kind, setKind] = useState<EventKind>(event.kind);
-  const [date, setDate] = useState(event.date);
-  const [closeEarly, setCloseEarly] = useState(false);
-  const [closeAt, setCloseAt] = useState("");
-  const [slug, setSlug] = useState(event.slug);
-  const [visibility, setVisibility] = useState<Visibility>(event.visibility);
-  const [password, setPassword] = useState(original.password);
-  const [cap, setCap] = useState(String(event.safeguard.cap));
-  const [preloaded, setPreloaded] = useState(event.preloaded);
+  const { control, setValue, getValues, reset, formState } =
+    useForm<EventFieldValues>({
+      defaultValues: {
+        title: event.title,
+        kind: event.kind,
+        date: event.date,
+        closeEarly: false,
+        closeAt: "",
+        slug: event.slug,
+        visibility: event.visibility,
+        password: original.password,
+        cap: String(event.safeguard.cap),
+        preloaded: event.preloaded,
+      },
+    });
 
-  const [dirty, setDirty] = useState(false);
+  const title = useWatch({ control, name: "title" });
+  const kind = useWatch({ control, name: "kind" });
+  const date = useWatch({ control, name: "date" });
+  const closeEarly = useWatch({ control, name: "closeEarly" });
+  const closeAt = useWatch({ control, name: "closeAt" });
+  const slug = useWatch({ control, name: "slug" });
+  const visibility = useWatch({ control, name: "visibility" });
+  const password = useWatch({ control, name: "password" });
+  const cap = useWatch({ control, name: "cap" });
+  const preloaded = useWatch({ control, name: "preloaded" });
+
   const [justSaved, setJustSaved] = useState(false);
   const [acknowledged, setAcknowledged] = useState<Record<WarningId, boolean>>({
     date: false,
@@ -62,11 +91,10 @@ export function useEventForm(event: DashboardEvent) {
   /** Nothing is editable once the content freeze has passed. */
   const locked = event.locked;
 
-  function edit<T>(apply: (value: T) => void) {
-    return (value: T) => {
+  function edit<K extends keyof EventFieldValues>(key: K) {
+    return (value: EventFieldValues[K]) => {
       if (locked) return;
-      apply(value);
-      setDirty(true);
+      setValue(key, value as never, { shouldDirty: true });
       setJustSaved(false);
     };
   }
@@ -131,8 +159,8 @@ export function useEventForm(event: DashboardEvent) {
       : null;
 
   function save() {
-    if (!dirty || pending > 0 || locked) return;
-    setDirty(false);
+    if (!formState.isDirty || pending > 0 || locked) return;
+    reset(getValues());
     setJustSaved(true);
     setAcknowledged({ date: false, address: false, password: false });
   }
@@ -152,29 +180,29 @@ export function useEventForm(event: DashboardEvent) {
       preloaded,
     },
     set: {
-      title: edit(setTitle),
-      kind: edit(setKind),
-      date: edit((value: string) => {
-        setDate(value);
+      title: edit("title"),
+      kind: edit("kind"),
+      date: (value: string) => {
+        edit("date")(value);
         if (value === event.date) acknowledge("date", false);
-      }),
-      closeEarly: edit((value: boolean) => {
-        setCloseEarly(value);
+      },
+      closeEarly: (value: boolean) => {
+        edit("closeEarly")(value);
         // Switching on starts from the cut-off, which is the latest it can be.
-        if (value && !closeAt) setCloseAt(toDateTimeLocal(freeze));
-      }),
-      closeAt: edit(setCloseAt),
-      slug: edit((value: string) => {
-        setSlug(value);
+        if (value && !closeAt) edit("closeAt")(toDateTimeLocal(freeze));
+      },
+      closeAt: edit("closeAt"),
+      slug: (value: string) => {
+        edit("slug")(value);
         if (normalizeSlug(value) === original.slug) acknowledge("address", false);
-      }),
-      visibility: edit(setVisibility),
-      password: edit((value: string) => {
-        setPassword(value);
+      },
+      visibility: edit("visibility"),
+      password: (value: string) => {
+        edit("password")(value);
         if (value === original.password) acknowledge("password", false);
-      }),
-      cap: edit(setCap),
-      preloaded: edit(setPreloaded),
+      },
+      cap: edit("cap"),
+      preloaded: edit("preloaded"),
     },
     warnings,
     derived: {
@@ -200,10 +228,10 @@ export function useEventForm(event: DashboardEvent) {
       passwordError,
     },
     save: {
-      dirty,
+      dirty: formState.isDirty,
       pending,
       justSaved,
-      canSave: dirty && pending === 0 && !locked,
+      canSave: formState.isDirty && pending === 0 && !locked,
       submit: save,
     },
   };

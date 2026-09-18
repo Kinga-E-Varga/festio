@@ -1,9 +1,17 @@
 import type { CSSProperties } from "react";
 import { GUEST_DATA_RETENTION_DAYS } from "@/lib/config";
 
+/** The guest-facing address as a route this app can navigate to. */
+export function invitationPath(event: {
+  slug: string;
+  digits: string;
+}): string {
+  return `/${event.slug}-${event.digits}`;
+}
+
 /** The guest-facing address: the host's slug plus Festio's four random digits. */
 export function invitationLink(event: { slug: string; digits: string }): string {
-  return `festio.eu/${event.slug}-${event.digits}`;
+  return `festio.eu${invitationPath(event)}`;
 }
 
 /** Slugs carry lowercase letters, digits and single hyphens, nothing else. */

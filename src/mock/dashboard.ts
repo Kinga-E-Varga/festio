@@ -128,6 +128,7 @@ export const EVENTS: DashboardEvent[] = [
     visibility: "protected",
     tier: 3,
     invitationType: 2,
+    templateId: "wolf-dance",
     paid: true,
     editLockLabel: "Locks in 30 h",
     locksInLabel: "30 hours",

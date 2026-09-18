@@ -1,0 +1,5 @@
+# List of unresolved questions
+
+- top bar badges at zero: the cart badge now counts unpaid invitations, so it will render a `0` bubble once everything is paid for. The bell does the same when nothing needs attention. Hide both badges at zero, or leave them always visible? Changing only the cart would break the pair's symmetry. (`src/components/dashboard/TopBar.tsx`)
+- protected-invitation passwords are modelled as plain reversible strings, with a reveal eye in both the card and the editor. The host has to be able to re-share the password, so it can never be a one-way hash — decide how it is protected at rest before the data layer lands: encrypted server-side, kept out of client reads except for the owning host, and covered explicitly in `firestore.rules`. (`src/mock/dashboard.ts`, `src/components/dashboard/PasswordField.tsx`, `src/components/dashboard/event-editor/LinkSection.tsx`)
+- `src/mock/inv-img/` holds two screenshot PNGs (`Screenshot 2026-07-27 143139.png`, `Screenshot 2026-07-29 164005.png`) that nothing imports. Were they meant for another mock event, or can they go?

@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 import type { ReactNode } from "react";
 import {
   BTN_GHOST,
@@ -7,12 +8,15 @@ import {
 import { DatesThatMatter } from "@/components/dashboard/DatesThatMatter";
 import { SafeguardBar } from "@/components/dashboard/SafeguardBar";
 import { Icon } from "@/components/icons";
-import { deletionDate, formatEventDate } from "@/lib/event";
+import { deletionDate, formatEventDate, invitationPath } from "@/lib/event";
 import { GUEST_DATA_RETENTION_DAYS } from "@/lib/config";
 import type { DashboardEvent } from "@/types/dashboard";
 
 const PANEL_LABEL =
   "mb-3.5 text-[10px] font-semibold tracking-[0.18em] text-mustard-500 uppercase";
+
+/** The two controls under the preview share a size, whatever they render as. */
+const ACTION = "flex-1 gap-1.5 px-2.5 py-[9px] text-[13px] whitespace-nowrap";
 
 function Tally({ label, value }: { label: string; value: ReactNode }) {
   return (
@@ -107,21 +111,58 @@ export function EventSummary({ event }: { event: DashboardEvent }) {
             className="h-auto w-full"
           />
         </div>
+        {/*
+         * Both actions need a design to lead anywhere: the editor and the
+         * guest page are the same template, and neither route exists for an
+         * event that hasn't picked one. Until it has, they stay as disabled
+         * buttons rather than links into a 404.
+         */}
         <div className="flex w-full max-w-[400px] gap-2">
-          <button
-            type="button"
-            className={`${BTN_PRIMARY} flex-1 gap-1.5 px-2.5 py-[9px] text-[13px] whitespace-nowrap`}
-          >
-            <Icon name="pencil" className="size-[15px]" />
-            Design
-          </button>
-          <button
-            type="button"
-            className={`${BTN_GHOST} flex-1 gap-1.5 px-2.5 py-[9px] text-[13px] whitespace-nowrap`}
-          >
-            <Icon name="eye" className="size-[15px]" />
-            View as guest
-          </button>
+          {event.templateId ? (
+            <>
+              <Link
+                href={`/invitations/${event.id}`}
+                className={`${BTN_PRIMARY} ${ACTION}`}
+              >
+                <Icon name="pencil" className="size-[15px]" />
+                Design
+              </Link>
+              {/*
+               * A new tab, because the guest page is the whole screen and
+               * carries no way back to the dashboard.
+               */}
+              <Link
+                href={invitationPath(event)}
+                target="_blank"
+                rel="noreferrer"
+                className={`${BTN_GHOST} ${ACTION}`}
+              >
+                <Icon name="eye" className="size-[15px]" />
+                View as guest
+              </Link>
+            </>
+          ) : (
+            <>
+              <button
+                type="button"
+                disabled
+                title="Pick a design for this invitation first"
+                className={`${BTN_PRIMARY} ${ACTION}`}
+              >
+                <Icon name="pencil" className="size-[15px]" />
+                Design
+              </button>
+              <button
+                type="button"
+                disabled
+                title="Pick a design for this invitation first"
+                className={`${BTN_GHOST} ${ACTION}`}
+              >
+                <Icon name="eye" className="size-[15px]" />
+                View as guest
+              </button>
+            </>
+          )}
         </div>
       </div>
 

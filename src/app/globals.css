@@ -1,4 +1,4 @@
-@import "tailwindcss";
+@import 'tailwindcss';
 
 @theme {
   --font-sans: var(--font-kantumruy-pro), ui-sans-serif, system-ui, sans-serif;
@@ -6,6 +6,8 @@
 
   /* The two columns dock at the width each one stops crowding the content. */
   --breakpoint-nav: 820px;
+  /* Where the RSVP moves from a bottom bar to a panel beside the card. */
+  --breakpoint-invite: 1000px;
   --breakpoint-rail: 1400px;
 
   --spacing-side: 242px;
@@ -82,6 +84,16 @@
 }
 
 @layer base {
+  /*
+   * The host's edit sheet slides to `translateX(100%)` while closed, which is
+   * `position: fixed` and so isn't clipped by any container's own
+   * `overflow-hidden` — only the viewport's own overflow can stop it from
+   * opening a horizontal scrollbar while off-screen.
+   */
+  html {
+    overflow-x: hidden;
+  }
+
   body {
     background-color: var(--color-mustard-50);
     color: var(--color-neutral-900);
@@ -94,7 +106,7 @@
    * arrow and say `cursor-not-allowed` for themselves.
    */
   button:not(:disabled),
-  [role="button"]:not([aria-disabled="true"]) {
+  [role='button']:not([aria-disabled='true']) {
     cursor: pointer;
   }
 
@@ -106,6 +118,14 @@
 }
 
 @layer components {
+  /*
+   * A guest sees one designed object, so nothing of Festio's own palette may
+   * show through — including the app's focus ring.
+   */
+  .invite :focus-visible {
+    outline-color: var(--c3);
+  }
+
   /*
    * Attendee-safeguard bar: replies that said yes, then replies that said no,
    * both measured against the cap. Every colour and dimension lives here, so
@@ -154,10 +174,170 @@
     inline-size: var(--fill);
     background-color: var(--color-forest-400);
   }
+
+  /*
+   * The invitation stage. A template is authored once at one fixed pixel size
+   * and never reflows; a single transform paints it smaller, so every element
+   * inside scales from one number. The component measures its own slot and
+   * hands over that number plus the design size — as with the bars above, no
+   * presentation ends up in an inline style.
+   */
+  .stage {
+    display: flex;
+    flex: 1;
+    align-items: center;
+    justify-content: center;
+    min-inline-size: 0;
+    min-block-size: 0;
+    overflow: auto;
+  }
+
+  /*
+   * The normal-flow placeholder. A transform paints but does not lay out, so
+   * without this the page reserves the full unscaled card and leaves a gap.
+   */
+  .stage > .frame {
+    position: relative;
+    flex-shrink: 0;
+    inline-size: calc(var(--design-w) * var(--scale));
+    block-size: calc(var(--design-h) * var(--scale));
+  }
+
+  /* Hidden until the first measurement, so no unscaled frame ever flashes. */
+  .stage[data-measured='false'] > .frame {
+    visibility: hidden;
+  }
+
+  /*
+   * The card itself, always exactly its design size. `top left` keeps the
+   * painted result aligned with the placeholder above.
+   */
+  .stage > .frame > .card {
+    position: absolute;
+    inset-block-start: 0;
+    inset-inline-start: 0;
+    inline-size: var(--design-w);
+    block-size: var(--design-h);
+    transform: scale(var(--scale));
+    transform-origin: top left;
+  }
+
+  /* The drawer's backdrop, mixed from the template's ink so no app colour shows. */
+  .invite-scrim {
+    background-color: color-mix(in srgb, var(--c2) 55%, transparent);
+  }
+
+  /*
+   * The strip where the RSVP surface meets the card. Painted in CSS from a
+   * repeating mask, capped at 40px, and counted inside the panel's declared
+   * width so it never overhangs the invitation.
+   */
+  /*
+   * `translateZ(0)` pins the strip to its own compositing layer so it rounds
+   * to device pixels the same way on every animation frame as the solid
+   * panel/bar beside it — without it the two round independently during the
+   * open/close transform or grid-row transition and a hairline of whatever
+   * is behind (page background) flashes through the seam. The 1px negative
+   * margin then overlaps that seam outright as a second line of defence.
+   */
+  .edge {
+    flex: none;
+    background-color: var(--c1);
+    mask-repeat: repeat-y;
+    transform: translateZ(0);
+  }
+
+  .edge[data-axis='y'] {
+    inline-size: 40px;
+    mask-size: 40px 80px;
+    margin-inline-end: -1px;
+  }
+
+  .edge[data-axis='x'] {
+    block-size: 20px;
+    mask-size: 60px 20px;
+    mask-repeat: repeat-x;
+    margin-block-end: -1px;
+  }
+
+  /*
+   * The wave: two arcs per 80px tile, each bulging away from the strip's own
+   * centreline by a fixed sagitta rather than reaching all the way across
+   * it. Amplitude 10px, radius 25px — derived from the sagitta formula
+   * `r = (A² + (period/4)²) / (2A)` for a half-chord of `period/4` = 20; the
+   * original wave used `A = r = 20` (a true semicircle spanning the whole
+   * 40px strip), which read as too large. Drop `A` into that formula for any
+   * other amplitude.
+   */
+  .edge[data-shape='wavy'][data-axis='y'] {
+    mask-image: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='40'%20height='80'%3E%3Cpath%20d='M40%200%20H20%20A25%2025%200%200%200%2020%2040%20A25%2025%200%200%201%2020%2080%20H40%20Z'%20fill='white'/%3E%3C/svg%3E");
+  }
+
+  .edge[data-shape='scalloped'][data-axis='y'] {
+    mask-image: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='40'%20height='80'%3E%3Cpath%20d='M40%200%20H20%20a20%2020%200%200%200%200%2040%20a20%2020%200%200%200%200%2040%20H40%20Z'%20fill='white'/%3E%3C/svg%3E");
+  }
+
+  /*
+   * Same shape as the `y`-axis wave, scaled to keep the same proportions —
+   * the `x` strip is half the `y` strip's height (20px vs 40px), so the
+   * whole tile is scaled by that same half: period 40px (not 80px) and
+   * amplitude 5px (not 10px), radius recomputed from the sagitta formula for
+   * the new half-chord: `r = (5² + 10²) / (2 × 5) = 12.5`.
+   */
+  .edge[data-shape='wavy'][data-axis='x'] {
+    mask-image: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='40'%20height='20'%3E%3Cpath%20d='M0%2020%20V10%20A12.5%2012.5%200%200%201%2020%2010%20A12.5%2012.5%200%200%200%2040%2010%20V20%20Z'%20fill='white'/%3E%3C/svg%3E");
+  }
+
+  .edge[data-shape='scalloped'][data-axis='x'] {
+    mask-image: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='40'%20height='20'%3E%3Cpath%20d='M0%2020%20V10%20A12.5%2012.5%200%200%201%2020%2010%20A12.5%2012.5%200%200%201%2040%2010%20V20%20Z'%20fill='white'/%3E%3C/svg%3E");
+  }
+
+  /*
+   * Shared, named CSS-drawn backgrounds a template can point at instead of
+   * shipping its own image — `background.pattern.className` in the template
+   * contract. Colours read from the template's own palette vars, so the same
+   * class looks right on any palette. Add to this list as new patterns are
+   * actually reused by more than one template; a one-off motif can just live
+   * inline in that template's own file instead.
+   */
+  .pattern-diagonal-stripes {
+    background-image: repeating-linear-gradient(
+      45deg,
+      var(--c1) 0px,
+      var(--c1) 24px,
+      var(--c3) 24px,
+      var(--c3) 48px
+    );
+  }
+
+  /*
+   * The reveal. `grid-template-rows` animates to the form's true height;
+   * `max-height` would animate toward an arbitrary ceiling, easing unevenly
+   * and clipping once enough names are added.
+   */
+  .reveal {
+    display: grid;
+    grid-template-rows: 0fr;
+    transition: grid-template-rows 800ms cubic-bezier(0.22, 1, 0.36, 1);
+    transform: translateZ(0);
+  }
+
+  .reveal[data-open='true'] {
+    grid-template-rows: 1fr;
+  }
+
+  .reveal > * {
+    overflow: hidden;
+    min-block-size: 0;
+  }
+
+  .elevation-light {
+    box-shadow: 0px 5px 20px #2f281fa6;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  *,
+  i *,
   *::before,
   *::after {
     transition-duration: 0.01ms !important;

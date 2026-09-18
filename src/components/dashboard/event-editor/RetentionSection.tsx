@@ -1,3 +1,4 @@
+import Link from "next/link";
 import type { ReactNode } from "react";
 import { EditorSection } from "@/components/dashboard/event-editor/EditorSection";
 import { GUEST_DATA_RETENTION_DAYS } from "@/lib/config";
@@ -48,12 +49,12 @@ export function RetentionSection({
 
         <Row title="You are the data controller">
           Festio only processes this event&apos;s data for you, under the{" "}
-          <a
+          <Link
             href="/legal/terms"
             className="underline underline-offset-[3px] hover:text-neutral-900"
           >
             DPA in the Terms
-          </a>
+          </Link>
           . What your guests tell you is theirs: use it to run this event and
           nothing else, never sell it or pass it to anyone who is not helping
           you host, and keep any copy you download to yourself.

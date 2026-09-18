@@ -1,3 +1,4 @@
+import Link from "next/link";
 import type { ReactNode } from "react";
 import { GUEST_DATA_RETENTION_DAYS } from "@/lib/config";
 import { ATTENTION_NOTICES, RECENT_RSVPS } from "@/mock/dashboard";
@@ -111,12 +112,12 @@ export function NotificationsRail() {
         </p>
         <p className="text-[12.5px] leading-[1.5]">
           You are the data controller; Festio processes on your behalf under the{" "}
-          <a
+          <Link
             href="/legal/terms"
             className="font-bold underline underline-offset-[3px]"
           >
             DPA in the Terms
-          </a>
+          </Link>
           .
         </p>
       </section>

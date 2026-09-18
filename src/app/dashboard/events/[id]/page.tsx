@@ -6,6 +6,7 @@ import { EventSummary } from "@/components/dashboard/EventSummary";
 import { Banner } from "@/components/dashboard/event-editor/Banner";
 import { EventEditor } from "@/components/dashboard/event-editor/EventEditor";
 import { Icon } from "@/components/icons";
+import { BTN } from "@/components/dashboard/event-editor/styles";
 import { contentFreeze, formatStamp } from "@/lib/event";
 import { findEvent, TIERS } from "@/mock/dashboard";
 
@@ -41,6 +42,14 @@ export default async function EventPage({ params }: Props) {
       </h1>
 
       <EventMeta event={event} deadlines={false} />
+
+      {/* The invitation itself lives outside the dashboard chrome. */}
+      {event.templateId ? (
+        <Link href={`/invitations/${event.id}`} className={`${BTN} mt-4`}>
+          <Icon name="pencil" className="size-4" />
+          Open the invitation
+        </Link>
+      ) : null}
 
       {/* Only the banners that are true right now. */}
       {event.locked ? (

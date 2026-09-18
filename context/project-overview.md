@@ -10,6 +10,8 @@ Next.js/React, TypeScript, Tailwind. SSR pages with dynamic components. Firebase
 
 Host-uploaded images go to **Firebase Storage** (same `europe-west` region); Firestore documents hold only the resulting path/URL, never image bytes. Uploaded images are covered by the auto-deletion rule under GDPR.
 
+For forms use React Form Hook.
+
 ## Data layer — not yet settled
 
 No canonical Firestore schema exists. Before adding collections, fields, or changing document shape, read the existing code and ask rather than assume. The answer-storage rules below are decided and hold regardless of final layout.

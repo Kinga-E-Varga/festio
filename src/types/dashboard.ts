@@ -115,6 +115,8 @@ export interface DashboardEvent {
   tier: TierId;
   /** 1 = fixed template, text only. 2 = modular sections. */
   invitationType: 1 | 2;
+  /** Which template file draws this invitation; see `src/templates/`. */
+  templateId?: string;
   paid: boolean;
   /** Set while the 24h content freeze is in sight. */
   editLockLabel?: string;
