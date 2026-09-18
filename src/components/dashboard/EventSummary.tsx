@@ -4,37 +4,15 @@ import {
   BTN_GHOST,
   BTN_PRIMARY,
 } from "@/components/dashboard/event-editor/styles";
+import { DatesThatMatter } from "@/components/dashboard/DatesThatMatter";
+import { SafeguardBar } from "@/components/dashboard/SafeguardBar";
 import { Icon } from "@/components/icons";
-import {
-  contentFreeze,
-  deletionDate,
-  formatEventDate,
-  formatStamp,
-  safeguardBarVars,
-} from "@/lib/event";
+import { deletionDate, formatEventDate } from "@/lib/event";
 import { GUEST_DATA_RETENTION_DAYS } from "@/lib/config";
 import type { DashboardEvent } from "@/types/dashboard";
 
 const PANEL_LABEL =
   "mb-3.5 text-[10px] font-semibold tracking-[0.18em] text-mustard-500 uppercase";
-
-/** A dated note; its edge colour says how much attention it wants. */
-function DateNote({
-  edge,
-  title,
-  children,
-}: {
-  edge: string;
-  title: string;
-  children: ReactNode;
-}) {
-  return (
-    <div className={`mb-3.5 border-l-4 pb-3.5 pl-3.5 last:mb-0 last:pb-0 ${edge}`}>
-      <b className="mb-[3px] block text-neutral-900">{title}</b>
-      <p className="text-[12.5px] leading-[1.45] text-neutral-700">{children}</p>
-    </div>
-  );
-}
 
 function Tally({ label, value }: { label: string; value: ReactNode }) {
   return (
@@ -73,9 +51,6 @@ function Replies({ event }: { event: DashboardEvent }) {
     );
   }
 
-  const { cap } = event.safeguard;
-  const barVars = safeguardBarVars(event);
-
   return (
     <>
       <dl className="grid grid-cols-2 gap-x-2 gap-y-2.5">
@@ -95,19 +70,7 @@ function Replies({ event }: { event: DashboardEvent }) {
         <Tally label="Pending" value={event.rsvp.pending} />
       </dl>
 
-      <div
-        role="img"
-        aria-label={`${event.rsvp.attending} attending and ${event.rsvp.declined} declined, against a cap of ${cap}`}
-        className="safeguard mt-3"
-        style={barVars}
-      >
-        <span aria-hidden="true" className="attending" />
-        <span aria-hidden="true" className="declined" />
-      </div>
-
-      <p className="mt-[9px] text-[11.5px] text-neutral-700">
-        Safeguard {event.rsvp.replied} of {cap}
-      </p>
+      <SafeguardBar event={event} />
 
       {event.unmatched > 0 ? (
         <div className="mt-3.5 flex gap-[9px] border border-rust-400 bg-rust-200 px-[13px] py-[11px] text-[12.5px] leading-[1.45] text-rust-600">
@@ -132,9 +95,6 @@ function Replies({ event }: { event: DashboardEvent }) {
  * saved event — the form only becomes the record on save.
  */
 export function EventSummary({ event }: { event: DashboardEvent }) {
-  const freeze = formatStamp(contentFreeze(event.date));
-  const deletion = formatEventDate(deletionDate(event.date));
-
   return (
     <section className="@container mt-[22px] grid grid-cols-1 border border-mustard-300 bg-mustard-100 @min-[760px]:grid-cols-[minmax(190px,1.05fr)_minmax(280px,1fr)]">
       {/* The artwork is the point of a record, so it takes the larger share. */}
@@ -189,25 +149,7 @@ export function EventSummary({ event }: { event: DashboardEvent }) {
 
         <div className="min-w-0 border-t border-mustard-300 pt-5">
           <h3 className={PANEL_LABEL}>Dates that matter</h3>
-
-          <DateNote
-            edge={event.locked ? "border-neutral-500" : "border-mustard-500"}
-            title={event.locked ? "Editing closed" : "Editing freezes"}
-          >
-            {freeze}
-            {event.locked || !event.locksInLabel
-              ? ""
-              : ` — ${event.locksInLabel} from now`}
-          </DateNote>
-
-          <DateNote edge="border-steel-500" title="Reply form closes">
-            {freeze}
-          </DateNote>
-
-          <DateNote edge="border-terracotta-500" title="Record deleted">
-            {deletion}
-            {event.dataDeleted ? " — done" : ""}
-          </DateNote>
+          <DatesThatMatter event={event} />
         </div>
       </div>
     </section>

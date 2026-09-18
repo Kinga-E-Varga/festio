@@ -1,6 +1,8 @@
 import Image from "next/image";
 import Link from "next/link";
+import { DatesThatMatter } from "@/components/dashboard/DatesThatMatter";
 import { EventMeta } from "@/components/dashboard/EventMeta";
+import { SafeguardBar } from "@/components/dashboard/SafeguardBar";
 import { Icon } from "@/components/icons";
 import { deletionDate, formatEventDate } from "@/lib/event";
 import type { DashboardEvent, EventStatus } from "@/types/dashboard";
@@ -90,7 +92,20 @@ export function EventRow({ event }: { event: DashboardEvent }) {
         </h3>
 
         <EventMeta event={event} />
-        {event.status === "past" ? null : <Replies event={event} />}
+
+        {event.status === "past" ? null : (
+          <>
+            <Replies event={event} />
+            {event.rsvp.invited > 0 ? <SafeguardBar event={event} /> : null}
+
+            <h4 className="mt-3.5 text-[10px] font-semibold tracking-[0.1em] text-neutral-700 uppercase">
+              Dates that matter
+            </h4>
+            <div className="mt-2">
+              <DatesThatMatter event={event} />
+            </div>
+          </>
+        )}
       </div>
 
       {event.status === "past" ? (
@@ -110,7 +125,7 @@ export function EventRow({ event }: { event: DashboardEvent }) {
           </Link>
           <button type="button" className={`${GHOST} @max-[440px]:flex-1`}>
             <Icon name="layers" className="size-[15px]" />
-            Invitation
+            Edit invitation
           </button>
         </div>
       )}
