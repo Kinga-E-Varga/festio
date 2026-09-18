@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { InvitationFrame } from "@/components/invitation/InvitationFrame";
-import { RsvpPanel } from "@/components/invitation/RsvpPanel";
+import { Invitation } from "@/components/invitation/Invitation";
 import { cardValues, findByInvite, seedValues } from "@/lib/invitation";
 import { EVENTS } from "@/mock/dashboard";
 import { loadTemplate } from "@/templates";
@@ -29,11 +28,8 @@ export default async function InvitationPage({
   const values = seedValues(template, event);
 
   return (
-    <InvitationFrame
-      template={template}
-      panel={<RsvpPanel template={template} values={values} />}
-    >
+    <Invitation template={template} values={values}>
       <Card values={cardValues(values)} />
-    </InvitationFrame>
+    </Invitation>
   );
 }

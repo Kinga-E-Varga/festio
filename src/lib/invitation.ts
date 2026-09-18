@@ -46,7 +46,7 @@ const COLOR_VAR: Record<keyof Palette, string> = {
 
 /**
  * What shows behind the card, as a className plus whatever inline style an
- * image background needs. `InvitationFrame` applies this once, on the page
+ * image background needs. `Invitation` applies this once, on the page
  * wrapper; a template's own `Card` is free to reuse the same field for its
  * own root if it wants the two to match.
  */

@@ -18,7 +18,7 @@ import { useRsvpForm, type RsvpFormState } from './useRsvpForm'
  */
 
 const TITLE =
-  'font-[family-name:var(--font-primary)] text-[24px] text-center text-balance leading-[1.5] text-[color:var(--c2)] mb-6 '
+  'font-[family-name:var(--font-primary)] text-[24px] text-center text-balance leading-[1.5] text-[color:var(--c2)] mb-12 '
 
 const MESSAGE = 'We would love to know if you can join us.'
 
@@ -32,8 +32,12 @@ interface RsvpPanelProps {
 }
 
 /**
- * The guest's reply surface: a panel beside the card on a wide screen, a bar
- * that opens a drawer below 900px. Both render the same form.
+ * The guest's reply surface: one panel, placed beside the card above
+ * `--breakpoint-invite` and anchored to the bottom of the screen below it.
+ * `.reply` in `globals.css` is what moves it; nothing here knows the width.
+ *
+ * One tree, not one per breakpoint. Two would put `rsvp-note` in the document
+ * twice and send every `<label for>` to whichever copy was written first.
  */
 export function RsvpPanel({
   template,
@@ -44,6 +48,8 @@ export function RsvpPanel({
   const form = useRsvpForm()
   const [open, setOpen] = useState(false)
   const message = values.rsvpMessage?.trim() || MESSAGE
+  const sent = form.derived.sent
+  const shown = open || sent
 
   function send() {
     const payload = form.buildPayload()
@@ -54,70 +60,16 @@ export function RsvpPanel({
 
   return (
     <>
-      <aside className={`hidden invite:flex ${PANEL}`} inert={inert}>
-        <div className="edge" data-axis="y" data-shape={template.edge} />
-        <div className="flex flex-1 flex-col overflow-y-auto bg-[var(--c1)] px-[44px] py-[40px]">
-          {/*
-           * Auto margins centre the block while it is short and let it scroll
-           * once it is not. `justify-center` would make the overflowing top
-           * unreachable, which is exactly what happens after a few names.
-           */}
-          <div className="my-auto">
-            {form.derived.sent ? null : <p className={TITLE}>{message}</p>}
-
-            <div className="reveal" data-open={!open && !form.derived.sent}>
-              <div className="flex justify-center">
-                <button
-                  type="button"
-                  onClick={() => setOpen(true)}
-                  className={`font-[family-name:var(--font-primary)] font-[600] text-[15px] tracking-[0.06em] text-[var(--c1)] bg-[var(--c3)] text-center uppercase py-2 px-6 rounded-sm hover:bg-[var(--c2)] transition-all`}
-                >
-                  Respond
-                </button>
-              </div>
-            </div>
-
-            <div className="reveal" data-open={open || form.derived.sent}>
-              <div>
-                <div className="pt-6">
-                  <Reply form={form} onSend={send} />
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </aside>
-
       {/*
-       * A transparent spacer, the exact resting height of the edge + bar
-       * below, reserved in normal flow so the card centres in the space
-       * actually visible above the bar — not the full viewport the fixed
-       * block below floats over.
+       * A transparent spacer, the exact resting height of the edge + bar,
+       * reserved in normal flow so the card centres in the space actually
+       * visible above the bar — not the full viewport the fixed panel floats
+       * over. Above the breakpoint the panel is back in flow and this goes.
        */}
       <div className="invite:hidden h-[70px] shrink-0" />
 
-      {/*
-       * Fixed and bottom-anchored as a single block: edge, bar, then the
-       * reply, the reply always at its natural full size — never clipped or
-       * grown. A single `translateY` on the whole block is what moves it:
-       * closed sits at `calc(100% - 70px)`, its own height minus the edge +
-       * bar, which tucks everything except those 70px below the screen;
-       * open is `translateY(0)`. Because it is one rigid block translating
-       * as a unit, the edge and bar ride up with the reply rather than the
-       * reply growing into view underneath a bar that stays put — a true
-       * slide, not an accordion reveal. The edge itself is left unpainted
-       * behind so its wavy mask still shows the page ground through it,
-       * exactly as the spacer does at rest.
-       */}
-      <div
-        className="invite:hidden fixed inset-x-0 bottom-0 z-40 [will-change:transform] transition-transform duration-[800ms] ease-[cubic-bezier(0.22,1,0.36,1)]"
-        style={{
-          transform: open
-            ? 'translateY(0) translateZ(0)'
-            : 'translateY(calc(100% - 70px)) translateZ(0)',
-        }}
-      >
-        <div className="edge" data-axis="x" data-shape={template.edge} />
+      <aside className={`reply ${PANEL}`} data-open={open} inert={inert}>
+        <div className="edge" data-axis="reply" data-shape={template.edge} />
 
         {/*
          * Bar and reply are one painted box, not two. As separate boxes in
@@ -125,10 +77,17 @@ export function RsvpPanel({
          * block is mid-transform, and a hairline of the page ground flashes
          * through the seam between them — the artefact the `.edge` rule
          * fights with `translateZ(0)` and its -1px margin. One background
-         * has no seam to leak through.
+         * has no seam to leak through. The edge itself is left unpainted
+         * behind so its wavy mask still shows the page ground through it,
+         * exactly as the spacer does at rest.
          */}
-        <div className="bg-[var(--c1)]">
-          <div className="relative flex h-[50px] items-center justify-center px-5">
+        <div className="flex flex-1 flex-col bg-[var(--c1)] invite:overflow-y-auto  invite:p-8">
+          {/*
+           * The bar is the narrow screen's only handle — it is what the
+           * closed block leaves on screen. Beside the card there is nothing
+           * to drag open, so the Respond button below takes over instead.
+           */}
+          <div className="invite:hidden relative flex h-[50px] shrink-0 items-center justify-center px-5">
             {open ? (
               <button
                 type="button"
@@ -144,21 +103,52 @@ export function RsvpPanel({
                 onClick={() => setOpen(true)}
                 className="absolute inset-0 flex items-center justify-center"
               >
-                <span className="font-[family-name:var(--font-primary)] text-[15px] tracking-[0.06em] text-[color:var(--c3)] uppercase">
-                  Respond
+                <span className="font-[family-name:var(--font-primary)] text-[16px] tracking-[0.06em] text-[color:var(--c3)]">
+                  Respond Now
                 </span>
               </button>
             )}
           </div>
 
-          <div
-            className="max-h-[60dvh] overflow-y-auto px-5 pt-5 pb-8"
-            inert={!open}
-          >
-            <Reply form={form} onSend={send} />
+          {/*
+           * Auto margins centre the block beside the card while it is short
+           * and let it scroll once it is not. `justify-center` would make
+           * the overflowing top unreachable, which is exactly what happens
+           * after a few names. Below the breakpoint the reply scrolls
+           * within its own ceiling instead, so the bar stays reachable.
+           */}
+          <div className="max-h-[60dvh] overflow-y-auto px-5 pt-5 pb-8 invite:my-auto invite:max-h-none invite:overflow-visible invite:px-0 invite:pt-0 invite:pb-0">
+            {sent ? null : (
+              <p className={`${TITLE} hidden invite:block`}>{message}</p>
+            )}
+
+            <div className="reveal hidden invite:grid" data-open={!shown}>
+              <div className="flex justify-center">
+                <button
+                  type="button"
+                  onClick={() => setOpen(true)}
+                  className={`font-[family-name:var(--font-primary)] font-[300] text-[16px] tracking-[0.06em] text-[var(--c3)] border-1 border-[var(--c3)] text-center py-2 px-6 rounded-xs hover:bg-[var(--c2)] transition-all`}
+                >
+                  Respond Now
+                </button>
+              </div>
+            </div>
+
+            {/*
+             * `contents` below the breakpoint: the whole block slides as a
+             * unit there, so collapsing the reply to `0fr` would leave the
+             * slide nothing to carry.
+             */}
+            <div className="reveal contents invite:grid" data-open={shown}>
+              <div>
+                <div className="invite:pt-6" inert={!shown}>
+                  <Reply form={form} onSend={send} />
+                </div>
+              </div>
+            </div>
           </div>
         </div>
-      </div>
+      </aside>
     </>
   )
 }

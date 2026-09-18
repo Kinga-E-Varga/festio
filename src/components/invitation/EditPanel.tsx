@@ -1,6 +1,5 @@
 'use client'
 
-import type { CSSProperties } from 'react'
 import type {
   InvitationTemplate,
   TemplateField,
@@ -39,11 +38,11 @@ interface EditPanelProps {
  * The host's text editor, generated from `template.fields` alone — a
  * different template yields a different form with no change here.
  *
- * Always mounted, stacked on top of the RSVP panel: the desktop aside is
- * taken out of flow (`invite:absolute`) so it never adds a second panel's
- * width to the layout, and both it and the mobile sheet just slide over the
- * RSVP surface on a transform. Neither panel ever has to react to the
- * other's presence.
+ * Always mounted and stacked on top of the RSVP panel, which it slides over
+ * on a transform rather than replacing, so neither panel ever has to react
+ * to the other's presence. `.edit` in `globals.css` decides where it lies at
+ * each width; one tree, not one per breakpoint, or every `field-*` id would
+ * exist twice and the labels would point at the copy that isn't on screen.
  */
 export function EditPanel({
   template,
@@ -101,39 +100,22 @@ export function EditPanel({
     </div>
   )
 
-  const slide: CSSProperties = {
-    transform: open
-      ? 'translateX(0) translateZ(0)'
-      : 'translateX(100%) translateZ(0)',
-  }
-
   return (
-    <>
-      <aside
-        className={`hidden invite:flex invite:absolute invite:inset-y-0 invite:right-0 z-20 [will-change:transform] transition-transform duration-[420ms] ease-[cubic-bezier(0.22,1,0.36,1)] ${PANEL}`}
-        style={slide}
-        inert={!open}
-      >
-        <div
-          className="edge bg-[var(--c1)]"
-          data-axis="y"
-          data-shape={template.edge}
-        />
-        <div className="bg-[var(--c1)] flex flex-1 flex-col overflow-y-auto p-5 transition-colors">
-          <Header onClose={onClose} />
-          {body}
-        </div>
-      </aside>
-
+    <aside className={`edit ${PANEL}`} data-open={open} inert={!open}>
+      {/*
+       * The edge exists only where the panel meets the card. Below the
+       * breakpoint the panel covers the screen and has nothing to meet.
+       */}
       <div
-        className="bg-[var(--c1)] fixed inset-0 z-50 flex flex-col overflow-y-auto px-5 pt-5 pb-8 invite:hidden [will-change:transform] transition-transform duration-[420ms] ease-[cubic-bezier(0.22,1,0.36,1)]"
-        style={slide}
-        inert={!open}
-      >
+        className="edge hidden invite:block bg-[var(--c1)]"
+        data-axis="y"
+        data-shape={template.edge}
+      />
+      <div className="bg-[var(--c1)] flex flex-1 flex-col overflow-y-auto p-5 invite:p-8 transition-colors">
         <Header onClose={onClose} />
         {body}
       </div>
-    </>
+    </aside>
   )
 }
 

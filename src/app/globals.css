@@ -243,21 +243,39 @@
   .edge {
     flex: none;
     background-color: var(--c1);
-    mask-repeat: repeat-y;
     transform: translateZ(0);
+    mask-image: var(--edge-mask);
+    mask-size: var(--edge-tile);
+    mask-repeat: var(--edge-repeat);
   }
 
-  .edge[data-axis='y'] {
+  /*
+   * Orientation. `y` is the vertical strip beside the card, `x` the
+   * horizontal one above the bottom bar, and each geometry is written once.
+   * The reply surface is the single element that turns at the breakpoint, so
+   * it names its own axis and is handed `x` below it — a data attribute
+   * swapped by a media query, the same shape as `.edge[data-shape]` and
+   * `.reveal[data-open]`.
+   */
+  .edge[data-axis='y'],
+  .edge[data-axis='reply'] {
+    --edge-mask: var(--edge-mask-y);
+    --edge-tile: 40px 80px;
+    --edge-repeat: repeat-y;
     inline-size: 40px;
-    mask-size: 40px 80px;
     margin-inline-end: -1px;
   }
 
-  .edge[data-axis='x'] {
-    block-size: 20px;
-    mask-size: 60px 20px;
-    mask-repeat: repeat-x;
-    margin-block-end: -1px;
+  @media (width < 1000px) {
+    .edge[data-axis='reply'] {
+      --edge-mask: var(--edge-mask-x);
+      --edge-tile: 60px 20px;
+      --edge-repeat: repeat-x;
+      inline-size: auto;
+      block-size: 20px;
+      margin-inline-end: 0;
+      margin-block-end: -1px;
+    }
   }
 
   /*
@@ -268,28 +286,96 @@
    * original wave used `A = r = 20` (a true semicircle spanning the whole
    * 40px strip), which read as too large. Drop `A` into that formula for any
    * other amplitude.
+   *
+   * The `x` tile is the same shape scaled to keep the same proportions — the
+   * `x` strip is half the `y` strip's height (20px vs 40px), so the whole
+   * tile is scaled by that same half: period 40px (not 80px) and amplitude
+   * 5px (not 10px), radius recomputed from the sagitta formula for the new
+   * half-chord: `r = (5² + 10²) / (2 × 5) = 12.5`.
    */
-  .edge[data-shape='wavy'][data-axis='y'] {
-    mask-image: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='40'%20height='80'%3E%3Cpath%20d='M40%200%20H20%20A25%2025%200%200%200%2020%2040%20A25%2025%200%200%201%2020%2080%20H40%20Z'%20fill='white'/%3E%3C/svg%3E");
+  .edge[data-shape='wavy'] {
+    --edge-mask-y: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='40'%20height='80'%3E%3Cpath%20d='M40%200%20H20%20A25%2025%200%200%200%2020%2040%20A25%2025%200%200%201%2020%2080%20H40%20Z'%20fill='white'/%3E%3C/svg%3E");
+    --edge-mask-x: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='40'%20height='20'%3E%3Cpath%20d='M0%2020%20V10%20A12.5%2012.5%200%200%201%2020%2010%20A12.5%2012.5%200%200%200%2040%2010%20V20%20Z'%20fill='white'/%3E%3C/svg%3E");
   }
 
-  .edge[data-shape='scalloped'][data-axis='y'] {
-    mask-image: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='40'%20height='80'%3E%3Cpath%20d='M40%200%20H20%20a20%2020%200%200%200%200%2040%20a20%2020%200%200%200%200%2040%20H40%20Z'%20fill='white'/%3E%3C/svg%3E");
+  .edge[data-shape='scalloped'] {
+    --edge-mask-y: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='40'%20height='80'%3E%3Cpath%20d='M40%200%20H20%20a20%2020%200%200%200%200%2040%20a20%2020%200%200%200%200%2040%20H40%20Z'%20fill='white'/%3E%3C/svg%3E");
+    --edge-mask-x: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='40'%20height='20'%3E%3Cpath%20d='M0%2020%20V10%20A12.5%2012.5%200%200%201%2020%2010%20A12.5%2012.5%200%200%201%2040%2010%20V20%20Z'%20fill='white'/%3E%3C/svg%3E");
   }
 
   /*
-   * Same shape as the `y`-axis wave, scaled to keep the same proportions —
-   * the `x` strip is half the `y` strip's height (20px vs 40px), so the
-   * whole tile is scaled by that same half: period 40px (not 80px) and
-   * amplitude 5px (not 10px), radius recomputed from the sagitta formula for
-   * the new half-chord: `r = (5² + 10²) / (2 × 5) = 12.5`.
+   * The two invitation panels, one element each. They used to be two shells
+   * apiece — a desktop box and a mobile box, one switched off by
+   * `display: none` — which put every `id` in the document twice, so a
+   * `<label for>` on a narrow screen resolved to the copy that wasn't on
+   * screen. Place and slide direction change here instead; 1000px is
+   * `--breakpoint-invite` written out, because a media query cannot read a
+   * theme variable.
    */
-  .edge[data-shape='wavy'][data-axis='x'] {
-    mask-image: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='40'%20height='20'%3E%3Cpath%20d='M0%2020%20V10%20A12.5%2012.5%200%200%201%2020%2010%20A12.5%2012.5%200%200%200%2040%2010%20V20%20Z'%20fill='white'/%3E%3C/svg%3E");
+
+  /*
+   * The guest's reply. Below the breakpoint it is the bottom block — edge,
+   * bar, then the reply — fixed and translated as one rigid unit: closed
+   * sits at its own height minus the 70px of edge + bar, so the edge and bar
+   * ride up with the reply rather than the reply growing into view under a
+   * bar that stays put. At and above it the block leaves the viewport and
+   * simply sits in flow beside the card, where `open` drives the inner
+   * `.reveal` instead of this transform.
+   */
+  .reply {
+    position: fixed;
+    inset-inline: 0;
+    inset-block-end: 0;
+    z-index: 40;
+    display: flex;
+    flex-direction: column;
+    will-change: transform;
+    transform: translateY(calc(100% - 70px)) translateZ(0);
+    transition: transform 800ms cubic-bezier(0.22, 1, 0.36, 1);
   }
 
-  .edge[data-shape='scalloped'][data-axis='x'] {
-    mask-image: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='40'%20height='20'%3E%3Cpath%20d='M0%2020%20V10%20A12.5%2012.5%200%200%201%2020%2010%20A12.5%2012.5%200%200%201%2040%2010%20V20%20Z'%20fill='white'/%3E%3C/svg%3E");
+  .reply[data-open='true'] {
+    transform: translateY(0) translateZ(0);
+  }
+
+  @media (width >= 1000px) {
+    .reply {
+      position: static;
+      flex-direction: row;
+      transform: none;
+      transition: none;
+      will-change: auto;
+    }
+  }
+
+  /*
+   * The host's edit form, always mounted and parked at `translateX(100%)`.
+   * Below the breakpoint it covers the viewport; at and above it is taken
+   * out of flow against the invitation root, so it never adds a second
+   * panel's width and covers the reply exactly — same width, same edge, no
+   * dimming.
+   */
+  .edit {
+    position: fixed;
+    inset: 0;
+    z-index: 50;
+    display: flex;
+    flex-direction: column;
+    will-change: transform;
+    transform: translateX(100%) translateZ(0);
+    transition: transform 420ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .edit[data-open='true'] {
+    transform: translateX(0) translateZ(0);
+  }
+
+  @media (width >= 1000px) {
+    .edit {
+      position: absolute;
+      inset: 0 0 0 auto;
+      flex-direction: row;
+    }
   }
 
   /*

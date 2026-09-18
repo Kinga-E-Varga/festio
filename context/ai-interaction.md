@@ -18,7 +18,7 @@ This is the common workflow that we will use for every single feature/fix:
 4. **Test** - Verify it works in the browser. Implement unit testing later. Run `npm run build` and fix any errors
 5. **Iterate** - Iterate and change things if needed
 6. **Commit** - Only after build passes and everything works
-7. **Merge** - Merge to main
+7. **Merge** - Merge to main. Fast-forward, no merge commits — if main has moved on and a fast-forward isn't possible, rebase the branch onto main first rather than creating a merge commit.
 8. **Delete Branch** - Delete branch after merge
 9. **Review** - Review AI-generated code periodically and on demand.
 10. **Close out** - Mark as completed in @context/current-feature.md and add to history. Leave this edit uncommitted — it is not a commit of its own, and it rides along with the next feature's commit at step 6. Writing it only after the merge keeps the history entry honest.
