@@ -25,7 +25,7 @@ function PasswordBox({ form }: { form: EventForm }) {
   return (
     <div className="px-3.5 pb-3.5">
       {/* One field with its two actions sitting inside it, as the link box has. */}
-      <div className="flex min-h-[38px] items-center gap-1.5 border border-mustard-400 bg-neutral-50 pr-[9px]">
+      <div className="flex min-h-[38px] items-center gap-1.5 border border-mustard-400 bg-neutral-50 pr-[9px] transition-colors hover:border-mustard-500 has-[:focus]:border-mustard-500">
         <input
           type={revealed ? "text" : "password"}
           maxLength={24}
@@ -34,7 +34,7 @@ function PasswordBox({ form }: { form: EventForm }) {
           disabled={form.locked}
           value={form.values.password}
           onChange={(control) => form.set.password(control.target.value)}
-          className="min-w-0 flex-1 border-0 bg-transparent px-3 py-[9px] text-[13.5px] text-neutral-900 focus:outline-2 focus:-outline-offset-2 focus:outline-mustard-600 disabled:cursor-not-allowed"
+          className="min-w-0 flex-1 border-0 bg-transparent px-3 py-[9px] text-[13.5px] text-neutral-900 focus:outline-2 focus:-outline-offset-2 focus:outline-mustard-500 disabled:cursor-not-allowed"
         />
         <button
           type="button"
@@ -74,7 +74,7 @@ export function LinkSection({ event, form }: SectionProps) {
           error={derived.slugError}
           hint="The four digits are Festio's — they keep the link unguessable. If you have already shared the link, changing it will break every copy your guests are holding."
         >
-          <div className="flex items-stretch border border-mustard-300 bg-mustard-50">
+          <div className="flex items-stretch border border-mustard-300 bg-neutral-50 transition-colors hover:border-mustard-500 has-[:focus]:border-mustard-500">
             <span className="grid place-items-center bg-mustard-200 px-3 text-[13.5px] whitespace-nowrap text-neutral-800">
               festio.eu/
             </span>
@@ -85,7 +85,7 @@ export function LinkSection({ event, form }: SectionProps) {
               disabled={locked}
               value={values.slug}
               onChange={(control) => set.slug(control.target.value)}
-              className="min-w-0 flex-1 border-0 bg-transparent px-3 py-[9px] text-[13.5px] text-neutral-900 focus:outline-2 focus:-outline-offset-2 focus:outline-forest-500 disabled:cursor-not-allowed"
+              className="min-w-0 flex-1 border-0 bg-transparent px-3 py-[9px] text-[13.5px] text-neutral-900 focus:outline-2 focus:-outline-offset-2 focus:outline-mustard-500 disabled:cursor-not-allowed"
             />
             <span className="grid place-items-center bg-mustard-200 px-3 text-[13.5px] whitespace-nowrap text-neutral-800">
               -{event.digits}
@@ -127,10 +127,10 @@ export function LinkSection({ event, form }: SectionProps) {
           return (
             <div
               key={id}
-              className={`flex min-w-0 flex-col border transition-colors has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-mustard-600 ${
+              className={`flex min-w-0 flex-col border transition-colors has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 ${
                 selected
-                  ? "border-mustard-500 bg-mustard-200"
-                  : "border-mustard-300 bg-neutral-50 hover:bg-mustard-100"
+                  ? "border-mustard-500 bg-mustard-200 outline-mustard-500"
+                  : "border-mustard-300 bg-neutral-50 outline-mustard-300 hover:bg-mustard-100"
               }`}
             >
               <label className="flex cursor-pointer flex-col gap-1.5 p-3.5">

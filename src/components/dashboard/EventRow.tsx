@@ -2,7 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { DatesThatMatter } from "@/components/dashboard/DatesThatMatter";
 import { EventMeta } from "@/components/dashboard/EventMeta";
-import { SafeguardBar } from "@/components/dashboard/SafeguardBar";
+import { RepliesMeter } from "@/components/dashboard/RepliesMeter";
 import { Icon } from "@/components/icons";
 import { deletionDate, formatEventDate } from "@/lib/event";
 import type { DashboardEvent, EventStatus } from "@/types/dashboard";
@@ -24,27 +24,7 @@ const BUTTON =
   "flex items-center justify-center gap-2 rounded-md px-4 py-2.5 font-medium transition-colors";
 const PRIMARY = `${BUTTON} border border-forest-500 bg-forest-500 text-neutral-50 hover:border-forest-600 hover:bg-forest-600`;
 /* The outlined action borrows the solid one's fill for its edge. */
-const GHOST = `${BUTTON} border border-forest-500 bg-transparent text-forest-500 hover:border-forest-600 hover:bg-mustard-50 hover:text-forest-600`;
-
-/** How many have replied, on the line under the tags. */
-function Replies({ event }: { event: DashboardEvent }) {
-  if (event.rsvp.invited === 0) {
-    return (
-      <p className="mt-2.5 text-[12.5px] leading-[1.4] text-neutral-700">
-        Not shared yet
-      </p>
-    );
-  }
-
-  return (
-    <p className="mt-2.5 text-[12.5px] leading-[1.4] text-neutral-700">
-      <span className="align-[-1px] font-serif text-[17px] text-neutral-900 tabular-nums">
-        {event.rsvp.replied}
-      </span>{" "}
-      {event.rsvp.replied === 1 ? "reply" : "replies"}
-    </p>
-  );
-}
+const GHOST = `${BUTTON} border border-forest-500 bg-mustard-50 text-forest-500 hover:border-forest-600 hover:bg-forest-200 hover:text-forest-600`;
 
 export function EventRow({ event }: { event: DashboardEvent }) {
   const deletion = formatEventDate(deletionDate(event.date));
@@ -61,69 +41,66 @@ export function EventRow({ event }: { event: DashboardEvent }) {
      * actions stay near what they act on instead of drifting to the far edge.
      */
     <div
-      className={`grid grid-cols-[88px_minmax(0,1fr)] items-center gap-x-4 gap-y-3.5 border-t border-mustard-300 border-l-4 px-4 py-3.5 first:border-t-0 @min-[720px]:grid-cols-[89px_minmax(0,920px)_minmax(280px,1fr)] @min-[720px]:gap-x-5 @min-[720px]:px-5 @min-[720px]:py-4 ${
+      className={`grid grid-cols-[110px_minmax(0,1fr)] items-center gap-x-4 @max-[560px]:grid-cols-1 gap-y-3.5 border-t border-mustard-300 border-l-4 px-4 py-[18px] first:border-t-0 @min-[720px]:grid-cols-[160px_minmax(0,800px)_minmax(190px,1fr)] @min-[720px]:gap-x-[26px] @2xl:px-6 @2xl:py-[22px] ${
         STATUS_EDGE[event.status]
       } ${event.status === "past" ? "" : HOVER}`}
     >
-      <div className="col-start-1 row-start-1 h-[124px] self-start bg-neutral-50 @min-[720px]:row-span-2 @min-[720px]:h-[126px] @min-[720px]:w-[89px] @min-[720px]:self-center">
+      <div className="col-start-1 row-start-1 h-[156px] self-start bg-neutral-50 @max-[560px]:hidden @min-[720px]:row-span-2 @min-[720px]:h-[228px] @min-[720px]:w-[160px] @min-[720px]:self-center">
         <Image
           src={event.preview}
           alt=""
-          sizes="89px"
+          sizes="160px"
           className="size-full object-cover"
         />
       </div>
 
-      <div className="col-start-2 row-start-1 min-w-0 @min-[720px]:row-span-2 @min-[720px]:self-center">
-        <p className="mb-[7px] text-[12.5px] leading-none text-neutral-700">
-          <span className="font-medium text-neutral-900">
-            {event.dateLabel}
-          </span>
-          <span aria-hidden="true">{" · "}</span>
-          <span
-            className={event.isNextUp ? "font-medium text-terracotta-600" : ""}
-          >
-            {event.countdownLabel}
-          </span>
+      <div className="col-start-2 row-start-1 min-w-0 @max-[560px]:col-start-1 @min-[720px]:row-span-2 @min-[720px]:self-center">
+        <p className="mb-[7px] text-[14px] leading-none font-medium text-neutral-900">
+          {event.dateLabel}
         </p>
 
         <h3 className="mb-[9px] font-serif text-[19px] leading-[1.25] text-neutral-900 @min-[560px]:truncate">
           {event.title}
         </h3>
 
-        <EventMeta event={event} />
+        <EventMeta event={event} locksIn={false} size="md" />
 
         {event.status === "past" ? null : (
           <>
-            <Replies event={event} />
-            {event.rsvp.invited > 0 ? <SafeguardBar event={event} /> : null}
+            {event.rsvp.invited === 0 ? (
+              <p className="mt-5 text-[12.5px] leading-[1.4] text-neutral-700">
+                Not shared yet
+              </p>
+            ) : (
+              <div className="mt-5">
+                <RepliesMeter
+                  replied={event.rsvp.replied}
+                  cap={event.safeguard.cap}
+                />
+              </div>
+            )}
 
-            <h4 className="mt-3.5 text-[10px] font-semibold tracking-[0.1em] text-neutral-700 uppercase">
-              Dates that matter
-            </h4>
-            <div className="mt-2">
-              <DatesThatMatter event={event} />
+            {/* A hairline keeps the deadlines from reading as more reply data. */}
+            <div className="mt-5 border-t border-mustard-300 pt-5">
+              <DatesThatMatter event={event} layout="row" />
             </div>
           </>
         )}
       </div>
 
       {event.status === "past" ? (
-        <p className="col-span-2 row-start-2 text-[12.5px] leading-[1.4] text-neutral-700 @min-[720px]:col-span-1 @min-[720px]:col-start-3 @min-[720px]:row-span-2 @min-[720px]:row-start-1 @min-[720px]:w-[280px] @min-[720px]:self-center @min-[720px]:text-center">
+        <p className="col-span-2 row-start-2 text-[12.5px] leading-[1.4] text-neutral-700 @max-[560px]:col-span-1 @min-[720px]:col-span-1 @min-[720px]:col-start-3 @min-[720px]:row-span-2 @min-[720px]:row-start-1 @min-[720px]:w-[190px] @min-[720px]:justify-self-center @min-[720px]:self-center @min-[720px]:text-center">
           {event.dataDeleted
             ? `Guest data deleted on ${deletion}`
             : `Deletion due ${deletion}`}
         </p>
       ) : (
-        <div className="col-span-2 row-start-2 flex flex-wrap items-center gap-2 @min-[720px]:col-span-1 @min-[720px]:col-start-3 @min-[720px]:row-span-2 @min-[720px]:row-start-1 @min-[720px]:w-[280px] @min-[720px]:justify-center @min-[720px]:self-center">
-          <Link
-            href={`/dashboard/events/${event.id}`}
-            className={`${PRIMARY} @max-[440px]:flex-1`}
-          >
+        <div className="col-span-2 row-start-2 grid grid-cols-2 gap-3.5 @max-[560px]:col-span-1 @max-[560px]:grid-cols-1 @min-[720px]:col-span-1 @min-[720px]:col-start-3 @min-[720px]:row-span-2 @min-[720px]:row-start-1 @min-[720px]:w-[190px] @min-[720px]:grid-cols-1 @min-[720px]:justify-self-center @min-[720px]:self-center">
+          <Link href={`/dashboard/events/${event.id}`} className={PRIMARY}>
             <Icon name="pencil" className="size-[15px]" />
             Edit event
           </Link>
-          <button type="button" className={`${GHOST} @max-[440px]:flex-1`}>
+          <button type="button" className={GHOST}>
             <Icon name="layers" className="size-[15px]" />
             Edit invitation
           </button>

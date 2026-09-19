@@ -15,13 +15,7 @@ export function StatStrip() {
               {stat.value}
             </span>
             {stat.detail ? (
-              <span
-                className={
-                  stat.tone === "attention"
-                    ? "text-[11px] font-semibold tracking-[0.1em] text-forest-600 uppercase"
-                    : "text-xs font-medium text-forest-600"
-                }
-              >
+              <span className="text-xs font-medium text-forest-600">
                 {stat.detail}
               </span>
             ) : null}

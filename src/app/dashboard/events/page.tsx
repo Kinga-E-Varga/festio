@@ -69,8 +69,8 @@ export default function EventsPage() {
   return (
     <div className="@container">
       {/* The title block and the one primary action share a row. */}
-      <header className="flex flex-wrap items-center gap-6">
-        <div className="min-w-[280px] flex-1">
+      <header className="flex items-center gap-6">
+        <div className="min-w-0 flex-1">
           <p className="text-[11px] font-semibold tracking-[0.16em] text-forest-500 uppercase">
             {HOST.todayLabel}
           </p>
@@ -83,9 +83,9 @@ export default function EventsPage() {
         <button
           type="button"
           aria-label="New event"
-          className="flex shrink-0 items-center gap-2 rounded-md border border-terracotta-500 bg-terracotta-500 px-4 py-2.5 font-medium text-terracotta-50 transition-colors hover:border-terracotta-600 hover:bg-terracotta-600 @max-[560px]:gap-0 @max-[560px]:p-[11px]"
+          className="flex shrink-0 items-center gap-2 rounded-md border border-forest-500 bg-forest-500 px-4 py-2.5 font-medium text-neutral-50 transition-colors hover:border-forest-600 hover:bg-forest-600 @max-[560px]:gap-0 @max-[560px]:p-[11px]"
         >
-          <Icon name="plus" className="size-4" />
+          <Icon name="plus" className="size-[18px]" strokeWidth={2} />
           <span className="@max-[560px]:hidden">New event</span>
         </button>
       </header>

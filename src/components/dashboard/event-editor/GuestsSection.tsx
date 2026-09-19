@@ -1,6 +1,5 @@
 "use client";
 
-import type { CSSProperties } from "react";
 import { Banner } from "@/components/dashboard/event-editor/Banner";
 import { EditorSection } from "@/components/dashboard/event-editor/EditorSection";
 import {
@@ -10,6 +9,7 @@ import {
   SUBBOX,
 } from "@/components/dashboard/event-editor/styles";
 import { Toggle } from "@/components/dashboard/event-editor/Toggle";
+import { RepliesMeter } from "@/components/dashboard/RepliesMeter";
 import type { EventForm } from "@/components/dashboard/event-editor/useEventForm";
 import { Icon } from "@/components/icons";
 import type { DashboardEvent } from "@/types/dashboard";
@@ -21,7 +21,6 @@ interface SectionProps {
 
 export function GuestsSection({ event, form }: SectionProps) {
   const { values, set, derived, locked } = form;
-  const fill = { "--fill": `${derived.capPercent}%` } as CSSProperties;
 
   return (
     <EditorSection title="Guests and replies">
@@ -42,21 +41,8 @@ export function GuestsSection({ event, form }: SectionProps) {
         />
 
         {/* The count sits over the bar, the pair centred on the input beside it. */}
-        <div className="min-w-0 flex-1 basis-[320px]">
-          <p className="mb-[5px] text-[12.5px] leading-[1.4] text-neutral-700">
-            <span className="align-[-1px] font-serif text-[22px] text-neutral-900 tabular-nums">
-              {event.rsvp.replied}
-            </span>{" "}
-            replies received against a {derived.capValue} cap
-          </p>
-          <div
-            role="img"
-            aria-label={`${event.rsvp.replied} replies against a cap of ${derived.capValue}`}
-            className="meter"
-            style={fill}
-          >
-            <span aria-hidden="true" />
-          </div>
+        <div className="flex-1 basis-[320px]">
+          <RepliesMeter replied={event.rsvp.replied} cap={derived.capValue} />
         </div>
 
         {derived.capError ? (

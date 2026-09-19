@@ -1,5 +1,23 @@
 import type { CSSProperties } from "react";
 import { GUEST_DATA_RETENTION_DAYS } from "@/lib/config";
+import type { DashboardEvent, EventStatus } from "@/types/dashboard";
+
+/**
+ * A pile of events still ahead reads soonest first — the next one is the one
+ * that needs work. A past pile reads the other way round: the event that has
+ * just happened is the one still being tidied up, so it leads.
+ *
+ * Dates are ISO `YYYY-MM-DD`, which sorts correctly as plain text.
+ */
+export function orderEvents(
+  events: DashboardEvent[],
+  status: EventStatus,
+): DashboardEvent[] {
+  const direction = status === "past" ? -1 : 1;
+  return [...events].sort(
+    (first, second) => direction * first.date.localeCompare(second.date),
+  );
+}
 
 /** The guest-facing address as a route this app can navigate to. */
 export function invitationPath(event: {

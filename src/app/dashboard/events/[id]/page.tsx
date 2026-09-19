@@ -6,7 +6,6 @@ import { EventSummary } from "@/components/dashboard/EventSummary";
 import { Banner } from "@/components/dashboard/event-editor/Banner";
 import { EventEditor } from "@/components/dashboard/event-editor/EventEditor";
 import { Icon } from "@/components/icons";
-import { BTN } from "@/components/dashboard/event-editor/styles";
 import { contentFreeze, formatStamp } from "@/lib/event";
 import { findEvent, TIERS } from "@/mock/dashboard";
 
@@ -43,14 +42,6 @@ export default async function EventPage({ params }: Props) {
 
       <EventMeta event={event} deadlines={false} />
 
-      {/* The invitation itself lives outside the dashboard chrome. */}
-      {event.templateId ? (
-        <Link href={`/invitations/${event.id}`} className={`${BTN} mt-4`}>
-          <Icon name="pencil" className="size-4" />
-          Open the invitation
-        </Link>
-      ) : null}
-
       {/* Only the banners that are true right now. */}
       {event.locked ? (
         <Banner
@@ -75,11 +66,20 @@ export default async function EventPage({ params }: Props) {
       ) : null}
 
       {event.paid ? null : (
-        <Banner tone="info" icon="info" title="This draft is unpaid">
+        <Banner tone="warn" icon="info" title="This draft is unpaid">
           The {tier.name} edition costs {tier.price}. The page stays hidden and
           the RSVP form stays closed until payment clears.
         </Banner>
       )}
+
+      {/* Paid for, but nobody can reach it — worth saying out loud. */}
+      {event.paid && event.visibility === "hidden" ? (
+        <Banner tone="warn" icon="eyeOff" title="This invitation is hidden">
+          Nobody can open the page, not even a guest holding the link, and no
+          reply can arrive. Set the visibility to Public or Protected below
+          once you are ready to share it.
+        </Banner>
+      ) : null}
 
       {event.unmatched > 0 ? (
         <Banner

@@ -115,6 +115,19 @@
     outline: 2px solid var(--color-forest-500);
     outline-offset: 2px;
   }
+
+  /*
+   * `transition-colors` animates `outline-color` as well, and an outline that
+   * has never been given a colour sits at `currentColor` — so on anything
+   * that transitions, the ring above fades in from the text ink first. Handing
+   * every element the ring's colour while the ring is still invisible leaves
+   * nothing to animate. Utilities still override it, as they always would.
+   */
+  *,
+  ::before,
+  ::after {
+    outline-color: var(--color-forest-500);
+  }
 }
 
 @layer components {
@@ -122,7 +135,8 @@
    * A guest sees one designed object, so nothing of Festio's own palette may
    * show through — including the app's focus ring.
    */
-  .invite :focus-visible {
+  .invite,
+  .invite * {
     outline-color: var(--c3);
   }
 

@@ -1,4 +1,5 @@
 import { EventRow } from "@/components/dashboard/EventRow";
+import { orderEvents } from "@/lib/event";
 import type { DashboardEvent, EventStatus } from "@/types/dashboard";
 
 /** Each pile says what being in it means, so the rows need no status badge. */
@@ -50,11 +51,12 @@ export function EventGroups({
            * from it, so the two never agree.
            */}
           <div className="@container border border-mustard-300 bg-mustard-100">
-            {events
-              .filter((event) => event.status === group.status)
-              .map((event) => (
-                <EventRow key={event.id} event={event} />
-              ))}
+            {orderEvents(
+              events.filter((event) => event.status === group.status),
+              group.status,
+            ).map((event) => (
+              <EventRow key={event.id} event={event} />
+            ))}
           </div>
         </section>
       ))}

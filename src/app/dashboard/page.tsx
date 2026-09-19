@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { EventList } from "@/components/dashboard/EventList";
 import { EventTabs, type EventTab } from "@/components/dashboard/EventTabs";
 import { StatStrip } from "@/components/dashboard/StatStrip";
+import type { EventStatus } from "@/types/dashboard";
+import { orderEvents } from "@/lib/event";
 import { EVENTS, HOST } from "@/mock/dashboard";
 
 export const metadata: Metadata = {
@@ -9,9 +11,15 @@ export const metadata: Metadata = {
 };
 
 export default function DashboardPage() {
-  const active = EVENTS.filter((event) => event.status === "active");
-  const drafts = EVENTS.filter((event) => event.status === "draft");
-  const past = EVENTS.filter((event) => event.status === "past");
+  const pile = (status: EventStatus) =>
+    orderEvents(
+      EVENTS.filter((event) => event.status === status),
+      status,
+    );
+
+  const active = pile("active");
+  const drafts = pile("draft");
+  const past = pile("past");
 
   const tabs: EventTab[] = [
     {

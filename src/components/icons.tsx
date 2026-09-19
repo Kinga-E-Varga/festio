@@ -4,6 +4,8 @@ import type { IconName } from "@/types/dashboard";
 interface IconProps {
   name: IconName;
   className?: string;
+  /** Raise it where the icon sits beside heavier type than usual. */
+  strokeWidth?: number;
 }
 
 const PATHS: Record<IconName, ReactNode> = {
@@ -225,13 +227,17 @@ const PATHS: Record<IconName, ReactNode> = {
   ),
 };
 
-export function Icon({ name, className = "size-4" }: IconProps) {
+export function Icon({
+  name,
+  className = "size-4",
+  strokeWidth = 1.5,
+}: IconProps) {
   return (
     <svg
       viewBox="0 0 24 24"
       fill="none"
       stroke="currentColor"
-      strokeWidth="1.5"
+      strokeWidth={strokeWidth}
       strokeLinecap="round"
       strokeLinejoin="round"
       aria-hidden="true"

@@ -4,6 +4,8 @@ import type { DashboardEvent } from "@/types/dashboard";
 /** Attending vs. declined against the host's cap, plus the reading beneath it. */
 export function SafeguardBar({ event }: { event: DashboardEvent }) {
   const { cap } = event.safeguard;
+  const percent =
+    cap > 0 ? Math.round((event.rsvp.replied / cap) * 100) : 100;
   const barVars = safeguardBarVars(event);
 
   return (
@@ -19,7 +21,7 @@ export function SafeguardBar({ event }: { event: DashboardEvent }) {
       </div>
 
       <p className="mt-[9px] text-[11.5px] text-neutral-700">
-        Safeguard {event.rsvp.replied} of {cap}
+        Safeguard {event.rsvp.replied} of {cap} · {percent}%
       </p>
     </>
   );

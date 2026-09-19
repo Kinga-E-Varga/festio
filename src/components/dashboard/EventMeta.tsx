@@ -39,15 +39,28 @@ interface EventMetaProps {
    * meta row under its title carries only visibility and tier.
    */
   deadlines?: boolean;
+  /** The events list gives the freeze a line of its own, further down. */
+  locksIn?: boolean;
+  /** The list sets its meta a step above the dashboard card's. */
+  size?: "sm" | "md";
 }
 
-export function EventMeta({ event, deadlines = true }: EventMetaProps) {
+export function EventMeta({
+  event,
+  deadlines = true,
+  locksIn = true,
+  size = "sm",
+}: EventMetaProps) {
   const visibility = VISIBILITY[event.visibility];
 
   return (
-    <div className="flex flex-wrap items-center gap-x-3.5 gap-y-2 text-[13px] text-neutral-700">
+    <div
+      className={`flex flex-wrap items-center gap-x-3.5 gap-y-2 text-neutral-700 ${
+        size === "md" ? "text-[14px]" : "text-[13px]"
+      }`}
+    >
       <span className="flex items-center gap-1.5">
-        <Icon name={visibility.icon} className="size-3.5" />
+        <Icon name={visibility.icon} className={size === "md" ? "size-4" : "size-3.5"} />
         {visibility.label}
       </span>
       <span>{TIERS[event.tier].name}</span>
@@ -63,7 +76,7 @@ export function EventMeta({ event, deadlines = true }: EventMetaProps) {
         </span>
       ) : null}
 
-      {deadlines && !event.locked && event.isNextUp && event.locksInLabel ? (
+      {deadlines && locksIn && !event.locked && event.isNextUp && event.locksInLabel ? (
         <span className={CHIP}>
           <Icon name="clock" className="size-3.5" />
           Locks in {event.locksInLabel}

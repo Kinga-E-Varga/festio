@@ -1,43 +1,43 @@
-import Image from "next/image";
-import Link from "next/link";
-import { CopyButton } from "@/components/dashboard/CopyButton";
-import { PasswordField } from "@/components/dashboard/PasswordField";
-import { VISIBILITY } from "@/components/dashboard/EventMeta";
-import { Icon } from "@/components/icons";
-import { invitationLink, safeguardBarVars } from "@/lib/event";
-import { TIERS } from "@/mock/dashboard";
-import type { DashboardEvent, EventStatus } from "@/types/dashboard";
+import Image from 'next/image'
+import Link from 'next/link'
+import { CopyButton } from '@/components/dashboard/CopyButton'
+import { PasswordField } from '@/components/dashboard/PasswordField'
+import { VISIBILITY } from '@/components/dashboard/EventMeta'
+import { Icon } from '@/components/icons'
+import { invitationLink, safeguardBarVars } from '@/lib/event'
+import { TIERS } from '@/mock/dashboard'
+import type { DashboardEvent, EventStatus } from '@/types/dashboard'
 
 /** The card's left edge says at a glance which pile the event is in. */
 const STATUS_EDGE: Record<EventStatus, string> = {
-  active: "border-l-forest-500",
-  draft: "border-l-terracotta-500",
-  past: "border-l-neutral-600 opacity-[0.86]",
-};
+  active: 'border-l-forest-500',
+  draft: 'border-l-terracotta-500',
+  past: 'border-l-neutral-600',
+}
 
 const ACTION =
-  "flex items-center justify-center gap-[9px] rounded-md border border-forest-500 bg-mustard-50 px-2 py-[11px] text-forest-600 transition-colors hover:border-forest-600 hover:bg-forest-200";
+  'flex items-center justify-center gap-[9px] rounded-md border border-forest-500 bg-mustard-50 px-2 py-[11px] font-medium text-forest-500 transition-colors hover:border-forest-600 hover:bg-forest-200 hover:text-forest-600'
 const ACTION_DISABLED =
-  "flex cursor-not-allowed items-center justify-center gap-[9px] rounded-md border border-forest-500 bg-mustard-100 px-2 py-[11px] text-neutral-700 opacity-[0.65]";
+  'flex cursor-not-allowed items-center justify-center gap-[9px] rounded-md border border-forest-500 bg-mustard-50 px-2 py-[11px] font-medium text-neutral-700 opacity-[0.65]'
 /** Two wide buttons then three narrow ones, until there is room for five. */
-const ACTION_WIDE = "col-span-3 @xl:col-span-1";
-const ACTION_NARROW = "col-span-2 @xl:col-span-1";
+const ACTION_WIDE = 'col-span-3 @xl:col-span-1'
+const ACTION_NARROW = 'col-span-2 @xl:col-span-1'
 
 const FIELD_BASE =
-  "flex items-center gap-[9px] border border-mustard-300 px-3 py-2 text-[13px] text-neutral-900";
-const FIELD = `${FIELD_BASE} bg-mustard-50`;
+  'flex items-center gap-[9px] border border-mustard-300 px-3 py-2 text-[13px] text-neutral-900'
+const FIELD = `${FIELD_BASE} bg-mustard-50`
 /** Stands in for the link row when there is nothing to share yet. */
-const FIELD_NOTE = `${FIELD_BASE} bg-terracotta-200`;
+const FIELD_NOTE = `${FIELD_BASE} bg-terracotta-200`
 
 function Tally({
   label,
   value,
   detail,
 }: {
-  label: string;
-  value: number;
+  label: string
+  value: number
   /** Denominator kept small so four tallies fit the column, e.g. "/124". */
-  detail?: string;
+  detail?: string
 }) {
   return (
     // Narrow cards read better as label-left / value-right rows; once four fit
@@ -53,15 +53,18 @@ function Tally({
         ) : null}
       </dd>
     </div>
-  );
+  )
 }
 
 export function EventCard({ event }: { event: DashboardEvent }) {
-  const visibility = VISIBILITY[event.visibility];
-  const link = invitationLink(event);
-  const { confirmed, cap } = event.safeguard;
-  const safeguardPercent = cap > 0 ? Math.round((confirmed / cap) * 100) : 0;
-  const barVars = safeguardBarVars(event);
+  const visibility = VISIBILITY[event.visibility]
+  const link = invitationLink(event)
+  /* Past and past its retention date: the record is a stub, not a tool. */
+  const archived = event.status === 'past' && event.dataDeleted
+  const { cap } = event.safeguard
+  const replied = event.rsvp.replied
+  const safeguardPercent = cap > 0 ? Math.round((replied / cap) * 100) : 100
+  const barVars = safeguardBarVars(event)
 
   return (
     <article
@@ -80,7 +83,7 @@ export function EventCard({ event }: { event: DashboardEvent }) {
          * preview with just the date and the wrapped title alongside.
          */}
         <div className="grid grid-cols-[88px_minmax(0,1fr)] gap-x-4 px-4 pt-[18px] pb-5 @min-[488px]:flex @min-[488px]:flex-wrap @min-[488px]:gap-x-[26px] @min-[488px]:gap-y-5 @2xl:px-6 @2xl:pt-[22px]">
-          <div className="contents @min-[488px]:flex @min-[488px]:min-w-0 @min-[488px]:flex-1 @min-[488px]:gap-[26px] @min-[904px]:min-w-[498px]">
+          <div className="contents @min-[488px]:flex @min-[488px]:min-w-0 @min-[488px]:flex-1 @min-[488px]:gap-[26px] @min-[904px]:min-w-[470px]">
             <div className="col-start-1 row-start-1 self-start bg-neutral-50 @min-[488px]:h-[198px] @min-[488px]:shrink-0">
               <Image
                 src={event.preview}
@@ -101,10 +104,10 @@ export function EventCard({ event }: { event: DashboardEvent }) {
                   <span className="font-medium text-neutral-900">
                     {event.dateLabel}
                   </span>
-                  <span aria-hidden="true">{" · "}</span>
+                  <span aria-hidden="true">{' · '}</span>
                   <span
                     className={
-                      event.isNextUp ? "font-medium text-terracotta-600" : ""
+                      event.isNextUp ? 'font-medium text-terracotta-600' : ''
                     }
                   >
                     {event.countdownLabel}
@@ -125,12 +128,14 @@ export function EventCard({ event }: { event: DashboardEvent }) {
               </div>
 
               <div className="col-span-full row-start-2 mt-4 mb-3 flex flex-wrap items-center gap-4 text-[13px] text-neutral-700 @min-[488px]:mt-0 @2xl:mb-3.5">
-                <span className="flex items-center gap-1.5">
-                  <Icon name={visibility.icon} className="size-3.5" />
-                  {visibility.label}
-                </span>
+                {archived ? null : (
+                  <span className="flex items-center gap-1.5">
+                    <Icon name={visibility.icon} className="size-3.5" />
+                    {visibility.label}
+                  </span>
+                )}
                 <span>{TIERS[event.tier].name}</span>
-                {event.editLockLabel ? (
+                {!archived && event.editLockLabel ? (
                   <span className="flex items-center gap-1.5 border border-terracotta-400 bg-terracotta-200 px-2.5 py-1 text-xs font-semibold text-terracotta-600">
                     <Icon name="clock" className="size-3.5" />
                     {event.editLockLabel}
@@ -139,7 +144,11 @@ export function EventCard({ event }: { event: DashboardEvent }) {
               </div>
 
               {/* Stacked fields butt together and share their edges. */}
-              <div className="col-span-full row-start-3 flex max-w-[330px] flex-col [&>*+*]:border-t-0">
+              <div
+                className={`col-span-full row-start-3 max-w-[330px] flex-col [&>*+*]:border-t-0 ${
+                  archived ? 'hidden' : 'flex'
+                }`}
+              >
                 <span className={FIELD}>
                   <Icon
                     name="link"
@@ -173,7 +182,7 @@ export function EventCard({ event }: { event: DashboardEvent }) {
            * Once it sits beside the details it starts at 330px and takes the
            * smaller share of any leftover width, up to 480px.
            */}
-          <div className="col-span-full row-start-4 mt-4 @min-[488px]:mt-0 @min-[488px]:w-full @min-[904px]:w-[330px] @min-[904px]:max-w-[480px] @min-[904px]:min-w-[330px] @min-[904px]:flex-[0.7_1_330px] @min-[904px]:border-l @min-[904px]:border-mustard-300 @min-[904px]:pl-[26px]">
+          <div className="col-span-full row-start-4 mt-4 @min-[488px]:mt-0 @min-[488px]:w-full @min-[904px]:w-[386px] @min-[904px]:max-w-[520px] @min-[904px]:min-w-[386px] @min-[904px]:flex-[0.85_1_386px] @min-[904px]:border-l @min-[904px]:border-mustard-300 @min-[904px]:pl-[26px]">
             <dl className="mb-3 grid grid-cols-2 gap-x-5 gap-y-[9px] @2xl:grid-cols-4 @2xl:gap-1.5">
               <Tally
                 label="Replied"
@@ -199,9 +208,9 @@ export function EventCard({ event }: { event: DashboardEvent }) {
               <span className="flex-1">
                 {/* Roomy only while the column runs the full width of the card. */}
                 <span className="hidden @2xl:inline @min-[904px]:hidden">
-                  Attendee{" "}
+                  Attendee{' '}
                 </span>
-                safeguard {confirmed} of {cap} · {safeguardPercent}%
+                safeguard {replied} of {cap} · {safeguardPercent}%
               </span>
               <button
                 type="button"
@@ -212,14 +221,14 @@ export function EventCard({ event }: { event: DashboardEvent }) {
             </p>
 
             {event.note ? (
-              event.note.tone === "warning" ? (
+              event.note.tone === 'warning' ? (
                 <div className="mt-4 flex gap-[9px] border border-rust-400 bg-rust-200 px-[13px] py-[11px] text-[12.5px] leading-[1.45] text-rust-600">
                   <Icon name="alert" className="mt-px size-[15px] shrink-0" />
                   <p>
                     {event.note.text}
                     {event.note.actionLabel ? (
                       <>
-                        {" "}
+                        {' '}
                         <button
                           type="button"
                           className="font-semibold underline underline-offset-2"
@@ -239,14 +248,31 @@ export function EventCard({ event }: { event: DashboardEvent }) {
           </div>
         </div>
 
-        <div className="mx-4 grid grid-cols-6 gap-2.5 border-t border-mustard-300 pt-[18px] pb-[22px] @2xl:mx-6 @2xl:gap-3.5 @xl:grid-cols-5">
-          <Link
-            href={`/dashboard/events/${event.id}`}
-            className={`${ACTION} ${ACTION_WIDE}`}
-          >
-            <Icon name="pencil" className="size-[15px]" />
-            Edit
-          </Link>
+        <div
+          className={`mx-4 grid-cols-6 gap-2.5 border-t border-mustard-300 pt-[18px] pb-[22px] @2xl:mx-6 @2xl:gap-3.5 @xl:grid-cols-5 ${
+            archived ? 'hidden' : 'grid'
+          }`}
+        >
+          {/* Editing closes with the event, but the record stays readable. */}
+          {event.status === 'past' ? (
+            <button
+              type="button"
+              disabled
+              title="This event has already happened"
+              className={`${ACTION_DISABLED} ${ACTION_WIDE}`}
+            >
+              <Icon name="pencil" className="size-[15px]" />
+              Edit
+            </button>
+          ) : (
+            <Link
+              href={`/dashboard/events/${event.id}`}
+              className={`${ACTION} ${ACTION_WIDE}`}
+            >
+              <Icon name="pencil" className="size-[15px]" />
+              Edit
+            </Link>
+          )}
           <button type="button" className={`${ACTION} ${ACTION_WIDE}`}>
             <Icon name="eye" className="size-[15px]" />
             View
@@ -278,5 +304,5 @@ export function EventCard({ event }: { event: DashboardEvent }) {
         </div>
       </div>
     </article>
-  );
+  )
 }

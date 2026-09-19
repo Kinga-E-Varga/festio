@@ -219,10 +219,6 @@ export function useEventForm(event: DashboardEvent) {
       freezeLabel: formatStamp(freeze),
       deletionLabel: formatEventDate(deletion),
       capValue,
-      capPercent:
-        capValue > 0
-          ? Math.min(100, Math.round((event.rsvp.replied / capValue) * 100))
-          : 100,
       capError,
       slugError,
       passwordError,

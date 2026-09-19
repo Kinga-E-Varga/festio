@@ -16,7 +16,8 @@ const PANEL_LABEL =
   "mb-3.5 text-[10px] font-semibold tracking-[0.18em] text-mustard-500 uppercase";
 
 /** The two controls under the preview share a size, whatever they render as. */
-const ACTION = "flex-1 gap-1.5 px-2.5 py-[9px] text-[13px] whitespace-nowrap";
+const ACTION =
+  "flex-1 basis-[140px] gap-1.5 px-2.5 py-[9px] text-[13px] whitespace-nowrap";
 
 function Tally({ label, value }: { label: string; value: ReactNode }) {
   return (
@@ -57,7 +58,7 @@ function Replies({ event }: { event: DashboardEvent }) {
 
   return (
     <>
-      <dl className="grid grid-cols-2 gap-x-2 gap-y-2.5">
+      <dl className="grid grid-cols-3 gap-x-2 gap-y-2.5">
         <Tally
           label="Replied"
           value={
@@ -71,25 +72,9 @@ function Replies({ event }: { event: DashboardEvent }) {
         />
         <Tally label="Attending" value={event.rsvp.attending} />
         <Tally label="Declined" value={event.rsvp.declined} />
-        <Tally label="Pending" value={event.rsvp.pending} />
       </dl>
 
       <SafeguardBar event={event} />
-
-      {event.unmatched > 0 ? (
-        <div className="mt-3.5 flex gap-[9px] border border-rust-400 bg-rust-200 px-[13px] py-[11px] text-[12.5px] leading-[1.45] text-rust-600">
-          <Icon name="alert" className="mt-px size-[15px] shrink-0" />
-          <p>
-            {event.unmatched} unmatched names.{" "}
-            <button
-              type="button"
-              className="font-semibold underline underline-offset-2"
-            >
-              Review
-            </button>
-          </p>
-        </div>
-      ) : null}
     </>
   );
 }
@@ -103,11 +88,11 @@ export function EventSummary({ event }: { event: DashboardEvent }) {
     <section className="@container mt-[22px] grid grid-cols-1 border border-mustard-300 bg-mustard-100 @min-[760px]:grid-cols-[minmax(190px,1.05fr)_minmax(280px,1fr)]">
       {/* The artwork is the point of a record, so it takes the larger share. */}
       <div className="flex min-w-0 flex-col items-center gap-2 p-[18px]">
-        <div className="mb-1.5 w-full max-w-[400px] leading-none">
+        <div className="mb-1.5 w-full max-w-[320px] leading-none">
           <Image
             src={event.preview}
             alt={event.previewAlt}
-            sizes="400px"
+            sizes="320px"
             className="h-auto w-full"
           />
         </div>
@@ -117,7 +102,7 @@ export function EventSummary({ event }: { event: DashboardEvent }) {
          * event that hasn't picked one. Until it has, they stay as disabled
          * buttons rather than links into a 404.
          */}
-        <div className="flex w-full max-w-[400px] gap-2">
+        <div className="flex w-full max-w-[320px] flex-wrap gap-2">
           {event.templateId ? (
             <>
               <Link
@@ -125,7 +110,7 @@ export function EventSummary({ event }: { event: DashboardEvent }) {
                 className={`${BTN_PRIMARY} ${ACTION}`}
               >
                 <Icon name="pencil" className="size-[15px]" />
-                Design
+                Edit invitation
               </Link>
               {/*
                * A new tab, because the guest page is the whole screen and
@@ -150,7 +135,7 @@ export function EventSummary({ event }: { event: DashboardEvent }) {
                 className={`${BTN_PRIMARY} ${ACTION}`}
               >
                 <Icon name="pencil" className="size-[15px]" />
-                Design
+                Edit invitation
               </button>
               <button
                 type="button"

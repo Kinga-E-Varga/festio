@@ -85,9 +85,8 @@ export interface RsvpTally {
   pending: number;
 }
 
-/** Host-set cap on total attendees — a technical safeguard, not a guest limit. */
+/** Host-set cap on replies — a technical safeguard, not a guest limit. */
 export interface AttendeeSafeguard {
-  confirmed: number;
   cap: number;
 }
 
@@ -150,9 +149,8 @@ export interface DashboardEvent {
 export interface DashboardStat {
   label: string;
   value: string;
-  /** Quieter text trailing the value, e.g. "of 4" or "+12 this week". */
+  /** Quieter text trailing the value, e.g. "of 4" or "2 days away". */
   detail?: string;
-  tone?: "default" | "attention";
 }
 
 export type NoticeTone = "unmatched" | "deadline" | "safeguard" | "billing";
