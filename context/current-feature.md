@@ -1,4 +1,4 @@
-# Current Feature: Dashboard Design Fixes
+# Current Feature: Dashboard & Events UX Fixes
 
 ## Status
 
@@ -8,40 +8,42 @@ In Progress
 
 ### Dashboard main page
 
-- Rework the summary box to show: live invitations (x of y), next event (in 2 days), new replies (x since last), unmatched names (x unknown — "unknown" styled like the other small texts).
-- Event card: give the left-hand "replies" section a bit more room on wide screens.
-- Event card: match the button style to the "Edit invitation" button on the Events page; both get `#D6E2D2` as hover background.
-- Event card, past event: if data is deleted, show only the free/standard/custom tag — no buttons, no link password. If data is not yet deleted, the edit button is disabled.
+- Add an "Add event" button on the right side of the header (next to date / "Bună, Maria"); on small screens it moves under "Bună, Maria" — it must not collapse into a bare "+".
+- Remove the "Your next invitation locks for editing tomorrow — 24 hours before the event" line.
+- Under "YOUR EVENTS", add explanatory copy: each event is one record and one purchase, and each event has an invitation with a response form for tracking and managing guests.
+- Rename "Your events" to "Your active events" and remove the tabs — only active events are shown.
+- Move the 5 action buttons off the dashboard event card (they move to the Events page list).
+- Make the whole event card a button that navigates to Events and scrolls to the clicked event. Give it a good hover state that does **not** change the card background colour.
+- Show when the response form closes — date only, unless a real time is set (not 00), in which case show the time too. Apply the same show/hide-time logic on the Events page.
+- Under the attendee safeguard (and under any warning such as "5 names didn't…") add attendee breakdown notes, e.g. "6 children and 2 babies among the attendees", "x with vegan dietary needs".
+- Remove all non-warning tags next to the warning tags; make warning tags more direct ("editing locks in 30 hours"), and add comparable warnings such as "safeguard at 80%" and "RSVP closes in x days".
+- Remove the "raise cap" button below the attendee bar.
 
 ### Events page
 
-- "Add event" button: same colour as the "Edit event" button, and pinned left even on small screens (icon-only, so it fits).
-- Event list row layout: image on the left; to its right a column with date (plain date, not "in x weeks"), title, tags (drop "locks in…"), then the replies bar styled like the event editing page ("82 replies received against a 100 cap"), then the "dates that matter" section separated by a thin rule. Buttons (Edit event, Edit invitation) on the far right, vertically centred.
-- Date and tags render larger here than on the dashboard event card.
+- Use the same "Each event is one …" copy as under "YOUR ACTIVE EVENTS" on the dashboard.
+- Split the events list into cards, like the dashboard.
+- Those cards carry the 5 buttons moved off the dashboard card, plus a 6th "Edit invitation" button placed after "Edit". Stack them cleanly on small screens.
+- Events page cards have **no** hover state.
+- Card layout: image on the far left; to its right a column with event details (date, tags — protected, custom — but no warning tags), and below that the RSVP section taken as-is from the dashboard card, except: keep the raise link, and omit the extra info lines (unmatched names, children attending, etc.). "Dates that matter" sits in its own column on the far right, styled the same way as in the current event-editing card. - might fine-tune after.
 
-### Event editing page
+### Dashboard nav
 
-- Drop the Pending number from the summary card.
-- Drop the unmatched-names box; shrink the image so buttons + image visually match the height of the card's left side on wide screens.
-- Rename the Design button to "Edit invitation".
-- Unpaid event: no "Cancel the event" action, and the "This draft is unpaid…" banner switches to the same colour as the "Editing closes in …" banner.
-- Paid but hidden event: add a banner in that same colour telling the host the invitation is unreachable.
-- Remove the "Open the invitation" button.
-- Invitation address: the editable part gets the same light background as other input fields.
-- Any thick focus outline on an input must use the same colour as that input's default border.
+- Hosting: Dashboard, Events, Invitations.
+- Studio: Prints and downloads, Templates.
 
 ## Notes
 
-- Spec source: `context/fix/design-fixes.md` (the file passed in, `context/fix/pending-design-fixes.md`, is empty).
-- Pure UI/design pass — no data-model or schema changes.
-- Anything not explicitly specified: choose whatever reads as visually clean and consistent with the existing design system.
-- Palette is restricted to the base app palette in `context/project-overview.md`.
-- Both the unpaid and the new hidden notice use the existing `Banner` (`src/components/dashboard/event-editor/Banner.tsx`) with `tone="warn"` — the terracotta tone the "Editing closes in …" banner already uses.
+- Source spec: `context/fix/UX-fixes.md`.
+- Scope is UI/UX only — no schema or data-model changes.
+- Base app palette and fonts from `context/project-overview.md` apply (these are app UI surfaces, not invitations).
+- Open questions to resolve at `start`: exact wording of the shared "Each event is one …" copy, which warning tags are in scope, and where the attendee breakdown data comes from.
 
 ## History
 
 <!-- Keep this updated latest to earliest -->
 
+- Dashboard design fixes — stats, card/list layout, editor banners, focus rings
 - Invitation composition — card + reply in one component, one tree per panel
 - Type 1 invitation page and editing platform
 - Events list — "Edit invitation" label + safeguard/dates info

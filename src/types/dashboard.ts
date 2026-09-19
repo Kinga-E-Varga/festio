@@ -117,8 +117,6 @@ export interface DashboardEvent {
   /** Which template file draws this invitation; see `src/templates/`. */
   templateId?: string;
   paid: boolean;
-  /** Set while the 24h content freeze is in sight. */
-  editLockLabel?: string;
   /** The host-editable half of the link. */
   slug: string;
   /** Festio's four random digits, which keep the link unguessable. */
@@ -134,6 +132,12 @@ export interface DashboardEvent {
   preloaded: boolean;
   preloadedCount: number;
   note?: EventNote;
+  /**
+   * Who is coming, beyond the head count — age groups, dietary needs and the
+   * like, already phrased for display. Empty or absent means nothing worth
+   * calling out, not that nobody was asked.
+   */
+  attendeeNotes?: string[];
   preview: StaticImageData;
   previewAlt: string;
   status: EventStatus;

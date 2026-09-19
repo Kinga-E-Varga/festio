@@ -1,12 +1,10 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { EventMeta } from "@/components/dashboard/EventMeta";
-import { EventSummary } from "@/components/dashboard/EventSummary";
 import { Banner } from "@/components/dashboard/event-editor/Banner";
 import { EventEditor } from "@/components/dashboard/event-editor/EventEditor";
 import { Icon } from "@/components/icons";
-import { contentFreeze, formatStamp } from "@/lib/event";
+import { contentFreeze, formatDeadline } from "@/lib/event";
 import { findEvent, TIERS } from "@/mock/dashboard";
 
 type Props = PageProps<"/dashboard/events/[id]">;
@@ -23,7 +21,7 @@ export default async function EventPage({ params }: Props) {
   if (!event) notFound();
 
   const tier = TIERS[event.tier];
-  const freeze = formatStamp(contentFreeze(event.date));
+  const freeze = formatDeadline(contentFreeze(event.date));
 
   return (
     <div className="@container">
@@ -36,11 +34,26 @@ export default async function EventPage({ params }: Props) {
         All events
       </Link>
 
-      <h1 className="mt-1.5 mb-3 font-serif text-[29px] leading-[1.08] text-balance text-neutral-900 @min-[720px]:text-[38px]">
+      <h1 className="mt-[18px] font-serif text-[29px] leading-[1.08] text-balance text-neutral-900 @min-[720px]:text-[38px]">
         {event.title}
       </h1>
 
-      <EventMeta event={event} deadlines={false} />
+      {/* When it is, said the way the events list says it. */}
+      <p className="mt-2.5 mb-3 text-[14px] leading-none text-neutral-900">
+        <span className="font-medium">{event.dateLabel}</span>
+        <span aria-hidden="true" className="text-neutral-700">
+          {" · "}
+        </span>
+        <span
+          className={
+            event.isNextUp
+              ? "font-medium text-terracotta-600"
+              : "text-neutral-700"
+          }
+        >
+          {event.countdownLabel}
+        </span>
+      </p>
 
       {/* Only the banners that are true right now. */}
       {event.locked ? (
@@ -92,7 +105,6 @@ export default async function EventPage({ params }: Props) {
         </Banner>
       ) : null}
 
-      <EventSummary event={event} />
       <EventEditor event={event} />
     </div>
   );

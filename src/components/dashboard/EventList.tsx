@@ -17,7 +17,7 @@ export function EventList({ events, emptyMessage }: EventListProps) {
   }
 
   return (
-    <div className="flex flex-col gap-5">
+    <div className="flex flex-col gap-[28px]">
       {events.map((event) => (
         <EventCard key={event.id} event={event} />
       ))}

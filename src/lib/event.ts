@@ -92,11 +92,22 @@ export function formatEventDate(value: Date): string {
   return value.toLocaleDateString("en-GB", DATE_PARTS);
 }
 
-/** "5 September 2026, 00:00" — used wherever the time of day matters. */
-export function formatStamp(value: Date): string {
+/** "5 September 2026, 00:00" — the long form, behind `formatDeadline`. */
+function formatStamp(value: Date): string {
   const hours = String(value.getHours()).padStart(2, "0");
   const minutes = String(value.getMinutes()).padStart(2, "0");
   return `${formatEventDate(value)}, ${hours}:${minutes}`;
+}
+
+/**
+ * A deadline as a host would say it out loud: the date on its own when it
+ * falls at midnight, and the date plus the time when the hour carries meaning.
+ * Midnight is the shape a date with no time of day takes once it is parsed, so
+ * stating "00:00" back would only ever be noise.
+ */
+export function formatDeadline(value: Date): string {
+  const midnight = value.getHours() === 0 && value.getMinutes() === 0;
+  return midnight ? formatEventDate(value) : formatStamp(value);
 }
 
 /** The `YYYY-MM-DDTHH:MM` shape a `datetime-local` input expects. */

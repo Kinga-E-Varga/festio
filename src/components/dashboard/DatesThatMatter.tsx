@@ -2,8 +2,8 @@ import type { ReactNode } from "react";
 import {
   contentFreeze,
   deletionDate,
+  formatDeadline,
   formatEventDate,
-  formatStamp,
 } from "@/lib/event";
 import type { DashboardEvent } from "@/types/dashboard";
 
@@ -14,8 +14,8 @@ function DateNote({
   row,
   children,
 }: {
-  /** Absent in the row layout, which carries no colour coding. */
-  edge?: string;
+  /** The colour coding both layouts carry. */
+  edge: string;
   title: string;
   /** Inline notes borrow the row's own date and tag type. */
   row?: boolean;
@@ -24,9 +24,9 @@ function DateNote({
   return (
     <div
       className={
-        edge
-          ? `mb-3.5 border-l-4 pb-3.5 pl-3.5 last:mb-0 last:pb-0 ${edge}`
-          : "min-w-0"
+        row
+          ? `min-w-0 flex-1 basis-[132px] border-l-4 pl-3 ${edge}`
+          : `mb-3.5 border-l-4 pb-3.5 pl-3.5 last:mb-0 last:pb-0 ${edge}`
       }
     >
       <b
@@ -54,8 +54,8 @@ function DateNote({
 interface DatesThatMatterProps {
   event: DashboardEvent;
   /**
-   * The events list states these inline under a rule, with no heading of
-   * their own, so they run across rather than down and drop their edges.
+   * The events list runs them across rather than down, keeping the edge
+   * colours that say how much attention each one wants.
    */
   layout?: "stacked" | "row";
 }
@@ -65,20 +65,14 @@ export function DatesThatMatter({
   event,
   layout = "stacked",
 }: DatesThatMatterProps) {
-  const freeze = formatStamp(contentFreeze(event.date));
+  const freeze = formatDeadline(contentFreeze(event.date));
   const deletion = formatEventDate(deletionDate(event.date));
   const row = layout === "row";
 
   return (
-    <div className={row ? "flex flex-wrap gap-x-9 gap-y-3" : undefined}>
+    <div className={row ? "flex flex-wrap gap-x-6 gap-y-3.5" : undefined}>
       <DateNote
-        edge={
-          row
-            ? undefined
-            : event.locked
-              ? "border-neutral-500"
-              : "border-mustard-500"
-        }
+        edge={event.locked ? "border-neutral-500" : "border-mustard-500"}
         title={event.locked ? "Editing closed" : "Editing freezes"}
         row={row}
       >
@@ -86,7 +80,7 @@ export function DatesThatMatter({
       </DateNote>
 
       <DateNote
-        edge={row ? undefined : "border-steel-500"}
+        edge="border-steel-500"
         title="Reply form closes"
         row={row}
       >
@@ -94,7 +88,7 @@ export function DatesThatMatter({
       </DateNote>
 
       <DateNote
-        edge={row ? undefined : "border-terracotta-500"}
+        edge="border-terracotta-500"
         title="Record deleted"
         row={row}
       >

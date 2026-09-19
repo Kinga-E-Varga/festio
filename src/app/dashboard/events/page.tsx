@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
+import { CentreOnHash } from "@/components/dashboard/CentreOnHash";
 import { EventGroups } from "@/components/dashboard/EventGroups";
 import { EventTabs, type EventTab } from "@/components/dashboard/EventTabs";
 import { Icon } from "@/components/icons";
-import { EVENTS, HOST } from "@/mock/dashboard";
+import { EVENTS, EVENTS_LEDE, HOST } from "@/mock/dashboard";
 import type { EventStatus } from "@/types/dashboard";
 
 export const metadata: Metadata = {
@@ -68,6 +69,9 @@ export default function EventsPage() {
 
   return (
     <div className="@container">
+      {/* Arriving from a dashboard card, on that card rather than under the bar. */}
+      <CentreOnHash />
+
       {/* The title block and the one primary action share a row. */}
       <header className="flex items-center gap-6">
         <div className="min-w-0 flex-1">
@@ -91,9 +95,7 @@ export default function EventsPage() {
       </header>
 
       <p className="mt-3.5 mb-[26px] text-neutral-700">
-        Each event is one record and one purchase. Open an event to change its
-        details, who can see it, and how guests reply — the invitation&apos;s
-        design is edited separately.
+        {EVENTS_LEDE}
       </p>
 
       <EventTabs tabs={tabs} />

@@ -6,7 +6,7 @@ import {
   contentFreeze,
   deletionDate,
   formatEventDate,
-  formatStamp,
+  formatDeadline,
   invitationLink,
   isRealDate,
   normalizeSlug,
@@ -210,13 +210,15 @@ export function useEventForm(event: DashboardEvent) {
       dateLabel: formatEventDate(new Date(`${effectiveDate}T00:00`)),
       /** The `max` a custom closing time cannot go past. */
       closeLimit: toDateTimeLocal(freeze),
-      closeDefaultLabel: formatStamp(freeze),
-      closeLabel: closesEarly ? formatStamp(chosenClose) : formatStamp(freeze),
+      closeDefaultLabel: formatDeadline(freeze),
+      closeLabel: closesEarly
+        ? formatDeadline(chosenClose)
+        : formatDeadline(freeze),
       closesEarly,
       /** Set while a chosen time sits past the cut-off, which cannot apply. */
       closeTooLate:
         closeEarly && isRealDate(chosenClose) && chosenClose > freeze,
-      freezeLabel: formatStamp(freeze),
+      freezeLabel: formatDeadline(freeze),
       deletionLabel: formatEventDate(deletion),
       capValue,
       capError,

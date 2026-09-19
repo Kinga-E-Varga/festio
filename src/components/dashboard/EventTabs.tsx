@@ -54,7 +54,7 @@ export function EventTabs({ tabs }: { tabs: EventTab[] }) {
                 // Colour lives in both branches rather than on the base: two
                 // text-colour utilities on one element resolve by stylesheet
                 // order, not by the order they are written.
-                className={`-mb-px flex items-center justify-center gap-1 border-b-2 px-3 py-[9px] text-[15px] whitespace-nowrap transition-colors sm:gap-1.5 sm:px-4 sm:text-base ${
+                className={`-mb-px flex items-center justify-center gap-1 rounded-t-xs border-b-2 px-3 py-[9px] text-[15px] whitespace-nowrap transition-colors sm:gap-1.5 sm:px-4 sm:text-base ${
                   isActive
                     ? 'border-forest-500 bg-forest-500 font-semibold text-mustard-50'
                     : 'border-transparent text-forest-600'

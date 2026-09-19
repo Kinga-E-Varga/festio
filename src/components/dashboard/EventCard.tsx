@@ -2,32 +2,59 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { CopyButton } from '@/components/dashboard/CopyButton'
 import { PasswordField } from '@/components/dashboard/PasswordField'
-import { VISIBILITY } from '@/components/dashboard/EventMeta'
 import { Icon } from '@/components/icons'
-import { invitationLink, safeguardBarVars } from '@/lib/event'
-import { TIERS } from '@/mock/dashboard'
-import type { DashboardEvent, EventStatus } from '@/types/dashboard'
+import {
+  contentFreeze,
+  formatDeadline,
+  invitationLink,
+  safeguardBarVars,
+} from '@/lib/event'
+import type { DashboardEvent, IconName } from '@/types/dashboard'
 
 /** The card's left edge says at a glance which pile the event is in. */
-const STATUS_EDGE: Record<EventStatus, string> = {
-  active: 'border-l-forest-500',
-  draft: 'border-l-terracotta-500',
-  past: 'border-l-neutral-600',
-}
-
-const ACTION =
-  'flex items-center justify-center gap-[9px] rounded-md border border-forest-500 bg-mustard-50 px-2 py-[11px] font-medium text-forest-500 transition-colors hover:border-forest-600 hover:bg-forest-200 hover:text-forest-600'
-const ACTION_DISABLED =
-  'flex cursor-not-allowed items-center justify-center gap-[9px] rounded-md border border-forest-500 bg-mustard-50 px-2 py-[11px] font-medium text-neutral-700 opacity-[0.65]'
-/** Two wide buttons then three narrow ones, until there is room for five. */
-const ACTION_WIDE = 'col-span-3 @xl:col-span-1'
-const ACTION_NARROW = 'col-span-2 @xl:col-span-1'
+/** How full the safeguard has to be before it is worth a chip of its own. */
+const SAFEGUARD_WARNING = 80
 
 const FIELD_BASE =
   'flex items-center gap-[9px] border border-mustard-300 px-3 py-2 text-[13px] text-neutral-900'
 const FIELD = `${FIELD_BASE} bg-mustard-50`
 /** Stands in for the link row when there is nothing to share yet. */
 const FIELD_NOTE = `${FIELD_BASE} bg-terracotta-200`
+
+interface Warning {
+  icon: IconName
+  text: string
+}
+
+/**
+ * The only tags the card carries. Each one names the deadline or the limit it
+ * is about outright — a host reading "Edit locks soon" in passing should not
+ * have to open the event to learn what locks. The exact hours are on the event
+ * itself; the card only has to say it is close.
+ */
+function warningsFor(event: DashboardEvent, safeguardPercent: number) {
+  const warnings: Warning[] = []
+
+  if (!event.paid) {
+    warnings.push({ icon: 'alert', text: 'Payment pending' })
+  }
+
+  if (event.locked) {
+    warnings.push({ icon: 'lock', text: 'Editing closed' })
+  } else if (event.isNextUp && event.locksInLabel) {
+    warnings.push({
+      icon: 'clock',
+      text: 'Edit locks soon',
+    })
+  }
+
+  /* A cap nobody is near is a safeguard working, not news. */
+  if (event.rsvp.replied > 0 && safeguardPercent >= SAFEGUARD_WARNING) {
+    warnings.push({ icon: 'shield', text: `Safeguard at ${safeguardPercent}%` })
+  }
+
+  return warnings
+}
 
 function Tally({
   label,
@@ -57,7 +84,6 @@ function Tally({
 }
 
 export function EventCard({ event }: { event: DashboardEvent }) {
-  const visibility = VISIBILITY[event.visibility]
   const link = invitationLink(event)
   /* Past and past its retention date: the record is a stub, not a tool. */
   const archived = event.status === 'past' && event.dataDeleted
@@ -65,46 +91,58 @@ export function EventCard({ event }: { event: DashboardEvent }) {
   const replied = event.rsvp.replied
   const safeguardPercent = cap > 0 ? Math.round((replied / cap) * 100) : 100
   const barVars = safeguardBarVars(event)
+  const warnings = warningsFor(event, safeguardPercent)
+  const replyCloses = formatDeadline(contentFreeze(event.date))
 
   return (
-    <article
-      className={`border border-mustard-300 border-l-4 bg-mustard-100 ${STATUS_EDGE[event.status]}`}
-    >
+    /*
+     * The whole card leads to this event on the events page, where its actions
+     * live. Hover is carried by the border, the shadow and the title rather
+     * than by a fill: the card's own ground is how the pile reads at a glance,
+     * and it may not move under the pointer. What the card leads to is said
+     * outright at its foot, so the hover only has to confirm it.
+     */
+    <article className="group relative border border-mustard-300 bg-mustard-100 transition hover:shadow-[0_3px_16px_rgba(47,40,31,0.2)]">
       {/*
        * The nav and the activity rail both eat into the card's width, so its
        * layout keys off the card itself rather than the viewport.
        */}
       <div className="@container">
         {/*
+         * The preview is sized on one axis at every width: the layout gives
+         * its box a width and the image fills it, so the height always falls
+         * out of the ratio and the box can never letterbox.
+         *
          * The full-size preview only earns its place while the details beside
          * it can still hold the meta row on one line. That row needs 286px, so
-         * with the 142 preview, the 26 gap and 32 of padding the card has to
-         * be 488 wide; under that it falls back to the compact head — a small
-         * preview with just the date and the wrapped title alongside.
+         * with the 164 preview, the 26 gap and 32 of padding the card has to
+         * be 508 wide; under that it falls back to the compact head, which
+         * stacks instead: the date and title lead, the preview takes a row of
+         * its own beneath them — capped at 300 so it does not swallow the
+         * card on a phone — and the rest of the card follows.
          */}
-        <div className="grid grid-cols-[88px_minmax(0,1fr)] gap-x-4 px-4 pt-[18px] pb-5 @min-[488px]:flex @min-[488px]:flex-wrap @min-[488px]:gap-x-[26px] @min-[488px]:gap-y-5 @2xl:px-6 @2xl:pt-[22px]">
-          <div className="contents @min-[488px]:flex @min-[488px]:min-w-0 @min-[488px]:flex-1 @min-[488px]:gap-[26px] @min-[904px]:min-w-[470px]">
-            <div className="col-start-1 row-start-1 self-start bg-neutral-50 @min-[488px]:h-[198px] @min-[488px]:shrink-0">
+        <div className="grid grid-cols-1 px-4 pt-[18px] pb-5 @min-[508px]:flex @min-[508px]:flex-wrap @min-[508px]:gap-x-[26px] @min-[508px]:gap-y-5 @min-[904px]:grid @min-[904px]:grid-cols-[minmax(0,1fr)_minmax(0,2fr)_minmax(0,2fr)] @2xl:px-6 @2xl:pt-[22px] @2xl:pb-[22px]">
+          <div className="contents @min-[508px]:flex @min-[508px]:min-w-0 @min-[508px]:flex-1 @min-[508px]:gap-[26px] @min-[904px]:contents">
+            <div className="col-start-1 row-start-2 mt-[18px] w-full max-w-[300px] self-start bg-neutral-50 mx-auto @min-[508px]:mx-0 @min-[508px]:mt-0 @min-[508px]:w-[164px] @min-[508px]:shrink-0 @min-[904px]:w-full @min-[904px]:row-start-1 @min-[904px]:max-w-[220px] @min-[904px]:self-center @min-[904px]:justify-self-center">
               <Image
                 src={event.preview}
                 alt={event.previewAlt}
-                sizes="200px"
-                className="w-full @min-[488px]:h-full @min-[488px]:w-auto"
+                sizes="300px"
+                className="h-auto w-full"
               />
             </div>
 
             {/* Nudged down so the date starts just below the preview's top edge. */}
-            <div className="contents @min-[488px]:block @min-[488px]:min-w-0 @min-[488px]:flex-1 @min-[488px]:pt-1.5 @min-[904px]:min-w-[330px]">
-              {/*
-               * Date and title travel together so the pair can sit centred
-               * against the compact preview instead of starting at its top.
-               */}
-              <div className="col-start-2 row-start-1 self-center">
+            <div className="contents @min-[508px]:block @min-[508px]:min-w-0 @min-[508px]:flex-1 @min-[508px]:pt-1.5 @min-[904px]:col-start-2 @min-[904px]:row-start-1 @min-[904px]:self-center @min-[904px]:pt-0">
+              {/* Date and title travel together: they lead the compact
+               * stack, and sit centred against the preview once it moves
+               * alongside them. */}
+              <div className="col-start-1 row-start-1 @min-[508px]:self-center">
                 <p className="mb-4 text-[12.5px] leading-none text-neutral-700">
                   <span className="font-medium text-neutral-900">
                     {event.dateLabel}
                   </span>
-                  <span aria-hidden="true">{' · '}</span>
+                  <span aria-hidden="true">{' · '}</span>
                   <span
                     className={
                       event.isNextUp ? 'font-medium text-terracotta-600' : ''
@@ -115,37 +153,50 @@ export function EventCard({ event }: { event: DashboardEvent }) {
                 </p>
 
                 {/* Wraps beside the compact preview; clipped beside the full one. */}
-                <h3 className="font-serif text-[20px] leading-[1.2] text-neutral-900 @min-[488px]:mb-5 @min-[488px]:truncate @2xl:mb-4 @2xl:text-2xl">
+                <h3 className="text-justify font-serif text-[20px] leading-[1.2] text-neutral-900 transition-colors group-hover:text-forest-600 @min-[508px]:mb-[18px] @min-[508px]:truncate @2xl:text-2xl">
                   {/*
                    * The clamp sits on a child, not the heading: the heading is a
                    * grid item in the compact layout, and grid items blockify
                    * `-webkit-box` away, which would drop the clamp entirely.
                    */}
-                  <span className="@max-[488px]:line-clamp-3">
+                  <span className="@max-[508px]:line-clamp-3">
                     {event.title}
                   </span>
                 </h3>
               </div>
 
-              <div className="col-span-full row-start-2 mt-4 mb-3 flex flex-wrap items-center gap-4 text-[13px] text-neutral-700 @min-[488px]:mt-0 @2xl:mb-3.5">
-                {archived ? null : (
-                  <span className="flex items-center gap-1.5">
-                    <Icon name={visibility.icon} className="size-3.5" />
-                    {visibility.label}
-                  </span>
-                )}
-                <span>{TIERS[event.tier].name}</span>
-                {!archived && event.editLockLabel ? (
-                  <span className="flex items-center gap-1.5 border border-terracotta-400 bg-terracotta-200 px-2.5 py-1 text-xs font-semibold text-terracotta-600">
-                    <Icon name="clock" className="size-3.5" />
-                    {event.editLockLabel}
-                  </span>
-                ) : null}
-              </div>
+              {/*
+               * Stacked, the tags and the line below them are separate grid
+               * rows, whose margins do not collapse — so down there the row
+               * below owns the whole gap.
+               */}
+              {warnings.length > 0 && !archived ? (
+                <div className="col-span-full row-start-3 mt-4 mb-0 flex flex-wrap items-center gap-2 @min-[508px]:mt-0 @min-[508px]:mb-[18px]">
+                  {warnings.map((warning) => (
+                    <span
+                      key={warning.text}
+                      className="flex items-center gap-1.5 border border-terracotta-400 bg-terracotta-200 px-2.5 py-1 text-xs font-semibold text-terracotta-600"
+                    >
+                      <Icon name={warning.icon} className="size-3.5" />
+                      {warning.text}
+                    </span>
+                  ))}
+                </div>
+              ) : null}
+
+              {archived ? null : (
+                <p className="col-span-full row-start-4 mt-4 mb-[18px] flex items-center gap-1.5 text-[12.5px] text-neutral-700 @min-[508px]:mt-0">
+                  <Icon
+                    name="calendar"
+                    className="size-3.5 shrink-0 text-forest-500"
+                  />
+                  Reply form closes {replyCloses}
+                </p>
+              )}
 
               {/* Stacked fields butt together and share their edges. */}
               <div
-                className={`col-span-full row-start-3 max-w-[330px] flex-col [&>*+*]:border-t-0 ${
+                className={`relative z-10 col-span-full row-start-5 max-w-[330px] flex-col [&>*+*]:border-t-0 ${
                   archived ? 'hidden' : 'flex'
                 }`}
               >
@@ -179,10 +230,11 @@ export function EventCard({ event }: { event: DashboardEvent }) {
           </div>
 
           {/*
-           * Once it sits beside the details it starts at 330px and takes the
-           * smaller share of any leftover width, up to 480px.
+           * Once all three fit side by side the card runs on fixed shares —
+           * 1 for the preview, 2 for the details, 2 for the replies — so every
+           * card in the pile lines up with the next.
            */}
-          <div className="col-span-full row-start-4 mt-4 @min-[488px]:mt-0 @min-[488px]:w-full @min-[904px]:w-[386px] @min-[904px]:max-w-[520px] @min-[904px]:min-w-[386px] @min-[904px]:flex-[0.85_1_386px] @min-[904px]:border-l @min-[904px]:border-mustard-300 @min-[904px]:pl-[26px]">
+          <div className="col-span-full row-start-6 mt-4 @min-[508px]:mt-0 @min-[508px]:w-full @min-[904px]:col-span-1 @min-[904px]:col-start-3 @min-[904px]:row-start-1 @min-[904px]:w-auto @min-[904px]:self-center @min-[904px]:border-l @min-[904px]:border-mustard-300 @min-[904px]:pl-[26px]">
             <dl className="mb-3 grid grid-cols-2 gap-x-5 gap-y-[9px] @2xl:grid-cols-4 @2xl:gap-1.5">
               <Tally
                 label="Replied"
@@ -204,105 +256,65 @@ export function EventCard({ event }: { event: DashboardEvent }) {
               <span aria-hidden="true" className="declined" />
             </div>
 
-            <p className="mt-[7px] flex items-center gap-2 text-[11.5px] text-neutral-700">
-              <span className="flex-1">
-                {/* Roomy only while the column runs the full width of the card. */}
-                <span className="hidden @2xl:inline @min-[904px]:hidden">
-                  Attendee{' '}
-                </span>
-                safeguard {replied} of {cap} · {safeguardPercent}%
+            <p className="mt-[7px] text-[11.5px] text-neutral-700">
+              {/* Roomy only while the column runs the full width of the card. */}
+              <span className="hidden @2xl:inline @min-[904px]:hidden">
+                Attendee{' '}
               </span>
-              <button
-                type="button"
-                className="text-forest-500 underline underline-offset-2 transition-colors hover:text-forest-600"
-              >
-                Raise cap
-              </button>
+              safeguard {replied} of {cap} · {safeguardPercent}%
             </p>
 
             {event.note ? (
               event.note.tone === 'warning' ? (
-                <div className="mt-4 flex gap-[9px] border border-rust-400 bg-rust-200 px-[13px] py-[11px] text-[12.5px] leading-[1.45] text-rust-600">
+                <div className="mt-[18px] flex gap-[9px] border border-rust-400 bg-rust-200 px-[13px] py-[11px] text-[12.5px] leading-[1.45] text-rust-600">
                   <Icon name="alert" className="mt-px size-[15px] shrink-0" />
-                  <p>
-                    {event.note.text}
-                    {event.note.actionLabel ? (
-                      <>
-                        {' '}
-                        <button
-                          type="button"
-                          className="font-semibold underline underline-offset-2"
-                        >
-                          {event.note.actionLabel}
-                        </button>
-                      </>
-                    ) : null}
-                  </p>
+                  <p>{event.note.text}</p>
                 </div>
               ) : (
-                <p className="mt-4 border-l-[3px] border-neutral-600 py-0.5 pl-3 text-[12.5px] text-neutral-700">
+                <p className="mt-[18px] border-l-[3px] border-neutral-600 py-0.5 pl-3 text-[12.5px] text-neutral-700">
                   {event.note.text}
                 </p>
               )
             ) : null}
+
+            {/*
+             * Who is coming, under the count of how many. These sit last so the
+             * numbers and anything wrong come first.
+             */}
+            {event.attendeeNotes?.length ? (
+              <ul className="mt-[18px] flex flex-col gap-1.5 text-[12.5px] leading-[1.45] text-neutral-700">
+                {event.attendeeNotes.map((note) => (
+                  <li key={note} className="flex gap-2">
+                    <span
+                      aria-hidden="true"
+                      className="mt-[7px] size-1 shrink-0 rounded-full bg-mustard-400"
+                    />
+                    {note}
+                  </li>
+                ))}
+              </ul>
+            ) : null}
           </div>
         </div>
-
-        <div
-          className={`mx-4 grid-cols-6 gap-2.5 border-t border-mustard-300 pt-[18px] pb-[22px] @2xl:mx-6 @2xl:gap-3.5 @xl:grid-cols-5 ${
-            archived ? 'hidden' : 'grid'
-          }`}
-        >
-          {/* Editing closes with the event, but the record stays readable. */}
-          {event.status === 'past' ? (
-            <button
-              type="button"
-              disabled
-              title="This event has already happened"
-              className={`${ACTION_DISABLED} ${ACTION_WIDE}`}
-            >
-              <Icon name="pencil" className="size-[15px]" />
-              Edit
-            </button>
-          ) : (
-            <Link
-              href={`/dashboard/events/${event.id}`}
-              className={`${ACTION} ${ACTION_WIDE}`}
-            >
-              <Icon name="pencil" className="size-[15px]" />
-              Edit
-            </Link>
-          )}
-          <button type="button" className={`${ACTION} ${ACTION_WIDE}`}>
-            <Icon name="eye" className="size-[15px]" />
-            View
-          </button>
-          <button type="button" className={`${ACTION} ${ACTION_NARROW}`}>
-            <Icon name="printer" className="size-[15px]" />
-            Print
-          </button>
-          <button type="button" className={`${ACTION} ${ACTION_NARROW}`}>
-            <Icon name="guests" className="size-[15px]" />
-            Guests
-          </button>
-          {event.seatingAvailable ? (
-            <button type="button" className={`${ACTION} ${ACTION_NARROW}`}>
-              <Icon name="seating" className="size-[15px]" />
-              Seating
-            </button>
-          ) : (
-            <button
-              type="button"
-              disabled
-              title="Seating charts come with paid invitations"
-              className={`${ACTION_DISABLED} ${ACTION_NARROW}`}
-            >
-              <Icon name="seating" className="size-[15px]" />
-              Seating
-            </button>
-          )}
-        </div>
       </div>
+
+      {/*
+       * The card's one destination, and the only thing on it that is clickable
+       * — the arrow answers this bar alone, not the card around it. It leads to
+       * the event's row on the events page, where all six of its actions are,
+       * so it promises the whole set rather than any one of them.
+       */}
+      <Link
+        href={`/dashboard/events#event-${event.id}`}
+        className="group/bar flex items-center justify-center gap-2 border-t border-mustard-300 px-4 py-3 text-[11px] font-semibold tracking-[0.16em] text-mustard-600 bg-mustard-200/70 uppercase transition-colors hover:bg-mustard-300/50"
+      >
+        Manage this event
+        <span className="sr-only">: {event.title}</span>
+        <Icon
+          name="arrowRight"
+          className="size-3.5 transition-transform group-hover/bar:translate-x-0.5"
+        />
+      </Link>
     </article>
   )
 }

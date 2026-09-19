@@ -1,7 +1,12 @@
 'use client'
 
-import { useEffect, useRef, useState, type ReactNode } from 'react'
-import { usePathname } from 'next/navigation'
+import {
+  useEffect,
+  useRef,
+  useState,
+  type MouseEvent,
+  type ReactNode,
+} from 'react'
 import { TopBar } from '@/components/dashboard/TopBar'
 
 interface DashboardShellProps {
@@ -13,12 +18,6 @@ interface DashboardShellProps {
 }
 
 type Drawer = 'nav' | 'notices'
-
-interface DrawerState {
-  open: Drawer | null
-  /** Route the drawer was opened on; a different route means it is stale. */
-  path: string
-}
 
 /** Matches the `nav` and `rail` breakpoints where each column docks. */
 const NAV_DOCKED = '(min-width: 820px)'
@@ -37,36 +36,40 @@ export function DashboardShell({
   notices,
   children,
 }: DashboardShellProps) {
-  const pathname = usePathname()
-  const [drawer, setDrawer] = useState<DrawerState>({
-    open: null,
-    path: pathname,
-  })
+  const [open, setOpen] = useState<Drawer | null>(null)
   const navPanelRef = useRef<HTMLDivElement>(null)
   const noticesPanelRef = useRef<HTMLDivElement>(null)
 
-  // Deriving from the pathname rather than resetting it in an effect means
-  // picking a destination in a drawer leaves the drawer behind for free.
-  const current = drawer.path === pathname ? drawer.open : null
-  const navOpen = current === 'nav'
-  const noticesOpen = current === 'notices'
+  const navOpen = open === 'nav'
+  const noticesOpen = open === 'notices'
 
   function toggle(target: Drawer) {
-    setDrawer({ open: current === target ? null : target, path: pathname })
+    setOpen((current) => (current === target ? null : target))
   }
 
   function close() {
-    setDrawer({ open: null, path: pathname })
+    setOpen(null)
+  }
+
+  /*
+   * The only way out of an open drawer is a link inside it, so closing on the
+   * way through is all the route change needs. Holding the route the drawer
+   * was opened on would be the other way round, and it kept the drawer coming
+   * back: the record outlived the visit, so returning to that route opened a
+   * menu the host had never asked for.
+   */
+  function closeOnLink(event: MouseEvent<HTMLElement>) {
+    if ((event.target as HTMLElement).closest('a')) close()
   }
 
   useEffect(() => {
     if (!navOpen && !noticesOpen) return
     const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') setDrawer({ open: null, path: pathname })
+      if (event.key === 'Escape') setOpen(null)
     }
     window.addEventListener('keydown', onKeyDown)
     return () => window.removeEventListener('keydown', onKeyDown)
-  }, [navOpen, noticesOpen, pathname])
+  }, [navOpen, noticesOpen])
 
   // Each drawer has a static column above its breakpoint; close it on the way
   // up so the app never holds an open drawer nobody can see.
@@ -74,14 +77,10 @@ export function DashboardShell({
     const navBreakpoint = window.matchMedia(NAV_DOCKED)
     const noticesBreakpoint = window.matchMedia(RAIL_DOCKED)
     const closeStale = () => {
-      setDrawer((state) => {
-        if (state.open === 'nav' && navBreakpoint.matches) {
-          return { open: null, path: state.path }
-        }
-        if (state.open === 'notices' && noticesBreakpoint.matches) {
-          return { open: null, path: state.path }
-        }
-        return state
+      setOpen((current) => {
+        if (current === 'nav' && navBreakpoint.matches) return null
+        if (current === 'notices' && noticesBreakpoint.matches) return null
+        return current
       })
     }
 
@@ -145,6 +144,7 @@ export function DashboardShell({
         aria-modal="true"
         aria-label="Dashboard menu"
         inert={!navOpen}
+        onClick={closeOnLink}
         className={`${PANEL} left-0 w-side max-w-[88vw] nav:hidden ${
           navOpen ? 'translate-x-0' : '-translate-x-full'
         }`}
@@ -159,6 +159,7 @@ export function DashboardShell({
         aria-modal="true"
         aria-label="Activity"
         inert={!noticesOpen}
+        onClick={closeOnLink}
         className={`${PANEL} right-0 w-rail max-w-[88vw] overflow-y-auto px-[18px] py-5 rail:hidden ${
           noticesOpen ? 'translate-x-0' : 'translate-x-full'
         }`}

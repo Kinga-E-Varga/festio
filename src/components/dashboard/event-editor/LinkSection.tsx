@@ -65,7 +65,7 @@ export function LinkSection({ event, form }: SectionProps) {
   const { values, set, derived, locked } = form;
 
   return (
-    <EditorSection title="Link and who can open it">
+    <EditorSection title="Link and access">
       {/* The address and the finished link sit side by side while there is room. */}
       <div className={FIELD_GRID}>
         <Field

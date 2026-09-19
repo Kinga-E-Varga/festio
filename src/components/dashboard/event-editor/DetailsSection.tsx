@@ -51,7 +51,7 @@ export function DetailsSection({ event, form }: SectionProps) {
   const replied = event.rsvp.replied;
 
   return (
-    <EditorSection title="Details">
+    <EditorSection title="Details" first>
       <div className={FIELD_GRID}>
         <Field
           htmlFor="event-name"

@@ -39,18 +39,19 @@ export function EventGroups({
   }
 
   return (
-    <div className="flex flex-col gap-[34px]">
+    <div className="flex flex-col gap-[60px]">
       {groups.map((group) => (
         <section key={group.status}>
           <h3 className="mb-2.5 text-[10px] font-semibold tracking-[0.18em] text-mustard-500 uppercase">
             {group.caption}
           </h3>
           {/*
-           * The rows lay themselves out against this box rather than the
-           * viewport — the nav and the activity rail both take width away
-           * from it, so the two never agree.
+           * Each event is its own card, as on the dashboard. The cards lay
+           * themselves out against their own width rather than the viewport —
+           * the nav and the activity rail both take width away from it, so the
+           * two never agree.
            */}
-          <div className="@container border border-mustard-300 bg-mustard-100">
+          <div className="flex flex-col gap-[28px]">
             {orderEvents(
               events.filter((event) => event.status === group.status),
               group.status,

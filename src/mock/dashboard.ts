@@ -22,14 +22,17 @@ export const HOST = {
   greeting: "Bună, Maria",
   initials: "MI",
   todayLabel: "Friday, 4 September 2026",
-  lede: "Your next invitation locks for editing tomorrow — 24 hours before the event.",
 };
+
+/** What an event *is*, said once, where the events themselves are managed. */
+export const EVENTS_LEDE =
+  "Each event is one record and one purchase. Every event has an invitation with a response form, so you can track and manage your guests.";
 
 export const NAV_SECTIONS: NavSection[] = [
   {
     label: "Hosting",
     items: [
-      { label: "Dashboard", href: "/dashboard", icon: "home" },
+      { label: "Home", href: "/dashboard", icon: "home" },
       {
         label: "Events",
         href: "/dashboard/events",
@@ -37,22 +40,15 @@ export const NAV_SECTIONS: NavSection[] = [
         badge: "4",
       },
       {
-        label: "Guest lists",
-        href: "/dashboard/guest-lists",
-        icon: "guests",
-        badge: "148",
-      },
-      {
-        label: "Seating charts",
-        href: "/dashboard/seating",
-        icon: "seating",
+        label: "Invitations",
+        href: "/dashboard/invitations",
+        icon: "envelope",
       },
     ],
   },
   {
     label: "Studio",
     items: [
-      { label: "Invitations", href: "/dashboard/invitations", icon: "envelope" },
       { label: "Print & downloads", href: "/dashboard/print", icon: "printer" },
       { label: "Templates", href: "/dashboard/templates", icon: "templates" },
     ],
@@ -130,7 +126,6 @@ export const EVENTS: DashboardEvent[] = [
     invitationType: 2,
     templateId: "wolf-dance",
     paid: true,
-    editLockLabel: "Locks in 30 h",
     locksInLabel: "30 hours",
     slug: "maria-andrei",
     digits: "1657",
@@ -142,7 +137,7 @@ export const EVENTS: DashboardEvent[] = [
       declined: 14,
       pending: 28,
     },
-    safeguard: { cap: 140 },
+    safeguard: { cap: 110 },
     unmatched: 5,
     preloaded: true,
     preloadedCount: 124,
@@ -151,6 +146,11 @@ export const EVENTS: DashboardEvent[] = [
       text: "5 names didn't match your pre-loaded list.",
       actionLabel: "Review names",
     },
+    attendeeNotes: [
+      "4 children and 1 baby among the attendees",
+      "7 with vegetarian or vegan dietary needs",
+      "2 need step-free access",
+    ],
     preview: previewCununie,
     previewAlt: "Invitation preview for Maria & Andrei",
     status: "active",
@@ -186,10 +186,10 @@ export const EVENTS: DashboardEvent[] = [
     unmatched: 0,
     preloaded: true,
     preloadedCount: 70,
-    note: {
-      tone: "neutral",
-      text: "6 children and 2 babies among the attendees.",
-    },
+    attendeeNotes: [
+      "6 children and 2 babies among the attendees",
+      "3 with gluten-free dietary needs",
+    ],
     preview: previewBotez,
     previewAlt: "Invitation preview for Botez Sofia",
     status: "active",
@@ -364,8 +364,8 @@ export const ATTENTION_NOTICES: AttentionNotice[] = [
   },
   {
     id: "safeguard",
-    title: "Attendee safeguard at 88%",
-    body: "96 of your 140 cap. Raise it any time — it's a technical guard, not a guest limit.",
+    title: "Attendee safeguard at 87%",
+    body: "96 of your 110 cap. Raise it any time — it's a technical guard, not a guest limit.",
     actionLabel: "Raise cap",
     tone: "safeguard",
   },
