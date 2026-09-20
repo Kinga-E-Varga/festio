@@ -302,10 +302,11 @@ export function EventCard({ event }: { event: DashboardEvent }) {
        * The card's one destination, and the only thing on it that is clickable
        * — the arrow answers this bar alone, not the card around it. It leads to
        * the event's row on the events page, where all six of its actions are,
-       * so it promises the whole set rather than any one of them.
+       * so it promises the whole set rather than any one of them. The page
+       * arrives narrowed to that one event.
        */}
       <Link
-        href={`/dashboard/events#event-${event.id}`}
+        href={`/dashboard/events?event=${event.id}#focus`}
         className="group/bar flex items-center justify-center gap-2 border-t border-mustard-300 px-4 py-3 text-[11px] font-semibold tracking-[0.16em] text-mustard-600 bg-mustard-200/70 uppercase transition-colors hover:bg-mustard-300/50"
       >
         Manage this event

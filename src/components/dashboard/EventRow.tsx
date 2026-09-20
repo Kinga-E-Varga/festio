@@ -9,6 +9,7 @@ import {
   deletionDate,
   formatEventDate,
   invitationLink,
+  invitationPath,
   safeguardBarVars,
 } from "@/lib/event";
 import { TIERS } from "@/mock/dashboard";
@@ -288,32 +289,58 @@ export function EventRow({ event }: { event: DashboardEvent }) {
                 </Link>
               )}
 
-              {/* The design lives behind its own route, which needs a template. */}
-              {past || !event.templateId ? (
+              {/*
+               * The invitation is managed on its own page, so this lands on
+               * that event's card there rather than jumping straight into an
+               * editor — what can be done to it is stated on the card. The
+               * page arrives narrowed to that one invitation.
+               */}
+              {past ? (
                 <button
                   type="button"
                   disabled
-                  title={
-                    past
-                      ? "This event has already happened"
-                      : "Pick a design for this invitation first"
-                  }
+                  title="This event has already happened"
                   className={ACTION}
                 >
                   <Icon name="layers" className="size-[15px]" />
                   Edit invitation
                 </button>
               ) : (
-                <Link href={`/invitations/${event.id}`} className={ACTION}>
+                <Link
+                  href={`/dashboard/invitations?event=${event.id}#focus`}
+                  className={ACTION}
+                >
                   <Icon name="layers" className="size-[15px]" />
                   Edit invitation
                 </Link>
               )}
 
-              <button type="button" className={ACTION}>
-                <Icon name="eye" className="size-[15px]" />
-                View as guest
-              </button>
+              {/*
+               * The guest page itself, in a tab of its own so the host keeps
+               * the dashboard behind it. It is drawn by the template, so an
+               * invitation without one has nothing to show yet.
+               */}
+              {event.templateId ? (
+                <a
+                  href={invitationPath(event)}
+                  target="_blank"
+                  rel="noreferrer"
+                  className={ACTION}
+                >
+                  <Icon name="eye" className="size-[15px]" />
+                  View as guest
+                </a>
+              ) : (
+                <button
+                  type="button"
+                  disabled
+                  title="Pick a design for this invitation first"
+                  className={ACTION}
+                >
+                  <Icon name="eye" className="size-[15px]" />
+                  View as guest
+                </button>
+              )}
               <button type="button" className={ACTION}>
                 <Icon name="printer" className="size-[15px]" />
                 Print

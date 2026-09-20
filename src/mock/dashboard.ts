@@ -28,6 +28,10 @@ export const HOST = {
 export const EVENTS_LEDE =
   "Each event is one record and one purchase. Every event has an invitation with a response form, so you can track and manage your guests.";
 
+/** What an invitation *is*, said once, where the invitations are managed. */
+export const INVITATIONS_LEDE =
+  "The guest-facing page of each event — its wording, its design and its printable card. To change the event itself, go to Events.";
+
 export const NAV_SECTIONS: NavSection[] = [
   {
     label: "Hosting",

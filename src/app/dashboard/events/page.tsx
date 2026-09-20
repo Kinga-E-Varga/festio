@@ -1,25 +1,38 @@
-import type { Metadata } from "next";
-import { CentreOnHash } from "@/components/dashboard/CentreOnHash";
-import { EventGroups } from "@/components/dashboard/EventGroups";
-import { EventTabs, type EventTab } from "@/components/dashboard/EventTabs";
-import { Icon } from "@/components/icons";
-import { EVENTS, EVENTS_LEDE, HOST } from "@/mock/dashboard";
-import type { EventStatus } from "@/types/dashboard";
+import type { Metadata } from 'next'
+import { CentreOnHash } from '@/components/dashboard/CentreOnHash'
+import { EventGroups } from '@/components/dashboard/EventGroups'
+import { EventRow } from '@/components/dashboard/EventRow'
+import { EventTabs, type EventTab } from '@/components/dashboard/EventTabs'
+import { FocusView } from '@/components/dashboard/FocusView'
+import { Icon } from '@/components/icons'
+import { EVENTS, EVENTS_LEDE, findEvent, HOST } from '@/mock/dashboard'
+import type { EventStatus } from '@/types/dashboard'
 
 export const metadata: Metadata = {
-  title: "Events · Festio",
-};
+  title: 'Events · Festio',
+}
 
-const ALL: EventStatus[] = ["active", "draft", "past"];
+const ALL: EventStatus[] = ['active', 'draft', 'past']
 
-export default function EventsPage() {
+export default async function EventsPage({
+  searchParams,
+}: PageProps<'/dashboard/events'>) {
+  /*
+   * `?event=` is how another page hands one event over — the dashboard's own
+   * cards do, from Manage this event. An id that matches nothing is simply
+   * the whole list, which is what the address without the query already is.
+   */
+  const { event: requested } = await searchParams
+  const focused =
+    typeof requested === 'string' ? findEvent(requested) : undefined
+
   const count = (status: EventStatus) =>
-    EVENTS.filter((event) => event.status === status).length;
+    EVENTS.filter((event) => event.status === status).length
 
   const tabs: EventTab[] = [
     {
-      id: "all",
-      label: "All",
+      id: 'all',
+      label: 'All',
       count: EVENTS.length,
       panel: (
         <EventGroups
@@ -30,42 +43,42 @@ export default function EventsPage() {
       ),
     },
     {
-      id: "active",
-      label: "Active",
-      count: count("active"),
+      id: 'active',
+      label: 'Active',
+      count: count('active'),
       panel: (
         <EventGroups
           events={EVENTS}
-          statuses={["active"]}
+          statuses={['active']}
           emptyMessage="Nothing live yet. Pick a template to start your first invitation."
         />
       ),
     },
     {
-      id: "drafts",
-      label: "Drafts",
-      count: count("draft"),
+      id: 'drafts',
+      label: 'Drafts',
+      count: count('draft'),
       panel: (
         <EventGroups
           events={EVENTS}
-          statuses={["draft"]}
+          statuses={['draft']}
           emptyMessage="No drafts waiting. Saved-but-unpaid invitations land here."
         />
       ),
     },
     {
-      id: "past",
-      label: "Past",
-      count: count("past"),
+      id: 'past',
+      label: 'Past',
+      count: count('past'),
       panel: (
         <EventGroups
           events={EVENTS}
-          statuses={["past"]}
+          statuses={['past']}
           emptyMessage="No past events yet. Invitations move here the day after the event."
         />
       ),
     },
-  ];
+  ]
 
   return (
     <div className="@container">
@@ -94,11 +107,24 @@ export default function EventsPage() {
         </button>
       </header>
 
-      <p className="mt-3.5 mb-[26px] text-neutral-700">
-        {EVENTS_LEDE}
-      </p>
+      <p className="mt-3.5 mb-[26px] text-neutral-700">{EVENTS_LEDE}</p>
 
-      <EventTabs tabs={tabs} />
+      <EventTabs
+        tabs={tabs}
+        // Arriving on one event, no pile is the one being looked at.
+        initialId={focused ? null : undefined}
+        fallback={
+          focused ? (
+            <FocusView
+              note="Showing the selected event only."
+              href="/dashboard/events"
+              linkLabel="Show all"
+            >
+              <EventRow event={focused} />
+            </FocusView>
+          ) : null
+        }
+      />
     </div>
-  );
+  )
 }

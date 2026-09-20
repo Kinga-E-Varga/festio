@@ -10,12 +10,53 @@ export interface EventTab {
   panel: ReactNode
 }
 
-export function EventTabs({ tabs }: { tabs: EventTab[] }) {
-  const [activeId, setActiveId] = useState(tabs[0]?.id)
+export function EventTabs({
+  tabs,
+  label = 'Event status',
+  initialId = tabs[0]?.id ?? null,
+  fallback,
+}: {
+  tabs: EventTab[]
+  /** What the tabs sort, for the tablist's own accessible name. */
+  label?: string
+  /**
+   * Which tab opens selected. `null` opens with none of them selected, for a
+   * page that arrived showing one record picked out elsewhere.
+   */
+  initialId?: string | null
+  /** Shown in place of the panels while no tab is selected. */
+  fallback?: ReactNode
+}) {
+  const [activeId, setActiveId] = useState<string | null>(initialId)
+  const [arrivedOn, setArrivedOn] = useState<string | null>(initialId)
+
+  /*
+   * Arriving at the page again — following its own way out of a narrowed
+   * view, say — hands down a new starting tab. The component is not remounted
+   * by that navigation, so the tab it was left on has to give way here.
+   */
+  if (initialId !== arrivedOn) {
+    setArrivedOn(initialId)
+    setActiveId(initialId)
+  }
+
+  /*
+   * Choosing a tab leaves whatever picked one record out, so the query that
+   * narrowed the page goes with it and a reload lands on the list. The
+   * address is rewritten in place rather than navigated to: a navigation
+   * would hand down a starting tab of its own and overrule the choice just
+   * made here.
+   */
+  function select(id: string) {
+    if (activeId === null && window.location.search) {
+      window.history.replaceState(null, '', window.location.pathname)
+    }
+    setActiveId(id)
+  }
 
   function selectByOffset(index: number, offset: number) {
     const next = tabs[(index + offset + tabs.length) % tabs.length]
-    setActiveId(next.id)
+    select(next.id)
     document.getElementById(`tab-${next.id}`)?.focus()
   }
 
@@ -24,7 +65,7 @@ export function EventTabs({ tabs }: { tabs: EventTab[] }) {
       <div className="border-b border-forest-500">
         <div
           role="tablist"
-          aria-label="Event status"
+          aria-label={label}
           className="flex flex-wrap items-center gap-0.5 sm:grid sm:w-max sm:grid-flow-col sm:auto-cols-fr sm:gap-1"
         >
           {tabs.map((tab, index) => {
@@ -37,8 +78,12 @@ export function EventTabs({ tabs }: { tabs: EventTab[] }) {
                 role="tab"
                 aria-selected={isActive}
                 aria-controls={`panel-${tab.id}`}
-                tabIndex={isActive ? 0 : -1}
-                onClick={() => setActiveId(tab.id)}
+                // With nothing selected the list still needs one way in, so
+                // the first tab holds the tab stop until a choice is made.
+                tabIndex={
+                  isActive || (activeId === null && index === 0) ? 0 : -1
+                }
+                onClick={() => select(tab.id)}
                 onKeyDown={(event) => {
                   if (event.key === 'ArrowRight') {
                     event.preventDefault()
@@ -74,18 +119,22 @@ export function EventTabs({ tabs }: { tabs: EventTab[] }) {
         </div>
       </div>
 
-      {tabs.map((tab) => (
-        <div
-          key={tab.id}
-          id={`panel-${tab.id}`}
-          role="tabpanel"
-          aria-labelledby={`tab-${tab.id}`}
-          hidden={tab.id !== activeId}
-          className="pt-5"
-        >
-          {tab.panel}
-        </div>
-      ))}
+      {activeId === null ? (
+        <div className="pt-5">{fallback}</div>
+      ) : (
+        tabs.map((tab) => (
+          <div
+            key={tab.id}
+            id={`panel-${tab.id}`}
+            role="tabpanel"
+            aria-labelledby={`tab-${tab.id}`}
+            hidden={tab.id !== activeId}
+            className="pt-5"
+          >
+            {tab.panel}
+          </div>
+        ))
+      )}
     </div>
   )
 }

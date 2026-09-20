@@ -20,6 +20,7 @@ export type IconName =
   | "link"
   | "lock"
   | "copy"
+  | "download"
   | "clock"
   | "alert"
   | "globe"
