@@ -10,6 +10,14 @@
   --breakpoint-invite: 1000px;
   --breakpoint-rail: 1400px;
 
+  /*
+   * The reply surface's width, edge included — the card's slot is whatever
+   * is left of the invitation. Lives here rather than in a class string so
+   * the panel that claims it and the host controls that centre themselves
+   * over the remainder read the same number.
+   */
+  --spacing-invite-panel: clamp(400px, 33.333vw, 700px);
+
   --spacing-side: 242px;
   --spacing-rail: 368px;
   --spacing-topbar: 64px;
@@ -433,6 +441,10 @@
 
   .elevation-light {
     box-shadow: 0px 5px 20px #2f281fa6;
+  }
+
+  .elevation-btn {
+    box-shadow: 0px 2px 10px #2f281f80;
   }
 }
 

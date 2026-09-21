@@ -12,7 +12,7 @@ import {
   formatInvitationDate,
 } from '@/lib/invitation'
 import { XIcon } from './icons'
-import { HINT, INPUT, LABEL, OUTLINE, PANEL, SOLID, TITLE } from './styles'
+import { HINT, INPUT, LABEL, PANEL, SELECT, SOLID, TITLE } from './styles'
 
 /**
  * The two halves of the editor, in the order the host meets them: the card
@@ -79,15 +79,8 @@ export function EditPanel({
 
       <div className="flex flex-col gap-3">
         {/* View is the same exit as the header's X — back to the invitation. */}
-        <div className="flex gap-3 mt-1">
-          <button type="button" onClick={onSave} className={`${SOLID} flex-1`}>
-            Save
-          </button>
-          <button
-            type="button"
-            onClick={onClose}
-            className={`${OUTLINE} flex-1`}
-          >
+        <div className="flex gap-3">
+          <button type="button" onClick={onClose} className={`${SOLID} flex-1`}>
             View
           </button>
         </div>
@@ -149,7 +142,7 @@ function Field({
   onChange: (id: string, value: string) => void
 }) {
   return (
-    <div className="flex flex-col gap-1 mb-6">
+    <div className="flex flex-col mb-6">
       <label htmlFor={`field-${field.id}`} className={LABEL}>
         {field.label}
       </label>
@@ -165,7 +158,7 @@ function Field({
             id={`field-${field.id}`}
             value={value || DEFAULT_DATE_FORMAT}
             onChange={(control) => onChange(field.id, control.target.value)}
-            className={INPUT}
+            className={SELECT}
           >
             {DATE_FORMATS.map((option) => (
               <option key={option.id} value={option.id}>

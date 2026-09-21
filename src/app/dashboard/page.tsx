@@ -37,7 +37,7 @@ export default function DashboardPage() {
           className="flex shrink-0 items-center gap-2 rounded-md border border-forest-500 bg-forest-500 px-4 py-2.5 font-medium text-neutral-50 transition-colors hover:border-forest-600 hover:bg-forest-600"
         >
           <Icon name="plus" className="size-[18px]" strokeWidth={2} />
-          Add event
+          New event
         </button>
       </header>
 

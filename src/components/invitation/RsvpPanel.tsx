@@ -18,7 +18,7 @@ import { useRsvpForm, type RsvpFormState } from './useRsvpForm'
  */
 
 const TITLE =
-  'font-[family-name:var(--font-primary)] text-[24px] text-center text-balance leading-[1.5] text-[color:var(--c2)] mb-8 '
+  'font-[family-name:var(--font-primary)] text-[24px] text-center text-balance leading-[1.5] text-[color:var(--c3)] mb-8 '
 
 const MESSAGE = 'We would love to know if you can join us.'
 
@@ -127,7 +127,7 @@ export function RsvpPanel({
                 <button
                   type="button"
                   onClick={() => setOpen(true)}
-                  className={`${open ? 'opacity-0' : 'font-[family-name:var(--font-primary)] font-[400] text-[16px] tracking-[0.06em] text-[var(--c1)] bg-[var(--c3)] border-1 border-[var(--c3)] text-center py-2 px-6 rounded-xs hover:bg-[var(--c1)] hover:text-[var(--c3)] transition-all'}`}
+                  className={`${open ? 'opacity-0' : 'font-[family-name:var(--font-primary)] text-[16px] tracking-[0.06em] text-[color:var(--c1)] bg-[var(--c2)] border-1 border-[var(--c2)] py-2.5 px-8 rounded-xs hover:bg-[var(--c3)] hover:border-[var(--c3)] transition-all'}`}
                 >
                   Respond Now
                 </button>

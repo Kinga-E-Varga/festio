@@ -92,7 +92,7 @@ export function RsvpForm({ form, onSubmit }: RsvpFormProps) {
           maxLength={NOTE_LIMIT}
           placeholder="Optional"
           onChange={(control) => set.note(control.target.value)}
-          className="w-full border-1 border-[var(--c3)] bg-transparent px-3 py-[6px] text-[16px] text-[color:var(--c2)] font-[family-name:var(--font-primary)] transition-colors placeholder:text-[color:var(--c4)] focus:border-[var(--c2)] focus:outline-none resize-none"
+          className="w-full border-1 border-[var(--c2)] bg-transparent px-3 py-[6px] text-[16px] text-[color:var(--c3)] font-[family-name:var(--font-primary)] transition-colors placeholder:text-[color:var(--c4)] focus:border-[var(--c3)] focus:outline-none resize-none"
         />
         <p className={HINT}>{derived.noteLeft} characters left</p>
       </div>

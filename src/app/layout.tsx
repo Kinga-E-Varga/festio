@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Kantumruy_Pro, Libre_Baskerville } from "next/font/google";
+import { HistoryTracker } from "@/components/HistoryTracker";
 import "./globals.css";
 
 const kantumruyPro = Kantumruy_Pro({
@@ -23,7 +24,10 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       lang="en"
       className={`${kantumruyPro.variable} ${libreBaskerville.variable} h-full antialiased`}
     >
-      <body className="flex min-h-full flex-col text-sm">{children}</body>
+      <body className="flex min-h-full flex-col text-sm">
+        <HistoryTracker />
+        {children}
+      </body>
     </html>
   );
 }

@@ -22,7 +22,7 @@ export const template: InvitationTemplate = {
     color1: '#473130',
     color2: '#adbd8f',
     color3: '#fefce5',
-    color4: '#adbd8f67',
+    color4: '#fefce569',
     color5: '#718355ff',
     color6: '#d88e5fff',
     color7: '#9cb17d',
