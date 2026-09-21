@@ -10,11 +10,7 @@ Next.js/React, TypeScript, Tailwind. SSR pages with dynamic components. Firebase
 
 Host-uploaded images go to **Firebase Storage** (same `europe-west` region); Firestore documents hold only the resulting path/URL, never image bytes. Uploaded images are covered by the auto-deletion rule under GDPR.
 
-For forms use React Form Hook.
-
-## Data layer — not yet settled
-
-No canonical Firestore schema exists. Before adding collections, fields, or changing document shape, read the existing code and ask rather than assume. The answer-storage rules below are decided and hold regardless of final layout.
+For forms use React Hook Form.
 
 ## Tiers
 
@@ -68,10 +64,12 @@ Lists active events with edit / print / guest list actions.
 
 ## Print
 
-Every event has a downloadable printable invitation. **PNG export in v1.** Recommended print dimensions shown next to the preview.
+Every event has a downloadable printable invitation. **PNG export in v1.**
 
-- **Type 1:** printable = the same artifact as the online invitation. Host sees a non-editable preview, an edit button (routes to the online editor), print specs, and "Save as PNG".
-- **Type 2:** separate printable layout with a dedicated print editor. **Fixed slots** — the template defines the layout, the host only chooses what fills each slot. No free-form layout editing.
+- **Type 1:** printable = the same artifact as the online invitation. No separate layout.
+- **Type 2:** separate printable layout, fixed slots, no free-form editing.
+
+Full spec in `context/features/print.md`. Not built yet.
 
 ## Lifecycle
 
@@ -83,7 +81,7 @@ Every event has a downloadable printable invitation. **PNG export in v1.** Recom
 
 ## Seating chart (paid)
 
-Host sets table count and seats per table, plus per-guest grouping criteria (can group / do not group / must stay together). Platform auto-generates an arrangement; host can then adjust manually and export the final chart.
+Tier 2 and 3 only. Full spec in `context/features/seating-chart.md`. Not built yet.
 
 ## Security
 
@@ -116,21 +114,9 @@ Desktop-first, fully mobile responsive. Nav collapses to a drawer on mobile. Smo
 Base app fonts — for the app's UI use the combination of Kantumruy Pro and Libre Baskerville google fonts fonts.
 **Invitations have their own independent fonts and are not bound by this.**
 
-Base app palette, only use these. **Invitations have their own independent palettes and are not bound by this.**
-
-```
-Neutral: #FAF7F3 #F5F0EB, #ECE5DD, #DCD3C7, #CABDAE, #AE9F8C, #8D7D6A, #6B5E4E, #4C4236, #2F281F, #17130E
-
-Steel teal: #F3F7F9, #EDF6F8, #DAECF0, #ADCCD4, #7CADBA, #478797, #275D6A
-
-Terracotta: #FDF2EB, #FCEEE4, #F6DBC7, #EEC09E, #E4A372, #C8711F, #924C00
-
-Mustard: #F9F5EA, #F8F2E0, #F0E6C9, #DBCDA1, #C6B379, #AF974B, #7C682A
-
-Forest green: #F2F7F0, #EAF1E7, #D6E2D2, #AABAA4, #7E9277, #51644A, #2F402A
-
-Rust red: #FCF0F0, #FBEAE9, #F6DBDA, #E1AEAD, #CD8080, #B75759, #7B2C30
-```
+Base app palette — the `@theme` tokens in `src/app/globals.css`: neutral, steel teal,
+terracotta, mustard, forest green, rust red. Use token names (`bg-steel-500`), never raw hex.
+**Invitations have their own palettes and are not bound by this.**
 
 ## Out of scope for v1
 
@@ -138,7 +124,7 @@ Conditional RSVP logic, PDF export, add-to-calendar / guest reminders, photo gal
 
 ## Unsettled — ask, don't assume
 
-- Firestore schema and document shapes (see above).
+- **Firestore schema and document shapes.** No canonical schema exists. Before adding collections, fields, or changing document shape, read the existing code and ask rather than assume. The answer-storage rules under RSVP are decided and hold regardless of final layout.
 - Which slots exist in the Type 2 print layout and what content can fill each.
 - Which field input types templates need (text, long text, date, time, image, ...).
 - How a guest holding only a printed invitation reaches the online RSVP form (printed URL / QR / host shares separately).
