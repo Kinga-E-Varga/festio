@@ -15,6 +15,8 @@
  * it is not ours.
  */
 
+import { useRouter } from 'next/navigation'
+
 const KEY = 'festioDepth'
 
 let depth = 0
@@ -52,4 +54,18 @@ export function trackHistoryEntry() {
  */
 export function hasFestioHistory() {
   return depth > 0
+}
+
+/**
+ * Back to wherever in Festio the host came from — the invitations list, the
+ * event editor, the template gallery, or the print page — which only history
+ * knows. When the entry behind this one is not ours, stepping into it would
+ * drop the host off the site, so the landing page stands in instead.
+ */
+export function useLeaveFestio() {
+  const router = useRouter()
+  return () => {
+    if (hasFestioHistory()) router.back()
+    else router.push('/')
+  }
 }

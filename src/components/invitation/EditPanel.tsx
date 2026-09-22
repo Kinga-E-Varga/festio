@@ -11,8 +11,8 @@ import {
   EVENT_DATE,
   formatInvitationDate,
 } from '@/lib/invitation'
-import { XIcon } from './icons'
-import { HINT, INPUT, LABEL, PANEL, SELECT, SOLID, TITLE } from './styles'
+import { PanelViewButton, SidePanel } from './SidePanel'
+import { HINT, INPUT, LABEL, SELECT, TITLE } from './styles'
 
 /**
  * The two halves of the editor, in the order the host meets them: the card
@@ -85,52 +85,14 @@ export function EditPanel({
         </section>
       ))}
 
-      {/*
-       * View is the same exit as the header's X — back to the invitation.
-       * Only below the breakpoint: above it the panel sits beside the card
-       * and the host bar's Edit segment is the way out.
-       */}
-      <div className="flex gap-3 invite:hidden">
-        <button
-          type="button"
-          onClick={onClose}
-          className={`${SOLID} flex-1 mb-6`}
-        >
-          View
-        </button>
-      </div>
+      <PanelViewButton onClose={onClose} />
     </div>
   )
 
   return (
-    // A glow in the panel's own colour, so its edge doesn't cut hard
-    // against the card beside it.
-    <aside
-      className={`edit ${PANEL} elevation-panel`}
-      data-open={open}
-      inert={!open}
-    >
-      <div className="bg-[var(--c1)] flex flex-1 flex-col overflow-y-auto p-5 invite:p-8 transition-colors">
-        <Header onClose={onClose} />
-        {body}
-      </div>
-    </aside>
-  )
-}
-
-/** The panel's top exit — the same X the guest's mobile drawer closes with. */
-function Header({ onClose }: { onClose: () => void }) {
-  return (
-    <header className="mb-6 flex items-center justify-end gap-4">
-      <button
-        type="button"
-        aria-label="Close"
-        onClick={onClose}
-        className="text-[color:var(--c3)] transition-opacity hover:opacity-60"
-      >
-        <XIcon size={20} />
-      </button>
-    </header>
+    <SidePanel panelClassName="edit" open={open} inert={!open} onClose={onClose}>
+      {body}
+    </SidePanel>
   )
 }
 

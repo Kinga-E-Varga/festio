@@ -1,6 +1,7 @@
 'use client'
 
 import Image from 'next/image'
+import type { ReactNode } from 'react'
 import { useState } from 'react'
 import type { PrintSettings } from '@/types/print'
 import front from '@/mock/inv-img/Screenshot 2026-07-27 213629.png'
@@ -38,12 +39,11 @@ function FlatCard({ settings, link }: PrintPreviewProps) {
   const [open, setOpen] = useState(false)
 
   return (
-    <button
-      type="button"
-      aria-pressed={open}
-      aria-label="Turn the card over"
-      onClick={() => setOpen(!open)}
-      className="sheet-stack"
+    <TurnStage
+      open={open}
+      onToggle={() => setOpen(!open)}
+      ariaLabel="Turn the card over"
+      caption={open ? 'Click to flip back' : 'Click to flip'}
     >
       <span className="sheet-view" data-pages={1}>
         <span className="flip" data-open={open}>
@@ -59,9 +59,7 @@ function FlatCard({ settings, link }: PrintPreviewProps) {
           </span>
         </span>
       </span>
-
-      <Caption>{open ? 'Click to flip back' : 'Click to flip'}</Caption>
-    </button>
+    </TurnStage>
   )
 }
 
@@ -74,12 +72,11 @@ function FoldedCard({ settings, link }: PrintPreviewProps) {
   const [open, setOpen] = useState(false)
 
   return (
-    <button
-      type="button"
-      aria-pressed={open}
-      aria-label="Open the card"
-      onClick={() => setOpen(!open)}
-      className="sheet-stack"
+    <TurnStage
+      open={open}
+      onToggle={() => setOpen(!open)}
+      ariaLabel="Open the card"
+      caption={open ? 'Click to close' : 'Click to open'}
     >
       <span className="sheet-view" data-pages={2}>
         <span className="fold" data-open={open}>
@@ -103,8 +100,38 @@ function FoldedCard({ settings, link }: PrintPreviewProps) {
           </span>
         </span>
       </span>
+    </TurnStage>
+  )
+}
 
-      <Caption>{open ? 'Click to close' : 'Click to open'}</Caption>
+/**
+ * The shared shell both shapes turn inside: one pressable button holding the
+ * shape's own faces, and the caption underneath that names what a click does.
+ * Only the faces and the wording differ between a flat card and a folded one.
+ */
+function TurnStage({
+  open,
+  onToggle,
+  ariaLabel,
+  caption,
+  children,
+}: {
+  open: boolean
+  onToggle: () => void
+  ariaLabel: string
+  caption: string
+  children: ReactNode
+}) {
+  return (
+    <button
+      type="button"
+      aria-pressed={open}
+      aria-label={ariaLabel}
+      onClick={onToggle}
+      className="sheet-stack"
+    >
+      {children}
+      <Caption>{caption}</Caption>
     </button>
   )
 }

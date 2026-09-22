@@ -8,6 +8,7 @@ import {
   formatDeadline,
   invitationLink,
   safeguardBarVars,
+  safeguardReplyPercent,
 } from '@/lib/event'
 import type { DashboardEvent, IconName } from '@/types/dashboard'
 
@@ -89,7 +90,7 @@ export function EventCard({ event }: { event: DashboardEvent }) {
   const archived = event.status === 'past' && event.dataDeleted
   const { cap } = event.safeguard
   const replied = event.rsvp.replied
-  const safeguardPercent = cap > 0 ? Math.round((replied / cap) * 100) : 100
+  const safeguardPercent = safeguardReplyPercent(event)
   const barVars = safeguardBarVars(event)
   const warnings = warningsFor(event, safeguardPercent)
   const replyCloses = formatDeadline(contentFreeze(event.date))

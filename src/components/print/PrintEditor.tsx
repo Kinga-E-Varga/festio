@@ -1,19 +1,11 @@
 'use client'
 
-import { useRouter } from 'next/navigation'
 import { type CSSProperties, useState } from 'react'
 import { Toast, useToast } from '@/components/dashboard/Toast'
-import {
-  ArrowLeftIcon,
-  ExportIcon,
-  PencilIcon,
-} from '@/components/invitation/icons'
-import {
-  HOST_ACTION,
-  HOST_BAR_TOP,
-  HOST_TOGGLE,
-} from '@/components/invitation/styles'
-import { hasFestioHistory } from '@/lib/history'
+import { HostBar } from '@/components/invitation/HostBar'
+import { ExportIcon } from '@/components/invitation/icons'
+import { HOST_ACTION } from '@/components/invitation/styles'
+import { useLeaveFestio } from '@/lib/history'
 import { printVars, templateFontVars } from '@/lib/invitation'
 import type { InvitationTemplate } from '@/types/invitation'
 import type { PrintSettings } from '@/types/print'
@@ -79,19 +71,13 @@ export function PrintEditor({ template, rsvpMessage, link }: PrintEditorProps) {
    */
   const [editing, setEditing] = useState(true)
   const toast = useToast()
-  const router = useRouter()
+  const leave = useLeaveFestio()
 
   function change<Key extends keyof PrintSettings>(
     key: Key,
     value: PrintSettings[Key],
   ) {
     setSettings((current) => ({ ...current, [key]: value }))
-  }
-
-  /* Back to wherever in Festio the host came from — see the invitation editor. */
-  function leave() {
-    if (hasFestioHistory()) router.back()
-    else router.push('/')
   }
 
   return (
@@ -111,31 +97,15 @@ export function PrintEditor({ template, rsvpMessage, link }: PrintEditorProps) {
          * behind the controls.
          */}
         <div className="relative flex min-h-0 min-w-0 flex-1 flex-col">
-          <div className="flex justify-center">
-            {/*
-             * The bar does not answer to `editing` — Back and Export stay
-             * within reach while the form is open.
-             */}
-            <div className={`${HOST_BAR_TOP} mb-2 invite:mt-6 invite:mb-2`}>
-              <button type="button" onClick={leave} className={HOST_ACTION}>
-                <ArrowLeftIcon size={14} />
-                Back
-              </button>
-              {/*
-               * The way back to a form that closes at every width — above
-               * the breakpoint it leaves in flow and the paper takes the
-               * width, so the segment is the only way to call it back.
-               */}
-              <button
-                type="button"
-                aria-pressed={editing}
-                data-active={editing ? 'true' : undefined}
-                onClick={() => setEditing(!editing)}
-                className={HOST_TOGGLE}
-              >
-                <PencilIcon size={14} />
-                Edit
-              </button>
+          {/*
+           * The bar does not answer to `editing` — Back and Export stay
+           * within reach while the form is open.
+           */}
+          <HostBar
+            onBack={leave}
+            editing={editing}
+            onToggleEdit={() => setEditing(!editing)}
+            thirdAction={
               <button
                 type="button"
                 onClick={() =>
@@ -146,8 +116,8 @@ export function PrintEditor({ template, rsvpMessage, link }: PrintEditorProps) {
                 <ExportIcon size={14} />
                 Export
               </button>
-            </div>
-          </div>
+            }
+          />
 
           <div className="relative flex min-h-0 min-w-0 flex-1">
             <PrintPreview settings={settings} link={link} />

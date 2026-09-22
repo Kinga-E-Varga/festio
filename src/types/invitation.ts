@@ -76,11 +76,10 @@ export type TemplateBackground =
   | { kind: 'pattern'; className: string }
 
 /**
- * A colour a template hands to something outside the card: either the name of
- * one of its own palette roles, so the two can never drift, or a colour stated
- * outright for the one place that uses it.
+ * A colour a template hands to something outside the card: the name of one of
+ * its own palette roles, so the two can never drift.
  */
-export type TemplateColor = keyof Palette | `#${string}`
+export type TemplateColor = keyof Palette
 
 /**
  * The printable's two colours. A printed card is paper, not a screen: it has

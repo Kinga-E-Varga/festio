@@ -371,32 +371,39 @@
   }
 
   /*
-   * The host's edit form, always mounted and parked at `translateX(100%)`.
-   * Below the breakpoint it covers the viewport; at and above it is taken
-   * out of flow against the invitation root, so it never adds a second
-   * panel's width and covers the reply exactly — same width, same edge, no
-   * dimming.
+   * The shared shape of the host's two slide-in panels — the invitation
+   * editor's `.edit` and the print page's `.sheet-form`. Both are always
+   * mounted and parked at `translateX(100%)`, below the breakpoint covering
+   * the viewport; the same one duration and easing carries the slide on
+   * both, so the two panels feel like one mechanism rather than two that
+   * happen to have drifted to the same values.
+   *
+   * Parked past its own width by the reach of its shadow, which is drawn
+   * outside the box and would otherwise still be lying on the card with the
+   * panel itself gone.
    */
-  .edit {
+  .edit,
+  .sheet-form {
     position: fixed;
     inset: 0;
     z-index: 50;
     display: flex;
     flex-direction: column;
     will-change: transform;
-    /*
-     * Parked past its own width by the reach of its shadow, which is drawn
-     * outside the box and would otherwise still be lying on the card with
-     * the panel itself gone.
-     */
     transform: translateX(calc(100% + 24px)) translateZ(0);
     transition: transform 620ms cubic-bezier(0.22, 1, 0.36, 1);
   }
 
-  .edit[data-open='true'] {
+  .edit[data-open='true'],
+  .sheet-form[data-open='true'] {
     transform: translateX(0) translateZ(0);
   }
 
+  /*
+   * At and above the breakpoint the edit form is taken out of flow against
+   * the invitation root, so it never adds a second panel's width and covers
+   * the reply exactly — same width, same edge, no dimming.
+   */
   @media (width >= 1000px) {
     .edit {
       position: absolute;
@@ -464,27 +471,21 @@
    * is delayed by the length of the slide so the panel is still painted on
    * the way out. Doing it this way rather than with `inert` means no script
    * has to agree with the CSS about when the form is reachable.
+   *
+   * The base position, size and slide are the shared `.edit, .sheet-form`
+   * rule above; only the extra `visibility` handling is this panel's own.
    */
   .sheet-form {
-    position: fixed;
-    inset: 0;
-    z-index: 50;
-    display: flex;
-    flex-direction: column;
-    will-change: transform;
     visibility: hidden;
-    /* Parked past its own width by the reach of its shadow — see `.edit`. */
-    transform: translateX(calc(100% + 24px)) translateZ(0);
     transition:
-      transform 420ms cubic-bezier(0.22, 1, 0.36, 1),
-      visibility 0s linear 420ms;
+      transform 620ms cubic-bezier(0.22, 1, 0.36, 1),
+      visibility 0s linear 620ms;
   }
 
   .sheet-form[data-open='true'] {
     visibility: visible;
-    transform: translateX(0) translateZ(0);
     transition:
-      transform 420ms cubic-bezier(0.22, 1, 0.36, 1),
+      transform 620ms cubic-bezier(0.22, 1, 0.36, 1),
       visibility 0s;
   }
 
@@ -502,15 +503,15 @@
       will-change: margin;
       margin-inline-end: calc(-1 * var(--spacing-invite-panel));
       transition:
-        margin-inline-end 420ms cubic-bezier(0.22, 1, 0.36, 1),
-        visibility 0s linear 420ms;
+        margin-inline-end 620ms cubic-bezier(0.22, 1, 0.36, 1),
+        visibility 0s linear 620ms;
     }
 
     .sheet-form[data-open='true'] {
       transform: none;
       margin-inline-end: 0;
       transition:
-        margin-inline-end 420ms cubic-bezier(0.22, 1, 0.36, 1),
+        margin-inline-end 620ms cubic-bezier(0.22, 1, 0.36, 1),
         visibility 0s;
     }
   }

@@ -11,6 +11,7 @@ import {
   invitationLink,
   invitationPath,
   safeguardBarVars,
+  safeguardReplyPercent,
 } from '@/lib/event'
 import { TIERS } from '@/mock/dashboard'
 import type { DashboardEvent, EventStatus } from '@/types/dashboard'
@@ -92,7 +93,7 @@ export function EventRow({ event }: { event: DashboardEvent }) {
   const link = invitationLink(event)
   const { cap } = event.safeguard
   const replied = event.rsvp.replied
-  const safeguardPercent = cap > 0 ? Math.round((replied / cap) * 100) : 100
+  const safeguardPercent = safeguardReplyPercent(event)
   const barVars = safeguardBarVars(event)
   /* Past and past its retention date: the record is a stub, not a tool. */
   const archived = event.status === 'past' && event.dataDeleted

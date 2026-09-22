@@ -60,6 +60,15 @@ export function safeguardBarVars(event: {
   } as CSSProperties;
 }
 
+/** How much of the safeguard cap the replies received so far have used. */
+export function safeguardReplyPercent(event: {
+  rsvp: { replied: number };
+  safeguard: { cap: number };
+}): number {
+  const { cap } = event.safeguard;
+  return cap > 0 ? Math.round((event.rsvp.replied / cap) * 100) : 100;
+}
+
 const DAY_MS = 86_400_000;
 
 const DATE_PARTS: Intl.DateTimeFormatOptions = {
