@@ -31,7 +31,6 @@ interface EditPanelProps {
   open: boolean
   onChange: (id: string, value: string) => void
   onClose: () => void
-  onSave: () => void
 }
 
 /**
@@ -50,7 +49,6 @@ export function EditPanel({
   open,
   onChange,
   onClose,
-  onSave,
 }: EditPanelProps) {
   const groups = GROUPS.map((group) => ({
     ...group,
@@ -60,9 +58,19 @@ export function EditPanel({
   })).filter((group) => group.fields.length > 0)
 
   const body = (
-    <div className="flex flex-col max-w-[500px] m-auto">
+    /*
+     * `w-full` is what makes it fill: the auto margins that centre it also
+     * turn off the column's stretch, so without it the form would only be as
+     * wide as its widest label.
+     */
+    <div className="flex flex-col w-full max-w-[500px] m-auto">
       {groups.map((group) => (
-        <section key={group.scope} className="flex flex-col mb-6">
+        // The last group butts up against View — its own fields already
+        // carry the gap, so it drops the one below it.
+        <section
+          key={group.scope}
+          className="flex flex-col mb-6 last-of-type:mb-0"
+        >
           <p className={TITLE}>{group.title}</p>
 
           {group.fields.map((field) => (
@@ -77,33 +85,31 @@ export function EditPanel({
         </section>
       ))}
 
-      <div className="flex flex-col gap-3">
-        {/* View is the same exit as the header's X — back to the invitation. */}
-        <div className="flex gap-3">
-          <button type="button" onClick={onClose} className={`${SOLID} flex-1`}>
-            View
-          </button>
-        </div>
-
-        <p className={HINT}>
-          Guests are not told when you change an invitation. It is your
-          responsibility to tell them if important details changed.
-        </p>
+      {/*
+       * View is the same exit as the header's X — back to the invitation.
+       * Only below the breakpoint: above it the panel sits beside the card
+       * and the host bar's Edit segment is the way out.
+       */}
+      <div className="flex gap-3 invite:hidden">
+        <button
+          type="button"
+          onClick={onClose}
+          className={`${SOLID} flex-1 mb-6`}
+        >
+          View
+        </button>
       </div>
     </div>
   )
 
   return (
-    <aside className={`edit ${PANEL}`} data-open={open} inert={!open}>
-      {/*
-       * The edge exists only where the panel meets the card. Below the
-       * breakpoint the panel covers the screen and has nothing to meet.
-       */}
-      <div
-        className="edge hidden invite:block bg-[var(--c1)]"
-        data-axis="y"
-        data-shape={template.edge}
-      />
+    // A glow in the panel's own colour, so its edge doesn't cut hard
+    // against the card beside it.
+    <aside
+      className={`edit ${PANEL} elevation-panel`}
+      data-open={open}
+      inert={!open}
+    >
       <div className="bg-[var(--c1)] flex flex-1 flex-col overflow-y-auto p-5 invite:p-8 transition-colors">
         <Header onClose={onClose} />
         {body}

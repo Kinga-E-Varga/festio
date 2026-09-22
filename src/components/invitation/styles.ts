@@ -4,13 +4,26 @@
  * is a `var()` the template supplies.
  */
 
-/* Everything but the surface, so the select can name its own without an
- * override — two plain `bg-*` utilities on one element are settled by
- * Tailwind's emit order, not by the class string. */
-const INPUT_CORE =
-  'w-full border-b-1 py-[6px] text-[16px] text-[color:var(--c3)] font-[family-name:var(--font-primary)] transition-colors placeholder:text-[color:var(--c4)] focus:border-[var(--c3)] focus:outline-none'
+/* Everything but the surface and the edge, so each field can name its own
+ * without an override — two plain `bg-*` utilities, or a width on one side
+ * against a width on all four, are settled by Tailwind's emit order rather
+ * than by the class string. */
+const FIELD_CORE =
+  'w-full py-[6px] text-[16px] text-[color:var(--c3)] font-[family-name:var(--font-primary)] transition-colors placeholder:text-[color:var(--c4)] focus:border-[var(--c3)] focus:outline-none'
 
-export const INPUT = `${INPUT_CORE} border-[var(--c2)] bg-transparent`
+/** A one-line field: a rule under the text, nothing around it. */
+export const INPUT = `${FIELD_CORE} border-b-1 border-[var(--c2)] bg-transparent`
+
+/**
+ * A field the host writes several lines into. Boxed rather than underlined,
+ * because a rule under a block of text reads as a line through the middle of
+ * the field as soon as the text wraps past it; the box holds the whole of
+ * what is being written.
+ *
+ * `resize-none` is part of the style: the panels these sit in are a fixed
+ * width, and a dragged corner would pull the field out of its column.
+ */
+export const TEXTAREA = `${FIELD_CORE} border-1 border-[var(--c2)] bg-transparent px-3 resize-none`
 
 /**
  * A `select` states the panel's surface outright where the other fields let it
@@ -30,7 +43,7 @@ export const INPUT = `${INPUT_CORE} border-[var(--c2)] bg-transparent`
  * mobile pickers keep their system ones, and `:checked` is commonly painted
  * with the OS accent whatever the rule says.
  */
-export const SELECT = `${INPUT_CORE} border-[var(--c3)] bg-[var(--c1)] [&>option]:bg-[var(--c3)] [&>option]:text-[color:var(--c1)] [&>option:hover]:bg-[var(--c2)] [&>option:hover]:text-[color:var(--c1)] [&>option:checked]:bg-[var(--c2)] [&>option:checked]:text-[color:var(--c1)]`
+export const SELECT = `${FIELD_CORE} border-b-1 border-[var(--c2)] bg-[var(--c1)] [&>option]:bg-[var(--c3)] [&>option]:text-[color:var(--c1)] [&>option:hover]:bg-[var(--c2)] [&>option:hover]:text-[color:var(--c1)] [&>option:checked]:bg-[var(--c2)] [&>option:checked]:text-[color:var(--c1)]`
 
 export const LABEL =
   'text-[11px] font-semibold tracking-[0.16em] text-[color:var(--c2)] uppercase'
@@ -57,12 +70,11 @@ const BUTTON_CORE =
   'inline-flex items-center justify-center gap-2 text-[12px] font-semibold tracking-[0.16em] uppercase transition-all duration-200 disabled:cursor-not-allowed disabled:opacity-40'
 
 /* Its own outline. The host bar's segments share one, so they start at CORE. */
-const BUTTON_BASE = `${BUTTON_CORE} rounded-xs border-1`
+const BUTTON_BASE = `${BUTTON_CORE} rounded-sm border-1`
 
 const BUTTON = `${BUTTON_BASE} px-5 py-3`
 
 export const SOLID = `${BUTTON} border-[var(--c2)] bg-[var(--c2)] text-[var(--c1)] hover:bg-[var(--c5)] hover:border-[var(--c5)]`
-export const OUTLINE = `${BUTTON} border-[var(--c2)] text-[color:var(--c2)]  hover:text-[var(--c5)] hover:border-[var(--c5)]`
 
 /** The going / not-going choice — c3 instead of the submit button's c2. */
 export const TOGGLE_SOLID = `${BUTTON} border-[var(--c3)] bg-[var(--c3)] text-[color:var(--c1)]`
@@ -74,10 +86,12 @@ const HOST_SKIN = 'border-[var(--c3)] bg-[var(--c1)] text-[color:var(--c3)]'
 /**
  * What a segment inside the bar carries: ink and hover, no box of its own.
  *
- * Hover fills with `--c2` rather than dimming: the segments share the bar's
- * one surface, so an opacity change could only fade the glyph, which reads as
- * the control going away rather than answering. The ink turns over to `--c1`
- * with it — `--c2` is the tone `SOLID` already sets light text on.
+ * Hover fills with `--c3` at 80% rather than dimming the control: the
+ * segments share the bar's one surface, so an opacity change on the segment
+ * itself could only fade the glyph, which reads as the control going away
+ * rather than answering. The fill's own alpha lets the bar's surface show
+ * through instead, so the answer is a softer ink, not a fading label. The
+ * ink turns over to `--c1` with it.
  *
  * `data-active` holds that same fill for a segment that toggles something
  * open. It is an attribute rather than a second class the component appends,
@@ -91,47 +105,72 @@ const HOST_SKIN = 'border-[var(--c3)] bg-[var(--c1)] text-[color:var(--c3)]'
  * colour — stands in for the templates that leave it null; without the
  * fallback those would lose the fill entirely on hover.
  */
-const HOST_SEGMENT = `${BUTTON_CORE} text-[color:var(--c3)] hover:bg-[var(--c2)] hover:text-[color:var(--c1)] data-[active=true]:bg-[var(--c2)] data-[active=true]:text-[color:var(--c1)] data-[active=true]:hover:bg-[var(--c5))]`
+/**
+ * The hairline between two segments. Drawn by the segment on the right as a
+ * pseudo-element rather than as a left border, for two reasons: a border
+ * would take part of the segment's own width and shift its label off centre,
+ * and above the breakpoint the bar opens a `gap-3` between segments, where a
+ * border would hug the right-hand control instead of standing between the
+ * two. The pseudo-element is pulled back half that gap — 6px, plus half its
+ * own width — so the line sits in the middle of the gap at every size; below
+ * the breakpoint there is no gap and `left-0` is already the middle.
+ *
+ * `first:before:hidden` keeps it off the leading segment, where it would
+ * land on the bar's own outline.
+ */
+const HOST_DIVIDER = `relative before:pointer-events-none before:absolute before:content-[''] before:inset-y-0 before:left-0 before:w-px before:bg-[color-mix(in_oklab,var(--c3)_30%,transparent)] first:before:hidden invite:before:-left-[6.5px]`
+
+const HOST_SEGMENT_CORE = `${BUTTON_CORE} ${HOST_DIVIDER} text-[color:var(--c3)] hover:bg-[color-mix(in_oklab,var(--c3)_15%,transparent)] hover:text-[color:var(--c3)]`
+
+const HOST_SEGMENT = `${HOST_SEGMENT_CORE} data-[active=true]:bg-[var(--c3)] data-[active=true]:text-[color:var(--c1)] data-[active=true]:hover:bg-[color-mix(in_oklab,var(--c3)_60%,transparent)]`
 
 /**
  * The bar itself: one outline and one surface around the whole row, so the
  * controls read as a single object rather than four floating ones.
  *
- * The separators hang on the container, not the buttons — `[&>*+*]` is every
- * segment but the first, which is the same rule stated as an omission. A
- * `border-l` on each segment undone by `first:border-l-0` would be an
- * override, and overrides here come down to which rule Tailwind emits last.
- *
  * `overflow-hidden` is what lets the end segments take the bar's radius
  * without either of them naming a corner of its own.
  */
-export const HOST_BAR = `inline-flex overflow-hidden rounded-xs border-1 ${HOST_SKIN} elevation-btn [&>*+*]:border-l-1 [&>*+*]:border-[var(--c3)]`
+const HOST_BAR_CORE = `overflow-hidden p-3 invite:gap-3 ${HOST_SKIN} elevation-btn`
+
+/**
+ * The same bar where it also has to serve as the page's top bar: below the
+ * breakpoint it spans the width and squares off, since there is nothing
+ * beside it for a floating pill to float over. The segments stay centred.
+ *
+ * The radius is stated once plain and once on the breakpoint rather than
+ * twice in the same utility group — Tailwind emits variants after the
+ * unprefixed rules, so the wide screen's `rounded-sm` wins by cascade order
+ * rather than by where it sits in this string.
+ */
+export const HOST_BAR_TOP = `flex w-full ${HOST_BAR_CORE} invite:inline-flex invite:w-auto invite:rounded-sm`
+
+/** The box a text segment sits in, on its own so a segment can take the size
+ * without the fill — see `HOST_TOGGLE`. */
+const HOST_SEGMENT_BOX = 'w-full invite:w-[140px] px-4 py-2'
 
 /** The host's Edit/Save segments — same width as each other, side by side. */
-export const HOST_ACTION = `${HOST_SEGMENT} w-[100px] px-5 py-3`
+export const HOST_ACTION = `${HOST_SEGMENT} ${HOST_SEGMENT_BOX}`
 
 /**
- * The icon-only segments — Back and the X that dismisses the bar. Narrow
- * rather than `w-[100px]`: a lone glyph in a segment that wide reads as a gap
- * in the row, not a control. They keep `py-3` so their height is the text
- * segments' height by construction rather than by a number that has to be
- * kept in step with the type.
- */
-export const HOST_ICON = `${HOST_SEGMENT} w-[44px] py-3`
-
-/**
- * The handle the X leaves behind. It stands alone rather than in the bar, so
- * unlike the segments it draws its own outline and surface.
+ * The Edit segment where the form it opens covers the whole screen. The
+ * segment is behind that form the moment it is pressed, so the fill has
+ * nothing to say and only shows up as a flicker under the panel sliding
+ * over it — the active rules exist above the breakpoint alone, where the
+ * form opens beside the bar and the segment stays in sight.
  *
- * A small handle centred over the bar it restores, not a second bar. Only the
- * bottom corners round — it sits flush against the top of the page, where the
- * top two would have nothing to round against.
+ * Stated as a variant-only rule rather than an override below it: two
+ * `data-[active=true]:bg-*` utilities would be one group settled by
+ * Tailwind's emit order, not by this string. For the same reason it is built
+ * from `HOST_SEGMENT_CORE` and the box, never from `HOST_ACTION` — that one
+ * carries the unprefixed active fill, which no variant here could take back
+ * below the breakpoint.
  */
-export const HOST_TAB = `${BUTTON_CORE} h-[26px] w-[44px] rounded-b-xs border-1 ${HOST_SKIN} elevation-btn hover:bg-[var(--c2)] hover:text-[color:var(--c1)]`
+export const HOST_TOGGLE = `${HOST_SEGMENT_CORE} ${HOST_SEGMENT_BOX} invite:data-[active=true]:bg-[var(--c3)] invite:data-[active=true]:text-[color:var(--c1)] invite:data-[active=true]:hover:bg-[color-mix(in_oklab,var(--c3)_60%,transparent)]`
 
 /** The small text control that adds or drops a name row. */
 export const QUIET =
-  'inline-flex items-center gap-1.5 text-[12px] font-semibold tracking-[0.1em] text-[color:var(--c2)] uppercase transition-colors duration-200 hover:text-[color:var(--c3)]'
+  'inline-flex items-center gap-1.5 text-[12px] font-semibold tracking-[0.1em] text-[color:var(--c3)] uppercase transition-colors duration-200 hover:text-[color:var(--c2)]'
 
 /**
  * The reply surface's width, edge included — `--spacing-invite-panel`, so the

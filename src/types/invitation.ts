@@ -76,6 +76,27 @@ export type TemplateBackground =
   | { kind: 'pattern'; className: string }
 
 /**
+ * A colour a template hands to something outside the card: either the name of
+ * one of its own palette roles, so the two can never drift, or a colour stated
+ * outright for the one place that uses it.
+ */
+export type TemplateColor = keyof Palette | `#${string}`
+
+/**
+ * The printable's two colours. A printed card is paper, not a screen: it has
+ * one surface the host may tint and one ink on it, and neither maps onto the
+ * RSVP chrome's roles — so a template names them here rather than the print
+ * page reaching into the palette and picking.
+ *
+ * `background` is the tinted back of a flat card, and the inside of a folded
+ * one; `ink` is the host's own lines printed on it.
+ */
+export interface TemplatePrint {
+  background: TemplateColor
+  ink: TemplateColor
+}
+
+/**
  * One font, declared once in `@/lib/fonts` and self-hosted at build time.
  * `className` applies the `next/font` variable class that defines `cssVar`;
  * `cssVar` is what the card and shared RSVP chrome write into `font-family`.
@@ -115,6 +136,7 @@ export interface InvitationTemplate {
   }
   /** Shown beside the print preview, e.g. "A5 portrait — 148 × 210 mm". */
   printSize: string
+  print: TemplatePrint
   palette: Palette
   fonts: TemplateFonts
   edge: EdgeShape

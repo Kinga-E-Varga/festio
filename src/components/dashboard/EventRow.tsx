@@ -1,53 +1,68 @@
-import Image from "next/image";
-import Link from "next/link";
-import { CopyButton } from "@/components/dashboard/CopyButton";
-import { DatesThatMatter } from "@/components/dashboard/DatesThatMatter";
-import { PasswordField } from "@/components/dashboard/PasswordField";
-import { Icon } from "@/components/icons";
-import { GUEST_DATA_RETENTION_DAYS } from "@/lib/config";
+import Image from 'next/image'
+import Link from 'next/link'
+import { CopyButton } from '@/components/dashboard/CopyButton'
+import { DatesThatMatter } from '@/components/dashboard/DatesThatMatter'
+import { PasswordField } from '@/components/dashboard/PasswordField'
+import { Icon } from '@/components/icons'
+import { GUEST_DATA_RETENTION_DAYS } from '@/lib/config'
 import {
   deletionDate,
   formatEventDate,
   invitationLink,
   invitationPath,
   safeguardBarVars,
-} from "@/lib/event";
-import { TIERS } from "@/mock/dashboard";
-import type { DashboardEvent, EventStatus } from "@/types/dashboard";
+} from '@/lib/event'
+import { TIERS } from '@/mock/dashboard'
+import type { DashboardEvent, EventStatus } from '@/types/dashboard'
 
 /** The card's left edge says which pile the event is in, as the dashboard's does. */
 const STATUS_EDGE: Record<EventStatus, string> = {
-  active: "border-l-forest-500",
-  draft: "border-l-terracotta-500",
-  past: "border-l-neutral-600",
-};
+  active: 'border-l-forest-500',
+  draft: 'border-l-terracotta-500',
+  past: 'border-l-neutral-600',
+}
 
 /** The quiet heading that names each section, as the event editor sets it. */
 const PANEL_LABEL =
-  "mb-3.5 text-[10px] font-semibold tracking-[0.18em] text-mustard-500 uppercase";
+  'mb-3.5 text-[10px] font-semibold tracking-[0.18em] text-mustard-500 uppercase'
+
+/**
+ * The rule between two of the card's sections. A pseudo-element rather than a
+ * border, because a border runs the whole side of the box it is on and these
+ * have to stop 20px short — of the card's own edges, and of each other where a
+ * vertical rule comes down to meet a horizontal one at a row boundary. The
+ * card itself stays unpadded, so nothing but the rules moves.
+ *
+ * Each section carries both and shows one: `before` across its top while the
+ * sections are stacked, `after` down its left once they sit side by side. Two
+ * pseudo-elements rather than one that turns, since turning it would mean
+ * taking back `top` and `h-px` inside the same breakpoint, where Tailwind's
+ * property order — not the class string — settles which wins.
+ */
+const RULE = `relative before:pointer-events-none before:absolute before:inset-x-5 before:top-0 before:h-px before:bg-mustard-300 before:content-[''] after:pointer-events-none after:absolute after:inset-y-5 after:left-0 after:hidden after:w-px after:bg-mustard-300 after:content-['']`
 
 /** Every section after the first hangs off a hairline of its own. */
-const PANEL = "min-w-0 border-t border-mustard-300 pt-5";
+const PANEL = 'min-w-0 border-t border-mustard-300 pt-5'
 
 /** The six actions share one size and fill the width of their column. */
 const ACTION =
-  "inline-flex w-full min-w-[135px] items-center justify-center gap-2 rounded-md border border-forest-500 bg-mustard-50 px-2.5 py-[9px] text-center text-[13px] leading-[1.3] font-medium text-forest-500 transition-colors hover:border-forest-600 hover:bg-forest-200 hover:text-forest-600 disabled:cursor-not-allowed disabled:opacity-50";
+  'inline-flex w-full min-w-[135px] items-center justify-center gap-2 rounded-md border border-forest-500 bg-mustard-50 px-2.5 py-[9px] text-center text-[13px] leading-[1.3] font-medium text-forest-500 transition-colors hover:border-forest-600 hover:bg-forest-200 hover:text-forest-600 disabled:cursor-not-allowed disabled:opacity-50'
 
 const FIELD_BASE =
-  "flex items-center gap-[9px] border border-mustard-300 px-3 py-2 text-[13px] text-neutral-900";
-const FIELD = `${FIELD_BASE} bg-mustard-50`;
+  'flex items-center gap-[9px] border border-mustard-300 px-3 py-2 text-[13px] text-neutral-900'
+const FIELD = `${FIELD_BASE} bg-mustard-50`
 /** Stands in for the link row when there is nothing to share yet. */
-const FIELD_NOTE = `${FIELD_BASE} bg-terracotta-200`;
+const FIELD_NOTE = `${FIELD_BASE} bg-terracotta-200`
 
 function Tally({
   label,
   value,
   detail,
 }: {
-  label: string;
-  value: number;
+  label: string
+  value: number
   /** Denominator kept small so four tallies fit the row, e.g. "/124". */
-  detail?: string;
+  detail?: string
 }) {
   return (
     <div>
@@ -63,7 +78,7 @@ function Tally({
         ) : null}
       </dd>
     </div>
-  );
+  )
 }
 
 /**
@@ -73,15 +88,15 @@ function Tally({
  * somewhere else that repeats it, so the card takes no hover state.
  */
 export function EventRow({ event }: { event: DashboardEvent }) {
-  const deletion = formatEventDate(deletionDate(event.date));
-  const link = invitationLink(event);
-  const { cap } = event.safeguard;
-  const replied = event.rsvp.replied;
-  const safeguardPercent = cap > 0 ? Math.round((replied / cap) * 100) : 100;
-  const barVars = safeguardBarVars(event);
+  const deletion = formatEventDate(deletionDate(event.date))
+  const link = invitationLink(event)
+  const { cap } = event.safeguard
+  const replied = event.rsvp.replied
+  const safeguardPercent = cap > 0 ? Math.round((replied / cap) * 100) : 100
+  const barVars = safeguardBarVars(event)
   /* Past and past its retention date: the record is a stub, not a tool. */
-  const archived = event.status === "past" && event.dataDeleted;
-  const past = event.status === "past";
+  const archived = event.status === 'past' && event.dataDeleted
+  const past = event.status === 'past'
 
   return (
     /*
@@ -100,7 +115,7 @@ export function EventRow({ event }: { event: DashboardEvent }) {
        */}
       <div className="grid grid-cols-1 @min-[720px]:grid-cols-[minmax(0,1fr)_minmax(0,2fr)] @min-[1000px]:grid-cols-[minmax(0,1fr)_minmax(0,1.9fr)_minmax(175px,0.6fr)]">
         {/* The artwork is the point of a record, so it is shown whole. */}
-        <div className="flex items-center justify-center p-[18px] @min-[720px]:col-start-1 @min-[720px]:row-start-1 @min-[720px]:p-5">
+        <div className="flex items-center justify-center p-[18px] py-8 @min-[720px]:col-start-1 @min-[720px]:row-start-1 @min-[720px]:p-5 @min-[720px]:py-10">
           {/*
            * Invitations are portrait, so width alone would let a wide card
            * make the card taller than anything beside it. The height is what
@@ -117,7 +132,9 @@ export function EventRow({ event }: { event: DashboardEvent }) {
         </div>
 
         {/* What the event says about itself, section by section. */}
-        <div className="flex min-w-0 flex-col justify-center border-t border-mustard-300 p-[18px] @min-[720px]:col-start-2 @min-[720px]:row-start-1 @min-[720px]:border-t-0 @min-[720px]:border-l @min-[720px]:p-5">
+        <div
+          className={`flex min-w-0 flex-col justify-center p-[18px] py-8 @min-[720px]:col-start-2 @min-[720px]:row-start-1 @min-[720px]:p-5 @min-[720px]:py-10 ${RULE} @min-[720px]:before:hidden @min-[720px]:after:block`}
+        >
           <div className="mx-auto flex w-full max-w-[700px] flex-col gap-5">
             {/* 1 — what it is and when. */}
             <div className="min-w-0">
@@ -128,13 +145,13 @@ export function EventRow({ event }: { event: DashboardEvent }) {
               <p className="mt-2.5 text-[14px] leading-none text-neutral-900">
                 <span className="font-medium">{event.dateLabel}</span>
                 <span aria-hidden="true" className="text-neutral-700">
-                  {" · "}
+                  {' · '}
                 </span>
                 <span
                   className={
                     event.isNextUp
-                      ? "font-medium text-terracotta-600"
-                      : "text-neutral-700"
+                      ? 'font-medium text-terracotta-600'
+                      : 'text-neutral-700'
                   }
                 >
                   {event.countdownLabel}
@@ -220,7 +237,7 @@ export function EventRow({ event }: { event: DashboardEvent }) {
 
                     <p className="mt-[9px] flex items-center gap-2 text-[11.5px] text-neutral-700">
                       <span className="flex-1">
-                        Attendee safeguard {replied} of {cap} ·{" "}
+                        Attendee safeguard {replied} of {cap} ·{' '}
                         {safeguardPercent}%
                       </span>
                       <button
@@ -240,7 +257,7 @@ export function EventRow({ event }: { event: DashboardEvent }) {
               <h4 className={PANEL_LABEL}>Dates that matter</h4>
               {archived ? (
                 <p className="text-[12.5px] leading-[1.45] text-neutral-700">
-                  Guest data was deleted on {deletion},{" "}
+                  Guest data was deleted on {deletion},{' '}
                   {GUEST_DATA_RETENTION_DAYS} days after the event.
                 </p>
               ) : (
@@ -263,7 +280,9 @@ export function EventRow({ event }: { event: DashboardEvent }) {
             className="@min-[720px]:col-span-2 @min-[720px]:row-start-2 @min-[1000px]:col-span-1 @min-[1000px]:col-start-3 @min-[1000px]:row-start-1"
           />
         ) : (
-          <div className="block border-t border-mustard-300 p-[18px] @min-[720px]:col-span-2 @min-[720px]:row-start-2 @min-[720px]:p-5 @min-[1000px]:col-span-1 @min-[1000px]:col-start-3 @min-[1000px]:row-start-1 @min-[1000px]:flex @min-[1000px]:items-center @min-[1000px]:justify-center @min-[1000px]:border-t-0 @min-[1000px]:border-l">
+          <div
+            className={`block p-[18px] py-8 @min-[720px]:col-span-2 @min-[720px]:row-start-2 @min-[720px]:p-5 @min-[720px]:py-10 @min-[1000px]:col-span-1 @min-[1000px]:col-start-3 @min-[1000px]:row-start-1 @min-[1000px]:flex @min-[1000px]:items-center @min-[1000px]:justify-center ${RULE} @min-[1000px]:before:hidden @min-[1000px]:after:block`}
+          >
             {/*
              * Six buttons, so the strip only ever runs 1, 2, 3 or 6 to a row —
              * every row stays full. Each step is the card width at which that
@@ -355,7 +374,7 @@ export function EventRow({ event }: { event: DashboardEvent }) {
                 title={
                   event.seatingAvailable
                     ? undefined
-                    : "Seating charts come with paid invitations"
+                    : 'Seating charts come with paid invitations'
                 }
                 className={ACTION}
               >
@@ -367,5 +386,5 @@ export function EventRow({ event }: { event: DashboardEvent }) {
         )}
       </div>
     </article>
-  );
+  )
 }

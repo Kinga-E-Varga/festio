@@ -69,7 +69,7 @@ Every event has a downloadable printable invitation. **PNG export in v1.**
 - **Type 1:** printable = the same artifact as the online invitation. No separate layout.
 - **Type 2:** separate printable layout, fixed slots, no free-form editing.
 
-Full spec in `context/features/print.md`. Not built yet.
+Full spec in `context/features/print.md`.
 
 ## Lifecycle
 

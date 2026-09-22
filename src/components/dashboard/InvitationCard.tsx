@@ -139,10 +139,23 @@ export function InvitationCard({ event }: { event: DashboardEvent }) {
                 View as guest
               </button>
             )}
-            <button type="button" className={ACTION}>
-              <Icon name="printer" className="size-[15px]" />
-              Print
-            </button>
+            {/* The printable is built from the design, so it needs one too. */}
+            {event.templateId ? (
+              <Link href={`/prints/${event.id}`} className={ACTION}>
+                <Icon name="printer" className="size-[15px]" />
+                Print
+              </Link>
+            ) : (
+              <button
+                type="button"
+                disabled
+                title="Pick a design for this invitation first"
+                className={ACTION}
+              >
+                <Icon name="printer" className="size-[15px]" />
+                Print
+              </button>
+            )}
           </>
         )}
       </div>

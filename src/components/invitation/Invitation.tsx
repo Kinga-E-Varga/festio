@@ -24,6 +24,12 @@ interface InvitationProps {
    * thing keeping the closed form off the page.
    */
   host?: ReactNode
+  /**
+   * The host's controls, in flow directly above the card. They take their
+   * height out of the stage's slot rather than covering it, so the card is
+   * never partly hidden behind them.
+   */
+  hostBar?: ReactNode
   /** Switches the reply panel inert — what the host's edit form asks for while it covers it. */
   replyInert?: boolean
   onSubmit?: (payload: RsvpPayload) => void
@@ -50,6 +56,7 @@ export function Invitation({
   values,
   children,
   host,
+  hostBar,
   replyInert,
   onSubmit,
 }: InvitationProps) {
@@ -66,15 +73,19 @@ export function Invitation({
        * counts padding, so a padded stage would measure a slot it does not
        * have and paint the card slightly too large.
        */}
-      <div className="relative flex min-h-0 min-w-0 flex-1">
-        <ScaledStage
-          width={width}
-          height={height}
-          minScale={minScale}
-          maxScale={maxScale}
-        >
-          {children}
-        </ScaledStage>
+      <div className="relative flex min-h-0 min-w-0 flex-1 flex-col">
+        {hostBar}
+
+        <div className="relative flex min-h-0 min-w-0 flex-1">
+          <ScaledStage
+            width={width}
+            height={height}
+            minScale={minScale}
+            maxScale={maxScale}
+          >
+            {children}
+          </ScaledStage>
+        </div>
       </div>
 
       <RsvpPanel

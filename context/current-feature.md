@@ -1,50 +1,39 @@
-# Current Feature
+# Current Feature: Invitation print page
 
 ## Status
 
-In Progress
+Completed
 
 ## Goals
 
-- Move the host's Edit/Save controls from the invitation's top-left corner to
-  the middle of the card's own viewing panel.
-- Make them one bar rather than separate buttons: Back and a dismiss X either
-  side of Edit and Save, separated by lines, on a single surface.
-- Keep the bar reachable while the edit form is open.
-- Let the host dismiss the bar entirely to see the card as a guest sees it,
-  with a small handle at the top of the page to call it back.
-- Make Edit a toggle that holds its state and closes the form on a second
-  click.
-- Send Back to whatever Festio page the host came from, and to the landing
-  page when they came from outside.
+- New route `/prints/[id]`, reached from the print button on a card on the invitation edit page. Own page, outside the dashboard layout.
+- Layout mirrors `HostInvitationEditor.tsx`: same host action bar (no X button; "edit" → "save", "save" → "print") and the same edit panel design.
+- Save and print buttons only fire a toast for now.
+- Print edit panel collapses only on small screens; the form's view button shows only there.
+- Print edit form: flat card / folded card choice, "coloured background" checkbox (on by default), two text inputs (bigger font, defaults to the invitation's `rsvpMessage` as a fallback only — separate data; smaller font, defaults to "Please respond on the link provided below.").
+- Printing-information box whose text swaps with the card type but whose size never changes.
+- Main viewing area shows an animated card instead of the `TemplateCard`: flip animation for flat card (note: click to flip), fold animation for folded card (note: click to open / click to close).
+- Only Maria & Andrei gets a working print page for now; front art is `src/mock/inv-img/Screenshot 2026-07-27 213629.png`.
 
 ## Notes
 
-- The bar centres over the card's slot, not the invitation: the reply
-  surface's width moved out of the `PANEL` class string into
-  `--spacing-invite-panel`, so the panel that claims that width and the
-  controls that centre themselves over the remainder read one number.
-- Tailwind settles conflicting utilities by emit order, not by class-string
-  order — `px-0` after `px-5` lost, which collapsed the icon buttons and hid
-  their glyphs. Every variant here is now built by omission from
-  `BUTTON_CORE`/`INPUT_CORE` rather than by override, and the Edit toggle's
-  active fill is a `data-active` attribute, which outranks the base utility on
-  specificity instead of on ordering.
-- Back is history-aware. The App Router keeps no depth counter and
-  `document.referrer` does not update across client navigations, so
-  `lib/history.ts` stamps each entry with how many Festio pages lie behind it
-  and `HistoryTracker` in the root layout keeps that count. It can only ever
-  undercount, so the failure mode is landing on the home page, never leaving
-  the site.
-- The date-format dropdown takes the panel's own surface and its option list
-  the inverse. The picker is a native OS widget, so the hovered row keeps the
-  system accent in Chrome whatever the rules say — `appearance: base-select`
-  would fix that, but it was tried and reverted.
+- Full spec: `context/features/print.md`, including the reference HTML/CSS for both animations. Use only the parts of that reference that fit our stack (React + Tailwind v4 tokens, no inline styles).
+- The big-text input defaults from `rsvpMessage` but stores its own value — editing it must not touch the invitation's RSVP message.
+- Flat card copy: two images, front and back, printed on the two sides of one sheet, no folding, A6–A5.
+- Folded card copy: two images, one per side, printed on both sides then folded in half, front ends up outside, A5–A4 before folding.
+- Save button of the form *is* the host action bar's save button.
+- Action bar is [Back] [Edit] [Save] [Print]; the Edit segment is hidden above 1000px, where
+  the panel is always in flow and cannot collapse. The form's View button is hidden there too.
+- Folded card: cover art on the flap, both text lines plus the link on the inside-right page,
+  inside-left is the blank reverse of the cover.
+- Only Maria & Andrei is reachable because it is the only event with a `templateId`; the route
+  and the card's Print link are both gated on that rather than on the id.
 
 ## History
 
 <!-- Keep this updated latest to earliest -->
 
+- Host action bar — one bar over the card: back, edit toggle, save, dismiss
 - Invitations page — grid of invitation cards, plus one-record arrivals from Events and the dashboard
 - Dashboard & events UX fixes — header action, card restack, warning-only tags
 - Dashboard design fixes — stats, card/list layout, editor banners, focus rings

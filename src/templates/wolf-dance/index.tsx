@@ -14,6 +14,12 @@ export const template: InvitationTemplate = {
   design: { width: 1080, height: 1532, minScale: 0.18, maxScale: 0.65 },
   printSize: 'A5 portrait — 148 × 210 mm at 300 dpi',
 
+  /* The tinted face and the host's lines on it. See `TemplatePrint`. */
+  print: {
+    background: 'color3',
+    ink: 'color1',
+  },
+
   /*
    * Roles are positional: 1 surface, 2 ink, 3 action, 4 on-action, 5 the
    * line under an input. The guest form reads these by number.
@@ -23,8 +29,8 @@ export const template: InvitationTemplate = {
     color2: '#adbd8f',
     color3: '#fefce5',
     color4: '#fefce569',
-    color5: '#718355ff',
-    color6: '#d88e5fff',
+    color5: '#788a5c',
+    color6: '#d88e5f',
     color7: '#9cb17d',
     color8: null,
     color9: null,

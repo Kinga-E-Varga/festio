@@ -384,8 +384,13 @@
     display: flex;
     flex-direction: column;
     will-change: transform;
-    transform: translateX(100%) translateZ(0);
-    transition: transform 420ms cubic-bezier(0.22, 1, 0.36, 1);
+    /*
+     * Parked past its own width by the reach of its shadow, which is drawn
+     * outside the box and would otherwise still be lying on the card with
+     * the panel itself gone.
+     */
+    transform: translateX(calc(100% + 24px)) translateZ(0);
+    transition: transform 620ms cubic-bezier(0.22, 1, 0.36, 1);
   }
 
   .edit[data-open='true'] {
@@ -439,12 +444,276 @@
     min-block-size: 0;
   }
 
+  /*
+   * The print page's form. Below the breakpoint it is the editor's sheet —
+   * fixed, parked off to the right, slid in on `data-open`. Above it the
+   * print page has no reply panel for the form to cover, so rather than
+   * lying over the paper it takes its place in flow beside it, and closing
+   * it gives the paper the width back instead of just uncovering it.
+   *
+   * That handover is the negative `margin-inline-end`, and above the
+   * breakpoint it is the whole animation. The panel keeps its width while a
+   * margin of minus that width retires the space it was holding; the sheet
+   * beside it is the flex item that grows, so the space lands there and the
+   * panel is carried its own width to the right by the same layout pass.
+   * One property, so the paper grows at exactly the rate the panel leaves.
+   * Animating the panel's own `width` instead would squash the form as it
+   * went.
+   *
+   * `visibility` is what keeps the parked sheet out of the tab order, and it
+   * is delayed by the length of the slide so the panel is still painted on
+   * the way out. Doing it this way rather than with `inert` means no script
+   * has to agree with the CSS about when the form is reachable.
+   */
+  .sheet-form {
+    position: fixed;
+    inset: 0;
+    z-index: 50;
+    display: flex;
+    flex-direction: column;
+    will-change: transform;
+    visibility: hidden;
+    /* Parked past its own width by the reach of its shadow — see `.edit`. */
+    transform: translateX(calc(100% + 24px)) translateZ(0);
+    transition:
+      transform 420ms cubic-bezier(0.22, 1, 0.36, 1),
+      visibility 0s linear 420ms;
+  }
+
+  .sheet-form[data-open='true'] {
+    visibility: visible;
+    transform: translateX(0) translateZ(0);
+    transition:
+      transform 420ms cubic-bezier(0.22, 1, 0.36, 1),
+      visibility 0s;
+  }
+
+  @media (width >= 1000px) {
+    .sheet-form {
+      position: static;
+      flex-direction: row;
+      /*
+       * No transform here, and it has to be turned off in both states: the
+       * margin already carries the panel its own width to the right as the
+       * sheet grows into the space, so a transform on top of it would send
+       * the panel out at twice the speed of the paper coming after it.
+       */
+      transform: none;
+      will-change: margin;
+      margin-inline-end: calc(-1 * var(--spacing-invite-panel));
+      transition:
+        margin-inline-end 420ms cubic-bezier(0.22, 1, 0.36, 1),
+        visibility 0s linear 420ms;
+    }
+
+    .sheet-form[data-open='true'] {
+      transform: none;
+      margin-inline-end: 0;
+      transition:
+        margin-inline-end 420ms cubic-bezier(0.22, 1, 0.36, 1),
+        visibility 0s;
+    }
+  }
+
+  /*
+   * The printable's stage. Nothing here is the scaled design the guest page
+   * shows — a printable is a real sheet of paper turned in perspective, so it
+   * is measured against its own slot instead: `container-type: size` makes
+   * this element the thing the sheet asks how much room it has, which keeps
+   * the form beside it out of the sum.
+   */
+  .sheet {
+    container-type: size;
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-inline-size: 0;
+    min-block-size: 0;
+  }
+
+  /*
+   * The card and the line under it, as one control. A folded card's cover is
+   * the only part of it that moves, so hanging the click there left the page
+   * beside it — half the card — dead to the pointer; the whole stage answers
+   * instead, the instruction included.
+   *
+   * It shrinks to the card: the sheet is what is measured against the slot,
+   * and this only stacks what is already sized.
+   */
+  .sheet-stack {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 22px;
+    cursor: pointer;
+  }
+
+  /*
+   * One sheet of paper, as large as the slot allows: either the height fits
+   * and the width follows, or the width does and the height follows. A folded
+   * card is the same sheet opened out, so it asks for two pages of width and
+   * nothing else about it changes — `--pages` is the only difference between
+   * the two shapes anywhere in this file.
+   *
+   * `--ratio` is the artwork's own proportions (993 / 699), near enough to
+   * the A series that a page of either size prints without a crop.
+   *
+   * `--tallest` is the third term: on a large screen the two measurements
+   * below would hand the card the whole slot, and a printable blown up to
+   * fill a desktop stops reading as a sheet of paper. It is a ceiling only —
+   * a slot smaller than this still decides.
+   */
+  .sheet .sheet-view {
+    --ratio: 1.421;
+    --gutter: 20px;
+    /* The caption below and the gap above it, kept out of the card's height. */
+    --caption: 44px;
+    --tallest: 700px;
+    container-type: inline-size;
+    position: relative;
+    perspective: 1600px;
+    block-size: min(
+      var(--tallest),
+      calc(100cqh - var(--gutter) * 2 - var(--caption)),
+      calc((100cqw - var(--gutter) * 2) / var(--pages) * var(--ratio))
+    );
+    aspect-ratio: calc(var(--pages) / var(--ratio));
+  }
+
+  .sheet-view[data-pages='1'] {
+    --pages: 1;
+  }
+
+  .sheet-view[data-pages='2'] {
+    --pages: 2;
+  }
+
+  /*
+   * A printed face. Text on one is set in `em` off this size, so a face reads
+   * at the same proportions whether the card is filling a desktop slot or a
+   * phone — the page's own width divided by a constant, which is the only
+   * place the two shapes' differing page widths are reconciled.
+   *
+   * It is a container-query width, so the chain those `em`s hang off ends at
+   * the paper rather than at the root font size. Nothing on a printed face
+   * answers to the reader's own text setting.
+   */
+  .leaf {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    backface-visibility: hidden;
+    font-size: calc(100cqw / var(--pages) / 30);
+    /*
+     * For the shadow a shut folded card gives up — see `.fold`. This is the
+     * closing half: the page keeps its shadow until the cover is nearly back
+     * over it, so nothing goes flat in plain sight.
+     */
+    transition: box-shadow 400ms ease 250ms;
+  }
+
+  /*
+   * A printed face is the template's, not the print page's: both colours come
+   * from the template's own `print` block, so what the host prints matches the
+   * invitation the guests are looking at.
+   */
+  .leaf[data-tint='true'] {
+    background-color: var(--print-card);
+    color: var(--print-ink);
+  }
+
+  /* Paper. Not a palette colour — it is the absence of one. */
+  .leaf[data-tint='false'] {
+    background-color: #ffffff;
+    color: var(--print-ink);
+  }
+
+  /* The reverse of whichever face is hinged or turned. */
+  .leaf[data-face='back'] {
+    transform: rotateY(180deg);
+  }
+
+  /* A flat card: one sheet, turned over. */
+  .flip {
+    position: absolute;
+    inset: 0;
+    transform-style: preserve-3d;
+    transition: transform 800ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .flip[data-open='true'] {
+    transform: rotateY(180deg);
+  }
+
+  /*
+   * A folded card. The sheet is two pages wide and the right page is the
+   * whole card while it is shut, so the closed state slides the pair half a
+   * page left to sit the card in the middle of the slot; opening it puts the
+   * spread back where it belongs. The left page is the back of the cover and
+   * swings with it — only the right one never moves.
+   */
+  .fold {
+    position: absolute;
+    inset: 0;
+    transform-style: preserve-3d;
+    transform: translateX(-25%);
+    transition: transform 900ms cubic-bezier(0.22, 0.61, 0.36, 1);
+  }
+
+  .fold[data-open='true'] {
+    transform: translateX(0);
+  }
+
+  /*
+   * Opening, the shadow comes back almost at once — a transition declared on
+   * the state being entered is the one that runs, so the pair here and on
+   * `.leaf` make the two directions differ. The page is uncovered early in
+   * the swing and a shadow that arrived last read as the card settling twice.
+   */
+  .fold[data-open='true'] .leaf {
+    transition: box-shadow 160ms ease 40ms;
+  }
+
+  /*
+   * Shut, the cover lies exactly over the page behind it, so the two faces
+   * cast into the same place and the card reads twice as heavy as the flat
+   * one. Only the face in front casts while the card is shut; the page
+   * underneath takes its own shadow back on the way open, late enough that
+   * the cover has already swung clear of it.
+   */
+  .fold:not([data-open='true']) .fold-page:not(.fold-flap) .leaf {
+    box-shadow: none;
+  }
+
+  .fold-page {
+    position: absolute;
+    inset-block: 0;
+    inset-inline-start: 50%;
+    inline-size: 50%;
+  }
+
+  .fold-page.fold-flap {
+    transform-origin: left center;
+    transform-style: preserve-3d;
+    transition: transform 900ms cubic-bezier(0.22, 0.61, 0.36, 1);
+  }
+
+  .fold-page.fold-flap[data-open='true'] {
+    transform: rotateY(-180deg);
+  }
+
   .elevation-light {
     box-shadow: 0px 5px 20px #2f281fa6;
   }
 
   .elevation-btn {
-    box-shadow: 0px 2px 10px #2f281f80;
+    box-shadow: 0px 2px 10px #2f281fc1;
+  }
+
+  .elevation-panel {
+    box-shadow: -1px 0px 25px #2f281fc1;
   }
 }
 

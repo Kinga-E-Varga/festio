@@ -11,6 +11,7 @@ Where things live. Check here before searching the codebase.
 | `globals.css` | **All** Tailwind v4 theme config lives here (`@theme`). No JS config file. |
 | `[invite]/page.tsx` | Public guest-facing invitation (`/maria-birthday-1657`) |
 | `invitations/[id]/page.tsx` | Host-side invitation view/editor |
+| `prints/[id]/page.tsx` | Host-side printable invitation |
 | `templates/[id]/page.tsx` | Template preview |
 | `dashboard/page.tsx` | Dashboard home |
 | `dashboard/layout.tsx` | Dashboard shell wrapper |
@@ -34,6 +35,13 @@ One file per template, **auto-discovered — no registration step.**
 - `ScaledStage.tsx` — scales the invitation to its container.
 - `styles.ts`, `icons.tsx` — local to invitations.
 
+## Print — `src/components/print/`
+
+- `PrintEditor.tsx` — the page shell: host action bar, panel, preview.
+- `PrintPanel.tsx` — the print settings form; `PrintPreview.tsx` — the card, flipped or folded.
+
+Geometry (`.sheet`, `.sheet-view`, `.leaf`, `.flip`, `.fold`, `.sheet-form`) lives in `globals.css`.
+
 ## Dashboard — `src/components/dashboard/`
 
 Shell: `DashboardShell.tsx`, `SideNav.tsx`, `TopBar.tsx`, `SiteFooter.tsx`, `NavLink.tsx`.
@@ -42,7 +50,7 @@ Events: `EventCard.tsx`, `EventRow.tsx`, `EventList.tsx`, `EventGroups.tsx`, `Ev
 
 Invitations: `InvitationCard.tsx`, `InvitationGroups.tsx`.
 
-Widgets: `StatStrip.tsx`, `RepliesMeter.tsx`, `SafeguardBar.tsx`, `DatesThatMatter.tsx`, `NotificationsRail.tsx`, `Toast.tsx`, `CopyButton.tsx`, `PasswordField.tsx`, `FocusView.tsx`, `CentreOnHash.tsx`.
+Widgets: `StatStrip.tsx`, `RepliesMeter.tsx`, `DatesThatMatter.tsx`, `NotificationsRail.tsx`, `Toast.tsx`, `CopyButton.tsx`, `PasswordField.tsx`, `FocusView.tsx`, `CentreOnHash.tsx`.
 
 `event-editor/` — the event edit form. `EventEditor.tsx` composes `*Section.tsx` parts; state in `useEventForm.ts`, shared classes in `styles.ts`.
 
@@ -58,7 +66,7 @@ Widgets: `StatStrip.tsx`, `RepliesMeter.tsx`, `SafeguardBar.tsx`, `DatesThatMatt
 
 ## Other
 
-- `src/types/` — `invitation.ts` (incl. `TemplateModule`), `dashboard.ts`
+- `src/types/` — `invitation.ts` (incl. `TemplateModule`), `dashboard.ts`, `print.ts`
 - `src/mock/dashboard.ts` — mock data; **no Firestore wiring yet**
 - `src/components/icons.tsx` — app-wide icons
 - Config: `next.config.ts`, `tsconfig.json`, `eslint.config.mjs`, `postcss.config.mjs`

@@ -1,22 +1,22 @@
-import { EventRow } from "@/components/dashboard/EventRow";
-import { orderEvents } from "@/lib/event";
-import type { DashboardEvent, EventStatus } from "@/types/dashboard";
+import { EventRow } from '@/components/dashboard/EventRow'
+import { orderEvents } from '@/lib/event'
+import type { DashboardEvent, EventStatus } from '@/types/dashboard'
 
 /** Each pile says what being in it means, so the rows need no status badge. */
 const GROUPS: { status: EventStatus; caption: string }[] = [
   {
-    status: "active",
-    caption: "Active — the invitation is live or ready to share",
+    status: 'active',
+    caption: 'Active — the invitation is live or ready to share',
   },
-  { status: "draft", caption: "Drafts — not paid for, never reachable" },
-  { status: "past", caption: "Past — closed, kept until the deletion date" },
-];
+  { status: 'draft', caption: 'Drafts — not paid for, never reachable' },
+  { status: 'past', caption: 'Past — closed, kept until the deletion date' },
+]
 
 interface EventGroupsProps {
-  events: DashboardEvent[];
+  events: DashboardEvent[]
   /** Which piles this tab shows; the rest are left out entirely. */
-  statuses: EventStatus[];
-  emptyMessage: string;
+  statuses: EventStatus[]
+  emptyMessage: string
 }
 
 export function EventGroups({
@@ -28,14 +28,14 @@ export function EventGroups({
     (group) =>
       statuses.includes(group.status) &&
       events.some((event) => event.status === group.status),
-  );
+  )
 
   if (groups.length === 0) {
     return (
       <p className="border border-dashed border-mustard-300 bg-mustard-100 px-6 py-11 text-center text-neutral-700">
         {emptyMessage}
       </p>
-    );
+    )
   }
 
   return (
@@ -51,7 +51,7 @@ export function EventGroups({
            * the nav and the activity rail both take width away from it, so the
            * two never agree.
            */}
-          <div className="flex flex-col gap-[28px]">
+          <div className="flex flex-col gap-7">
             {orderEvents(
               events.filter((event) => event.status === group.status),
               group.status,
@@ -62,5 +62,5 @@ export function EventGroups({
         </section>
       ))}
     </div>
-  );
+  )
 }

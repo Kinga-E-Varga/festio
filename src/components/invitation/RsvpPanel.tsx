@@ -127,7 +127,7 @@ export function RsvpPanel({
                 <button
                   type="button"
                   onClick={() => setOpen(true)}
-                  className={`${open ? 'opacity-0' : 'font-[family-name:var(--font-primary)] text-[16px] tracking-[0.06em] text-[color:var(--c1)] bg-[var(--c2)] border-1 border-[var(--c2)] py-2.5 px-8 rounded-xs hover:bg-[var(--c3)] hover:border-[var(--c3)] transition-all'}`}
+                  className={`${open ? 'opacity-0' : 'font-[family-name:var(--font-primary)] text-[16px] tracking-[0.06em] text-[color:var(--c1)] bg-[var(--c2)] border-1 border-[var(--c2)] py-2.5 px-8 rounded-sm hover:bg-[var(--c3)] hover:border-[var(--c3)] transition-all'}`}
                 >
                   Respond Now
                 </button>
