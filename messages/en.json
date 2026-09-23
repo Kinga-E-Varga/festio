@@ -209,8 +209,6 @@
     "other": "Other"
   },
   "EventPage": {
-    "metaTitle": "{title} · Festio",
-    "metaFallback": "Event · Festio",
     "allEvents": "All events",
     "closedTitle": "Editing closed on {date}",
     "closedBody": "Event and invitation editing closed the day before the event. The record stays readable, and your printable file is still yours to download.",
@@ -411,5 +409,19 @@
     "glutenFree": "gluten-free",
     "notOnList": "not on pre-loaded list",
     "addedByHost": "added by host"
+  },
+  "Meta": {
+    "description": "Invitations, RSVPs and everything after.",
+    "dashboard": "Dashboard · Festio",
+    "events": "Events · Festio",
+    "invitations": "Invitations · Festio",
+    "event": "{title} · Festio",
+    "eventFallback": "Event · Festio",
+    "invitation": "{title} · Invitation · Festio",
+    "invitationFallback": "Invitation · Festio",
+    "print": "{title} · Print · Festio",
+    "printFallback": "Print · Festio",
+    "template": "{name} · Templates · Festio",
+    "templateFallback": "Templates · Festio"
   }
 }

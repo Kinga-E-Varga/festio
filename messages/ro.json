@@ -209,8 +209,6 @@
     "other": "Altceva"
   },
   "EventPage": {
-    "metaTitle": "{title} · Festio",
-    "metaFallback": "Eveniment · Festio",
     "allEvents": "Toate evenimentele",
     "closedTitle": "Editarea s-a închis pe {date}",
     "closedBody": "Editarea evenimentului și a invitației s-a închis cu o zi înainte de eveniment. Datele rămân vizibile, iar fișierul de tipărit îl poți descărca în continuare.",
@@ -411,5 +409,19 @@
     "glutenFree": "fără gluten",
     "notOnList": "nu e în lista încărcată",
     "addedByHost": "adăugat de gazdă"
+  },
+  "Meta": {
+    "description": "Invitații, confirmări și tot ce urmează.",
+    "dashboard": "Panou · Festio",
+    "events": "Evenimente · Festio",
+    "invitations": "Invitații · Festio",
+    "event": "{title} · Festio",
+    "eventFallback": "Eveniment · Festio",
+    "invitation": "{title} · Invitație · Festio",
+    "invitationFallback": "Invitație · Festio",
+    "print": "{title} · Tipărire · Festio",
+    "printFallback": "Tipărire · Festio",
+    "template": "{name} · Șabloane · Festio",
+    "templateFallback": "Șabloane · Festio"
   }
 }

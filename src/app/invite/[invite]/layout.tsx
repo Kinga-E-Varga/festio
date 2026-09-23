@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { NextIntlClientProvider } from "next-intl";
+import { getTranslations } from "next-intl/server";
 import { HistoryTracker } from "@/components/HistoryTracker";
 import { loadMessages } from "@/i18n/messages";
 import { DEFAULT_LANGUAGE, invitationLanguage } from "@/lib/language";
@@ -16,10 +17,17 @@ import "@/app/globals.css";
  * `next.config.ts` rewrites the real, unprefixed URL
  * (`festio.eu/maria-birthday-1657`) here invisibly.
  */
-export const metadata: Metadata = {
-  title: "Festio",
-  description: "Invitations, RSVPs and everything after.",
-};
+export async function generateMetadata({
+  params,
+}: LayoutProps<"/invite/[invite]">): Promise<Metadata> {
+  const { invite } = await params;
+  const event = findByInvite(EVENTS, invite);
+  const t = await getTranslations({
+    locale: event ? invitationLanguage(event) : DEFAULT_LANGUAGE,
+    namespace: "Meta",
+  });
+  return { title: "Festio", description: t("description") };
+}
 
 export default async function InviteRootLayout({
   children,

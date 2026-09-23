@@ -19,9 +19,9 @@ type Props = PageProps<"/[locale]/dashboard/events/[id]">;
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { id } = await params;
   const event = findEvent(id);
-  const t = await getTranslations("EventPage");
+  const t = await getTranslations("Meta");
   return {
-    title: event ? t("metaTitle", { title: event.title }) : t("metaFallback"),
+    title: event ? t("event", { title: event.title }) : t("eventFallback"),
   };
 }
 

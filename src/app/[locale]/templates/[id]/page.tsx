@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { getLocale } from "next-intl/server";
+import { getLocale, getTranslations } from "next-intl/server";
 import { notFound } from "next/navigation";
 import { HostInvitationEditor } from "@/components/invitation/HostInvitationEditor";
 import { fallbackValues } from "@/lib/invitation";
@@ -10,8 +10,11 @@ type Props = PageProps<"/[locale]/templates/[id]">;
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { id } = await params;
   const loaded = await loadTemplate(id);
+  const t = await getTranslations("Meta");
   return {
-    title: loaded ? `${loaded.template.name} · Templates · Festio` : "Templates · Festio",
+    title: loaded
+      ? t("template", { name: loaded.template.name })
+      : t("templateFallback"),
     robots: { index: false, follow: false },
   };
 }

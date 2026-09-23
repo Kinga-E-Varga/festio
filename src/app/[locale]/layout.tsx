@@ -1,15 +1,16 @@
 import type { Metadata } from "next";
 import { hasLocale, NextIntlClientProvider } from "next-intl";
+import { getTranslations } from "next-intl/server";
 import { notFound } from "next/navigation";
 import { routing } from "@/i18n/routing";
 import { HistoryTracker } from "@/components/HistoryTracker";
 import { appFontClassName } from "@/app/fonts";
 import "@/app/globals.css";
 
-export const metadata: Metadata = {
-  title: "Festio",
-  description: "Invitations, RSVPs and everything after.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations("Meta");
+  return { title: "Festio", description: t("description") };
+}
 
 export function generateStaticParams() {
   return routing.locales.map((locale) => ({ locale }));

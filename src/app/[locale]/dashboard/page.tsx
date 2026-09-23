@@ -7,8 +7,9 @@ import { Icon } from '@/components/icons'
 import { orderEvents } from '@/lib/event'
 import { EVENTS, HOST } from '@/mock/dashboard'
 
-export const metadata: Metadata = {
-  title: 'Dashboard · Festio',
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations('Meta')
+  return { title: t('dashboard') }
 }
 
 export default async function DashboardPage() {

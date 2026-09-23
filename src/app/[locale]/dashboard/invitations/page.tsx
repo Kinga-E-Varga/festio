@@ -9,8 +9,9 @@ import { InvitationGroups } from '@/components/dashboard/InvitationGroups'
 import { EVENTS, findEvent } from '@/mock/dashboard'
 import type { EventStatus } from '@/types/dashboard'
 
-export const metadata: Metadata = {
-  title: 'Invitations · Festio',
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations('Meta')
+  return { title: t('invitations') }
 }
 
 const ALL: EventStatus[] = ['active', 'draft', 'past']

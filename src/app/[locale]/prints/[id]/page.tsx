@@ -13,8 +13,9 @@ type Props = PageProps<"/[locale]/prints/[id]">;
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { id } = await params;
   const event = findEvent(id);
+  const t = await getTranslations("Meta");
   return {
-    title: event ? `${event.title} · Print · Festio` : "Print · Festio",
+    title: event ? t("print", { title: event.title }) : t("printFallback"),
     robots: { index: false, follow: false },
   };
 }

@@ -10,8 +10,9 @@ import { Icon } from '@/components/icons'
 import { EVENTS, findEvent } from '@/mock/dashboard'
 import type { EventStatus } from '@/types/dashboard'
 
-export const metadata: Metadata = {
-  title: 'Events · Festio',
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations('Meta')
+  return { title: t('events') }
 }
 
 const ALL: EventStatus[] = ['active', 'draft', 'past']

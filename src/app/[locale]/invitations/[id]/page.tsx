@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { getTranslations } from "next-intl/server";
 import { notFound } from "next/navigation";
 import { HostInvitationEditor } from "@/components/invitation/HostInvitationEditor";
 import { loadMessages } from "@/i18n/messages";
@@ -12,8 +13,11 @@ type Props = PageProps<"/[locale]/invitations/[id]">;
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { id } = await params;
   const event = findEvent(id);
+  const t = await getTranslations("Meta");
   return {
-    title: event ? `${event.title} · Invitation · Festio` : "Invitation · Festio",
+    title: event
+      ? t("invitation", { title: event.title })
+      : t("invitationFallback"),
     robots: { index: false, follow: false },
   };
 }

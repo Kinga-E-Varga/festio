@@ -209,8 +209,6 @@
     "other": "Egyéb"
   },
   "EventPage": {
-    "metaTitle": "{title} · Festio",
-    "metaFallback": "Esemény · Festio",
     "allEvents": "Összes esemény",
     "closedTitle": "A szerkesztés lezárult: {date}",
     "closedBody": "Az esemény és a meghívó szerkesztése az esemény előtti napon lezárult. Az adatok továbbra is olvashatók, és a nyomtatható fájlt továbbra is letöltheted.",
@@ -411,5 +409,19 @@
     "glutenFree": "gluténmentes",
     "notOnList": "nincs az előre feltöltött listán",
     "addedByHost": "a házigazda rögzítette"
+  },
+  "Meta": {
+    "description": "Meghívók, visszajelzések és minden, ami utána jön.",
+    "dashboard": "Vezérlőpult · Festio",
+    "events": "Események · Festio",
+    "invitations": "Meghívók · Festio",
+    "event": "{title} · Festio",
+    "eventFallback": "Esemény · Festio",
+    "invitation": "{title} · Meghívó · Festio",
+    "invitationFallback": "Meghívó · Festio",
+    "print": "{title} · Nyomtatás · Festio",
+    "printFallback": "Nyomtatás · Festio",
+    "template": "{name} · Sablonok · Festio",
+    "templateFallback": "Sablonok · Festio"
   }
 }
