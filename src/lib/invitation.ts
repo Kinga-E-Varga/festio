@@ -1,5 +1,12 @@
 import type { CSSProperties } from 'react'
 import { isRealDate } from '@/lib/event'
+import {
+  DEFAULT_LANGUAGE,
+  LANGUAGE_LOCALE,
+  invitationLanguage,
+  localized,
+  type Language,
+} from '@/lib/language'
 import type { DashboardEvent } from '@/types/dashboard'
 import type {
   Palette,
@@ -150,14 +157,23 @@ const FROM_EVENT: Record<string, (event: DashboardEvent) => string> = {
   address: (event) => event.address,
 }
 
+/*
+ * The language is taken from the event rather than passed in: a fallback is
+ * copy a guest reads, so there is only ever one right answer for it, and
+ * asking each caller to supply it would be inviting one of them to get it
+ * wrong.
+ */
 export function seedValues(
   template: InvitationTemplate,
   event: DashboardEvent,
 ): TemplateValues {
+  const language = invitationLanguage(event)
   const values: TemplateValues = { [EVENT_DATE]: event.date }
   for (const field of template.fields) {
     const fromEvent = FROM_EVENT[field.id]
-    values[field.id] = fromEvent ? fromEvent(event) : field.fallback
+    values[field.id] = fromEvent
+      ? fromEvent(event)
+      : localized(field.fallback, language)
   }
   return values
 }
@@ -165,12 +181,15 @@ export function seedValues(
 /**
  * A template previewed on its own, before any host has picked it — every
  * field is just its own fallback copy, since there is no event yet to seed
- * title/date/venue from.
+ * title/date/venue from, and no invitation to hold a language either.
  */
-export function fallbackValues(template: InvitationTemplate): TemplateValues {
+export function fallbackValues(
+  template: InvitationTemplate,
+  language: Language = DEFAULT_LANGUAGE,
+): TemplateValues {
   const values: TemplateValues = { [EVENT_DATE]: MOCK_EVENT_DATE }
   for (const field of template.fields) {
-    values[field.id] = field.fallback
+    values[field.id] = localized(field.fallback, language)
   }
   return values
 }
@@ -194,34 +213,45 @@ export const MOCK_EVENT_DATE = '2024-08-24'
  */
 export interface DateFormatOption {
   id: string
-  render: (date: Date) => string
+  /**
+   * `locale` is the invitation's own language, not the host's app locale —
+   * a date on a card is guest-facing copy like any other.
+   */
+  render: (date: Date, locale: string) => string
 }
 
 const pad = (part: number) => String(part).padStart(2, '0')
 
+/** The month as the invitation's language writes it. */
+function monthName(date: Date, locale: string): string {
+  return new Intl.DateTimeFormat(locale, { month: 'long' }).format(date)
+}
+
 export const DATE_FORMATS: DateFormatOption[] = [
   {
     id: 'long',
-    render: (date) =>
-      date.toLocaleDateString('en-GB', {
+    render: (date, locale) =>
+      date.toLocaleDateString(locale, {
         day: 'numeric',
         month: 'long',
         year: 'numeric',
       }),
   },
   {
+    /*
+     * Month first is a style the host picks, so it is built rather than
+     * asked for: `Intl` writes the parts in whatever order the language
+     * prefers, which would collapse this option into `long` outside English.
+     * Only the month name itself comes from the language.
+     */
     id: 'monthFirst',
-    render: (date) =>
-      date.toLocaleDateString('en-US', {
-        month: 'long',
-        day: 'numeric',
-        year: 'numeric',
-      }),
+    render: (date, locale) =>
+      `${monthName(date, locale)} ${date.getDate()}, ${date.getFullYear()}`,
   },
   {
     id: 'weekday',
-    render: (date) =>
-      date.toLocaleDateString('en-GB', {
+    render: (date, locale) =>
+      date.toLocaleDateString(locale, {
         weekday: 'long',
         day: 'numeric',
         month: 'long',
@@ -248,28 +278,37 @@ export const DEFAULT_DATE_FORMAT = DATE_FORMATS[0].id
  * value saved before the list changed — reads as the default rather than
  * blanking the card's date line.
  */
-export function formatInvitationDate(iso: string, formatId: string): string {
+export function formatInvitationDate(
+  iso: string,
+  formatId: string,
+  language: Language = DEFAULT_LANGUAGE,
+): string {
   if (!iso) return ''
   const date = new Date(`${iso}T00:00`)
   if (!isRealDate(date)) return iso
 
   const format =
     DATE_FORMATS.find((option) => option.id === formatId) ?? DATE_FORMATS[0]
-  return format.render(date)
+  return format.render(date, LANGUAGE_LOCALE[language])
 }
 
 /**
  * What the card is actually handed: the host's values with the date already
- * written out, so a template just prints `values.date` and never has to know
- * a format was chosen. Applied at render, not at seed, so the card follows
- * the host's choice live while the editor is open.
+ * written out in the invitation's own language, so a template just prints
+ * `values.date` and never has to know a format or a language was chosen.
+ * Applied at render, not at seed, so the card follows the host's choice live
+ * while the editor is open.
  */
-export function cardValues(values: TemplateValues): TemplateValues {
+export function cardValues(
+  values: TemplateValues,
+  language: Language = DEFAULT_LANGUAGE,
+): TemplateValues {
   return {
     ...values,
     [EVENT_DATE]: formatInvitationDate(
       values[EVENT_DATE] ?? '',
       values.dateFormat ?? DEFAULT_DATE_FORMAT,
+      language,
     ),
   }
 }

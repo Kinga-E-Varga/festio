@@ -51,6 +51,12 @@ export const template: InvitationTemplate = {
     under: 'color3',
   },
 
+  /*
+   * A fallback that is a phrase is declared in every language Festio speaks;
+   * the ones that stay plain strings — the names, the two addresses, the date
+   * format — are sample content standing in for the host's own, and read the
+   * same whichever language the invitation is in.
+   */
   fields: [
     /* Read by the RSVP panel, not by the card — the line above the reply. */
     {
@@ -58,7 +64,11 @@ export const template: InvitationTemplate = {
       label: 'message',
       type: 'text',
       maxLength: 120,
-      fallback: 'We would love to know if you can join us.',
+      fallback: {
+        en: 'We would love to know if you can join us.',
+        ro: 'Ne-ar face mare plăcere să știm dacă poți veni.',
+        hu: 'Nagyon örülnénk, ha tudnánk, hogy tudsz-e jönni.',
+      },
       scope: 'rsvp',
     },
     {
@@ -66,14 +76,22 @@ export const template: InvitationTemplate = {
       label: 'opening line',
       type: 'text',
       maxLength: 40,
-      fallback: 'We invite you to',
+      fallback: {
+        en: 'We invite you to',
+        ro: 'Vă invităm să',
+        hu: 'Szeretettel meghívunk',
+      },
     },
     {
       id: 'title2',
       label: 'opening line',
       type: 'text',
       maxLength: 60,
-      fallback: 'celebrate our wedding',
+      fallback: {
+        en: 'celebrate our wedding',
+        ro: 'sărbătoriți nunta noastră',
+        hu: 'esküvőnk megünneplésére',
+      },
     },
     {
       id: 'name1',
@@ -100,7 +118,11 @@ export const template: InvitationTemplate = {
       label: 'bold text',
       type: 'text',
       maxLength: 90,
-      fallback: 'Ceremony | 1 PM',
+      fallback: {
+        en: 'Ceremony | 1 PM',
+        ro: 'Cununia | 13:00',
+        hu: 'Szertartás | 13:00',
+      },
     },
     {
       id: 'text2',
@@ -114,7 +136,11 @@ export const template: InvitationTemplate = {
       label: 'bold text',
       type: 'text',
       maxLength: 90,
-      fallback: 'Reception | 4 PM',
+      fallback: {
+        en: 'Reception | 4 PM',
+        ro: 'Petrecerea | 16:00',
+        hu: 'Fogadás | 16:00',
+      },
     },
     {
       id: 'text4',

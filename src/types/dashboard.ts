@@ -1,4 +1,5 @@
 import type { StaticImageData } from "next/image";
+import type { Language } from "@/lib/language";
 
 export type IconName =
   | "home"
@@ -38,8 +39,14 @@ export type IconName =
   | "menu"
   | "close";
 
+/**
+ * The nav is Festio's own structure, so what each entry is *called* lives in
+ * the message catalogs and only the key travels with the data. Same for the
+ * footer below.
+ */
 export interface NavItem {
-  label: string;
+  /** A key in the `Nav` namespace. */
+  labelKey: string;
   href: string;
   icon: IconName;
   /** Small count shown right-aligned, e.g. how many invitations are live. */
@@ -47,7 +54,8 @@ export interface NavItem {
 }
 
 export interface NavSection {
-  label: string;
+  /** A key in the `Nav` namespace. */
+  labelKey: string;
   items: NavItem[];
 }
 
@@ -117,6 +125,15 @@ export interface DashboardEvent {
   invitationType: 1 | 2;
   /** Which template file draws this invitation; see `src/templates/`. */
   templateId?: string;
+  /**
+   * The language the invitation itself is written in — RSVP labels, Festio's
+   * own section copy, the dates guests read. Never the host's app locale: a
+   * host reading Festio in Hungarian may send a Romanian invitation.
+   *
+   * Absent means English. Invitations made before this field existed carry
+   * nothing, and read as English without anyone touching them.
+   */
+  language?: Language;
   paid: boolean;
   /** The host-editable half of the link. */
   slug: string;
@@ -152,10 +169,17 @@ export interface DashboardEvent {
 }
 
 export interface DashboardStat {
-  label: string;
+  /** A key in the `Stats` namespace. */
+  labelKey: string;
   value: string;
-  /** Quieter text trailing the value, e.g. "of 4" or "2 days away". */
-  detail?: string;
+  /**
+   * A key in the `Stats` namespace for the quieter text trailing the value,
+   * e.g. "of 4" or "days away". It follows the value rather than wrapping it,
+   * so every language has to phrase it as a suffix.
+   */
+  detailKey?: string;
+  /** Filled into `detailKey` when it names a count. */
+  detailValue?: number;
 }
 
 export type NoticeTone = "unmatched" | "deadline" | "safeguard" | "billing";
@@ -184,6 +208,7 @@ export interface RsvpActivity {
 }
 
 export interface FooterColumn {
-  label: string;
-  links: string[];
+  /** Keys in the `Footer` namespace — the heading, then each link under it. */
+  labelKey: string;
+  linkKeys: string[];
 }

@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import type { EventForm } from "@/components/dashboard/event-editor/useEventForm";
 
 const BUTTON =

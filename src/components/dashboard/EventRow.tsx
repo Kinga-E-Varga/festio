@@ -1,5 +1,6 @@
+import { useTranslations } from 'next-intl'
 import Image from 'next/image'
-import Link from 'next/link'
+import { Link } from '@/i18n/navigation'
 import { CopyButton } from '@/components/dashboard/CopyButton'
 import { DatesThatMatter } from '@/components/dashboard/DatesThatMatter'
 import { PasswordField } from '@/components/dashboard/PasswordField'
@@ -89,6 +90,7 @@ function Tally({
  * somewhere else that repeats it, so the card takes no hover state.
  */
 export function EventRow({ event }: { event: DashboardEvent }) {
+  const t = useTranslations('Event')
   const deletion = formatEventDate(deletionDate(event.date))
   const link = invitationLink(event)
   const { cap } = event.safeguard
@@ -171,7 +173,7 @@ export function EventRow({ event }: { event: DashboardEvent }) {
             {/* 2 — how a guest reaches it. */}
             {archived ? null : (
               <div className={PANEL}>
-                <h4 className={PANEL_LABEL}>Sharing</h4>
+                <h4 className={PANEL_LABEL}>{t('sharing')}</h4>
                 {/* Stacked fields butt together and share their edges. */}
                 <div className="flex max-w-[340px] flex-col [&>*+*]:border-t-0">
                   <span className={FIELD}>
@@ -206,29 +208,32 @@ export function EventRow({ event }: { event: DashboardEvent }) {
             {/* 3 — how many have answered. */}
             {archived ? null : (
               <div className={PANEL}>
-                <h4 className={PANEL_LABEL}>Replies</h4>
+                <h4 className={PANEL_LABEL}>{t('replies')}</h4>
 
                 {event.rsvp.invited === 0 ? (
                   <p className="text-[12.5px] leading-[1.45] text-neutral-700">
-                    Nothing shared yet — the reply form opens when the page
-                    becomes reachable.
+                    {t('nothingShared')}
                   </p>
                 ) : (
                   <>
                     <dl className="grid grid-cols-2 gap-x-4 gap-y-2.5 @min-[400px]:grid-cols-4">
                       <Tally
-                        label="Replied"
+                        label={t('replied')}
                         value={event.rsvp.replied}
                         detail={`/${event.rsvp.invited}`}
                       />
-                      <Tally label="Attending" value={event.rsvp.attending} />
-                      <Tally label="Declined" value={event.rsvp.declined} />
-                      <Tally label="Pending" value={event.rsvp.pending} />
+                      <Tally label={t('attending')} value={event.rsvp.attending} />
+                      <Tally label={t('declined')} value={event.rsvp.declined} />
+                      <Tally label={t('pending')} value={event.rsvp.pending} />
                     </dl>
 
                     <div
                       role="img"
-                      aria-label={`Attendee safeguard: ${event.rsvp.attending} attending and ${event.rsvp.declined} declined, against a cap of ${cap}`}
+                      aria-label={t('safeguardAria', {
+                        attending: event.rsvp.attending,
+                        declined: event.rsvp.declined,
+                        cap,
+                      })}
                       className="safeguard mt-3.5"
                       style={barVars}
                     >
@@ -238,14 +243,17 @@ export function EventRow({ event }: { event: DashboardEvent }) {
 
                     <p className="mt-[9px] flex items-center gap-2 text-[11.5px] text-neutral-700">
                       <span className="flex-1">
-                        Attendee safeguard {replied} of {cap} ·{' '}
-                        {safeguardPercent}%
+                        {t('safeguardLine', {
+                          replied,
+                          cap,
+                          percent: safeguardPercent,
+                        })}
                       </span>
                       <button
                         type="button"
                         className="text-forest-500 underline underline-offset-2 transition-colors hover:text-forest-600"
                       >
-                        Raise cap
+                        {t('raiseCap')}
                       </button>
                     </p>
                   </>
@@ -255,7 +263,7 @@ export function EventRow({ event }: { event: DashboardEvent }) {
 
             {/* 4 — the deadlines that govern it. */}
             <div className={PANEL}>
-              <h4 className={PANEL_LABEL}>Dates that matter</h4>
+              <h4 className={PANEL_LABEL}>{t('datesThatMatter')}</h4>
               {archived ? (
                 <p className="text-[12.5px] leading-[1.45] text-neutral-700">
                   Guest data was deleted on {deletion},{' '}
@@ -296,16 +304,16 @@ export function EventRow({ event }: { event: DashboardEvent }) {
                 <button
                   type="button"
                   disabled
-                  title="This event has already happened"
+                  title={t('alreadyHappened')}
                   className={ACTION}
                 >
                   <Icon name="pencil" className="size-[15px]" />
-                  Edit event
+                  {t('editEvent')}
                 </button>
               ) : (
                 <Link href={`/dashboard/events/${event.id}`} className={ACTION}>
                   <Icon name="pencil" className="size-[15px]" />
-                  Edit event
+                  {t('editEvent')}
                 </Link>
               )}
 
@@ -319,11 +327,11 @@ export function EventRow({ event }: { event: DashboardEvent }) {
                 <button
                   type="button"
                   disabled
-                  title="This event has already happened"
+                  title={t('alreadyHappened')}
                   className={ACTION}
                 >
                   <Icon name="layers" className="size-[15px]" />
-                  Edit invitation
+                  {t('editInvitation')}
                 </button>
               ) : (
                 <Link
@@ -331,7 +339,7 @@ export function EventRow({ event }: { event: DashboardEvent }) {
                   className={ACTION}
                 >
                   <Icon name="layers" className="size-[15px]" />
-                  Edit invitation
+                  {t('editInvitation')}
                 </Link>
               )}
 
@@ -348,26 +356,26 @@ export function EventRow({ event }: { event: DashboardEvent }) {
                   className={ACTION}
                 >
                   <Icon name="eye" className="size-[15px]" />
-                  View as guest
+                  {t('viewAsGuest')}
                 </a>
               ) : (
                 <button
                   type="button"
                   disabled
-                  title="Pick a design for this invitation first"
+                  title={t('noDesign')}
                   className={ACTION}
                 >
                   <Icon name="eye" className="size-[15px]" />
-                  View as guest
+                  {t('viewAsGuest')}
                 </button>
               )}
               <button type="button" className={ACTION}>
                 <Icon name="printer" className="size-[15px]" />
-                Print
+                {t('print')}
               </button>
               <button type="button" className={ACTION}>
                 <Icon name="guests" className="size-[15px]" />
-                Guest list
+                {t('guestList')}
               </button>
               <button
                 type="button"
@@ -375,12 +383,12 @@ export function EventRow({ event }: { event: DashboardEvent }) {
                 title={
                   event.seatingAvailable
                     ? undefined
-                    : 'Seating charts come with paid invitations'
+                    : t('seatingPaidOnly')
                 }
                 className={ACTION}
               >
                 <Icon name="seating" className="size-[15px]" />
-                Seating
+                {t('seating')}
               </button>
             </div>
           </div>

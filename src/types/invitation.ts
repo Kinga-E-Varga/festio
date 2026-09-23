@@ -1,3 +1,4 @@
+import type { LocalizedText } from '@/lib/language'
 import type { EventKind, TierId } from '@/types/dashboard'
 
 /**
@@ -43,12 +44,21 @@ export type FieldScope = 'card' | 'rsvp'
 /** One host-editable slot. The edit form is generated from these alone. */
 export interface TemplateField {
   id: string
+  /**
+   * What the host's edit form calls this slot. Still English everywhere:
+   * it is editor chrome, and it changes language with the rest of the
+   * dashboard rather than on its own.
+   */
   label: string
   type: FieldType
   /** Typed input only — a `dateFormat` choice has nothing to cap. */
   maxLength?: number
-  /** Seeds the field when the event carries nothing for it. */
-  fallback: string
+  /**
+   * Seeds the field when the event carries nothing for it. Guests read this
+   * until the host types over it, so anything that is a phrase is declared in
+   * every language; a name, an address or a format id stays a plain string.
+   */
+  fallback: LocalizedText
   scope?: FieldScope
 }
 

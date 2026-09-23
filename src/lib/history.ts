@@ -15,7 +15,7 @@
  * it is not ours.
  */
 
-import { useRouter } from 'next/navigation'
+import { useRouter } from '@/i18n/navigation'
 
 const KEY = 'festioDepth'
 

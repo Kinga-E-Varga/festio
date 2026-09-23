@@ -1,10 +1,12 @@
 import type { Metadata } from "next";
+import { getLocale } from "next-intl/server";
 import { notFound } from "next/navigation";
 import { HostInvitationEditor } from "@/components/invitation/HostInvitationEditor";
 import { fallbackValues } from "@/lib/invitation";
+import type { Language } from "@/lib/language";
 import { loadTemplate } from "@/templates";
 
-type Props = PageProps<"/templates/[id]">;
+type Props = PageProps<"/[locale]/templates/[id]">;
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { id } = await params;
@@ -28,7 +30,19 @@ export default async function TemplatePreviewPage({ params }: Props) {
 
   const { template } = loaded;
 
+  /*
+   * There is no invitation here to hold a language of its own, so the
+   * preview speaks the host's — the only person who ever sees this page.
+   * The route's own locale is already one of `LANGUAGES`; `[locale]` is
+   * matched against that same list before anything renders.
+   */
+  const language = (await getLocale()) as Language;
+
   return (
-    <HostInvitationEditor template={template} initial={fallbackValues(template)} />
+    <HostInvitationEditor
+      template={template}
+      initial={fallbackValues(template, language)}
+      language={language}
+    />
   );
 }

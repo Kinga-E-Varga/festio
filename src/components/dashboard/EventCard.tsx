@@ -1,5 +1,6 @@
+import { useTranslations } from 'next-intl'
 import Image from 'next/image'
-import Link from 'next/link'
+import { Link } from '@/i18n/navigation'
 import { CopyButton } from '@/components/dashboard/CopyButton'
 import { PasswordField } from '@/components/dashboard/PasswordField'
 import { Icon } from '@/components/icons'
@@ -24,7 +25,10 @@ const FIELD_NOTE = `${FIELD_BASE} bg-terracotta-200`
 
 interface Warning {
   icon: IconName
-  text: string
+  /** A key in the `Event` namespace. */
+  key: string
+  /** Values the key takes, when it names a number. */
+  values?: Record<string, number>
 }
 
 /**
@@ -37,21 +41,22 @@ function warningsFor(event: DashboardEvent, safeguardPercent: number) {
   const warnings: Warning[] = []
 
   if (!event.paid) {
-    warnings.push({ icon: 'alert', text: 'Payment pending' })
+    warnings.push({ icon: 'alert', key: 'paymentPending' })
   }
 
   if (event.locked) {
-    warnings.push({ icon: 'lock', text: 'Editing closed' })
+    warnings.push({ icon: 'lock', key: 'editingClosed' })
   } else if (event.isNextUp && event.locksInLabel) {
-    warnings.push({
-      icon: 'clock',
-      text: 'Edit locks soon',
-    })
+    warnings.push({ icon: 'clock', key: 'editLocksSoon' })
   }
 
   /* A cap nobody is near is a safeguard working, not news. */
   if (event.rsvp.replied > 0 && safeguardPercent >= SAFEGUARD_WARNING) {
-    warnings.push({ icon: 'shield', text: `Safeguard at ${safeguardPercent}%` })
+    warnings.push({
+      icon: 'shield',
+      key: 'safeguardAt',
+      values: { percent: safeguardPercent },
+    })
   }
 
   return warnings
@@ -92,6 +97,7 @@ export function EventCard({ event }: { event: DashboardEvent }) {
   const replied = event.rsvp.replied
   const safeguardPercent = safeguardReplyPercent(event)
   const barVars = safeguardBarVars(event)
+  const t = useTranslations('Event')
   const warnings = warningsFor(event, safeguardPercent)
   const replyCloses = formatDeadline(contentFreeze(event.date))
 
@@ -175,11 +181,11 @@ export function EventCard({ event }: { event: DashboardEvent }) {
                 <div className="col-span-full row-start-3 mt-4 mb-0 flex flex-wrap items-center gap-2 @min-[508px]:mt-0 @min-[508px]:mb-[18px]">
                   {warnings.map((warning) => (
                     <span
-                      key={warning.text}
+                      key={warning.key}
                       className="flex items-center gap-1.5 border border-terracotta-400 bg-terracotta-200 px-2.5 py-1 text-xs font-semibold text-terracotta-600"
                     >
                       <Icon name={warning.icon} className="size-3.5" />
-                      {warning.text}
+                      {t(warning.key, warning.values)}
                     </span>
                   ))}
                 </div>
@@ -238,18 +244,22 @@ export function EventCard({ event }: { event: DashboardEvent }) {
           <div className="col-span-full row-start-6 mt-4 @min-[508px]:mt-0 @min-[508px]:w-full @min-[904px]:col-span-1 @min-[904px]:col-start-3 @min-[904px]:row-start-1 @min-[904px]:w-auto @min-[904px]:self-center @min-[904px]:border-l @min-[904px]:border-mustard-300 @min-[904px]:pl-[26px]">
             <dl className="mb-3 grid grid-cols-2 gap-x-5 gap-y-[9px] @2xl:grid-cols-4 @2xl:gap-1.5">
               <Tally
-                label="Replied"
+                label={t('replied')}
                 value={event.rsvp.replied}
                 detail={`/${event.rsvp.invited}`}
               />
-              <Tally label="Attending" value={event.rsvp.attending} />
-              <Tally label="Declined" value={event.rsvp.declined} />
-              <Tally label="Pending" value={event.rsvp.pending} />
+              <Tally label={t('attending')} value={event.rsvp.attending} />
+              <Tally label={t('declined')} value={event.rsvp.declined} />
+              <Tally label={t('pending')} value={event.rsvp.pending} />
             </dl>
 
             <div
               role="img"
-              aria-label={`Attendee safeguard: ${event.rsvp.attending} attending and ${event.rsvp.declined} declined, against a cap of ${cap}`}
+              aria-label={t('safeguardAria', {
+                attending: event.rsvp.attending,
+                declined: event.rsvp.declined,
+                cap,
+              })}
               className="safeguard"
               style={barVars}
             >
@@ -310,7 +320,7 @@ export function EventCard({ event }: { event: DashboardEvent }) {
         href={`/dashboard/events?event=${event.id}#focus`}
         className="group/bar flex items-center justify-center gap-2 border-t border-mustard-300 px-4 py-3 text-[11px] font-semibold tracking-[0.16em] text-mustard-600 bg-mustard-200/70 uppercase transition-colors hover:bg-mustard-300/50"
       >
-        Manage this event
+        {t('manageEvent')}
         <span className="sr-only">: {event.title}</span>
         <Icon
           name="arrowRight"

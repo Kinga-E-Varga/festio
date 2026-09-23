@@ -1,5 +1,6 @@
 'use client'
 
+import { useTranslations } from "next-intl";
 import {
   useEffect,
   useRef,
@@ -36,6 +37,7 @@ export function DashboardShell({
   notices,
   children,
 }: DashboardShellProps) {
+  const t = useTranslations("TopBar");
   const [open, setOpen] = useState<Drawer | null>(null)
   const navPanelRef = useRef<HTMLDivElement>(null)
   const noticesPanelRef = useRef<HTMLDivElement>(null)
@@ -119,7 +121,7 @@ export function DashboardShell({
         </main>
 
         <aside
-          aria-label="Activity"
+          aria-label={t("activity")}
           className="sticky top-topbar hidden h-[calc(100vh-var(--spacing-topbar))] w-rail shrink-0 overflow-y-auto border-l border-mustard-300 bg-mustard-100 px-[18px] py-5 rail:block"
         >
           {notices}
@@ -142,7 +144,7 @@ export function DashboardShell({
         tabIndex={-1}
         role="dialog"
         aria-modal="true"
-        aria-label="Dashboard menu"
+        aria-label={t("menu")}
         inert={!navOpen}
         onClick={closeOnLink}
         className={`${PANEL} left-0 w-side max-w-[88vw] nav:hidden ${
@@ -157,7 +159,7 @@ export function DashboardShell({
         tabIndex={-1}
         role="dialog"
         aria-modal="true"
-        aria-label="Activity"
+        aria-label={t("activity")}
         inert={!noticesOpen}
         onClick={closeOnLink}
         className={`${PANEL} right-0 w-rail max-w-[88vw] overflow-y-auto px-[18px] py-5 rail:hidden ${

@@ -1,7 +1,7 @@
 "use client";
 
-import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { useTranslations } from "next-intl";
+import { Link, usePathname } from "@/i18n/navigation";
 import { Icon } from "@/components/icons";
 import type { NavItem } from "@/types/dashboard";
 
@@ -10,6 +10,7 @@ import type { NavItem } from "@/types/dashboard";
  * needs the pathname, which layouts don't receive as a prop.
  */
 export function NavLink({ item }: { item: NavItem }) {
+  const t = useTranslations("Nav");
   const pathname = usePathname();
   const isCurrent = pathname === item.href;
 
@@ -26,7 +27,7 @@ export function NavLink({ item }: { item: NavItem }) {
       }`}
     >
       <Icon name={item.icon} className="size-[17px] shrink-0" />
-      <span className="truncate">{item.label}</span>
+      <span className="truncate">{t(item.labelKey)}</span>
       {item.badge ? (
         <span
           className={`ml-auto text-xs tabular-nums ${

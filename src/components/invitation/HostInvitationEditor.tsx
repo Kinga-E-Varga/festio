@@ -4,6 +4,7 @@ import { Suspense, useState } from 'react'
 import { Toast, useToast } from '@/components/dashboard/Toast'
 import { useLeaveFestio } from '@/lib/history'
 import { cardValues } from '@/lib/invitation'
+import type { Language } from '@/lib/language'
 import { TemplateCard } from '@/templates/TemplateCard'
 import type { InvitationTemplate, TemplateValues } from '@/types/invitation'
 import { EditPanel } from './EditPanel'
@@ -15,6 +16,8 @@ import { HOST_ACTION } from './styles'
 interface HostInvitationEditorProps {
   template: InvitationTemplate
   initial: TemplateValues
+  /** The invitation's own language — what the card's date is written in. */
+  language: Language
 }
 
 /**
@@ -25,6 +28,7 @@ interface HostInvitationEditorProps {
 export function HostInvitationEditor({
   template,
   initial,
+  language,
 }: HostInvitationEditorProps) {
   const [values, setValues] = useState(initial)
   const [editing, setEditing] = useState(true)
@@ -49,6 +53,7 @@ export function HostInvitationEditor({
           <EditPanel
             template={template}
             values={values}
+            language={language}
             open={editing}
             onChange={change}
             onClose={() => setEditing(false)}
@@ -74,7 +79,10 @@ export function HostInvitationEditor({
       >
         <Suspense fallback={null}>
           {/* The date is written out here, not in the template — see `cardValues`. */}
-          <TemplateCard id={template.id} values={cardValues(values)} />
+          <TemplateCard
+            id={template.id}
+            values={cardValues(values, language)}
+          />
         </Suspense>
       </Invitation>
       <Toast message={toast.message} />

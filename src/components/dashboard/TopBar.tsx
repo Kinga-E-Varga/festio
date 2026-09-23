@@ -1,5 +1,6 @@
+import { useTranslations } from "next-intl";
 import Image from "next/image";
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import { Icon } from "@/components/icons";
 import { ATTENTION_NOTICES, EVENTS, HOST } from "@/mock/dashboard";
 
@@ -23,6 +24,7 @@ export function TopBar({
   onToggleNav,
   onToggleNotices,
 }: TopBarProps) {
+  const t = useTranslations("TopBar");
   // An invitation is only live once it is paid for, so the unpaid ones are
   // exactly what is sitting in the cart.
   const awaitingPayment = EVENTS.filter((event) => !event.paid).length;
@@ -38,7 +40,7 @@ export function TopBar({
         type="button"
         onClick={onToggleNav}
         aria-expanded={navOpen}
-        aria-label="Open dashboard menu"
+        aria-label={t("openMenu")}
         className={`${ICON_BUTTON} -ml-2 nav:hidden`}
       >
         <Icon name="menu" className="size-[22px]" />
@@ -70,7 +72,7 @@ export function TopBar({
           type="button"
           onClick={onToggleNotices}
           aria-expanded={noticesOpen}
-          aria-label={`Activity, ${ATTENTION_NOTICES.length} items need attention`}
+          aria-label={t("activityCount", { count: ATTENTION_NOTICES.length })}
           className={`${ICON_BUTTON} rail:hidden`}
         >
           <Icon name="bell" className="size-[22px]" />
@@ -81,9 +83,7 @@ export function TopBar({
 
         <button
           type="button"
-          aria-label={`Cart, ${awaitingPayment} ${
-            awaitingPayment === 1 ? "invitation" : "invitations"
-          } awaiting payment`}
+          aria-label={t("cart", { count: awaitingPayment })}
           className={ICON_BUTTON}
         >
           <Icon name="cart" className="size-[22px]" />
@@ -94,7 +94,7 @@ export function TopBar({
 
         <button
           type="button"
-          aria-label="Your account"
+          aria-label={t("account")}
           className="ml-2.5 grid size-[34px] place-items-center rounded-full bg-mustard-500 text-xs font-semibold tracking-[0.06em] text-neutral-950 transition-colors hover:bg-mustard-400"
         >
           {HOST.initials}

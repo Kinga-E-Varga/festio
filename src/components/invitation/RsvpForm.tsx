@@ -1,5 +1,6 @@
 'use client'
 
+import { useTranslations } from 'next-intl'
 import { useState } from 'react'
 import { GUEST_DATA_RETENTION_DAYS } from '@/lib/config'
 import type { RsvpStatus } from '@/types/invitation'
@@ -15,9 +16,10 @@ import {
 } from './styles'
 import { NAME_LIMIT, NOTE_LIMIT, type RsvpFormState } from './useRsvpForm'
 
-const CHOICES: { id: RsvpStatus; label: string }[] = [
-  { id: 'going', label: 'Going' },
-  { id: 'not_going', label: 'Not going' },
+/** Ids only — what each choice is called is the invitation's language. */
+const CHOICES: { id: RsvpStatus; key: 'going' | 'notGoing' }[] = [
+  { id: 'going', key: 'going' },
+  { id: 'not_going', key: 'notGoing' },
 ]
 
 interface RsvpFormProps {
@@ -28,8 +30,13 @@ interface RsvpFormProps {
 /**
  * The Type 1 reply: names, one going choice for the whole reply, and an
  * optional note. Everything else a template might ask is Type 2's business.
+ *
+ * Every word here is Festio's, not the host's, so it comes from the catalog
+ * of the invitation's own `language` — the provider around this tree, never
+ * the locale the host happens to read the dashboard in.
  */
 export function RsvpForm({ form, onSubmit }: RsvpFormProps) {
+  const t = useTranslations('Rsvp')
   const { values, set, derived } = form
   const [attempted, setAttempted] = useState(false)
   const showNameWarning = attempted && derived.anyNameEmpty
@@ -47,7 +54,7 @@ export function RsvpForm({ form, onSubmit }: RsvpFormProps) {
       }}
     >
       <fieldset className="flex flex-col gap-6">
-        <legend className={`${LABEL} mb-3`}>Who is coming</legend>
+        <legend className={`${LABEL} mb-3`}>{t('whoIsComing')}</legend>
 
         {values.rows.map((row, index) => (
           <div key={row.id} className="flex items-end gap-3">
@@ -55,15 +62,15 @@ export function RsvpForm({ form, onSubmit }: RsvpFormProps) {
               type="text"
               value={row.value}
               maxLength={NAME_LIMIT}
-              placeholder="Full name"
-              aria-label={`Name ${index + 1}`}
+              placeholder={t('fullName')}
+              aria-label={t('nameNumber', { number: index + 1 })}
               onChange={(control) => set.name(row.id, control.target.value)}
               className={INPUT}
             />
             {index > 0 ? (
               <button
                 type="button"
-                aria-label={`Remove name ${index + 1}`}
+                aria-label={t('removeName', { number: index + 1 })}
                 onClick={() => set.removeName(row.id)}
                 className="pb-[7px] text-[color:var(--c2)] transition-opacity hover:text-[color:var(--c3)]"
               >
@@ -78,24 +85,24 @@ export function RsvpForm({ form, onSubmit }: RsvpFormProps) {
           onClick={set.addName}
           className={`${QUIET} self-start`}
         >
-          + New person
+          {t('addPerson')}
         </button>
       </fieldset>
 
       <div className="flex flex-col gap-2">
         <label htmlFor="rsvp-note" className={LABEL}>
-          Note for the host
+          {t('noteLabel')}
         </label>
         <textarea
           id="rsvp-note"
           rows={3}
           value={values.note}
           maxLength={NOTE_LIMIT}
-          placeholder="Optional"
+          placeholder={t('notePlaceholder')}
           onChange={(control) => set.note(control.target.value)}
           className={TEXTAREA}
         />
-        <p className={HINT}>{derived.noteLeft} characters left</p>
+        <p className={HINT}>{t('charactersLeft', { count: derived.noteLeft })}</p>
       </div>
 
       <fieldset className="flex flex-col gap-3">
@@ -108,7 +115,7 @@ export function RsvpForm({ form, onSubmit }: RsvpFormProps) {
               onClick={() => set.status(choice.id)}
               className={`flex-1 ${values.status === choice.id ? TOGGLE_SOLID : TOGGLE_OUTLINE}`}
             >
-              {choice.label}
+              {t(choice.key)}
             </button>
           ))}
         </div>
@@ -117,18 +124,16 @@ export function RsvpForm({ form, onSubmit }: RsvpFormProps) {
       <div className="flex flex-col gap-3">
         {showNameWarning ? (
           <p className="text-[12px] text-center leading-[1.45] text-[color:var(--c6)]">
-            Please fill in a name for everyone you are RSVPing for.
+            {t('nameWarning')}
           </p>
         ) : null}
 
         <button type="submit" className={SOLID}>
-          Submit Response
+          {t('submit')}
         </button>
 
         <p className={HINT}>
-          Your name and reply go only to the hosts of this event, and are
-          deleted {GUEST_DATA_RETENTION_DAYS} days after it. Nothing is shared
-          with anyone else.
+          {t('privacy', { days: GUEST_DATA_RETENTION_DAYS })}
         </p>
       </div>
     </form>

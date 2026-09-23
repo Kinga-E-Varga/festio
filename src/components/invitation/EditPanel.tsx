@@ -11,6 +11,7 @@ import {
   EVENT_DATE,
   formatInvitationDate,
 } from '@/lib/invitation'
+import type { Language } from '@/lib/language'
 import { PanelViewButton, SidePanel } from './SidePanel'
 import { HINT, INPUT, LABEL, SELECT, TITLE } from './styles'
 
@@ -27,6 +28,8 @@ const GROUPS = [
 interface EditPanelProps {
   template: InvitationTemplate
   values: TemplateValues
+  /** The invitation's language — the date options are previewed in it. */
+  language: Language
   /** Always mounted; this slides it in over the RSVP panel instead of replacing it. */
   open: boolean
   onChange: (id: string, value: string) => void
@@ -46,6 +49,7 @@ interface EditPanelProps {
 export function EditPanel({
   template,
   values,
+  language,
   open,
   onChange,
   onClose,
@@ -79,6 +83,7 @@ export function EditPanel({
               field={field}
               value={values[field.id] ?? ''}
               eventDate={values[EVENT_DATE] ?? ''}
+              language={language}
               onChange={onChange}
             />
           ))}
@@ -101,12 +106,15 @@ function Field({
   field,
   value,
   eventDate,
+  language,
   onChange,
 }: {
   field: TemplateField
   value: string
   /** The event's own date — what a `dateFormat` choice is previewed against. */
   eventDate: string
+  /** The language the previewed dates are written in. */
+  language: Language
   onChange: (id: string, value: string) => void
 }) {
   return (
@@ -130,7 +138,7 @@ function Field({
           >
             {DATE_FORMATS.map((option) => (
               <option key={option.id} value={option.id}>
-                {formatInvitationDate(eventDate, option.id)}
+                {formatInvitationDate(eventDate, option.id, language)}
               </option>
             ))}
           </select>

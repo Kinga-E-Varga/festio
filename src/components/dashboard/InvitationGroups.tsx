@@ -1,15 +1,16 @@
+import { useTranslations } from "next-intl";
 import { InvitationCard } from "@/components/dashboard/InvitationCard";
 import { orderEvents } from "@/lib/event";
 import type { DashboardEvent, EventStatus } from "@/types/dashboard";
 
-/** Each pile says what being in it means, so the cards need no status badge. */
-const GROUPS: { status: EventStatus; caption: string }[] = [
-  { status: "active", caption: "Active — the invitation is visible to guests" },
-  {
-    status: "draft",
-    caption: "Drafts — hidden or not paid for, never reachable",
-  },
-  { status: "past", caption: "Past — closed, kept until the deletion date" },
+/**
+ * Each pile says what being in it means, so the cards need no status badge.
+ * The captions are keys into the `Invitations` namespace.
+ */
+const GROUPS: { status: EventStatus; captionKey: string }[] = [
+  { status: "active", captionKey: "groupActive" },
+  { status: "draft", captionKey: "groupDraft" },
+  { status: "past", captionKey: "groupPast" },
 ];
 
 interface InvitationGroupsProps {
@@ -24,6 +25,7 @@ export function InvitationGroups({
   statuses,
   emptyMessage,
 }: InvitationGroupsProps) {
+  const t = useTranslations("Invitations");
   const groups = GROUPS.filter(
     (group) =>
       statuses.includes(group.status) &&
@@ -43,7 +45,7 @@ export function InvitationGroups({
       {groups.map((group) => (
         <section key={group.status}>
           <h3 className="mb-2.5 text-[10px] font-semibold tracking-[0.18em] text-mustard-500 uppercase">
-            {group.caption}
+            {t(group.captionKey)}
           </h3>
           {/*
            * Portrait cards, on the events list's own card gap. Each step is

@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import { notFound } from "next/navigation";
 import { Banner } from "@/components/dashboard/event-editor/Banner";
 import { EventEditor } from "@/components/dashboard/event-editor/EventEditor";
@@ -7,7 +7,7 @@ import { Icon } from "@/components/icons";
 import { contentFreeze, formatDeadline } from "@/lib/event";
 import { findEvent, TIERS } from "@/mock/dashboard";
 
-type Props = PageProps<"/dashboard/events/[id]">;
+type Props = PageProps<"/[locale]/dashboard/events/[id]">;
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { id } = await params;

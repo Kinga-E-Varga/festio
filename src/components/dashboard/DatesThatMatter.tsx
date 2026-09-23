@@ -1,3 +1,4 @@
+import { useTranslations } from "next-intl";
 import type { ReactNode } from "react";
 import {
   contentFreeze,
@@ -65,6 +66,7 @@ export function DatesThatMatter({
   event,
   layout = "stacked",
 }: DatesThatMatterProps) {
+  const t = useTranslations("Event");
   const freeze = formatDeadline(contentFreeze(event.date));
   const deletion = formatEventDate(deletionDate(event.date));
   const row = layout === "row";
@@ -73,7 +75,7 @@ export function DatesThatMatter({
     <div className={row ? "flex flex-wrap gap-x-6 gap-y-3.5" : undefined}>
       <DateNote
         edge={event.locked ? "border-neutral-500" : "border-mustard-500"}
-        title={event.locked ? "Editing closed" : "Editing freezes"}
+        title={t(event.locked ? "editingClosed" : "editingFreezes")}
         row={row}
       >
         {freeze}
@@ -81,7 +83,7 @@ export function DatesThatMatter({
 
       <DateNote
         edge="border-steel-500"
-        title="Reply form closes"
+        title={t("replyFormCloses")}
         row={row}
       >
         {freeze}
@@ -89,7 +91,7 @@ export function DatesThatMatter({
 
       <DateNote
         edge="border-terracotta-500"
-        title="Record deleted"
+        title={t("recordDeleted")}
         row={row}
       >
         {deletion}

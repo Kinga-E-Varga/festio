@@ -1,11 +1,13 @@
 import type { Metadata } from 'next'
+import { getTranslations } from 'next-intl/server'
 import { CentreOnHash } from '@/components/dashboard/CentreOnHash'
+import { HostToday } from '@/components/dashboard/HostToday'
 import { EventGroups } from '@/components/dashboard/EventGroups'
 import { EventRow } from '@/components/dashboard/EventRow'
 import { EventTabs, type EventTab } from '@/components/dashboard/EventTabs'
 import { FocusView } from '@/components/dashboard/FocusView'
 import { Icon } from '@/components/icons'
-import { EVENTS, EVENTS_LEDE, findEvent, HOST } from '@/mock/dashboard'
+import { EVENTS, findEvent } from '@/mock/dashboard'
 import type { EventStatus } from '@/types/dashboard'
 
 export const metadata: Metadata = {
@@ -16,12 +18,13 @@ const ALL: EventStatus[] = ['active', 'draft', 'past']
 
 export default async function EventsPage({
   searchParams,
-}: PageProps<'/dashboard/events'>) {
+}: PageProps<'/[locale]/dashboard/events'>) {
   /*
    * `?event=` is how another page hands one event over — the dashboard's own
    * cards do, from Manage this event. An id that matches nothing is simply
    * the whole list, which is what the address without the query already is.
    */
+  const t = await getTranslations('Events')
   const { event: requested } = await searchParams
   const focused =
     typeof requested === 'string' ? findEvent(requested) : undefined
@@ -32,49 +35,49 @@ export default async function EventsPage({
   const tabs: EventTab[] = [
     {
       id: 'all',
-      label: 'All',
+      label: t('tabAll'),
       count: EVENTS.length,
       panel: (
         <EventGroups
           events={EVENTS}
           statuses={ALL}
-          emptyMessage="No events yet. Pick a template to start your first invitation."
+          emptyMessage={t('emptyAll')}
         />
       ),
     },
     {
       id: 'active',
-      label: 'Active',
+      label: t('tabActive'),
       count: count('active'),
       panel: (
         <EventGroups
           events={EVENTS}
           statuses={['active']}
-          emptyMessage="Nothing live yet. Pick a template to start your first invitation."
+          emptyMessage={t('emptyActive')}
         />
       ),
     },
     {
       id: 'drafts',
-      label: 'Drafts',
+      label: t('tabDrafts'),
       count: count('draft'),
       panel: (
         <EventGroups
           events={EVENTS}
           statuses={['draft']}
-          emptyMessage="No drafts waiting. Saved-but-unpaid invitations land here."
+          emptyMessage={t('emptyDrafts')}
         />
       ),
     },
     {
       id: 'past',
-      label: 'Past',
+      label: t('tabPast'),
       count: count('past'),
       panel: (
         <EventGroups
           events={EVENTS}
           statuses={['past']}
-          emptyMessage="No past events yet. Invitations move here the day after the event."
+          emptyMessage={t('emptyPast')}
         />
       ),
     },
@@ -88,26 +91,24 @@ export default async function EventsPage({
       {/* The title block and the one primary action share a row. */}
       <header className="flex items-center gap-6">
         <div className="min-w-0 flex-1">
-          <p className="text-[11px] font-semibold tracking-[0.16em] text-forest-500 uppercase">
-            {HOST.todayLabel}
-          </p>
+          <HostToday />
           <h1 className="mt-1.5 font-serif text-[34px] leading-[1.05] text-neutral-900 @min-[720px]:text-[46px]">
-            Events
+            {t('title')}
           </h1>
         </div>
 
         {/* Below 560 the label goes and the plus stands on its own. */}
         <button
           type="button"
-          aria-label="New event"
+          aria-label={t('newEvent')}
           className="flex shrink-0 items-center gap-2 rounded-md border border-forest-500 bg-forest-500 px-4 py-2.5 font-medium text-neutral-50 transition-colors hover:border-forest-600 hover:bg-forest-600 @max-[560px]:gap-0 @max-[560px]:p-[11px]"
         >
           <Icon name="plus" className="size-[18px]" strokeWidth={2} />
-          <span className="@max-[560px]:hidden">New event</span>
+          <span className="@max-[560px]:hidden">{t('newEvent')}</span>
         </button>
       </header>
 
-      <p className="mt-3.5 mb-[26px] text-neutral-700">{EVENTS_LEDE}</p>
+      <p className="mt-3.5 mb-[26px] text-neutral-700">{t('lede')}</p>
 
       <EventTabs
         tabs={tabs}
@@ -116,9 +117,9 @@ export default async function EventsPage({
         fallback={
           focused ? (
             <FocusView
-              note="Showing the selected event only."
+              note={t('focusNote')}
               href="/dashboard/events"
-              linkLabel="Show all"
+              linkLabel={t('focusLink')}
             >
               <EventRow event={focused} />
             </FocusView>

@@ -1,3 +1,4 @@
+import { useTranslations } from "next-intl";
 import { Icon } from "@/components/icons";
 import { TIERS } from "@/mock/dashboard";
 import type {
@@ -6,25 +7,20 @@ import type {
   Visibility,
 } from "@/types/dashboard";
 
+/**
+ * The icon is this map's own; what each visibility is *called* and what it
+ * means are keys into the `Event` namespace, since both are words.
+ */
 export const VISIBILITY: Record<
   Visibility,
-  { label: string; icon: IconName; blurb: string }
+  { labelKey: string; icon: IconName; blurbKey: string }
 > = {
-  hidden: {
-    label: "Hidden",
-    icon: "eyeOff",
-    blurb: "Only you can see the invitation.",
-  },
-  public: {
-    label: "Public",
-    icon: "globe",
-    blurb: "Anyone holding the link can see the invitation and can RSVP.",
-  },
+  hidden: { labelKey: "hidden", icon: "eyeOff", blurbKey: "hiddenNote" },
+  public: { labelKey: "public", icon: "globe", blurbKey: "publicNote" },
   protected: {
-    label: "Protected",
+    labelKey: "protected",
     icon: "shield",
-    blurb:
-      "The invitation can only be viewed with a password. Remember to share the password with your guests.",
+    blurbKey: "protectedNote",
   },
 };
 
@@ -51,6 +47,7 @@ export function EventMeta({
   locksIn = true,
   size = "sm",
 }: EventMetaProps) {
+  const t = useTranslations("Event");
   const visibility = VISIBILITY[event.visibility];
 
   return (
@@ -61,18 +58,18 @@ export function EventMeta({
     >
       <span className="flex items-center gap-1.5">
         <Icon name={visibility.icon} className={size === "md" ? "size-4" : "size-3.5"} />
-        {visibility.label}
+        {t(visibility.labelKey)}
       </span>
       <span>{TIERS[event.tier].name}</span>
 
       {deadlines && !event.paid ? (
-        <span className={CHIP}>Payment pending</span>
+        <span className={CHIP}>{t("paymentPending")}</span>
       ) : null}
 
       {deadlines && event.locked ? (
         <span className={CHIP}>
           <Icon name="lock" className="size-3.5" />
-          Editing closed
+          {t("editingClosed")}
         </span>
       ) : null}
 

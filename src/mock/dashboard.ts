@@ -17,52 +17,49 @@ import type {
   TierId,
 } from "@/types/dashboard";
 
-/** Placeholder host until accounts are wired up. */
+/**
+ * Placeholder host until accounts are wired up. The name and the date are
+ * data, not sentences: the greeting around the name and the way the date is
+ * written both change with the host's language.
+ */
 export const HOST = {
-  greeting: "Bună, Maria",
+  name: "Maria",
   initials: "MI",
-  todayLabel: "Friday, 4 September 2026",
+  today: "2026-09-04",
 };
 
-/** What an event *is*, said once, where the events themselves are managed. */
-export const EVENTS_LEDE =
-  "Each event is one record and one purchase. Every event has an invitation with a response form, so you can track and manage your guests.";
-
-/** What an invitation *is*, said once, where the invitations are managed. */
-export const INVITATIONS_LEDE =
-  "The guest-facing page of each event — its wording, its design and its printable card. To change the event itself, go to Events.";
-
+/* Keys into the `Nav` message namespace; the words themselves live there. */
 export const NAV_SECTIONS: NavSection[] = [
   {
-    label: "Hosting",
+    labelKey: "hosting",
     items: [
-      { label: "Home", href: "/dashboard", icon: "home" },
+      { labelKey: "home", href: "/dashboard", icon: "home" },
       {
-        label: "Events",
+        labelKey: "events",
         href: "/dashboard/events",
         icon: "calendar",
         badge: "4",
       },
       {
-        label: "Invitations",
+        labelKey: "invitations",
         href: "/dashboard/invitations",
         icon: "envelope",
       },
     ],
   },
   {
-    label: "Studio",
+    labelKey: "studio",
     items: [
-      { label: "Print & downloads", href: "/dashboard/print", icon: "printer" },
-      { label: "Templates", href: "/dashboard/templates", icon: "templates" },
+      { labelKey: "print", href: "/dashboard/print", icon: "printer" },
+      { labelKey: "templates", href: "/dashboard/templates", icon: "templates" },
     ],
   },
   {
-    label: "Account",
+    labelKey: "account",
     items: [
-      { label: "Billing", href: "/dashboard/billing", icon: "billing" },
-      { label: "Privacy & data", href: "/dashboard/privacy", icon: "shield" },
-      { label: "Settings", href: "/dashboard/settings", icon: "settings" },
+      { labelKey: "billing", href: "/dashboard/billing", icon: "billing" },
+      { labelKey: "privacy", href: "/dashboard/privacy", icon: "shield" },
+      { labelKey: "settings", href: "/dashboard/settings", icon: "settings" },
     ],
   },
 ];
@@ -106,11 +103,17 @@ export const EVENT_KINDS: { id: EventKind; label: string }[] = [
   { id: "other", label: "Other" },
 ];
 
+/* Keys into the `Stats` message namespace. */
 export const STATS: DashboardStat[] = [
-  { label: "Live invitations", value: "3", detail: "of 4" },
-  { label: "Next event", value: "2", detail: "days away" },
-  { label: "New replies", value: "12", detail: "since last visit" },
-  { label: "Unmatched names", value: "5", detail: "unknown" },
+  {
+    labelKey: "liveInvitations",
+    value: "3",
+    detailKey: "ofTotal",
+    detailValue: 4,
+  },
+  { labelKey: "nextEvent", value: "2", detailKey: "daysAway" },
+  { labelKey: "newReplies", value: "12", detailKey: "sinceLastVisit" },
+  { labelKey: "unmatchedNames", value: "5", detailKey: "unknown" },
 ];
 
 export const EVENTS: DashboardEvent[] = [
@@ -129,6 +132,8 @@ export const EVENTS: DashboardEvent[] = [
     tier: 3,
     invitationType: 2,
     templateId: "wolf-dance",
+    /* Every other event carries none, and so reads as English — the rollout default. */
+    language: "ro",
     paid: true,
     locksInLabel: "30 hours",
     slug: "maria-andrei",
@@ -422,32 +427,28 @@ export const RECENT_RSVPS: RsvpActivity[] = [
   },
 ];
 
+/* Keys into the `Footer` message namespace. */
 export const FOOTER_COLUMNS: FooterColumn[] = [
   {
-    label: "Product",
-    links: [
-      "Template gallery",
-      "Editions & pricing",
-      "Print sizes",
-      "Seating charts",
+    labelKey: "product",
+    linkKeys: [
+      "templateGallery",
+      "editionsPricing",
+      "printSizes",
+      "seatingCharts",
     ],
   },
   {
-    label: "For hosts",
-    links: [
-      "Getting started",
-      "Writing RSVP questions",
-      "Sharing your link",
-      "Cancel or postpone",
+    labelKey: "forHosts",
+    linkKeys: [
+      "gettingStarted",
+      "writingQuestions",
+      "sharingLink",
+      "cancelPostpone",
     ],
   },
   {
-    label: "Legal",
-    links: [
-      "Terms & DPA",
-      "Privacy notice",
-      "Data retention",
-      "Cookies",
-    ],
+    labelKey: "legal",
+    linkKeys: ["termsDpa", "privacyNotice", "dataRetention", "cookies"],
   },
 ];

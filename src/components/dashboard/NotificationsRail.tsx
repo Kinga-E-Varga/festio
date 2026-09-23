@@ -1,4 +1,5 @@
-import Link from "next/link";
+import { useTranslations } from "next-intl";
+import { Link } from "@/i18n/navigation";
 import type { ReactNode } from "react";
 import { GUEST_DATA_RETENTION_DAYS } from "@/lib/config";
 import { ATTENTION_NOTICES, RECENT_RSVPS } from "@/mock/dashboard";
@@ -25,9 +26,17 @@ function Panel({ label, children }: { label: string; children: ReactNode }) {
 }
 
 export function NotificationsRail() {
+  const t = useTranslations("Rail");
+
   return (
     <div>
-      <Panel label="Needs your attention">
+      {/*
+       * The notices and the activity below are still English: both are
+       * sentences Festio generates from an event's own numbers, and what
+       * generates them does not exist yet. They become catalog messages with
+       * the write layer, when the facts behind each line are settled.
+       */}
+      <Panel label={t("needsAttention")}>
         <ul>
           {ATTENTION_NOTICES.map((notice) => (
             <li
@@ -54,7 +63,7 @@ export function NotificationsRail() {
         </ul>
       </Panel>
 
-      <Panel label="Recent RSVPs">
+      <Panel label={t("recentRsvps")}>
         <ul>
           {RECENT_RSVPS.map((entry) => (
             <li
@@ -102,23 +111,34 @@ export function NotificationsRail() {
       </Panel>
 
       <section className="border border-terracotta-400 bg-terracotta-200 p-5 text-terracotta-600">
-        <h2 className={`${PANEL_LABEL} text-terracotta-600`}>Data retention</h2>
+        <h2 className={`${PANEL_LABEL} text-terracotta-600`}>
+          {t("dataRetention")}
+        </h2>
+        {/*
+         * Rich text rather than three glued fragments: the number sits mid
+         * sentence, and where "mid" falls is the language's business.
+         */}
         <p className="mb-3 text-[12.5px] leading-[1.5]">
-          Each invitation and all its guest data is deleted automatically{" "}
-          <span className="font-serif text-[22px] align-[-2px]">
-            {GUEST_DATA_RETENTION_DAYS}
-          </span>{" "}
-          days after the event date. Your account stays.
+          {t.rich("retention", {
+            days: GUEST_DATA_RETENTION_DAYS,
+            big: (chunks) => (
+              <span className="font-serif text-[22px] align-[-2px]">
+                {chunks}
+              </span>
+            ),
+          })}
         </p>
         <p className="text-[12.5px] leading-[1.5]">
-          You are the data controller; Festio processes on your behalf under the{" "}
-          <Link
-            href="/legal/terms"
-            className="font-bold underline underline-offset-[3px]"
-          >
-            DPA in the Terms
-          </Link>
-          .
+          {t.rich("controller", {
+            link: (chunks) => (
+              <Link
+                href="/legal/terms"
+                className="font-bold underline underline-offset-[3px]"
+              >
+                {chunks}
+              </Link>
+            ),
+          })}
         </p>
       </section>
     </div>

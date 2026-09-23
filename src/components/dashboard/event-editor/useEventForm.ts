@@ -12,6 +12,7 @@ import {
   normalizeSlug,
   toDateTimeLocal,
 } from "@/lib/event";
+import { invitationLanguage, type Language } from "@/lib/language";
 import type {
   DashboardEvent,
   EventKind,
@@ -23,7 +24,7 @@ import type {
  * warning the host has to take in before the save unlocks — Festio never
  * notifies guests, so acknowledging it is the whole point.
  */
-export type WarningId = "date" | "address" | "password";
+export type WarningId = "date" | "address" | "password" | "language";
 
 export interface Warning {
   shown: boolean;
@@ -38,6 +39,8 @@ const PASSWORD_PATTERN = /^[A-Za-z0-9]{4,}$/;
 interface EventFieldValues {
   title: string;
   kind: EventKind;
+  /** The invitation's own language, never the language the host reads Festio in. */
+  language: Language;
   date: string;
   closeEarly: boolean;
   closeAt: string;
@@ -52,6 +55,7 @@ export function useEventForm(event: DashboardEvent) {
   const original = {
     slug: event.slug,
     password: event.password ?? "",
+    language: invitationLanguage(event),
   };
 
   const { control, setValue, getValues, reset, formState } =
@@ -59,6 +63,7 @@ export function useEventForm(event: DashboardEvent) {
       defaultValues: {
         title: event.title,
         kind: event.kind,
+        language: original.language,
         date: event.date,
         closeEarly: false,
         closeAt: "",
@@ -72,6 +77,7 @@ export function useEventForm(event: DashboardEvent) {
 
   const title = useWatch({ control, name: "title" });
   const kind = useWatch({ control, name: "kind" });
+  const language = useWatch({ control, name: "language" });
   const date = useWatch({ control, name: "date" });
   const closeEarly = useWatch({ control, name: "closeEarly" });
   const closeAt = useWatch({ control, name: "closeAt" });
@@ -86,6 +92,7 @@ export function useEventForm(event: DashboardEvent) {
     date: false,
     address: false,
     password: false,
+    language: false,
   });
 
   /** Nothing is editable once the content freeze has passed. */
@@ -134,6 +141,16 @@ export function useEventForm(event: DashboardEvent) {
       acknowledged: acknowledged.password,
       toggle: (value) => acknowledge("password", value),
     },
+    /*
+     * A new language rewrites the reply form under guests who already have
+     * the link — the same kind of change as moving the date, and warned
+     * about the same way.
+     */
+    language: {
+      shown: shared && language !== original.language,
+      acknowledged: acknowledged.language,
+      toggle: (value) => acknowledge("language", value),
+    },
   };
 
   const pending = Object.values(warnings).filter(
@@ -162,7 +179,12 @@ export function useEventForm(event: DashboardEvent) {
     if (!formState.isDirty || pending > 0 || locked) return;
     reset(getValues());
     setJustSaved(true);
-    setAcknowledged({ date: false, address: false, password: false });
+    setAcknowledged({
+      date: false,
+      address: false,
+      password: false,
+      language: false,
+    });
   }
 
   return {
@@ -170,6 +192,7 @@ export function useEventForm(event: DashboardEvent) {
     values: {
       title,
       kind,
+      language,
       date,
       closeEarly,
       closeAt,
@@ -182,6 +205,10 @@ export function useEventForm(event: DashboardEvent) {
     set: {
       title: edit("title"),
       kind: edit("kind"),
+      language: (value: Language) => {
+        edit("language")(value);
+        if (value === original.language) acknowledge("language", false);
+      },
       date: (value: string) => {
         edit("date")(value);
         if (value === event.date) acknowledge("date", false);

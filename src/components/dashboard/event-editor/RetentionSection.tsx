@@ -1,4 +1,4 @@
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import type { ReactNode } from "react";
 import { EditorSection } from "@/components/dashboard/event-editor/EditorSection";
 import { GUEST_DATA_RETENTION_DAYS } from "@/lib/config";

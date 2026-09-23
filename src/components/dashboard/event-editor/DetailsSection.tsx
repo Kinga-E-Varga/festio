@@ -13,6 +13,7 @@ import {
 import { Toggle } from "@/components/dashboard/event-editor/Toggle";
 import type { EventForm } from "@/components/dashboard/event-editor/useEventForm";
 import { GUEST_DATA_RETENTION_DAYS } from "@/lib/config";
+import { LANGUAGES, LANGUAGE_NAMES, type Language } from "@/lib/language";
 import { EVENT_KINDS } from "@/mock/dashboard";
 import type { DashboardEvent, EventKind } from "@/types/dashboard";
 
@@ -56,7 +57,6 @@ export function DetailsSection({ event, form }: SectionProps) {
         <Field
           htmlFor="event-name"
           label="Event name"
-          className="@min-[820px]:col-span-2"
           hint="Your own label for this event. The only place a guest meets it is the browser tab title."
         >
           <input
@@ -91,6 +91,28 @@ export function DetailsSection({ event, form }: SectionProps) {
         </Field>
 
         <Field
+          htmlFor="event-language"
+          label="Invitation language"
+          hint="What your guests read — the reply form, Festio's own wording, and the date. It has nothing to do with the language you read Festio in."
+        >
+          <select
+            id="event-language"
+            disabled={locked}
+            value={values.language}
+            onChange={(control) =>
+              set.language(control.target.value as Language)
+            }
+            className={INPUT}
+          >
+            {LANGUAGES.map((code) => (
+              <option key={code} value={code}>
+                {LANGUAGE_NAMES[code]}
+              </option>
+            ))}
+          </select>
+        </Field>
+
+        <Field
           htmlFor="event-date"
           label="Date"
           hint="The date of your event, and the one shown on the invitation."
@@ -105,6 +127,17 @@ export function DetailsSection({ event, form }: SectionProps) {
           />
         </Field>
       </div>
+
+      <ChangeWarning
+        title="Changing the invitation's language"
+        warning={form.warnings.language}
+      >
+        Guests who open your link from now on will find the reply form in the
+        new language. Replies already sent are unaffected — they are stored
+        against the question, not its wording. A printable you have already
+        downloaded keeps the language it was made in; download it again to get
+        the new one.
+      </ChangeWarning>
 
       <ChangeWarning title="Moving the date" warning={form.warnings.date}>
         Your invitation will show the new date, but Festio will not tell your

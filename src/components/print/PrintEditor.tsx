@@ -33,10 +33,6 @@ const PRINT_PALETTE = {
   '--print-ground': '#F9F5EA',
 } as CSSProperties
 
-/** The line the second input opens on, until the host writes their own. */
-const DEFAULT_NOTE =
-  'Please respond before the 5th of august 2024 on the link provided below.'
-
 interface PrintEditorProps {
   template: InvitationTemplate
   /**
@@ -47,6 +43,12 @@ interface PrintEditorProps {
   rsvpMessage: string
   /** The guest-facing address, printed on the card. */
   link: string
+  /**
+   * The line the second input opens on, until the host writes their own.
+   * Festio's copy, and it is printed, so it arrives already written in the
+   * invitation's language — never the locale the host reads Festio in.
+   */
+  defaultNote: string
 }
 
 /**
@@ -57,12 +59,17 @@ interface PrintEditorProps {
  *
  * Export does nothing yet beyond saying so.
  */
-export function PrintEditor({ template, rsvpMessage, link }: PrintEditorProps) {
+export function PrintEditor({
+  template,
+  rsvpMessage,
+  link,
+  defaultNote,
+}: PrintEditorProps) {
   const [settings, setSettings] = useState<PrintSettings>({
     shape: 'flat',
     tinted: true,
     headline: rsvpMessage,
-    note: DEFAULT_NOTE,
+    note: defaultNote,
   })
   /*
    * Answered at every width. Below the breakpoint the form covers the

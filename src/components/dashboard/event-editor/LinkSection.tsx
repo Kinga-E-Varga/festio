@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { CopyButton } from "@/components/dashboard/CopyButton";
+import { useTranslations } from "next-intl";
 import { VISIBILITY } from "@/components/dashboard/EventMeta";
 import { Banner } from "@/components/dashboard/event-editor/Banner";
 import { ChangeWarning } from "@/components/dashboard/event-editor/ChangeWarning";
@@ -62,6 +63,8 @@ interface SectionProps {
 }
 
 export function LinkSection({ event, form }: SectionProps) {
+  /* The visibility options are shared with the event cards, so is their copy. */
+  const tEvent = useTranslations("Event");
   const { values, set, derived, locked } = form;
 
   return (
@@ -145,7 +148,7 @@ export function LinkSection({ event, form }: SectionProps) {
                       <span className="size-1.5 rounded-full bg-mustard-500" />
                     ) : null}
                   </span>
-                  {option.label}
+                  {tEvent(option.labelKey)}
                 </span>
                 <input
                   type="radio"
@@ -157,7 +160,7 @@ export function LinkSection({ event, form }: SectionProps) {
                   className="sr-only"
                 />
                 <span className="text-xs leading-[1.45] text-neutral-700">
-                  {option.blurb}
+                  {tEvent(option.blurbKey)}
                 </span>
               </label>
 

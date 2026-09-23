@@ -9,7 +9,7 @@ import { SiteFooter } from "@/components/dashboard/SiteFooter";
  */
 export default function DashboardLayout({
   children,
-}: LayoutProps<"/dashboard">) {
+}: LayoutProps<"/[locale]/dashboard">) {
   return (
     <>
       <DashboardShell nav={<SideNav />} notices={<NotificationsRail />}>

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { Invitation } from "@/components/invitation/Invitation";
 import { cardValues, findByInvite, seedValues } from "@/lib/invitation";
+import { invitationLanguage } from "@/lib/language";
 import { EVENTS } from "@/mock/dashboard";
 import { loadTemplate } from "@/templates";
 
@@ -15,7 +16,7 @@ export const metadata: Metadata = {
 
 export default async function InvitationPage({
   params,
-}: PageProps<"/[invite]">) {
+}: PageProps<"/invite/[invite]">) {
   const { invite } = await params;
 
   const event = findByInvite(EVENTS, invite);
@@ -26,10 +27,12 @@ export default async function InvitationPage({
 
   const { template, Card } = loaded;
   const values = seedValues(template, event);
+  /* The date a guest reads is written in the invitation's own language. */
+  const language = invitationLanguage(event);
 
   return (
     <Invitation template={template} values={values}>
-      <Card values={cardValues(values)} />
+      <Card values={cardValues(values, language)} />
     </Invitation>
   );
 }
