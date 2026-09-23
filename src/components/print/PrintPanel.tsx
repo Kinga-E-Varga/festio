@@ -1,5 +1,6 @@
 'use client'
 
+import { useTranslations } from 'next-intl'
 import type { CSSProperties } from 'react'
 import { CheckIcon } from '@/components/invitation/icons'
 import { PanelViewButton, SidePanel } from '@/components/invitation/SidePanel'
@@ -11,29 +12,14 @@ import {
 } from '@/components/invitation/styles'
 import type { PrintSettings, PrintShape } from '@/types/print'
 
-const SHAPES: { id: PrintShape; label: string }[] = [
-  { id: 'flat', label: 'Flat card' },
-  { id: 'folded', label: 'Folded card' },
-]
-
-/**
- * What the host gets back from us once they print, one shape each, a line
- * per step: what they download, what to do with it, what to print it on.
- * Both shapes are kept here together because the box that shows them must not
+/*
+ * Each shape's id is also its key into `PrintPanel` — its label, and under
+ * `steps` what the host gets back from us once they print, a line per step:
+ * what they download, what to do with it, what to print it on. Both shapes'
+ * steps are rendered together because the box that shows them must not
  * resize when the host switches — see the note where it is rendered.
  */
-const INSTRUCTIONS: Record<PrintShape, string[]> = {
-  flat: [
-    'You will download two images: one for the front, one for the back.',
-    'Print them on the two sides of a single sheet of paper — nothing to fold.',
-    'Paper size: anything between A6 (smallest recommended) and A5 (largest recommended), as long as you keep the A-series proportions.',
-  ],
-  folded: [
-    'You will download two images: one for each side of the sheet.',
-    'Print them on the two sides of a single sheet, then fold it in half — the front of the invitation ends up on the outside.',
-    'Paper size before folding: anything between A5 (smallest recommended) and A4 (largest recommended), as long as you keep the A-series proportions.',
-  ],
-}
+const SHAPES: PrintShape[] = ['flat', 'folded']
 
 interface PrintPanelProps {
   settings: PrintSettings
@@ -61,6 +47,8 @@ export function PrintPanel({
   onChange,
   onClose,
 }: PrintPanelProps) {
+  const t = useTranslations('PrintPanel')
+
   return (
     /*
      * Festio's own faces, not the template's. The form is the app talking to
@@ -93,19 +81,19 @@ export function PrintPanel({
        */}
       <div className="flex flex-col w-full max-w-[500px] m-auto">
         <fieldset className="flex flex-col mb-6">
-          <legend className={`${LABEL} mb-2`}>card style</legend>
+          <legend className={`${LABEL} mb-2`}>{t('cardStyle')}</legend>
           <div className="flex gap-6">
-            {SHAPES.map((option) => (
+            {SHAPES.map((shape) => (
               <button
-                key={option.id}
+                key={shape}
                 type="button"
-                aria-pressed={settings.shape === option.id}
-                onClick={() => onChange('shape', option.id)}
+                aria-pressed={settings.shape === shape}
+                onClick={() => onChange('shape', shape)}
                 className={`flex-1 ${
-                  settings.shape === option.id ? TOGGLE_SOLID : TOGGLE_OUTLINE
+                  settings.shape === shape ? TOGGLE_SOLID : TOGGLE_OUTLINE
                 }`}
               >
-                {option.label}
+                {t(shape)}
               </button>
             ))}
           </div>
@@ -119,7 +107,7 @@ export function PrintPanel({
          * the tab order, and the box follows its state.
          */}
         <fieldset className="flex flex-col mb-6">
-          <legend className={`${LABEL} mb-2`}>Background</legend>
+          <legend className={`${LABEL} mb-2`}>{t('background')}</legend>
           <label className="flex cursor-pointer items-center gap-3">
             <input
               type="checkbox"
@@ -138,20 +126,20 @@ export function PrintPanel({
               {settings.tinted ? <CheckIcon size={12} /> : null}
             </span>
             <span className="text-[16px] leading-[1.45] text-[color:var(--c3)]">
-              Use matching color for the back and inside of the card.
+              {t('tinted')}
             </span>
           </label>
         </fieldset>
 
         <div className="flex flex-col gap-2 mb-6">
           <label htmlFor="print-headline" className={LABEL}>
-            message
+            {t('message')}
           </label>
           <textarea
             id="print-headline"
             rows={2}
             maxLength={120}
-            placeholder="Optional"
+            placeholder={t('optional')}
             value={settings.headline}
             onChange={(control) => onChange('headline', control.target.value)}
             className={TEXTAREA}
@@ -160,13 +148,13 @@ export function PrintPanel({
 
         <div className="flex flex-col gap-2 mb-6">
           <label htmlFor="print-note" className={LABEL}>
-            second line
+            {t('secondLine')}
           </label>
           <textarea
             id="print-note"
             rows={2}
             maxLength={120}
-            placeholder="Optional"
+            placeholder={t('optional')}
             value={settings.note}
             onChange={(control) => onChange('note', control.target.value)}
             className={TEXTAREA}
@@ -175,7 +163,7 @@ export function PrintPanel({
 
         <div className="flex flex-col bg-[var(--c5)] text-[var(--c1)] border-1 border-[var(--c2)] p-4 rounded-sm">
           <p className="text-[14px] text-center font-semibold tracking-[0.1em] border-b-1 pb-2 mb-3 uppercase">
-            Printing Instructions
+            {t('instructions')}
           </p>
           {/*
            * Both sets of instructions are laid in the same cell, the one the
@@ -190,15 +178,15 @@ export function PrintPanel({
            * below the lists however early it came in the markup.
            */}
           <div className="grid">
-            {SHAPES.map((option) => (
+            {SHAPES.map((shape) => (
               <ul
-                key={option.id}
-                aria-hidden={settings.shape !== option.id}
+                key={shape}
+                aria-hidden={settings.shape !== shape}
                 className={`[grid-area:1/1] space-y-2 text-[14px] leading-[1.45] font-[500] text-justify ${
-                  settings.shape === option.id ? '' : 'invisible'
+                  settings.shape === shape ? '' : 'invisible'
                 }`}
               >
-                {INSTRUCTIONS[option.id].map((line) => (
+                {(t.raw(`steps.${shape}`) as string[]).map((line) => (
                   <li key={line}>{line}</li>
                 ))}
               </ul>

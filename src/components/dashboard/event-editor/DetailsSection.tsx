@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { ChangeWarning } from "@/components/dashboard/event-editor/ChangeWarning";
 import { EditorSection } from "@/components/dashboard/event-editor/EditorSection";
 import { Field } from "@/components/dashboard/event-editor/Field";
@@ -48,16 +49,17 @@ interface SectionProps {
 }
 
 export function DetailsSection({ event, form }: SectionProps) {
+  const t = useTranslations("EventEditor");
+  const tOccasions = useTranslations("Occasions");
   const { values, set, derived, locked } = form;
-  const replied = event.rsvp.replied;
 
   return (
-    <EditorSection title="Details" first>
+    <EditorSection title={t("details")} first>
       <div className={FIELD_GRID}>
         <Field
           htmlFor="event-name"
-          label="Event name"
-          hint="Your own label for this event. The only place a guest meets it is the browser tab title."
+          label={t("eventName")}
+          hint={t("eventNameHint")}
         >
           <input
             id="event-name"
@@ -72,8 +74,8 @@ export function DetailsSection({ event, form }: SectionProps) {
 
         <Field
           htmlFor="event-kind"
-          label="Occasion"
-          hint="Sets which templates Festio offers first."
+          label={t("occasion")}
+          hint={t("occasionHint")}
         >
           <select
             id="event-kind"
@@ -82,9 +84,9 @@ export function DetailsSection({ event, form }: SectionProps) {
             onChange={(control) => set.kind(control.target.value as EventKind)}
             className={INPUT}
           >
-            {EVENT_KINDS.map((option) => (
-              <option key={option.id} value={option.id}>
-                {option.label}
+            {EVENT_KINDS.map((id) => (
+              <option key={id} value={id}>
+                {tOccasions(id)}
               </option>
             ))}
           </select>
@@ -92,8 +94,8 @@ export function DetailsSection({ event, form }: SectionProps) {
 
         <Field
           htmlFor="event-language"
-          label="Invitation language"
-          hint="What your guests read — the reply form, Festio's own wording, and the date. It has nothing to do with the language you read Festio in."
+          label={t("language")}
+          hint={t("languageHint")}
         >
           <select
             id="event-language"
@@ -114,8 +116,8 @@ export function DetailsSection({ event, form }: SectionProps) {
 
         <Field
           htmlFor="event-date"
-          label="Date"
-          hint="The date of your event, and the one shown on the invitation."
+          label={t("date")}
+          hint={t("dateHint")}
         >
           <input
             id="event-date"
@@ -129,50 +131,35 @@ export function DetailsSection({ event, form }: SectionProps) {
       </div>
 
       <ChangeWarning
-        title="Changing the invitation's language"
+        title={t("languageWarningTitle")}
         warning={form.warnings.language}
       >
-        Guests who open your link from now on will find the reply form in the
-        new language. Replies already sent are unaffected — they are stored
-        against the question, not its wording. A printable you have already
-        downloaded keeps the language it was made in; download it again to get
-        the new one.
+        {t("languageWarning")}
       </ChangeWarning>
 
-      <ChangeWarning title="Moving the date" warning={form.warnings.date}>
-        Your invitation will show the new date, but Festio will not tell your
-        guests — that part is yours to do.{" "}
-        {replied > 0 ? (
-          <>
-            <b>
-              {replied} {replied === 1 ? "guest has" : "guests have"} already
-              replied
-            </b>{" "}
-            for this event.
-          </>
-        ) : (
-          "No one has replied for this event yet."
-        )}
+      <ChangeWarning title={t("dateWarningTitle")} warning={form.warnings.date}>
+        {t.rich("dateWarning", {
+          count: event.rsvp.replied,
+          b: (chunks) => <b>{chunks}</b>,
+        })}
       </ChangeWarning>
 
-      <p className={`mt-[22px] mb-2.5 ${LABEL}`}>When the reply form closes</p>
+      <p className={`mt-[22px] mb-2.5 ${LABEL}`}>{t("closeHeading")}</p>
 
       <Toggle
-        label="Close the replies earlier"
+        label={t("closeEarly")}
         checked={values.closeEarly}
         disabled={locked}
         onChange={set.closeEarly}
-        description={
-          <>
-            Replies close on <b>{derived.closeDefaultLabel}</b> — the day before
-            the event. Switch this on to close sooner.
-          </>
-        }
+        description={t.rich("closeEarlyNote", {
+          date: derived.closeDefaultLabel,
+          b: (chunks) => <b>{chunks}</b>,
+        })}
       />
 
       {values.closeEarly ? (
         <div className={SUBBOX}>
-          <Field htmlFor="event-close" label="Close the form at">
+          <Field htmlFor="event-close" label={t("closeAt")}>
             <input
               id="event-close"
               type="datetime-local"
@@ -185,7 +172,7 @@ export function DetailsSection({ event, form }: SectionProps) {
           </Field>
           {derived.closeTooLate ? (
             <p className={`mt-[7px] ${ERROR}`}>
-              Pick a time no later than the 24-hour cut-off.
+              {t("closeTooLate")}
             </p>
           ) : null}
         </div>
@@ -194,21 +181,19 @@ export function DetailsSection({ event, form }: SectionProps) {
       <Derived
         items={[
           {
-            term: "Replies close",
+            term: t("repliesClose"),
             value: derived.closeLabel,
-            note: derived.closesEarly
-              ? "Your own time, ahead of the cut-off."
-              : "The day before the event.",
+            note: t(derived.closesEarly ? "closesEarlyNote" : "closesDefaultNote"),
           },
           {
-            term: "Editing freezes",
+            term: t("editingFreezes"),
             value: derived.freezeLabel,
-            note: "Event and invitation editing close the day before the event.",
+            note: t("freezeNote"),
           },
           {
-            term: "Data deleted",
+            term: t("dataDeleted"),
             value: derived.deletionLabel,
-            note: `${event.dataDeleted ? "Already done. " : ""}For GDPR reasons, guest and event data are kept only ${GUEST_DATA_RETENTION_DAYS} days after the event date.`,
+            note: `${event.dataDeleted ? `${t("alreadyDeleted")} ` : ""}${t("deletionNote", { days: GUEST_DATA_RETENTION_DAYS })}`,
           },
         ]}
       />

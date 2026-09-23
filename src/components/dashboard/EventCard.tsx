@@ -1,4 +1,4 @@
-import { useTranslations } from 'next-intl'
+import { useLocale, useTranslations } from 'next-intl'
 import Image from 'next/image'
 import { Link } from '@/i18n/navigation'
 import { CopyButton } from '@/components/dashboard/CopyButton'
@@ -6,7 +6,9 @@ import { PasswordField } from '@/components/dashboard/PasswordField'
 import { Icon } from '@/components/icons'
 import {
   contentFreeze,
+  formatDay,
   formatDeadline,
+  formatRelative,
   invitationLink,
   safeguardBarVars,
   safeguardReplyPercent,
@@ -46,7 +48,7 @@ function warningsFor(event: DashboardEvent, safeguardPercent: number) {
 
   if (event.locked) {
     warnings.push({ icon: 'lock', key: 'editingClosed' })
-  } else if (event.isNextUp && event.locksInLabel) {
+  } else if (event.isNextUp && event.locksIn) {
     warnings.push({ icon: 'clock', key: 'editLocksSoon' })
   }
 
@@ -98,8 +100,11 @@ export function EventCard({ event }: { event: DashboardEvent }) {
   const safeguardPercent = safeguardReplyPercent(event)
   const barVars = safeguardBarVars(event)
   const t = useTranslations('Event')
+  const tNotes = useTranslations('EventNotes')
   const warnings = warningsFor(event, safeguardPercent)
-  const replyCloses = formatDeadline(contentFreeze(event.date))
+  const locale = useLocale()
+  const replyCloses = formatDeadline(contentFreeze(event.date), locale)
+  const safeguardValues = { replied, cap, percent: safeguardPercent }
 
   return (
     /*
@@ -133,7 +138,7 @@ export function EventCard({ event }: { event: DashboardEvent }) {
             <div className="col-start-1 row-start-2 mt-[18px] w-full max-w-[300px] self-start bg-neutral-50 mx-auto @min-[508px]:mx-0 @min-[508px]:mt-0 @min-[508px]:w-[164px] @min-[508px]:shrink-0 @min-[904px]:w-full @min-[904px]:row-start-1 @min-[904px]:max-w-[220px] @min-[904px]:self-center @min-[904px]:justify-self-center">
               <Image
                 src={event.preview}
-                alt={event.previewAlt}
+                alt={t('previewAlt', { title: event.title })}
                 sizes="300px"
                 className="h-auto w-full"
               />
@@ -147,7 +152,7 @@ export function EventCard({ event }: { event: DashboardEvent }) {
               <div className="col-start-1 row-start-1 @min-[508px]:self-center">
                 <p className="mb-4 text-[12.5px] leading-none text-neutral-700">
                   <span className="font-medium text-neutral-900">
-                    {event.dateLabel}
+                    {formatDay(event.date, locale)}
                   </span>
                   <span aria-hidden="true">{' · '}</span>
                   <span
@@ -155,7 +160,7 @@ export function EventCard({ event }: { event: DashboardEvent }) {
                       event.isNextUp ? 'font-medium text-terracotta-600' : ''
                     }
                   >
-                    {event.countdownLabel}
+                    {formatRelative(event.countdown, locale)}
                   </span>
                 </p>
 
@@ -197,7 +202,7 @@ export function EventCard({ event }: { event: DashboardEvent }) {
                     name="calendar"
                     className="size-3.5 shrink-0 text-forest-500"
                   />
-                  Reply form closes {replyCloses}
+                  {t('replyFormClosesOn', { date: replyCloses })}
                 </p>
               )}
 
@@ -215,7 +220,7 @@ export function EventCard({ event }: { event: DashboardEvent }) {
                   <span className="flex-1 truncate">{link}</span>
                   <CopyButton
                     value={`https://${link}`}
-                    label={`Copy invitation link for ${event.title}`}
+                    label={t('copyLinkFor', { title: event.title })}
                   />
                 </span>
 
@@ -223,13 +228,13 @@ export function EventCard({ event }: { event: DashboardEvent }) {
                   <PasswordField password={event.password} />
                 ) : null}
 
-                {event.linkNote ? (
+                {event.linkNoteKey ? (
                   <span className={FIELD_NOTE}>
                     <Icon
                       name="eyeOff"
                       className="size-3.5 shrink-0 text-neutral-700"
                     />
-                    {event.linkNote}
+                    {tNotes(event.linkNoteKey)}
                   </span>
                 ) : null}
               </div>
@@ -270,20 +275,22 @@ export function EventCard({ event }: { event: DashboardEvent }) {
             <p className="mt-[7px] text-[11.5px] text-neutral-700">
               {/* Roomy only while the column runs the full width of the card. */}
               <span className="hidden @2xl:inline @min-[904px]:hidden">
-                Attendee{' '}
+                {t('safeguardLine', safeguardValues)}
               </span>
-              safeguard {replied} of {cap} · {safeguardPercent}%
+              <span className="@2xl:hidden @min-[904px]:inline">
+                {t('safeguardShort', safeguardValues)}
+              </span>
             </p>
 
             {event.note ? (
               event.note.tone === 'warning' ? (
                 <div className="mt-[18px] flex gap-[9px] border border-rust-400 bg-rust-200 px-[13px] py-[11px] text-[12.5px] leading-[1.45] text-rust-600">
                   <Icon name="alert" className="mt-px size-[15px] shrink-0" />
-                  <p>{event.note.text}</p>
+                  <p>{tNotes(event.note.key, event.note.values)}</p>
                 </div>
               ) : (
                 <p className="mt-[18px] border-l-[3px] border-neutral-600 py-0.5 pl-3 text-[12.5px] text-neutral-700">
-                  {event.note.text}
+                  {tNotes(event.note.key, event.note.values)}
                 </p>
               )
             ) : null}
@@ -295,12 +302,12 @@ export function EventCard({ event }: { event: DashboardEvent }) {
             {event.attendeeNotes?.length ? (
               <ul className="mt-[18px] flex flex-col gap-1.5 text-[12.5px] leading-[1.45] text-neutral-700">
                 {event.attendeeNotes.map((note) => (
-                  <li key={note} className="flex gap-2">
+                  <li key={note.key} className="flex gap-2">
                     <span
                       aria-hidden="true"
                       className="mt-[7px] size-1 shrink-0 rounded-full bg-mustard-400"
                     />
-                    {note}
+                    {tNotes(note.key, note.values)}
                   </li>
                 ))}
               </ul>

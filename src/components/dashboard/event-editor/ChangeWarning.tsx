@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import type { ReactNode } from "react";
 import { Icon } from "@/components/icons";
 import type { Warning } from "@/components/dashboard/event-editor/useEventForm";
@@ -19,6 +20,7 @@ export function ChangeWarning({
   children,
   warning,
 }: ChangeWarningProps) {
+  const t = useTranslations("EventEditor");
   if (!warning.shown) return null;
 
   return (
@@ -41,7 +43,7 @@ export function ChangeWarning({
               className="pointer-events-none absolute size-3 text-mustard-50 opacity-0 peer-checked:opacity-100"
             />
           </span>
-          I understand — telling my guests is up to me.
+          {t("acknowledge")}
         </label>
       </div>
     </div>

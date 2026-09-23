@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { Banner } from "@/components/dashboard/event-editor/Banner";
 import { EditorSection } from "@/components/dashboard/event-editor/EditorSection";
 import {
@@ -20,11 +21,12 @@ interface SectionProps {
 }
 
 export function GuestsSection({ event, form }: SectionProps) {
+  const t = useTranslations("EventEditor");
   const { values, set, derived, locked } = form;
 
   return (
-    <EditorSection title="Guests and replies">
-      <p className={`mb-2.5 ${LABEL}`}>Maximum number of guests</p>
+    <EditorSection title={t("guests")}>
+      <p className={`mb-2.5 ${LABEL}`}>{t("cap")}</p>
 
       <div className="flex flex-wrap items-center gap-x-6 gap-y-3.5">
         <input
@@ -33,7 +35,7 @@ export function GuestsSection({ event, form }: SectionProps) {
           min={1}
           max={1000}
           step={10}
-          aria-label="Maximum number of guests"
+          aria-label={t("cap")}
           disabled={locked}
           value={values.cap}
           onChange={(control) => set.cap(control.target.value)}
@@ -53,34 +55,32 @@ export function GuestsSection({ event, form }: SectionProps) {
       <Banner
         tone="info"
         icon="shield"
-        title="A technical safeguard, not a guest limit"
+        title={t("safeguardTitle")}
       >
-        The maximum only guards against a flood of automated replies. Raise it
-        whenever you like — it is worth setting a little above the number of
-        guests you are planning for.
+        {t("safeguard")}
       </Banner>
 
       <div className="mt-[22px]">
-        <p className={`mb-2.5 ${LABEL}`}>Who you are expecting</p>
+        <p className={`mb-2.5 ${LABEL}`}>{t("expecting")}</p>
 
         <Toggle
-          label="Use pre-loaded guest list"
+          label={t("preloaded")}
           checked={values.preloaded}
           disabled={locked}
           onChange={set.preloaded}
-          description="Match incoming replies against a list of names you expect. Anything that doesn't match is tagged UNKNOWN for you to sort out."
+          description={t("preloadedNote")}
         />
 
         {values.preloaded ? (
           <div className={SUBBOX}>
             <p className="font-bold text-neutral-900">
-              Currently {event.preloadedCount} names on your pre-loaded list
+              {t("preloadedCount", { count: event.preloadedCount })}
               <button
                 type="button"
                 className="ml-3 inline-flex items-center gap-1.5 border border-mustard-400 bg-mustard-200 px-2.5 py-1 align-[1px] text-xs font-semibold whitespace-nowrap text-mustard-600 transition-colors hover:border-mustard-500"
               >
                 <Icon name="pencil" className="size-3.5" />
-                Edit list
+                {t("editList")}
               </button>
             </p>
           </div>

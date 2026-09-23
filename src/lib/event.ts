@@ -1,6 +1,11 @@
 import type { CSSProperties } from "react";
 import { GUEST_DATA_RETENTION_DAYS } from "@/lib/config";
-import type { DashboardEvent, EventStatus } from "@/types/dashboard";
+import { LANGUAGE_LOCALE, type Language } from "@/lib/language";
+import type {
+  DashboardEvent,
+  EventStatus,
+  TimeSpan,
+} from "@/types/dashboard";
 
 /**
  * A pile of events still ahead reads soonest first — the next one is the one
@@ -96,16 +101,37 @@ export function isRealDate(value: Date): boolean {
   return !Number.isNaN(value.getTime());
 }
 
-/** "6 September 2026" */
-export function formatEventDate(value: Date): string {
-  return value.toLocaleDateString("en-GB", DATE_PARTS);
+/** "6 September 2026", in the language it is read in. */
+export function formatEventDate(value: Date, language: Language): string {
+  return value.toLocaleDateString(LANGUAGE_LOCALE[language], DATE_PARTS);
+}
+
+/** An ISO `YYYY-MM-DD` day as `formatEventDate` writes it. */
+export function formatDay(date: string, language: Language): string {
+  return formatEventDate(new Date(`${date}T00:00`), language);
+}
+
+/** "in 2 days", "12 weeks ago", "yesterday" — counted from now. */
+export function formatRelative(span: TimeSpan, language: Language): string {
+  return new Intl.RelativeTimeFormat(LANGUAGE_LOCALE[language], {
+    numeric: "auto",
+  }).format(span.value, span.unit);
+}
+
+/** "30 hours" — a length of time on its own, for a sentence to place. */
+export function formatDuration(span: TimeSpan, language: Language): string {
+  return new Intl.NumberFormat(LANGUAGE_LOCALE[language], {
+    style: "unit",
+    unit: span.unit,
+    unitDisplay: "long",
+  }).format(span.value);
 }
 
 /** "5 September 2026, 00:00" — the long form, behind `formatDeadline`. */
-function formatStamp(value: Date): string {
+function formatStamp(value: Date, language: Language): string {
   const hours = String(value.getHours()).padStart(2, "0");
   const minutes = String(value.getMinutes()).padStart(2, "0");
-  return `${formatEventDate(value)}, ${hours}:${minutes}`;
+  return `${formatEventDate(value, language)}, ${hours}:${minutes}`;
 }
 
 /**
@@ -114,9 +140,11 @@ function formatStamp(value: Date): string {
  * Midnight is the shape a date with no time of day takes once it is parsed, so
  * stating "00:00" back would only ever be noise.
  */
-export function formatDeadline(value: Date): string {
+export function formatDeadline(value: Date, language: Language): string {
   const midnight = value.getHours() === 0 && value.getMinutes() === 0;
-  return midnight ? formatEventDate(value) : formatStamp(value);
+  return midnight
+    ? formatEventDate(value, language)
+    : formatStamp(value, language);
 }
 
 /** The `YYYY-MM-DDTHH:MM` shape a `datetime-local` input expects. */

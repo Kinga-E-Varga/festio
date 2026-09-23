@@ -1,5 +1,6 @@
 'use client'
 
+import { useLocale, useTranslations } from 'next-intl'
 import type {
   InvitationTemplate,
   TemplateField,
@@ -11,7 +12,7 @@ import {
   EVENT_DATE,
   formatInvitationDate,
 } from '@/lib/invitation'
-import type { Language } from '@/lib/language'
+import { localized, type Language } from '@/lib/language'
 import { PanelViewButton, SidePanel } from './SidePanel'
 import { HINT, INPUT, LABEL, SELECT, TITLE } from './styles'
 
@@ -21,8 +22,8 @@ import { HINT, INPUT, LABEL, SELECT, TITLE } from './styles'
  * a scope simply doesn't get that group.
  */
 const GROUPS = [
-  { scope: 'card', title: 'Invitation' },
-  { scope: 'rsvp', title: 'Response form' },
+  { scope: 'card', titleKey: 'groupCard' },
+  { scope: 'rsvp', titleKey: 'groupRsvp' },
 ] as const
 
 interface EditPanelProps {
@@ -40,6 +41,9 @@ interface EditPanelProps {
  * The host's text editor, generated from `template.fields` alone — a
  * different template yields a different form with no change here.
  *
+ * Its own copy and the field labels are host chrome, so they read the host's
+ * locale; only the previewed dates are in the invitation's `language`.
+ *
  * Always mounted and stacked on top of the RSVP panel, which it slides over
  * on a transform rather than replacing, so neither panel ever has to react
  * to the other's presence. `.edit` in `globals.css` decides where it lies at
@@ -54,6 +58,7 @@ export function EditPanel({
   onChange,
   onClose,
 }: EditPanelProps) {
+  const t = useTranslations('HostEditor')
   const groups = GROUPS.map((group) => ({
     ...group,
     fields: template.fields.filter(
@@ -75,7 +80,7 @@ export function EditPanel({
           key={group.scope}
           className="flex flex-col mb-6 last-of-type:mb-0"
         >
-          <p className={TITLE}>{group.title}</p>
+          <p className={TITLE}>{t(group.titleKey)}</p>
 
           {group.fields.map((field) => (
             <Field
@@ -117,10 +122,13 @@ function Field({
   language: Language
   onChange: (id: string, value: string) => void
 }) {
+  const t = useTranslations('HostEditor')
+  const hostLocale = useLocale()
+
   return (
     <div className="flex flex-col mb-6">
       <label htmlFor={`field-${field.id}`} className={LABEL}>
-        {field.label}
+        {localized(field.label, hostLocale)}
       </label>
       {field.type === 'dateFormat' ? (
         <>
@@ -142,10 +150,7 @@ function Field({
               </option>
             ))}
           </select>
-          <p className={`${HINT} mt-1`}>
-            Set with your event details — edit it there to change the date
-            itself.
-          </p>
+          <p className={`${HINT} mt-1`}>{t('dateHint')}</p>
         </>
       ) : field.type === 'longText' ? (
         <textarea

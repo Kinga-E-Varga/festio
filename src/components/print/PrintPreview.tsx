@@ -1,5 +1,6 @@
 'use client'
 
+import { useTranslations } from 'next-intl'
 import Image from 'next/image'
 import type { ReactNode } from 'react'
 import { useState } from 'react'
@@ -36,14 +37,15 @@ export function PrintPreview({ settings, link }: PrintPreviewProps) {
 
 /** One sheet, printed both sides and turned over. */
 function FlatCard({ settings, link }: PrintPreviewProps) {
+  const t = useTranslations('PrintPanel')
   const [open, setOpen] = useState(false)
 
   return (
     <TurnStage
       open={open}
       onToggle={() => setOpen(!open)}
-      ariaLabel="Turn the card over"
-      caption={open ? 'Click to flip back' : 'Click to flip'}
+      ariaLabel={t('turnOver')}
+      caption={open ? t('flipBack') : t('flip')}
     >
       <span className="sheet-view" data-pages={1}>
         <span className="flip" data-open={open}>
@@ -69,14 +71,15 @@ function FlatCard({ settings, link }: PrintPreviewProps) {
  * reverse are the two faces of the half that swings.
  */
 function FoldedCard({ settings, link }: PrintPreviewProps) {
+  const t = useTranslations('PrintPanel')
   const [open, setOpen] = useState(false)
 
   return (
     <TurnStage
       open={open}
       onToggle={() => setOpen(!open)}
-      ariaLabel="Open the card"
-      caption={open ? 'Click to close' : 'Click to open'}
+      ariaLabel={t('openCard')}
+      caption={open ? t('clickClose') : t('clickOpen')}
     >
       <span className="sheet-view" data-pages={2}>
         <span className="fold" data-open={open}>

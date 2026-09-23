@@ -1,3 +1,4 @@
+import { useTranslations } from "next-intl";
 import { EditorSection } from "@/components/dashboard/event-editor/EditorSection";
 import { Icon } from "@/components/icons";
 import { TIERS } from "@/mock/dashboard";
@@ -35,12 +36,15 @@ function Tile({
 }
 
 export function EditionSection({ event }: { event: DashboardEvent }) {
+  const t = useTranslations("EventEditor");
+  const tTiers = useTranslations("Tiers");
   const tier = TIERS[event.tier];
   const nextId = (event.tier + 1) as TierId;
   const next = event.tier < 3 ? TIERS[nextId] : undefined;
+  const price = (amount: number) => tTiers("price", { amount });
 
   return (
-    <EditorSection title="Edition">
+    <EditorSection title={t("edition")}>
       <div className="grid grid-cols-1 gap-3">
         {/* What this event already is, stated before anything on offer. */}
         <div className="flex gap-3.5 border border-forest-500 border-l-4 bg-forest-100 p-4">
@@ -49,25 +53,35 @@ export function EditionSection({ event }: { event: DashboardEvent }) {
           </span>
           <span className="min-w-0">
             <b className="mb-[3px] block text-forest-500">
-              {tier.name} — {tier.price}
-              {event.paid ? " · paid" : " · unpaid"}
+              {t(event.paid ? "tierPaid" : "tierUnpaid", {
+                name: tTiers(`${tier.key}.name`),
+                price: price(tier.price),
+              })}
             </b>
             <span className="block text-xs leading-[1.45] text-forest-600">
-              {tier.blurb}
+              {tTiers(`${tier.key}.blurb`)}
             </span>
           </span>
         </div>
 
-        {next?.upsell ? (
-          <Tile icon="arrowRight" title={`Raise to ${next.name} — ${next.price}`}>
-            {next.upsell}
+        {next ? (
+          <Tile
+            icon="arrowRight"
+            title={t("raiseTo", {
+              name: tTiers(`${next.key}.name`),
+              price: price(next.price),
+            })}
+          >
+            {tTiers(`${next.key}.upsell`)}
           </Tile>
         ) : null}
 
         {event.paid ? null : (
-          <Tile icon="arrowRight" title={`Pay ${tier.price} and publish`}>
-            Clears the draft for sharing. Visibility stays where you set it
-            until you change it yourself.
+          <Tile
+            icon="arrowRight"
+            title={t("payAndPublish", { price: price(tier.price) })}
+          >
+            {t("payNote")}
           </Tile>
         )}
       </div>

@@ -1,3 +1,4 @@
+import { useTranslations } from 'next-intl'
 import type { CSSProperties, ReactNode } from 'react'
 import { XIcon } from './icons'
 import { PANEL, SOLID } from './styles'
@@ -46,11 +47,13 @@ export function SidePanel({
 
 /** The panel's top exit — the same X the guest's mobile drawer closes with. */
 function Header({ onClose }: { onClose: () => void }) {
+  const t = useTranslations('HostEditor')
+
   return (
     <header className="mb-6 flex items-center justify-end gap-4">
       <button
         type="button"
-        aria-label="Close"
+        aria-label={t('close')}
         onClick={onClose}
         className="text-[color:var(--c3)] transition-opacity hover:opacity-60"
       >
@@ -72,6 +75,8 @@ export function PanelViewButton({
   onClose: () => void
   className?: string
 }) {
+  const t = useTranslations('HostEditor')
+
   return (
     <div className="flex gap-3 invite:hidden">
       <button
@@ -79,7 +84,7 @@ export function PanelViewButton({
         onClick={onClose}
         className={`${SOLID} flex-1 mb-6 ${className}`}
       >
-        View
+        {t('view')}
       </button>
     </div>
   )

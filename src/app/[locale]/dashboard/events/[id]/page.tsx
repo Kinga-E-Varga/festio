@@ -1,10 +1,17 @@
 import type { Metadata } from "next";
 import { Link } from "@/i18n/navigation";
+import { getLocale, getTranslations } from "next-intl/server";
 import { notFound } from "next/navigation";
 import { Banner } from "@/components/dashboard/event-editor/Banner";
 import { EventEditor } from "@/components/dashboard/event-editor/EventEditor";
 import { Icon } from "@/components/icons";
-import { contentFreeze, formatDeadline } from "@/lib/event";
+import {
+  contentFreeze,
+  formatDay,
+  formatDeadline,
+  formatDuration,
+  formatRelative,
+} from "@/lib/event";
 import { findEvent, TIERS } from "@/mock/dashboard";
 
 type Props = PageProps<"/[locale]/dashboard/events/[id]">;
@@ -12,7 +19,10 @@ type Props = PageProps<"/[locale]/dashboard/events/[id]">;
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { id } = await params;
   const event = findEvent(id);
-  return { title: event ? `${event.title} · Festio` : "Event · Festio" };
+  const t = await getTranslations("EventPage");
+  return {
+    title: event ? t("metaTitle", { title: event.title }) : t("metaFallback"),
+  };
 }
 
 export default async function EventPage({ params }: Props) {
@@ -20,8 +30,11 @@ export default async function EventPage({ params }: Props) {
   const event = findEvent(id);
   if (!event) notFound();
 
+  const t = await getTranslations("EventPage");
+  const tTiers = await getTranslations("Tiers");
   const tier = TIERS[event.tier];
-  const freeze = formatDeadline(contentFreeze(event.date));
+  const locale = await getLocale();
+  const freeze = formatDeadline(contentFreeze(event.date), locale);
 
   return (
     <div className="@container">
@@ -31,7 +44,7 @@ export default async function EventPage({ params }: Props) {
         className="inline-flex items-center gap-2 text-[11px] font-semibold tracking-[0.16em] text-forest-500 uppercase transition-colors hover:text-forest-600 hover:underline hover:underline-offset-4"
       >
         <Icon name="arrowLeft" className="size-3.5" />
-        All events
+        {t("allEvents")}
       </Link>
 
       <h1 className="mt-[18px] font-serif text-[29px] leading-[1.08] text-balance text-neutral-900 @min-[720px]:text-[38px]">
@@ -40,7 +53,7 @@ export default async function EventPage({ params }: Props) {
 
       {/* When it is, said the way the events list says it. */}
       <p className="mt-2.5 mb-3 text-[14px] leading-none text-neutral-900">
-        <span className="font-medium">{event.dateLabel}</span>
+        <span className="font-medium">{formatDay(event.date, locale)}</span>
         <span aria-hidden="true" className="text-neutral-700">
           {" · "}
         </span>
@@ -51,7 +64,7 @@ export default async function EventPage({ params }: Props) {
               : "text-neutral-700"
           }
         >
-          {event.countdownLabel}
+          {formatRelative(event.countdown, locale)}
         </span>
       </p>
 
@@ -60,37 +73,35 @@ export default async function EventPage({ params }: Props) {
         <Banner
           tone="frozen"
           icon="lock"
-          title={`Editing closed on ${freeze}`}
+          title={t("closedTitle", { date: freeze })}
         >
-          Event and invitation editing closed the day before the event. The
-          record stays readable, and your printable file is still yours to
-          download.
+          {t("closedBody")}
         </Banner>
-      ) : event.isNextUp && event.locksInLabel ? (
+      ) : event.isNextUp && event.locksIn ? (
         <Banner
           tone="warn"
           icon="clock"
-          title={`Editing closes in ${event.locksInLabel}`}
+          title={t("closingTitle", {
+            time: formatDuration(event.locksIn, locale),
+          })}
         >
-          Event and invitation editing close on {freeze}, the day before the
-          event. The guest list stays open after that, so you can still record
-          replies that reach you by phone.
+          {t("closingBody", { date: freeze })}
         </Banner>
       ) : null}
 
       {event.paid ? null : (
-        <Banner tone="warn" icon="info" title="This draft is unpaid">
-          The {tier.name} edition costs {tier.price}. The page stays hidden and
-          the RSVP form stays closed until payment clears.
+        <Banner tone="warn" icon="info" title={t("unpaidTitle")}>
+          {t("unpaidBody", {
+            tier: tTiers(`${tier.key}.name`),
+            price: tTiers("price", { amount: tier.price }),
+          })}
         </Banner>
       )}
 
       {/* Paid for, but nobody can reach it — worth saying out loud. */}
       {event.paid && event.visibility === "hidden" ? (
-        <Banner tone="warn" icon="eyeOff" title="This invitation is hidden">
-          Nobody can open the page, not even a guest holding the link, and no
-          reply can arrive. Set the visibility to Public or Protected below
-          once you are ready to share it.
+        <Banner tone="warn" icon="eyeOff" title={t("hiddenTitle")}>
+          {t("hiddenBody")}
         </Banner>
       ) : null}
 
@@ -98,10 +109,9 @@ export default async function EventPage({ params }: Props) {
         <Banner
           tone="warn"
           icon="alert"
-          title={`${event.unmatched} replies don't match a name on your list`}
+          title={t("unmatchedTitle", { count: event.unmatched })}
         >
-          They are tagged UNKNOWN until you add them or match them to a name
-          someone mistyped.
+          {t("unmatchedBody")}
         </Banner>
       ) : null}
 

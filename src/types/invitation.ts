@@ -45,11 +45,10 @@ export type FieldScope = 'card' | 'rsvp'
 export interface TemplateField {
   id: string
   /**
-   * What the host's edit form calls this slot. Still English everywhere:
-   * it is editor chrome, and it changes language with the rest of the
-   * dashboard rather than on its own.
+   * What the host's edit form calls this slot. Editor chrome, so it is read
+   * in the host's locale, never the invitation's.
    */
-  label: string
+  label: LocalizedText
   type: FieldType
   /** Typed input only — a `dateFormat` choice has nothing to cap. */
   maxLength?: number

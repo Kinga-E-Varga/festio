@@ -12,13 +12,13 @@ export interface EventTab {
 
 export function EventTabs({
   tabs,
-  label = 'Event status',
+  label,
   initialId = tabs[0]?.id ?? null,
   fallback,
 }: {
   tabs: EventTab[]
   /** What the tabs sort, for the tablist's own accessible name. */
-  label?: string
+  label: string
   /**
    * Which tab opens selected. `null` opens with none of them selected, for a
    * page that arrived showing one record picked out elsewhere.

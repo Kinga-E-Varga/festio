@@ -1,4 +1,4 @@
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import type { ReactNode } from "react";
 import {
   contentFreeze,
@@ -67,8 +67,9 @@ export function DatesThatMatter({
   layout = "stacked",
 }: DatesThatMatterProps) {
   const t = useTranslations("Event");
-  const freeze = formatDeadline(contentFreeze(event.date));
-  const deletion = formatEventDate(deletionDate(event.date));
+  const locale = useLocale();
+  const freeze = formatDeadline(contentFreeze(event.date), locale);
+  const deletion = formatEventDate(deletionDate(event.date), locale);
   const row = layout === "row";
 
   return (

@@ -1,8 +1,8 @@
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import Image from "next/image";
 import { Link } from "@/i18n/navigation";
 import { Icon } from "@/components/icons";
-import { invitationPath } from "@/lib/event";
+import { formatDay, formatRelative, invitationPath } from "@/lib/event";
 import type { DashboardEvent, EventStatus } from "@/types/dashboard";
 
 /**
@@ -28,6 +28,7 @@ const ACTION =
 export function InvitationCard({ event }: { event: DashboardEvent }) {
   const t = useTranslations("Invitations");
   const tEvent = useTranslations("Event");
+  const locale = useLocale();
   /* Content freezes with the event; a past invitation is only downloadable. */
   const past = event.status === "past";
 
@@ -49,7 +50,9 @@ export function InvitationCard({ event }: { event: DashboardEvent }) {
         </h3>
 
         <p className="mt-2.5 text-[14px] leading-none text-neutral-900">
-          <span className="font-medium">{event.dateLabel}</span>
+          <span className="font-medium">
+            {formatDay(event.date, locale)}
+          </span>
           <span aria-hidden="true" className="text-neutral-700">
             {" · "}
           </span>
@@ -60,7 +63,7 @@ export function InvitationCard({ event }: { event: DashboardEvent }) {
                 : "text-neutral-700"
             }
           >
-            {event.countdownLabel}
+            {formatRelative(event.countdown, locale)}
           </span>
         </p>
       </div>
@@ -74,7 +77,7 @@ export function InvitationCard({ event }: { event: DashboardEvent }) {
         <div className="relative aspect-[1/1.4142] overflow-hidden border border-mustard-300 bg-mustard-50">
           <Image
             src={event.preview}
-            alt={event.previewAlt}
+            alt={tEvent("previewAlt", { title: event.title })}
             sizes="(min-width: 1400px) 300px, (min-width: 820px) 40vw, 90vw"
             className="h-full w-full object-cover"
           />

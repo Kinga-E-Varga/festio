@@ -1,5 +1,6 @@
 "use client";
 
+import { useLocale, useTranslations } from "next-intl";
 import { useState } from "react";
 import { useForm, useWatch } from "react-hook-form";
 import {
@@ -52,6 +53,9 @@ interface EventFieldValues {
 }
 
 export function useEventForm(event: DashboardEvent) {
+  const t = useTranslations("EventEditor");
+  /* The host reads these dates, so they follow the host's locale. */
+  const locale = useLocale();
   const original = {
     slug: event.slug,
     password: event.password ?? "",
@@ -160,19 +164,19 @@ export function useEventForm(event: DashboardEvent) {
   const capValue = Number.parseInt(cap, 10) || 0;
   const capError =
     capValue < event.rsvp.replied
-      ? `You already have ${event.rsvp.replied} replies. The maximum cannot sit below the replies you have received — nobody is removed by lowering it.`
+      ? t("capError", { count: event.rsvp.replied })
       : null;
 
   let slugError: string | null = null;
   if (slug.trim().length > 0 && cleanSlug.length < SLUG_MIN) {
-    slugError = `Use at least ${SLUG_MIN} characters — letters, digits and hyphens.`;
+    slugError = t("slugTooShort", { min: SLUG_MIN });
   } else if (cleanSlug.length > SLUG_MAX) {
-    slugError = `Use ${SLUG_MAX} characters at most.`;
+    slugError = t("slugTooLong", { max: SLUG_MAX });
   }
 
   const passwordError =
     password.length > 0 && !PASSWORD_PATTERN.test(password)
-      ? "Use at least 4 letters or digits."
+      ? t("passwordInvalid")
       : null;
 
   function save() {
@@ -234,19 +238,19 @@ export function useEventForm(event: DashboardEvent) {
     warnings,
     derived: {
       link: invitationLink({ slug: cleanSlug, digits: event.digits }),
-      dateLabel: formatEventDate(new Date(`${effectiveDate}T00:00`)),
+      dateLabel: formatEventDate(new Date(`${effectiveDate}T00:00`), locale),
       /** The `max` a custom closing time cannot go past. */
       closeLimit: toDateTimeLocal(freeze),
-      closeDefaultLabel: formatDeadline(freeze),
+      closeDefaultLabel: formatDeadline(freeze, locale),
       closeLabel: closesEarly
-        ? formatDeadline(chosenClose)
-        : formatDeadline(freeze),
+        ? formatDeadline(chosenClose, locale)
+        : formatDeadline(freeze, locale),
       closesEarly,
       /** Set while a chosen time sits past the cut-off, which cannot apply. */
       closeTooLate:
         closeEarly && isRealDate(chosenClose) && chosenClose > freeze,
-      freezeLabel: formatDeadline(freeze),
-      deletionLabel: formatEventDate(deletion),
+      freezeLabel: formatDeadline(freeze, locale),
+      deletionLabel: formatEventDate(deletion, locale),
       capValue,
       capError,
       slugError,

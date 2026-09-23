@@ -1,5 +1,6 @@
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { Icon } from "@/components/icons";
+import { formatDuration } from "@/lib/event";
 import { TIERS } from "@/mock/dashboard";
 import type {
   DashboardEvent,
@@ -48,6 +49,8 @@ export function EventMeta({
   size = "sm",
 }: EventMetaProps) {
   const t = useTranslations("Event");
+  const tTiers = useTranslations("Tiers");
+  const locale = useLocale();
   const visibility = VISIBILITY[event.visibility];
 
   return (
@@ -60,7 +63,7 @@ export function EventMeta({
         <Icon name={visibility.icon} className={size === "md" ? "size-4" : "size-3.5"} />
         {t(visibility.labelKey)}
       </span>
-      <span>{TIERS[event.tier].name}</span>
+      <span>{tTiers(`${TIERS[event.tier].key}.name`)}</span>
 
       {deadlines && !event.paid ? (
         <span className={CHIP}>{t("paymentPending")}</span>
@@ -73,10 +76,10 @@ export function EventMeta({
         </span>
       ) : null}
 
-      {deadlines && locksIn && !event.locked && event.isNextUp && event.locksInLabel ? (
+      {deadlines && locksIn && !event.locked && event.isNextUp && event.locksIn ? (
         <span className={CHIP}>
           <Icon name="clock" className="size-3.5" />
-          Locks in {event.locksInLabel}
+          {t("locksIn", { time: formatDuration(event.locksIn, locale) })}
         </span>
       ) : null}
     </div>

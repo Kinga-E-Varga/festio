@@ -21,6 +21,7 @@ import type { DashboardEvent, Visibility } from "@/types/dashboard";
 const ORDER: Visibility[] = ["hidden", "public", "protected"];
 
 function PasswordBox({ form }: { form: EventForm }) {
+  const t = useTranslations("EventEditor");
   const [revealed, setRevealed] = useState(false);
 
   return (
@@ -30,8 +31,8 @@ function PasswordBox({ form }: { form: EventForm }) {
         <input
           type={revealed ? "text" : "password"}
           maxLength={24}
-          placeholder="Password"
-          aria-label="Invitation password"
+          placeholder={t("password")}
+          aria-label={t("passwordAria")}
           disabled={form.locked}
           value={form.values.password}
           onChange={(control) => form.set.password(control.target.value)}
@@ -40,14 +41,14 @@ function PasswordBox({ form }: { form: EventForm }) {
         <button
           type="button"
           onClick={() => setRevealed((shown) => !shown)}
-          aria-label={revealed ? "Hide password" : "Show password"}
+          aria-label={revealed ? t("hidePassword") : t("showPassword")}
           className={MINI}
         >
           <Icon name={revealed ? "eyeOff" : "eye"} className="size-[15px]" />
         </button>
         <CopyButton
           value={form.values.password}
-          label="Copy invitation password"
+          label={t("copyPassword")}
         />
       </div>
       {form.derived.passwordError ? (
@@ -65,17 +66,18 @@ interface SectionProps {
 export function LinkSection({ event, form }: SectionProps) {
   /* The visibility options are shared with the event cards, so is their copy. */
   const tEvent = useTranslations("Event");
+  const t = useTranslations("EventEditor");
   const { values, set, derived, locked } = form;
 
   return (
-    <EditorSection title="Link and access">
+    <EditorSection title={t("link")}>
       {/* The address and the finished link sit side by side while there is room. */}
       <div className={FIELD_GRID}>
         <Field
           htmlFor="event-slug"
-          label="Invitation address"
+          label={t("address")}
           error={derived.slugError}
-          hint="The four digits are Festio's — they keep the link unguessable. If you have already shared the link, changing it will break every copy your guests are holding."
+          hint={t("addressHint")}
         >
           <div className="flex items-stretch border border-mustard-300 bg-neutral-50 transition-colors hover:border-mustard-500 has-[:focus]:border-mustard-500">
             <span className="grid place-items-center bg-mustard-200 px-3 text-[13.5px] whitespace-nowrap text-neutral-800">
@@ -96,34 +98,32 @@ export function LinkSection({ event, form }: SectionProps) {
           </div>
         </Field>
 
-        <Field label="The link your guests open">
+        <Field label={t("guestLink")}>
           <span className="flex min-h-[38px] items-center gap-[9px] border border-mustard-300 bg-neutral-50 px-3 py-[9px] text-[13.5px] text-neutral-900">
             <Icon name="link" className="size-3.5 shrink-0 text-forest-500" />
             <span className="flex-1 truncate">{derived.link}</span>
             <CopyButton
               value={`https://${derived.link}`}
-              label="Copy invitation link"
+              label={t("copyLink")}
             />
           </span>
         </Field>
       </div>
 
       <ChangeWarning
-        title="Changing the address"
+        title={t("addressWarningTitle")}
         warning={form.warnings.address}
       >
-        The old link stops working the moment you save. Every copy your{" "}
-        <b>
-          {event.rsvp.replied}{" "}
-          {event.rsvp.replied === 1 ? "guest is" : "guests are"} holding
-        </b>{" "}
-        leads nowhere, and passing on the new one is yours to do.
+        {t.rich("addressWarning", {
+          count: event.rsvp.replied,
+          b: (chunks) => <b>{chunks}</b>,
+        })}
       </ChangeWarning>
 
-      <p className={`mt-[22px] mb-2.5 ${LABEL}`}>Visibility</p>
+      <p className={`mt-[22px] mb-2.5 ${LABEL}`}>{t("visibility")}</p>
 
       <fieldset className="grid grid-cols-1 gap-3 @min-[940px]:grid-cols-3">
-        <legend className="sr-only">Who can open the invitation</legend>
+        <legend className="sr-only">{t("visibilityLegend")}</legend>
         {ORDER.map((id) => {
           const option = VISIBILITY[id];
           const selected = values.visibility === id;
@@ -174,16 +174,14 @@ export function LinkSection({ event, form }: SectionProps) {
       </fieldset>
 
       <ChangeWarning
-        title="Changing the password"
+        title={t("passwordWarningTitle")}
         warning={form.warnings.password}
       >
-        The old password stops working the moment you save. Guests will not be
-        able to see the invitation until you give them the new one.
+        {t("passwordWarning")}
       </ChangeWarning>
 
-      <Banner tone="info" icon="shield" title="Search engines never see this page">
-        Every invitation is served with a noindex header, whichever visibility
-        you pick.
+      <Banner tone="info" icon="shield" title={t("noindexTitle")}>
+        {t("noindex")}
       </Banner>
     </EditorSection>
   );

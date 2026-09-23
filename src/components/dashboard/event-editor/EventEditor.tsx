@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { Toast, useToast } from "@/components/dashboard/Toast";
 import { DangerZone } from "@/components/dashboard/event-editor/DangerZone";
 import { DetailsSection } from "@/components/dashboard/event-editor/DetailsSection";
@@ -16,13 +17,14 @@ import type { DashboardEvent } from "@/types/dashboard";
  * until they save; nothing here is persisted yet.
  */
 export function EventEditor({ event }: { event: DashboardEvent }) {
+  const t = useTranslations("EventEditor");
   const form = useEventForm(event);
   const toast = useToast();
 
   function save() {
     if (!form.save.canSave) return;
     form.save.submit();
-    toast.show("Changes saved — your guests were not notified");
+    toast.show(t("saved"));
   }
 
   return (

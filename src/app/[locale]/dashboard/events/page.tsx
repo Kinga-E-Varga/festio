@@ -112,6 +112,7 @@ export default async function EventsPage({
 
       <EventTabs
         tabs={tabs}
+        label={t('tabsLabel')}
         // Arriving on one event, no pile is the one being looked at.
         initialId={focused ? null : undefined}
         fallback={

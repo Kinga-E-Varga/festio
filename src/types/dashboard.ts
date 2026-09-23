@@ -62,13 +62,17 @@ export interface NavSection {
 /** Tier is per invitation and can only ever go up (project spec). */
 export type TierId = 1 | 2 | 3;
 
+/**
+ * Key into the `Tiers` message namespace, which holds each tier's name, blurb
+ * and — for the tiers a host can raise to — its upsell.
+ */
+export type TierKey = "free" | "standard" | "custom";
+
 export interface Tier {
-  name: string;
-  price: string;
+  key: TierKey;
+  /** In RON; 0 is the free tier. */
+  price: number;
   seating: boolean;
-  blurb: string;
-  /** Shown on the tile offering the next tier up; absent on the top tier. */
-  upsell?: string;
 }
 
 /** Occasion drives which templates are offered first. */
@@ -99,10 +103,29 @@ export interface AttendeeSafeguard {
   cap: number;
 }
 
-export interface EventNote {
+/**
+ * A sentence Festio writes from an event's own numbers: the catalog key and
+ * the values it is filled with. The wording lives in the catalogs, so it is
+ * written in whichever language reads it.
+ */
+export interface Message {
+  key: string;
+  values?: Record<string, string | number>;
+}
+
+/**
+ * A stretch of time as a number and a unit, so it can be written out in the
+ * reader's language. Negative is in the past.
+ */
+export interface TimeSpan {
+  value: number;
+  unit: "minute" | "hour" | "day" | "week";
+}
+
+/** Keys into the `EventNotes` message namespace. */
+export interface EventNote extends Message {
   tone: "warning" | "neutral";
-  text: string;
-  actionLabel?: string;
+  actionKey?: string;
 }
 
 export interface DashboardEvent {
@@ -113,9 +136,8 @@ export interface DashboardEvent {
   date: string;
   /** 24h `HH:MM` start time. */
   time: string;
-  /** Pre-formatted for display; the list does no date maths of its own. */
-  dateLabel: string;
-  countdownLabel: string;
+  /** How far the event is from today; the list does no date maths of its own. */
+  countdown: TimeSpan;
   isNextUp?: boolean;
   venue: string;
   address: string;
@@ -141,8 +163,8 @@ export interface DashboardEvent {
   digits: string;
   /** Set only on Protected invitations; min 4 chars, letters or digits. */
   password?: string;
-  /** Replaces the copy row when there is nothing to share yet. */
-  linkNote?: string;
+  /** Replaces the copy row when there is nothing to share yet. A key into `EventNotes`. */
+  linkNoteKey?: string;
   rsvp: RsvpTally;
   safeguard: AttendeeSafeguard;
   /** Replies that matched no name on the pre-loaded list. */
@@ -152,18 +174,17 @@ export interface DashboardEvent {
   note?: EventNote;
   /**
    * Who is coming, beyond the head count — age groups, dietary needs and the
-   * like, already phrased for display. Empty or absent means nothing worth
+   * like, as keys into `EventNotes`. Empty or absent means nothing worth
    * calling out, not that nobody was asked.
    */
-  attendeeNotes?: string[];
+  attendeeNotes?: Message[];
   preview: StaticImageData;
-  previewAlt: string;
   status: EventStatus;
   seatingAvailable: boolean;
   /** True once the content freeze has passed; nothing is editable after it. */
   locked: boolean;
   /** How long until the freeze, while it is still ahead. */
-  locksInLabel?: string;
+  locksIn?: TimeSpan;
   /** True once the retention window has run out and the guest data is gone. */
   dataDeleted: boolean;
 }
@@ -184,27 +205,36 @@ export interface DashboardStat {
 
 export type NoticeTone = "unmatched" | "deadline" | "safeguard" | "billing";
 
-export interface AttentionNotice {
+/**
+ * A notice's title, body, action and optional context are keys under
+ * `Notices.<key>`, all filled from the same values.
+ */
+export interface AttentionNotice extends Message {
   id: string;
-  title: string;
-  /** Event the notice belongs to, appended to the title in lighter ink. */
-  context?: string;
-  body: string;
-  actionLabel: string;
+  /** Filled in as `{time}`, written out in the reader's language. */
+  span?: TimeSpan;
+  /** Filled in as `{tier}`, the tier's own name in the reader's language. */
+  tier?: TierId;
   tone: NoticeTone;
 }
 
 export interface RsvpActivity {
   id: string;
   initials: string;
-  /** Who acted — rendered emphasised. */
-  actor: string;
-  /** What they did, following the actor in plain ink. */
-  summary: string;
-  /** Optional second emphasised name, e.g. the guest a host added by phone. */
-  subject?: string;
+  /** Who acted. Absent means the host, who is addressed as "you". */
+  actor?: string;
+  /**
+   * What happened, a key into `Activity`. The sentence names the actor
+   * itself — where the name sits is the language's business.
+   */
+  action: Message;
   tag?: "UNKNOWN";
-  meta: string[];
+  /** The event's short name, as the host would say it. */
+  event: string;
+  /** Anything worth knowing about the reply, as keys into `Activity`. */
+  details?: Message[];
+  /** When it happened, counted back from now. */
+  when: TimeSpan;
 }
 
 export interface FooterColumn {

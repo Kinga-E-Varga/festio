@@ -1,3 +1,4 @@
+import { useTranslations } from 'next-intl'
 import type { ReactNode } from 'react'
 import { ArrowLeftIcon, PencilIcon } from './icons'
 import { HOST_ACTION, HOST_BAR_TOP, HOST_TOGGLE } from './styles'
@@ -23,6 +24,8 @@ export function HostBar({
   onToggleEdit,
   thirdAction,
 }: HostBarProps) {
+  const t = useTranslations('HostEditor')
+
   return (
     <div className="flex justify-center">
       {/*
@@ -33,7 +36,7 @@ export function HostBar({
       <div className={`${HOST_BAR_TOP} mb-2 invite:mt-6 invite:mb-2`}>
         <button type="button" onClick={onBack} className={HOST_ACTION}>
           <ArrowLeftIcon size={14} />
-          Back
+          {t('back')}
         </button>
         {/*
          * A toggle, not a way in: it holds the hover fill while the form is
@@ -48,7 +51,7 @@ export function HostBar({
           className={HOST_TOGGLE}
         >
           <PencilIcon size={14} />
-          Edit
+          {t('edit')}
         </button>
         {thirdAction}
       </div>

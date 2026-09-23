@@ -1,10 +1,12 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { CopyButton } from "@/components/dashboard/CopyButton";
 import { Icon } from "@/components/icons";
 
 export function PasswordField({ password }: { password: string }) {
+  const t = useTranslations("Event");
   const [revealed, setRevealed] = useState(false);
 
   return (
@@ -16,12 +18,12 @@ export function PasswordField({ password }: { password: string }) {
       <button
         type="button"
         onClick={() => setRevealed((shown) => !shown)}
-        aria-label={revealed ? "Hide guest password" : "Show guest password"}
+        aria-label={revealed ? t("hidePassword") : t("showPassword")}
         className="text-neutral-700 transition-colors hover:text-forest-500"
       >
         <Icon name={revealed ? "eyeOff" : "eye"} className="size-[15px]" />
       </button>
-      <CopyButton value={password} label="Copy guest password" />
+      <CopyButton value={password} label={t("copyPassword")} />
     </div>
   );
 }

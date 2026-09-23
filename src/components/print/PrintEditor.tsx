@@ -1,5 +1,6 @@
 'use client'
 
+import { useTranslations } from 'next-intl'
 import { type CSSProperties, useState } from 'react'
 import { Toast, useToast } from '@/components/dashboard/Toast'
 import { HostBar } from '@/components/invitation/HostBar'
@@ -77,6 +78,7 @@ export function PrintEditor({
    * width over — see `.sheet-form`.
    */
   const [editing, setEditing] = useState(true)
+  const t = useTranslations('HostEditor')
   const toast = useToast()
   const leave = useLeaveFestio()
 
@@ -115,13 +117,11 @@ export function PrintEditor({
             thirdAction={
               <button
                 type="button"
-                onClick={() =>
-                  toast.show('Your printable is on its way — not yet, though')
-                }
+                onClick={() => toast.show(t('exported'))}
                 className={HOST_ACTION}
               >
                 <ExportIcon size={14} />
-                Export
+                {t('export')}
               </button>
             }
           />

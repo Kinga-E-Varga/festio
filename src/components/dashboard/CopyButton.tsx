@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 import { Icon } from "@/components/icons";
 
@@ -10,6 +11,7 @@ interface CopyButtonProps {
 }
 
 export function CopyButton({ value, label }: CopyButtonProps) {
+  const t = useTranslations("Event");
   const [copied, setCopied] = useState(false);
 
   useEffect(() => {
@@ -43,7 +45,7 @@ export function CopyButton({ value, label }: CopyButtonProps) {
           copied ? "opacity-100" : "opacity-0"
         }`}
       >
-        {copied ? "Copied" : ""}
+        {copied ? t("copied") : ""}
       </span>
     </span>
   );

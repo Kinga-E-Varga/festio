@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import { NextIntlClientProvider } from "next-intl";
 import { notFound } from "next/navigation";
 import { HostInvitationEditor } from "@/components/invitation/HostInvitationEditor";
 import { loadMessages } from "@/i18n/messages";
@@ -34,22 +33,17 @@ export default async function HostInvitationPage({ params }: Props) {
   /*
    * The host is looking at the guest page, so the reply panel and the date
    * are in the invitation's language — not the locale this route is under.
-   * The provider here sits inside the root layout's and overrides it for
-   * this subtree; the host's own chrome around the card is unaffected,
-   * because none of it reads a catalog.
+   * The editor draws the guest page in this catalog and keeps its own
+   * chrome in the host's.
    */
   const language = invitationLanguage(event);
 
   return (
-    <NextIntlClientProvider
-      locale={language}
-      messages={await loadMessages(language)}
-    >
-      <HostInvitationEditor
-        template={template}
-        initial={seedValues(template, event)}
-        language={language}
-      />
-    </NextIntlClientProvider>
+    <HostInvitationEditor
+      template={template}
+      initial={seedValues(template, event)}
+      language={language}
+      guestMessages={await loadMessages(language)}
+    />
   );
 }

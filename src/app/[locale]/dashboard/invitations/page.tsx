@@ -99,7 +99,7 @@ export default async function InvitationsPage({
 
       <EventTabs
         tabs={tabs}
-        label="Invitation status"
+        label={t('tabsLabel')}
         // Arriving on one invitation, no pile is the one being looked at.
         initialId={focused ? null : undefined}
         fallback={

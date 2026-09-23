@@ -1,4 +1,4 @@
-import { useTranslations } from 'next-intl'
+import { useLocale, useTranslations } from 'next-intl'
 import Image from 'next/image'
 import { Link } from '@/i18n/navigation'
 import { CopyButton } from '@/components/dashboard/CopyButton'
@@ -8,7 +8,9 @@ import { Icon } from '@/components/icons'
 import { GUEST_DATA_RETENTION_DAYS } from '@/lib/config'
 import {
   deletionDate,
+  formatDay,
   formatEventDate,
+  formatRelative,
   invitationLink,
   invitationPath,
   safeguardBarVars,
@@ -91,7 +93,10 @@ function Tally({
  */
 export function EventRow({ event }: { event: DashboardEvent }) {
   const t = useTranslations('Event')
-  const deletion = formatEventDate(deletionDate(event.date))
+  const tTiers = useTranslations('Tiers')
+  const tNotes = useTranslations('EventNotes')
+  const locale = useLocale()
+  const deletion = formatEventDate(deletionDate(event.date), locale)
   const link = invitationLink(event)
   const { cap } = event.safeguard
   const replied = event.rsvp.replied
@@ -127,7 +132,7 @@ export function EventRow({ event }: { event: DashboardEvent }) {
           <div className="flex w-full justify-center leading-none">
             <Image
               src={event.preview}
-              alt={event.previewAlt}
+              alt={t('previewAlt', { title: event.title })}
               sizes="500px"
               className="h-auto max-h-[500px] w-auto max-w-full"
             />
@@ -146,7 +151,9 @@ export function EventRow({ event }: { event: DashboardEvent }) {
               </h3>
 
               <p className="mt-2.5 text-[14px] leading-none text-neutral-900">
-                <span className="font-medium">{event.dateLabel}</span>
+                <span className="font-medium">
+                  {formatDay(event.date, locale)}
+                </span>
                 <span aria-hidden="true" className="text-neutral-700">
                   {' · '}
                 </span>
@@ -157,7 +164,7 @@ export function EventRow({ event }: { event: DashboardEvent }) {
                       : 'text-neutral-700'
                   }
                 >
-                  {event.countdownLabel}
+                  {formatRelative(event.countdown, locale)}
                 </span>
               </p>
 
@@ -166,7 +173,7 @@ export function EventRow({ event }: { event: DashboardEvent }) {
                * the invitation rather than as what was bought, so it says so.
                */}
               <p className="mt-2.5 text-[13px] text-neutral-700">
-                {TIERS[event.tier].name} edition
+                {t('edition', { name: tTiers(`${TIERS[event.tier].key}.name`) })}
               </p>
             </div>
 
@@ -184,7 +191,7 @@ export function EventRow({ event }: { event: DashboardEvent }) {
                     <span className="flex-1 truncate">{link}</span>
                     <CopyButton
                       value={`https://${link}`}
-                      label={`Copy invitation link for ${event.title}`}
+                      label={t('copyLinkFor', { title: event.title })}
                     />
                   </span>
 
@@ -192,13 +199,13 @@ export function EventRow({ event }: { event: DashboardEvent }) {
                     <PasswordField password={event.password} />
                   ) : null}
 
-                  {event.linkNote ? (
+                  {event.linkNoteKey ? (
                     <span className={FIELD_NOTE}>
                       <Icon
                         name="eyeOff"
                         className="size-3.5 shrink-0 text-neutral-700"
                       />
-                      {event.linkNote}
+                      {tNotes(event.linkNoteKey)}
                     </span>
                   ) : null}
                 </div>
@@ -266,8 +273,10 @@ export function EventRow({ event }: { event: DashboardEvent }) {
               <h4 className={PANEL_LABEL}>{t('datesThatMatter')}</h4>
               {archived ? (
                 <p className="text-[12.5px] leading-[1.45] text-neutral-700">
-                  Guest data was deleted on {deletion},{' '}
-                  {GUEST_DATA_RETENTION_DAYS} days after the event.
+                  {t('dataDeletedOn', {
+                    date: deletion,
+                    days: GUEST_DATA_RETENTION_DAYS,
+                  })}
                 </p>
               ) : (
                 <DatesThatMatter event={event} layout="row" />

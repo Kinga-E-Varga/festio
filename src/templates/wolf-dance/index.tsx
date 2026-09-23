@@ -1,9 +1,23 @@
 import Image from 'next/image'
 import { DEFAULT_DATE_FORMAT } from '@/lib/invitation'
 import { fonts } from '@/lib/fonts'
+import type { LocalizedText } from '@/lib/language'
 import type { InvitationTemplate, TemplateValues } from '@/types/invitation'
 import pattern from './pattern.svg'
 import animalCoupleDance from './animal-couple-dance.svg'
+
+/*
+ * What the host's edit form calls each slot, in the host's language. Several
+ * slots share a label, so each is declared once here.
+ */
+const LABELS = {
+  message: { en: 'message', ro: 'mesaj', hu: 'üzenet' },
+  openingLine: { en: 'opening line', ro: 'rândul de deschidere', hu: 'nyitó sor' },
+  name: { en: 'name', ro: 'nume', hu: 'név' },
+  date: { en: 'date', ro: 'dată', hu: 'dátum' },
+  boldText: { en: 'bold text', ro: 'text îngroșat', hu: 'félkövér szöveg' },
+  text: { en: 'text', ro: 'text', hu: 'szöveg' },
+} satisfies Record<string, LocalizedText>
 
 export const template: InvitationTemplate = {
   id: 'wolf-dance',
@@ -61,7 +75,7 @@ export const template: InvitationTemplate = {
     /* Read by the RSVP panel, not by the card — the line above the reply. */
     {
       id: 'rsvpMessage',
-      label: 'message',
+      label: LABELS.message,
       type: 'text',
       maxLength: 120,
       fallback: {
@@ -73,7 +87,7 @@ export const template: InvitationTemplate = {
     },
     {
       id: 'title1',
-      label: 'opening line',
+      label: LABELS.openingLine,
       type: 'text',
       maxLength: 40,
       fallback: {
@@ -84,7 +98,7 @@ export const template: InvitationTemplate = {
     },
     {
       id: 'title2',
-      label: 'opening line',
+      label: LABELS.openingLine,
       type: 'text',
       maxLength: 60,
       fallback: {
@@ -95,27 +109,27 @@ export const template: InvitationTemplate = {
     },
     {
       id: 'name1',
-      label: 'name',
+      label: LABELS.name,
       type: 'text',
       maxLength: 10,
       fallback: 'Jacob',
     },
     {
       id: 'name2',
-      label: 'name',
+      label: LABELS.name,
       type: 'text',
       maxLength: 10,
       fallback: 'Bella',
     },
     {
       id: 'dateFormat',
-      label: 'date',
+      label: LABELS.date,
       type: 'dateFormat',
       fallback: DEFAULT_DATE_FORMAT,
     },
     {
       id: 'text1',
-      label: 'bold text',
+      label: LABELS.boldText,
       type: 'text',
       maxLength: 90,
       fallback: {
@@ -126,14 +140,14 @@ export const template: InvitationTemplate = {
     },
     {
       id: 'text2',
-      label: 'text',
+      label: LABELS.text,
       type: 'text',
       maxLength: 90,
       fallback: 'Quileute Reservation, La Push, Washington',
     },
     {
       id: 'text3',
-      label: 'bold text',
+      label: LABELS.boldText,
       type: 'text',
       maxLength: 90,
       fallback: {
@@ -144,7 +158,7 @@ export const template: InvitationTemplate = {
     },
     {
       id: 'text4',
-      label: 'text',
+      label: LABELS.text,
       type: 'text',
       maxLength: 90,
       fallback: 'La Bella Italia, Forks, Washington',

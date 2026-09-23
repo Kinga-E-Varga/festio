@@ -3,7 +3,6 @@ import { getLocale } from "next-intl/server";
 import { notFound } from "next/navigation";
 import { HostInvitationEditor } from "@/components/invitation/HostInvitationEditor";
 import { fallbackValues } from "@/lib/invitation";
-import type { Language } from "@/lib/language";
 import { loadTemplate } from "@/templates";
 
 type Props = PageProps<"/[locale]/templates/[id]">;
@@ -36,7 +35,7 @@ export default async function TemplatePreviewPage({ params }: Props) {
    * The route's own locale is already one of `LANGUAGES`; `[locale]` is
    * matched against that same list before anything renders.
    */
-  const language = (await getLocale()) as Language;
+  const language = await getLocale();
 
   return (
     <HostInvitationEditor
