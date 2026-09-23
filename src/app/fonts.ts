@@ -1,7 +1,7 @@
-import { Kantumruy_Pro, Libre_Baskerville } from "next/font/google";
+import { Libre_Baskerville, Work_Sans } from "next/font/google";
 
-const kantumruyPro = Kantumruy_Pro({
-  variable: "--font-kantumruy-pro",
+const workSans = Work_Sans({
+  variable: "--font-work-sans",
   subsets: ["latin", "latin-ext"],
 });
 
@@ -11,4 +11,4 @@ const libreBaskerville = Libre_Baskerville({
 });
 
 /** Shared by every root layout ([locale] and [invite]) so the app fonts are declared once. */
-export const appFontClassName = `${kantumruyPro.variable} ${libreBaskerville.variable}`;
+export const appFontClassName = `${workSans.variable} ${libreBaskerville.variable}`;

@@ -1,7 +1,7 @@
 import { useTranslations } from 'next-intl'
 import type { CSSProperties, ReactNode } from 'react'
 import { XIcon } from './icons'
-import { PANEL, SOLID } from './styles'
+import { PANEL, VIEW } from './styles'
 
 interface SidePanelProps {
   /** `edit` for the invitation editor, `sheet-form` for the print page — see `globals.css`. */
@@ -82,7 +82,7 @@ export function PanelViewButton({
       <button
         type="button"
         onClick={onClose}
-        className={`${SOLID} flex-1 mb-6 ${className}`}
+        className={`${VIEW} flex-1 mb-6 ${className}`}
       >
         {t('view')}
       </button>

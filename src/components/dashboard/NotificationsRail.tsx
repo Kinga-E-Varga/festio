@@ -111,8 +111,8 @@ export function NotificationsRail() {
                   {entry.tag ? (
                     <>
                       {" "}
-                      <span className="inline-block border border-terracotta-400 bg-terracotta-200 px-1.5 py-px align-[1px] text-[9.5px] font-semibold tracking-[0.1em] text-terracotta-600">
-                        {entry.tag}
+                      <span className="inline-block border border-terracotta-400 bg-terracotta-200 px-1.5 py-px align-[1px] text-[9.5px] font-semibold tracking-[0.1em] text-terracotta-600 uppercase">
+                        {t("unknownTag")}
                       </span>
                     </>
                   ) : null}

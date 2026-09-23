@@ -78,11 +78,13 @@ export interface Tier {
 /** Occasion drives which templates are offered first. */
 export type EventKind =
   | "wedding"
+  | "engagement"
+  | "bachelorParty"
   | "christening"
   | "birthday"
-  | "comingOfAge"
-  | "cumetrie"
-  | "newYear"
+  | "kidsParty"
+  | "dinnerParty"
+  | "reunion"
   | "other";
 
 /** Per-invitation visibility (project spec: Hidden / Public / Protected). */

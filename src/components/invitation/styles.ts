@@ -76,6 +76,9 @@ const BUTTON = `${BUTTON_BASE} px-5 py-3`
 
 export const SOLID = `${BUTTON} border-[var(--c2)] bg-[var(--c2)] text-[var(--c1)] hover:bg-[var(--c5)] hover:border-[var(--c5)]`
 
+/** The button that closes a side panel back to the invitation, below the breakpoint. */
+export const VIEW = `${BUTTON} border-[var(--c3)] bg-[var(--c3)] text-[color:var(--c1)] hover:bg-[var(--c2)] hover:border-[var(--c2)]`
+
 /** The going / not-going choice — c3 instead of the submit button's c2. */
 export const TOGGLE_SOLID = `${BUTTON} border-[var(--c3)] bg-[var(--c3)] text-[color:var(--c1)]`
 export const TOGGLE_OUTLINE = `${BUTTON} border-[var(--c3)] text-[color:var(--c3)] hover:text-[color:var(--c1)] hover:bg-[var(--c3)] hover:opacity-60`

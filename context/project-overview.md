@@ -111,7 +111,7 @@ Structure is fixed by invitation type; design varies per template.
 
 Desktop-first, fully mobile responsive. Nav collapses to a drawer on mobile. Smooth transitions, card hover states, toasts for user actions, loading skeletons for async content.
 
-Base app fonts — for the app's UI use the combination of Kantumruy Pro and Libre Baskerville google fonts fonts.
+Base app fonts — for the app's UI use the combination of Work Sans and Libre Baskerville google fonts.
 **Invitations have their own independent fonts and are not bound by this.**
 
 Base app palette — the `@theme` tokens in `src/app/globals.css`: neutral, steel teal,

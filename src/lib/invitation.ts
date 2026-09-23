@@ -218,6 +218,12 @@ export interface DateFormatOption {
    * a date on a card is guest-facing copy like any other.
    */
   render: (date: Date, locale: string) => string
+  /**
+   * Languages that never write a date this way. The editor leaves the style
+   * out of their list, and an invitation in one of them that has it saved
+   * reads as the default instead.
+   */
+  notIn?: Language[]
 }
 
 const pad = (part: number) => String(part).padStart(2, '0')
@@ -247,6 +253,11 @@ export const DATE_FORMATS: DateFormatOption[] = [
     id: 'monthFirst',
     render: (date, locale) =>
       `${monthName(date, locale)} ${date.getDate()}, ${date.getFullYear()}`,
+    /*
+     * English order. Romanian writes the day before the month, and Hungarian
+     * already puts the month before the day, after the year.
+     */
+    notIn: ['ro', 'hu'],
   },
   {
     id: 'weekday',
@@ -259,24 +270,33 @@ export const DATE_FORMATS: DateFormatOption[] = [
       }),
   },
   {
+    /* Hungarian writes a numeric date year first: 2026. 09. 06. */
     id: 'dotted',
-    render: (date) =>
-      `${pad(date.getDate())}.${pad(date.getMonth() + 1)}.${date.getFullYear()}`,
+    render: (date, locale) =>
+      locale === LANGUAGE_LOCALE.hu
+        ? `${date.getFullYear()}. ${pad(date.getMonth() + 1)}. ${pad(date.getDate())}.`
+        : `${pad(date.getDate())}.${pad(date.getMonth() + 1)}.${date.getFullYear()}`,
   },
   {
     id: 'slashed',
     render: (date) =>
       `${pad(date.getDate())}/${pad(date.getMonth() + 1)}/${date.getFullYear()}`,
+    notIn: ['hu'],
   },
 ]
 
 /** What a template's `dateFormat` field falls back to. */
 export const DEFAULT_DATE_FORMAT = DATE_FORMATS[0].id
 
+/** The styles an invitation in this language can be written in. */
+export function dateFormatsFor(language: Language): DateFormatOption[] {
+  return DATE_FORMATS.filter((option) => !option.notIn?.includes(language))
+}
+
 /**
  * The event's date as the chosen format writes it. An unknown format id — a
- * value saved before the list changed — reads as the default rather than
- * blanking the card's date line.
+ * value saved before the list changed, or a style the language does not use —
+ * reads as the default rather than blanking the card's date line.
  */
 export function formatInvitationDate(
   iso: string,
@@ -288,7 +308,8 @@ export function formatInvitationDate(
   if (!isRealDate(date)) return iso
 
   const format =
-    DATE_FORMATS.find((option) => option.id === formatId) ?? DATE_FORMATS[0]
+    dateFormatsFor(language).find((option) => option.id === formatId) ??
+    DATE_FORMATS[0]
   return format.render(date, LANGUAGE_LOCALE[language])
 }
 

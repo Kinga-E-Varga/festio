@@ -32,7 +32,7 @@ one) — see the comments in `[locale]/layout.tsx` and `invite/[invite]/layout.t
 | `invite/[invite]/layout.tsx` | Its own root layout — same fonts/chrome; `lang` and the message catalog come from the invitation's own `language` |
 | `invite/[invite]/page.tsx` | Public guest-facing invitation. URL is unprefixed (`/maria-birthday-1657`) — `next.config.ts` rewrites it here invisibly |
 
-`fonts.ts` — the app-wide `next/font/google` declarations (Kantumruy Pro +
+`fonts.ts` — the app-wide `next/font/google` declarations (Work Sans +
 Libre Baskerville), shared by both root layouts.
 
 ## i18n — `src/i18n/` and `messages/`

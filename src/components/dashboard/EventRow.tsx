@@ -43,7 +43,7 @@ const PANEL_LABEL =
  * taking back `top` and `h-px` inside the same breakpoint, where Tailwind's
  * property order — not the class string — settles which wins.
  */
-const RULE = `relative before:pointer-events-none before:absolute before:inset-x-5 before:top-0 before:h-px before:bg-mustard-300 before:content-[''] after:pointer-events-none after:absolute after:inset-y-5 after:left-0 after:hidden after:w-px after:bg-mustard-300 after:content-['']`
+export const RULE = `relative before:pointer-events-none before:absolute before:inset-x-5 before:top-0 before:h-px before:bg-mustard-300 before:content-[''] after:pointer-events-none after:absolute after:inset-y-5 after:left-0 after:hidden after:w-px after:bg-mustard-300 after:content-['']`
 
 /** Every section after the first hangs off a hairline of its own. */
 const PANEL = 'min-w-0 border-t border-mustard-300 pt-5'
@@ -134,7 +134,7 @@ export function EventRow({ event }: { event: DashboardEvent }) {
               src={event.preview}
               alt={t('previewAlt', { title: event.title })}
               sizes="500px"
-              className="h-auto max-h-[500px] w-auto max-w-full"
+              className="h-auto max-h-[500px] w-auto max-w-full border border-mustard-300"
             />
           </div>
         </div>
@@ -173,7 +173,9 @@ export function EventRow({ event }: { event: DashboardEvent }) {
                * the invitation rather than as what was bought, so it says so.
                */}
               <p className="mt-2.5 text-[13px] text-neutral-700">
-                {t('edition', { name: tTiers(`${TIERS[event.tier].key}.name`) })}
+                {t('edition', {
+                  name: tTiers(`${TIERS[event.tier].key}.name`),
+                })}
               </p>
             </div>
 
@@ -229,8 +231,14 @@ export function EventRow({ event }: { event: DashboardEvent }) {
                         value={event.rsvp.replied}
                         detail={`/${event.rsvp.invited}`}
                       />
-                      <Tally label={t('attending')} value={event.rsvp.attending} />
-                      <Tally label={t('declined')} value={event.rsvp.declined} />
+                      <Tally
+                        label={t('attending')}
+                        value={event.rsvp.attending}
+                      />
+                      <Tally
+                        label={t('declined')}
+                        value={event.rsvp.declined}
+                      />
                       <Tally label={t('pending')} value={event.rsvp.pending} />
                     </dl>
 
@@ -307,7 +315,7 @@ export function EventRow({ event }: { event: DashboardEvent }) {
              * many buttons still clear 135px apiece. In its own column it is a
              * single stack, held to a readable button width.
              */}
-            <div className="grid grid-cols-1 gap-3 @min-[340px]:grid-cols-2 @min-[500px]:grid-cols-3 @min-[920px]:grid-cols-6 @min-[1000px]:mx-auto @min-[1000px]:w-full @min-[1000px]:max-w-[180px] @min-[1000px]:grid-cols-1 @min-[1000px]:gap-6">
+            <div className="grid grid-cols-1 gap-3 @min-[340px]:grid-cols-2 @min-[500px]:grid-cols-3 @min-[920px]:grid-cols-6 @min-[1000px]:mx-auto @min-[1000px]:w-full @min-[1000px]:max-w-[190px] @min-[1000px]:grid-cols-1 @min-[1000px]:gap-6">
               {/* Editing closes with the event, but the record stays readable. */}
               {past ? (
                 <button
@@ -390,9 +398,7 @@ export function EventRow({ event }: { event: DashboardEvent }) {
                 type="button"
                 disabled={!event.seatingAvailable}
                 title={
-                  event.seatingAvailable
-                    ? undefined
-                    : t('seatingPaidOnly')
+                  event.seatingAvailable ? undefined : t('seatingPaidOnly')
                 }
                 className={ACTION}
               >

@@ -89,6 +89,7 @@
   "Rail": {
     "needsAttention": "Needs your attention",
     "recentRsvps": "Recent RSVPs",
+    "unknownTag": "Unknown",
     "dataRetention": "Data retention",
     "retention": "Each invitation and all its guest data is deleted automatically <big>{days}</big> days after the event date. Your account stays.",
     "controller": "You are the data controller; Festio processes on your behalf under the <link>DPA in the Terms</link>."
@@ -200,12 +201,14 @@
     }
   },
   "Occasions": {
-    "wedding": "Wedding — Nuntă",
-    "christening": "Christening — Botez",
-    "birthday": "Birthday — Aniversare",
-    "comingOfAge": "Coming of age — Majorat",
-    "cumetrie": "Cumetrie",
-    "newYear": "New Year — Revelion",
+    "wedding": "Wedding",
+    "engagement": "Engagement",
+    "bachelorParty": "Bachelor / bachelorette party",
+    "christening": "Christening",
+    "birthday": "Birthday",
+    "kidsParty": "Kids' party",
+    "dinnerParty": "Dinner party",
+    "reunion": "Reunion",
     "other": "Other"
   },
   "EventPage": {

@@ -7,14 +7,14 @@ import type {
   TemplateValues,
 } from '@/types/invitation'
 import {
-  DATE_FORMATS,
+  dateFormatsFor,
   DEFAULT_DATE_FORMAT,
   EVENT_DATE,
   formatInvitationDate,
 } from '@/lib/invitation'
 import { localized, type Language } from '@/lib/language'
 import { PanelViewButton, SidePanel } from './SidePanel'
-import { HINT, INPUT, LABEL, SELECT, TITLE } from './styles'
+import { HINT, INPUT, LABEL, SELECT, TEXTAREA, TITLE } from './styles'
 
 /**
  * The two halves of the editor, in the order the host meets them: the card
@@ -100,7 +100,12 @@ export function EditPanel({
   )
 
   return (
-    <SidePanel panelClassName="edit" open={open} inert={!open} onClose={onClose}>
+    <SidePanel
+      panelClassName="edit"
+      open={open}
+      inert={!open}
+      onClose={onClose}
+    >
       {body}
     </SidePanel>
   )
@@ -144,7 +149,7 @@ function Field({
             onChange={(control) => onChange(field.id, control.target.value)}
             className={SELECT}
           >
-            {DATE_FORMATS.map((option) => (
+            {dateFormatsFor(language).map((option) => (
               <option key={option.id} value={option.id}>
                 {formatInvitationDate(eventDate, option.id, language)}
               </option>
@@ -159,7 +164,7 @@ function Field({
           value={value}
           maxLength={field.maxLength}
           onChange={(control) => onChange(field.id, control.target.value)}
-          className={`${INPUT} resize-none`}
+          className={`${TEXTAREA} mt-2`}
         />
       ) : (
         <input

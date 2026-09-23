@@ -76,7 +76,7 @@ export const template: InvitationTemplate = {
     {
       id: 'rsvpMessage',
       label: LABELS.message,
-      type: 'text',
+      type: 'longText',
       maxLength: 120,
       fallback: {
         en: 'We would love to know if you can join us.',

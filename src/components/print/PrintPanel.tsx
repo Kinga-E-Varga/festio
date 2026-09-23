@@ -56,10 +56,10 @@ export function PrintPanel({
      * the card is the only thing on this page still wearing them.
      *
      * Only the two role vars, because they are the only way a template's
-     * face ever reaches anything: `body` sets Kantumruy for the whole app
+     * face ever reaches anything: `body` sets Work Sans for the whole app
      * and a template's font classes are `next/font` variable classes, which
      * declare `--font-noto-serif` and the like without applying a family.
-     * So everything here is already Kantumruy, and both roles point at it
+     * So everything here is already Work Sans, and both roles point at it
      * too, so a control that names one — `TEXTAREA` — lands on the same face
      * as the rest of the form.
      */
@@ -112,9 +112,7 @@ export function PrintPanel({
             <input
               type="checkbox"
               checked={settings.tinted}
-              onChange={(control) =>
-                onChange('tinted', control.target.checked)
-              }
+              onChange={(control) => onChange('tinted', control.target.checked)}
               className="sr-only"
             />
             <span
@@ -137,7 +135,7 @@ export function PrintPanel({
           </label>
           <textarea
             id="print-headline"
-            rows={2}
+            rows={3}
             maxLength={120}
             placeholder={t('optional')}
             value={settings.headline}
@@ -152,7 +150,7 @@ export function PrintPanel({
           </label>
           <textarea
             id="print-note"
-            rows={2}
+            rows={3}
             maxLength={120}
             placeholder={t('optional')}
             value={settings.note}

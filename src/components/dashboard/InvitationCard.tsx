@@ -1,6 +1,7 @@
 import { useLocale, useTranslations } from "next-intl";
 import Image from "next/image";
 import { Link } from "@/i18n/navigation";
+import { RULE } from "@/components/dashboard/EventRow";
 import { Icon } from "@/components/icons";
 import { formatDay, formatRelative, invitationPath } from "@/lib/event";
 import type { DashboardEvent, EventStatus } from "@/types/dashboard";
@@ -36,7 +37,7 @@ export function InvitationCard({ event }: { event: DashboardEvent }) {
     <article
       className={`@container flex flex-col border border-mustard-300 border-t-4 bg-mustard-100 ${STATUS_EDGE[event.status]}`}
     >
-      <div className="p-[18px]">
+      <div className="p-[18px] py-8">
         {/*
          * One line, always: the cards sit in a grid, and a two-line title on
          * one of them would push its date, artwork and buttons out of step
@@ -69,16 +70,19 @@ export function InvitationCard({ event }: { event: DashboardEvent }) {
       </div>
 
       {/*
-       * The artwork hangs off a hairline of its own, as the actions below it
-       * do. Invitations are printed on A4, so the slot is cut to that ratio
-       * and every card in the row stands the same height.
+       * As on the events page, the card itself is unpadded: each section pads
+       * itself and hangs off a rule of its own that stops short of the edges.
+       * Invitations are printed on A4, so the artwork's slot is cut to that
+       * ratio and every card in the row stands the same height — capped at
+       * 320 wide, so a card that runs the full width of a mid-size screen
+       * does not turn into a poster.
        */}
-      <figure className="mx-[18px] border-t border-mustard-300 pt-5">
-        <div className="relative aspect-[1/1.4142] overflow-hidden border border-mustard-300 bg-mustard-50">
+      <figure className={`p-[18px] ${RULE}`}>
+        <div className="relative mx-auto aspect-[1/1.4142] max-w-[320px] overflow-hidden border border-mustard-300 bg-mustard-50">
           <Image
             src={event.preview}
             alt={tEvent("previewAlt", { title: event.title })}
-            sizes="(min-width: 1400px) 300px, (min-width: 820px) 40vw, 90vw"
+            sizes="320px"
             className="h-full w-full object-cover"
           />
         </div>
@@ -90,7 +94,7 @@ export function InvitationCard({ event }: { event: DashboardEvent }) {
        * with one action keeps it full width rather than half a row.
        */}
       <div
-        className={`mx-[18px] mt-[18px] grid gap-3 border-t border-mustard-300 pt-5 pb-[18px] ${
+        className={`grid gap-3 p-[18px] py-8 ${RULE} ${
           past ? "grid-cols-1" : "grid-cols-1 @min-[340px]:grid-cols-2"
         }`}
       >
