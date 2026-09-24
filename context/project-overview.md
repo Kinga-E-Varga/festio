@@ -95,7 +95,7 @@ Tier 2 and 3 only. Full spec in `context/features/seating-chart.md`. Not built y
 ## GDPR
 
 - Host = data controller, Festio = data processor, via a DPA in the Terms.
-- Auto-deletion of the whole invitation record (invitation, guest data, everything but the host account) a set period after the event. Currently 30 days — **must be a single configurable parameter, never hardcoded.**
+- Auto-deletion of the whole invitation record (invitation, guest data, everything but the host account) a set period after the event. Currently 60 days — **must be a single configurable parameter, never hardcoded.**
 - Plain-language privacy notice on the RSVP form: what's collected, who sees it, retention.
 - Consent both ways: host uses guest data only for this event; guest agrees to that use.
 

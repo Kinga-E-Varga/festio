@@ -1,24 +1,24 @@
-import { useLocale, useTranslations } from "next-intl";
-import Image from "next/image";
-import { Link } from "@/i18n/navigation";
-import { RULE } from "@/components/dashboard/EventRow";
-import { Icon } from "@/components/icons";
-import { formatDay, formatRelative, invitationPath } from "@/lib/event";
-import type { DashboardEvent, EventStatus } from "@/types/dashboard";
+import { useLocale, useTranslations } from 'next-intl'
+import Image from 'next/image'
+import { Link } from '@/i18n/navigation'
+import { RULE } from '@/components/dashboard/EventRow'
+import { Icon } from '@/components/icons'
+import { formatDay, formatRelative, invitationPath } from '@/lib/event'
+import type { DashboardEvent, EventStatus } from '@/types/dashboard'
 
 /**
  * The top edge says which pile the card is in — the events list's status
  * colours, turned onto the head of the card rather than its side.
  */
 const STATUS_EDGE: Record<EventStatus, string> = {
-  active: "border-t-forest-500",
-  draft: "border-t-terracotta-500",
-  past: "border-t-neutral-600",
-};
+  active: 'border-t-forest-500',
+  draft: 'border-t-terracotta-500',
+  past: 'border-t-neutral-600',
+}
 
 /** One button, one size — the events list's own action, verbatim. */
 const ACTION =
-  "inline-flex w-full min-w-[135px] items-center justify-center gap-2 rounded-md border border-forest-500 bg-mustard-50 px-2.5 py-[9px] text-center text-[13px] leading-[1.3] font-medium text-forest-500 transition-colors hover:border-forest-600 hover:bg-forest-200 hover:text-forest-600 disabled:cursor-not-allowed disabled:opacity-50";
+  'inline-flex w-full min-w-[135px] items-center justify-center gap-2 rounded-md border border-forest-500 bg-mustard-50 px-2.5 py-[9px] text-center text-[13px] leading-[1.3] font-medium text-forest-500 transition-colors hover:border-forest-600 hover:bg-forest-200 hover:text-forest-600 disabled:cursor-not-allowed disabled:opacity-50'
 
 /**
  * One invitation: what it is and when, the artwork itself, and the handful of
@@ -27,11 +27,11 @@ const ACTION =
  * links to somewhere that repeats it, so it takes no hover state.
  */
 export function InvitationCard({ event }: { event: DashboardEvent }) {
-  const t = useTranslations("Invitations");
-  const tEvent = useTranslations("Event");
-  const locale = useLocale();
+  const t = useTranslations('Invitations')
+  const tEvent = useTranslations('Event')
+  const locale = useLocale()
   /* Content freezes with the event; a past invitation is only downloadable. */
-  const past = event.status === "past";
+  const past = event.status === 'past'
 
   return (
     <article
@@ -51,17 +51,15 @@ export function InvitationCard({ event }: { event: DashboardEvent }) {
         </h3>
 
         <p className="mt-2.5 text-[14px] leading-none text-neutral-900">
-          <span className="font-medium">
-            {formatDay(event.date, locale)}
-          </span>
+          <span className="font-medium">{formatDay(event.date, locale)}</span>
           <span aria-hidden="true" className="text-neutral-700">
-            {" · "}
+            {' · '}
           </span>
           <span
             className={
               event.isNextUp
-                ? "font-medium text-terracotta-600"
-                : "text-neutral-700"
+                ? 'font-medium text-terracotta-600'
+                : 'text-neutral-700'
             }
           >
             {formatRelative(event.countdown, locale)}
@@ -78,10 +76,10 @@ export function InvitationCard({ event }: { event: DashboardEvent }) {
        * does not turn into a poster.
        */}
       <figure className={`p-[18px] ${RULE}`}>
-        <div className="relative mx-auto aspect-[1/1.4142] max-w-[320px] overflow-hidden border border-mustard-300 bg-mustard-50">
+        <div className="relative mx-auto aspect-[1/1.4142] max-w-[400px] overflow-hidden border border-mustard-300 bg-mustard-50">
           <Image
             src={event.preview}
-            alt={tEvent("previewAlt", { title: event.title })}
+            alt={tEvent('previewAlt', { title: event.title })}
             sizes="320px"
             className="h-full w-full object-cover"
           />
@@ -95,13 +93,13 @@ export function InvitationCard({ event }: { event: DashboardEvent }) {
        */}
       <div
         className={`grid gap-3 p-[18px] py-8 ${RULE} ${
-          past ? "grid-cols-1" : "grid-cols-1 @min-[340px]:grid-cols-2"
+          past ? 'grid-cols-1' : 'grid-cols-1 @min-[340px]:grid-cols-2'
         }`}
       >
         {past ? (
           <button type="button" className={ACTION}>
             <Icon name="download" className="size-[15px]" />
-            {t("downloadCard")}
+            {t('downloadCard')}
           </button>
         ) : (
           <>
@@ -109,23 +107,23 @@ export function InvitationCard({ event }: { event: DashboardEvent }) {
             {event.templateId ? (
               <Link href={`/invitations/${event.id}`} className={ACTION}>
                 <Icon name="pencil" className="size-[15px]" />
-                {t("editDetails")}
+                {t('editDetails')}
               </Link>
             ) : (
               <button
                 type="button"
                 disabled
-                title={tEvent("noDesign")}
+                title={tEvent('noDesign')}
                 className={ACTION}
               >
                 <Icon name="pencil" className="size-[15px]" />
-                {t("editDetails")}
+                {t('editDetails')}
               </button>
             )}
 
             <button type="button" className={ACTION}>
               <Icon name="layers" className="size-[15px]" />
-              {t("editDesign")}
+              {t('editDesign')}
             </button>
             {/* The guest page itself, in a tab of its own. */}
             {event.templateId ? (
@@ -136,39 +134,39 @@ export function InvitationCard({ event }: { event: DashboardEvent }) {
                 className={ACTION}
               >
                 <Icon name="eye" className="size-[15px]" />
-                {tEvent("viewAsGuest")}
+                {tEvent('viewAsGuest')}
               </a>
             ) : (
               <button
                 type="button"
                 disabled
-                title={tEvent("noDesign")}
+                title={tEvent('noDesign')}
                 className={ACTION}
               >
                 <Icon name="eye" className="size-[15px]" />
-                {tEvent("viewAsGuest")}
+                {tEvent('viewAsGuest')}
               </button>
             )}
             {/* The printable is built from the design, so it needs one too. */}
             {event.templateId ? (
               <Link href={`/prints/${event.id}`} className={ACTION}>
                 <Icon name="printer" className="size-[15px]" />
-                {tEvent("print")}
+                {tEvent('print')}
               </Link>
             ) : (
               <button
                 type="button"
                 disabled
-                title={tEvent("noDesign")}
+                title={tEvent('noDesign')}
                 className={ACTION}
               >
                 <Icon name="printer" className="size-[15px]" />
-                {tEvent("print")}
+                {tEvent('print')}
               </button>
             )}
           </>
         )}
       </div>
     </article>
-  );
+  )
 }

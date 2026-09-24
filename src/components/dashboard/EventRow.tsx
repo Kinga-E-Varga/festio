@@ -388,10 +388,13 @@ export function EventRow({ event }: { event: DashboardEvent }) {
                 <Icon name="printer" className="size-[15px]" />
                 {t('print')}
               </button>
-              <button type="button" className={ACTION}>
+              <Link
+                href={`/dashboard/events/${event.id}/guests`}
+                className={ACTION}
+              >
                 <Icon name="guests" className="size-[15px]" />
                 {t('guestList')}
-              </button>
+              </Link>
               <button
                 type="button"
                 disabled={!event.seatingAvailable}

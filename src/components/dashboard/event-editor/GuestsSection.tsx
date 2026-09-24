@@ -13,6 +13,7 @@ import { Toggle } from "@/components/dashboard/event-editor/Toggle";
 import { RepliesMeter } from "@/components/dashboard/RepliesMeter";
 import type { EventForm } from "@/components/dashboard/event-editor/useEventForm";
 import { Icon } from "@/components/icons";
+import { Link } from "@/i18n/navigation";
 import type { DashboardEvent } from "@/types/dashboard";
 
 interface SectionProps {
@@ -73,13 +74,16 @@ export function GuestsSection({ event, form }: SectionProps) {
           <div className={SUBBOX}>
             <p className="font-bold text-neutral-900">
               {t("preloadedCount", { count: event.preloadedCount })}
-              <button
-                type="button"
+              {/* A new tab, so unsaved changes in this editor stay put. */}
+              <Link
+                href={`/dashboard/events/${event.id}/guests#list`}
+                target="_blank"
+                rel="noopener"
                 className="ml-3 inline-flex items-center gap-1.5 border border-mustard-400 bg-mustard-200 px-2.5 py-1 align-[1px] text-xs font-semibold whitespace-nowrap text-mustard-600 transition-colors hover:border-mustard-500"
               >
                 <Icon name="pencil" className="size-3.5" />
                 {t("editList")}
-              </button>
+              </Link>
             </p>
           </div>
         ) : null}

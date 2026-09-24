@@ -1,7 +1,8 @@
 # Complete Action
 
 1. In `context/current-feature.md` set **Status: Completed** — that line only, nothing
-   else in the file. Then stage all changes and commit with a descriptive message
+   else in the file. Delete `.superpowers/` if it exists. Then stage all changes and
+   commit with a descriptive message
    (do not add Co-authored with...)
 2. Switch to main and merge the feature branch (no push yet).
    **Fast-forward only, no merge commits.** If main hasn't moved since the

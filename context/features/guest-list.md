@@ -1,10 +1,6 @@
-# Current Feature
+# Event Guest List
 
 Event guest list — one page per event at `/dashboard/events/[id]/guests` where the host reads, fixes and adds every reply, and manages the pre-loaded guest list.
-
-## Status
-
-Completed
 
 ## Goals
 
@@ -148,23 +144,3 @@ Completed
   - A new line in `context/fixes/pending/pending-design-fixes.md`, and the BACK unsaved-changes note in `context/fixes/pending/pending-UX-fixes.md`.
   - The Plan step in the workflow (`context/ai-interaction.md`), `/context/plans/` in `.gitignore`, and the feature skill's new `plan` action.
   - The fix notes in `context/fixes/guest-list-design.md`.
-
-## History
-
-<!-- Keep this updated latest to earliest -->
-
-- Safety features — clean slug-only links, the Protected password on the printed card, expected guests with a hidden reply cap, reply-form closing, and one set of warning texts for banners and the notifications rail
-- Language / i18n — Romanian and Hungarian for the host app and guest invitations, each invitation with its own language
-- Invitation print page — a flat or folded printable at `/prints`, with its own settings form
-- Host action bar — one bar over the card: back, edit toggle, save, dismiss
-- Invitations page — grid of invitation cards, plus one-record arrivals from Events and the dashboard
-- Dashboard & events UX fixes — header action, card restack, warning-only tags
-- Dashboard design fixes — stats, card/list layout, editor banners, focus rings
-- Invitation composition — card + reply in one component, one tree per panel
-- Type 1 invitation page and editing platform
-- Events list — "Edit invitation" label + safeguard/dates info
-- Scanner fixes — cart badge + safeguard bar helper
-- Dashboard events + event edit pages
-- Dashboard redesign
-- Dashboard UI
-- Initial setup

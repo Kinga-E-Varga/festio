@@ -59,13 +59,14 @@ export function hasFestioHistory() {
 /**
  * Back to wherever in Festio the host came from — the invitations list, the
  * event editor, the template gallery, or the print page — which only history
- * knows. When the entry behind this one is not ours, stepping into it would
- * drop the host off the site, so the landing page stands in instead.
+ * knows. When the entry behind this one is not ours (a fresh tab, a pasted
+ * link), stepping into it would drop the host off the site, so the page's own
+ * `fallback` stands in instead: the list it belongs to.
  */
-export function useLeaveFestio() {
+export function useLeaveFestio(fallback: string) {
   const router = useRouter()
   return () => {
     if (hasFestioHistory()) router.back()
-    else router.push('/')
+    else router.push(fallback)
   }
 }

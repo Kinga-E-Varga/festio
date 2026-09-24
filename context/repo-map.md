@@ -23,6 +23,7 @@ one) — see the comments in `[locale]/layout.tsx` and `invite/[invite]/layout.t
 | `[locale]/dashboard/layout.tsx` | Dashboard shell wrapper |
 | `[locale]/dashboard/events/page.tsx` | Events list |
 | `[locale]/dashboard/events/[id]/page.tsx` | Event editor |
+| `[locale]/dashboard/events/[id]/guests/page.tsx` | Event guest list |
 | `[locale]/dashboard/events/[id]/report/page.tsx` | Draft: report a flood of unexpected replies |
 | `[locale]/dashboard/invitations/page.tsx` | Invitations grid |
 
@@ -78,7 +79,11 @@ Invitations: `InvitationCard.tsx`, `InvitationGroups.tsx`.
 
 Widgets: `HostToday.tsx`, `StatStrip.tsx`, `RepliesMeter.tsx`, `DatesThatMatter.tsx`, `NotificationsRail.tsx`, `Toast.tsx`, `CopyButton.tsx`, `PasswordField.tsx`, `FocusView.tsx`, `CentreOnHash.tsx`.
 
+Event pages: `EventHeader.tsx` (BACK + title + date), `BackButton.tsx`, `RepliesBanner.tsx` (from `warn` in the editor, `over` on the guest list).
+
 `event-editor/` — the event edit form. `EventEditor.tsx` composes `*Section.tsx` parts; state in `useEventForm.ts`, shared classes in `styles.ts`.
+
+`guest-list/` — the guest manager. `GuestManager.tsx` composes toolbar, add-names box, summary chips + `GuestSearch.tsx`, and table (`GuestTable.tsx` → categories → groups → `RowView.tsx` / `RowEditor.tsx`); state in `useGuestList.ts` / `useGuestActions.ts` / `useRowEditor.ts`.
 
 ## Lib — `src/lib/`
 
@@ -89,13 +94,15 @@ Widgets: `HostToday.tsx`, `StatStrip.tsx`, `RepliesMeter.tsx`, `DatesThatMatter.
 | `slug.ts` | `RESERVED_SLUGS` (the one list), slug limits, `normalizeSlug`, suggestions, the invite rewrite pattern. Relative imports only — `next.config.ts` reads it. |
 | `invitation.ts` | Template vars, `findByInvite`, seed/fallback values, `DATE_FORMATS` |
 | `fonts.ts` | Invitation fonts via `next/font/google` (per-template, not the app chrome — that's `src/app/fonts.ts`) |
-| `history.ts` | Local visit tracking |
+| `history.ts` | Local visit tracking; `useLeaveFestio(fallback)` — the one BACK, with each page's own fallback when no Festio page is behind it |
+| `guests.ts` | Guest rows from list + replies: matching, Unknown/Duplicate tags, grouping and splitting by category, counts, filters, repeat check. Type imports only. |
 | `language.ts` | `LANGUAGES` (the one list, read by both `i18n/routing.ts` and an invitation's `language`), `invitationLanguage`, `LocalizedText`/`localized`, locale tags and names |
 
 ## Other
 
-- `src/types/` — `invitation.ts` (incl. `TemplateModule`), `dashboard.ts`, `print.ts`
+- `src/types/` — `invitation.ts` (incl. `TemplateModule`), `dashboard.ts`, `print.ts`, `guests.ts` (mock-only)
 - `src/mock/dashboard.ts` — mock data; **no Firestore wiring yet**
+- `src/mock/guests.ts` — `findGuests(eventId)`, mock guest lists
 - `src/components/icons.tsx` — app-wide icons
 - Config: `next.config.ts`, `tsconfig.json`, `eslint.config.mjs`, `postcss.config.mjs`
 

@@ -83,7 +83,7 @@ export function PrintEditor({
   const [editing, setEditing] = useState(true)
   const t = useTranslations('HostEditor')
   const toast = useToast()
-  const leave = useLeaveFestio()
+  const leave = useLeaveFestio('/dashboard/invitations')
 
   function change<Key extends keyof PrintSettings>(
     key: Key,

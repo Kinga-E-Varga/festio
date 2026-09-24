@@ -12,12 +12,15 @@
 
 ## Archived specs — do not read unless asked
 
-`context/features/` and `context/fixes/`, including `pending/`, are completed work. The code
-is the source of truth.
+`context/features/`, `context/fixes/` (including `pending/`) and `context/plans/` are completed
+work. The code is the source of truth.
 
 - **Never read a file there on your own initiative** — only when the user names it, or the
   `feature` skill resolves a name to it.
-- **Exclude both folders from every Grep and Glob.** They produce false matches.
+- **Plans are stricter:** read one only when the user names it, or when the `Plan:` line in
+  @context/current-feature.md Notes points to it while that feature is being built. Never
+  list or search `context/plans/`.
+- **Exclude these folders from every Grep and Glob.** They produce false matches.
 - A match there is not evidence about current behaviour. Check the code or
   @context/project-overview.md.
 
@@ -62,14 +65,15 @@ Ignore `02-pages/` entirely. This project is App Router only.
 Workflow for every feature/fix:
 
 1. **Document** - Document the feature in @context/current-feature.md.
-2. **Branch** - Create new branch for feature, fix, etc
-3. **Implement** - Implement the feature/fix that I create in @context/current-feature.md
-4. **Test** - Verify it works in the browser. Implement unit testing later. Run `npm run build` and fix any errors
-5. **Iterate** - Iterate and change things if needed
-6. **Commit** - Only after build passes and everything works. Right before committing, set **Status: Completed** in @context/current-feature.md — that line only, nothing else in the file. If the change moved a route, a top-level `src/` directory, a file in `src/lib/`, or a component between folders, update @context/repo-map.md in this same commit. Adding a template does not count.
-7. **Merge** - Merge to main. Fast-forward, no merge commits — if main has moved on and a fast-forward isn't possible, rebase the branch onto main first rather than creating a merge commit.
-8. **Delete Branch** - Delete the branch after the merge.
-9. **Close out** - The last step, after the merge. In @context/current-feature.md: add the feature name to the top of History, then reset everything else — Status back to `Not Started`, Goals and Notes back to their empty boilerplate comments. **History is never reset; it only grows.** Leave this edit uncommitted; it rides along with the next feature's commit at step 6.
+2. **Plan** - Large features only, and ask before planning: write an implementation plan to `context/plans/[feature].md`. Plans are git-ignored and never committed. @context/current-feature.md stays the spec.
+3. **Branch** - Create new branch for feature, fix, etc
+4. **Implement** - Implement the feature/fix that I create in @context/current-feature.md
+5. **Test** - Verify it works in the browser. Implement unit testing later. Run `npm run build` and fix any errors
+6. **Iterate** - Iterate and change things if needed
+7. **Commit** - Only after build passes and everything works. Right before committing, set **Status: Completed** in @context/current-feature.md — that line only, nothing else in the file — and delete `.superpowers/` if it exists. If the change moved a route, a top-level `src/` directory, a file in `src/lib/`, or a component between folders, update @context/repo-map.md in this same commit. Adding a template does not count.
+8. **Merge** - Merge to main. Fast-forward, no merge commits — if main has moved on and a fast-forward isn't possible, rebase the branch onto main first rather than creating a merge commit.
+9. **Delete Branch** - Delete the branch after the merge.
+10. **Close out** - The last step, after the merge. In @context/current-feature.md: add the feature name to the top of History, then reset everything else — Status back to `Not Started`, Goals and Notes back to their empty boilerplate comments. **History is never reset; it only grows.** Leave this edit uncommitted; it rides along with the next feature's commit at step 7.
 
 Do NOT commit without permission and until the build passes. If build fails, fix the issues first.
 

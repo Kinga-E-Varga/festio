@@ -46,7 +46,7 @@ export const NAV_SECTIONS: NavSection[] = [
         labelKey: 'events',
         href: '/dashboard/events',
         icon: 'calendar',
-        badge: '4',
+        badge: '5',
       },
       {
         labelKey: 'invitations',
@@ -100,13 +100,13 @@ export const EVENT_KINDS: EventKind[] = [
 export const STATS: DashboardStat[] = [
   {
     labelKey: 'liveInvitations',
-    value: '3',
+    value: '4',
     detailKey: 'ofTotal',
-    detailValue: 4,
+    detailValue: 5,
   },
   { labelKey: 'nextEvent', value: '2', detailKey: 'daysAway' },
   { labelKey: 'newReplies', value: '12', detailKey: 'sinceLastVisit' },
-  { labelKey: 'unmatchedNames', value: '5', detailKey: 'unknown' },
+  { labelKey: 'unmatchedNames', value: '7', detailKey: 'unknown' },
 ]
 
 export const EVENTS: DashboardEvent[] = [
@@ -124,7 +124,7 @@ export const EVENTS: DashboardEvent[] = [
     tier: 3,
     invitationType: 2,
     templateId: 'wolf-dance',
-    /* Every other event carries none, and so reads as English — the rollout default. */
+    /* Events without one read as English — the rollout default. */
     language: 'ro',
     paid: true,
     locksIn: { value: 30, unit: 'hour' },
@@ -192,6 +192,34 @@ export const EVENTS: DashboardEvent[] = [
     preview: previewBotez,
     status: 'active',
     seatingAvailable: true,
+    locked: false,
+    dataDeleted: false,
+  },
+  {
+    id: 'logodna-ana-vlad',
+    title: 'Logodnă Ana & Vlad — Vila Florilor',
+    kind: 'engagement',
+    date: '2026-10-24',
+    time: '18:00',
+    countdown: { value: 7, unit: 'week' },
+    venue: 'Vila Florilor',
+    address: 'Strada Florilor 5, Cluj-Napoca',
+    visibility: 'public',
+    tier: 1,
+    invitationType: 1,
+    language: 'ro',
+    paid: true,
+    locksIn: { value: 7, unit: 'week' },
+    slug: 'ana-vlad',
+    /* Matches the rows in `mock/guests.ts`. */
+    rsvp: { replied: 8, invited: 8, attending: 7, declined: 1, pending: 3 },
+    expectedGuests: 8,
+    unmatched: 2,
+    preloaded: true,
+    preloadedCount: 8,
+    preview: previewAniversare,
+    status: 'active',
+    seatingAvailable: false,
     locked: false,
     dataDeleted: false,
   },
