@@ -1,10 +1,10 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { Banner } from "@/components/dashboard/event-editor/Banner";
 import { EditorSection } from "@/components/dashboard/event-editor/EditorSection";
 import {
   ERROR,
+  HINT,
   INPUT,
   LABEL,
   SUBBOX,
@@ -26,39 +26,37 @@ export function GuestsSection({ event, form }: SectionProps) {
 
   return (
     <EditorSection title={t("guests")}>
-      <p className={`mb-2.5 ${LABEL}`}>{t("cap")}</p>
+      <label htmlFor="event-expected" className={`mb-2.5 block ${LABEL}`}>
+        {t("expected")}
+      </label>
 
       <div className="flex flex-wrap items-center gap-x-6 gap-y-3.5">
         <input
-          id="event-cap"
+          id="event-expected"
           type="number"
+          required
           min={1}
           max={1000}
-          step={10}
-          aria-label={t("cap")}
+          step={1}
           disabled={locked}
-          value={values.cap}
-          onChange={(control) => set.cap(control.target.value)}
+          value={values.expected}
+          onChange={(control) => set.expected(control.target.value)}
           className={`${INPUT} basis-[180px]`}
         />
 
         {/* The count sits over the bar, the pair centred on the input beside it. */}
         <div className="flex-1 basis-[320px]">
-          <RepliesMeter replied={event.rsvp.replied} cap={derived.capValue} />
+          <RepliesMeter
+            replied={event.rsvp.replied}
+            expected={derived.expectedValue}
+          />
         </div>
 
-        {derived.capError ? (
-          <p className={`basis-full ${ERROR}`}>{derived.capError}</p>
+        {derived.expectedError ? (
+          <p className={`basis-full ${ERROR}`}>{derived.expectedError}</p>
         ) : null}
+        <p className={`basis-full ${HINT}`}>{t("expectedHint")}</p>
       </div>
-
-      <Banner
-        tone="info"
-        icon="shield"
-        title={t("safeguardTitle")}
-      >
-        {t("safeguard")}
-      </Banner>
 
       <div className="mt-[22px]">
         <p className={`mb-2.5 ${LABEL}`}>{t("expecting")}</p>

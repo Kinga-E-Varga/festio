@@ -23,10 +23,12 @@
     "submit": "Submit Response",
     "privacy": "Your name and reply go only to the hosts of this event, and are deleted {days} days after it. Nothing is shared with anyone else.",
     "sentTitle": "Thank you — your reply is with the hosts.",
-    "sentNote": "Need to change something? The hosts can correct any reply for you."
+    "sentNote": "Need to change something? The hosts can correct any reply for you.",
+    "paused": "Replies are closed for now. Please contact the host."
   },
   "Print": {
-    "defaultNote": "Please respond before the 5th of august 2024 on the link provided below."
+    "defaultNote": "Please respond before the 5th of august 2024 on the link provided below.",
+    "password": "Password: {password}"
   },
   "Nav": {
     "aria": "Dashboard sections",
@@ -128,7 +130,8 @@
     "seating": "Seating",
     "viewAsGuest": "View as guest",
     "manageEvent": "Manage this event",
-    "raiseCap": "Raise cap",
+    "raiseExpected": "Raise expected",
+    "reportFlood": "Report issue",
     "editLocksSoon": "Edit locks soon",
     "alreadyHappened": "This event has already happened",
     "noDesign": "Pick a design for this invitation first",
@@ -138,17 +141,18 @@
     "public": "Public",
     "protected": "Protected",
     "hiddenNote": "Only you can see the invitation.",
-    "publicNote": "Anyone holding the link can see the invitation and can RSVP.",
-    "protectedNote": "The invitation can only be viewed with a password. Remember to share the password with your guests.",
+    "publicNote": "Anyone with the link can see the invitation and reply, even people you didn't invite. They'll also see the event's address, date and any other detail you add.",
+    "protectedNote": "Guests need a password to see the invitation, so only people you share it with see it. The password is printed on the card under the link.",
     "editingClosed": "Editing closed",
     "editingFreezes": "Editing freezes",
     "recordDeleted": "Record deleted",
     "replyFormCloses": "Reply form closes",
-    "meter": "<big>{replied}</big> replies received against a {cap} cap · {percent}%",
-    "meterAria": "{replied} replies against a cap of {cap}",
-    "safeguardAt": "Safeguard at {percent}%",
-    "safeguardAria": "Attendee safeguard: {attending} attending and {declined} declined, against a cap of {cap}",
-    "safeguardLine": "Attendee safeguard {replied} of {cap} · {percent}%",
+    "meter": "<big>{replied}</big>/{expected} expected guests replied · {percent}%",
+    "meterAria": "{replied} of {expected} expected guests replied",
+    "expectedAt": "Replies at {percent}%",
+    "overExpected": "More replies than expected",
+    "barAria": "Replies: {attending} attending and {declined} declined, of {expected} expected guests",
+    "expectedLine": "Expected guests {replied}/{expected} · {percent}%",
     "seatingPaidOnly": "Seating charts come with paid invitations",
     "edition": "{name} edition",
     "copyLinkFor": "Copy invitation link for {title}",
@@ -157,7 +161,9 @@
     "copyPassword": "Copy guest password",
     "copied": "Copied",
     "replyFormClosesOn": "Reply form closes {date}",
-    "safeguardShort": "Safeguard {replied} of {cap} · {percent}%",
+    "repliesClosedOn": "Replies closed {date}",
+    "repliesClosed": "Replies closed",
+    "expectedShort": "Expected {replied}/{expected} · {percent}%",
     "locksIn": "Locks in {time}",
     "previewAlt": "Invitation preview for {title}",
     "dataDeletedOn": "Guest data was deleted on {date}, {days} days after the event."
@@ -216,13 +222,23 @@
     "closedTitle": "Editing closed on {date}",
     "closedBody": "Event and invitation editing closed the day before the event. The record stays readable, and your printable file is still yours to download.",
     "closingTitle": "Editing closes in {time}",
-    "closingBody": "Event and invitation editing close on {date}, the day before the event. The guest list stays open after that, so you can still record replies that reach you by phone.",
+    "closingBody": "Event and invitation editing close on {date}, the day before the event.",
+    "repliesClosingTitle": "Replies close in {time}",
+    "repliesClosingBody": "The reply form closes on {date}, {custom, select, yes {the time you set} other {the day before the event}}.",
+    "repliesClosedTitle": "Replies closed on {date}",
+    "repliesClosedBody": "The reply form closed {custom, select, yes {at the time you set} other {the day before the event}}. You can still add replies that reach you in any other way.",
     "unpaidTitle": "This draft is unpaid",
     "unpaidBody": "The {tier} edition costs {price}. The page stays hidden and the RSVP form stays closed until payment clears.",
     "hiddenTitle": "This invitation is hidden",
     "hiddenBody": "Nobody can open the page, not even a guest holding the link, and no reply can arrive. Set the visibility to Public or Protected below once you are ready to share it.",
-    "unmatchedTitle": "{count, plural, one {# reply doesn't match a name on your list} other {# replies don't match a name on your list}}",
-    "unmatchedBody": "They are tagged UNKNOWN until you add them or match them to a name someone mistyped."
+    "unmatchedTitle": "{count, plural, one {# unmatched reply} other {# unmatched replies}}",
+    "unmatchedBody": "They are tagged UNKNOWN until you add them or match them to a name someone mistyped.",
+    "pausedTitle": "Replies are paused",
+    "pausedBody": "An unusually high number of guests replied compared to the number you expected. If they're real, raise the number to reopen the form. If not, report it.",
+    "nearExpectedTitle": "Replies at {percent}%",
+    "nearExpectedBody": "{replied} of the {expected} guests you expect have replied. If more are coming, raise the expected number.",
+    "overExpectedTitle": "More replies than expected",
+    "overExpectedBody": "{replied} guests have replied, but you expected {expected}. Raise the expected number to keep your numbers accurate."
   },
   "EventEditor": {
     "details": "Details",
@@ -251,13 +267,17 @@
     "dataDeleted": "Data deleted",
     "alreadyDeleted": "Already done.",
     "deletionNote": "For GDPR reasons, guest and event data are kept only {days} days after the event date.",
-    "capError": "{count, plural, one {You already have # reply.} other {You already have # replies.}} The maximum cannot sit below the replies you have received — nobody is removed by lowering it.",
+    "expectedTooLow": "{count, plural, one {You already have # reply.} other {You already have # replies.}} You can't expect fewer guests than have already replied.",
+    "expectedRequired": "Enter how many guests you expect.",
     "slugTooShort": "Use at least {min} characters — letters, digits and hyphens.",
     "slugTooLong": "Use {max} characters at most.",
+    "slugTaken": "This link is already taken.",
+    "slugReserved": "This word is reserved by Festio. Try another.",
+    "slugFree": "Free:",
     "passwordInvalid": "Use at least 4 letters or digits.",
     "link": "Link and access",
     "address": "Invitation address",
-    "addressHint": "The four digits are Festio's — they keep the link unguessable. If you have already shared the link, changing it will break every copy your guests are holding.",
+    "addressHint": "If you have already shared the link, changing it will break every copy your guests are holding.",
     "guestLink": "The link your guests open",
     "copyLink": "Copy invitation link",
     "addressWarningTitle": "Changing the address",
@@ -271,12 +291,11 @@
     "copyPassword": "Copy invitation password",
     "passwordWarningTitle": "Changing the password",
     "passwordWarning": "The old password stops working the moment you save. Guests will not be able to see the invitation until you give them the new one.",
-    "noindexTitle": "Search engines never see this page",
-    "noindex": "Every invitation is served with a noindex header, whichever visibility you pick.",
+    "noindexTitle": "Search engines never see invitations",
+    "noindex": "For your privacy, no invitation can be found by searching Google or any other search engine, whatever visibility you choose.",
     "guests": "Guests and replies",
-    "cap": "Maximum number of guests",
-    "safeguardTitle": "A technical safeguard, not a guest limit",
-    "safeguard": "The maximum only guards against a flood of automated replies. Raise it whenever you like — it is worth setting a little above the number of guests you are planning for.",
+    "expected": "How many guests do you expect?",
+    "expectedHint": "We use this to show how your replies are coming in, and to protect you from spam: if far more replies come in than you expected, we'll pause the form. You can raise the number anytime.",
     "expecting": "Who you are expecting",
     "preloaded": "Use pre-loaded guest list",
     "preloadedNote": "Match incoming replies against a list of names you expect. Anything that doesn't match is tagged UNKNOWN for you to sort out.",
@@ -380,24 +399,35 @@
   },
   "Notices": {
     "unmatched": {
-      "title": "{count, plural, one {# unmatched name} other {# unmatched names}}",
-      "context": "on {event}",
-      "body": "Tagged UNKNOWN. Add them, or match them to a mistyped name on your pre-loaded list.",
+      "context": "· {event}",
       "action": "Review names"
     },
-    "editingCloses": {
-      "title": "Editing closes in {time}",
-      "body": "Content and template freeze 24 hours before the event date.",
+    "closing": {
+      "context": "· {event}",
       "action": "Make final edits"
     },
-    "safeguard": {
-      "title": "Attendee safeguard at {percent}%",
-      "body": "{replied} of your {cap} cap. Raise it any time — it's a technical guard, not a guest limit.",
-      "action": "Raise cap"
+    "repliesClosing": {
+      "context": "· {event}",
+      "action": "{change, select, yes {Change closing time} other {Open guest list}}"
+    },
+    "repliesClosed": {
+      "context": "· {event}",
+      "action": "{change, select, yes {Change closing time} other {Open guest list}}"
+    },
+    "nearExpected": {
+      "context": "· {event}",
+      "action": "Raise expected"
+    },
+    "overExpected": {
+      "context": "· {event}",
+      "action": "Raise expected"
+    },
+    "paused": {
+      "context": "· {event}",
+      "action": "Raise expected"
     },
     "unpaid": {
-      "title": "{event} draft is unpaid",
-      "body": "A {tier} invitation. The page stays hidden until payment clears.",
+      "context": "· {event}",
       "action": "Pay & publish"
     }
   },

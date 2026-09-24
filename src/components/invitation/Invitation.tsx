@@ -32,6 +32,8 @@ interface InvitationProps {
   hostBar?: ReactNode
   /** Switches the reply panel inert — what the host's edit form asks for while it covers it. */
   replyInert?: boolean
+  /** The hidden reply cap is reached; the panel says so instead of taking replies. */
+  repliesPaused?: boolean
   onSubmit?: (payload: RsvpPayload) => void
 }
 
@@ -58,6 +60,7 @@ export function Invitation({
   host,
   hostBar,
   replyInert,
+  repliesPaused,
   onSubmit,
 }: InvitationProps) {
   const { width, height, minScale, maxScale } = template.design
@@ -93,6 +96,7 @@ export function Invitation({
         values={values}
         onSubmit={onSubmit}
         inert={replyInert}
+        paused={repliesPaused}
       />
 
       {host}

@@ -23,10 +23,12 @@
     "submit": "Trimite",
     "privacy": "Numele și răspunsul tău ajung doar la gazdele acestui eveniment și sunt șterse la {days} zile după eveniment. Nimic nu este partajat cu altcineva.",
     "sentTitle": "Mulțumim — răspunsul tău a ajuns la gazde.",
-    "sentNote": "Vrei să schimbi ceva? Gazdele pot corecta orice răspuns pentru tine."
+    "sentNote": "Vrei să schimbi ceva? Gazdele pot corecta orice răspuns pentru tine.",
+    "paused": "Răspunsurile sunt închise deocamdată. Te rugăm să iei legătura cu gazda."
   },
   "Print": {
-    "defaultNote": "Te rugăm să răspunzi până pe 5 august 2024 la linkul de mai jos."
+    "defaultNote": "Te rugăm să răspunzi până pe 5 august 2024 la linkul de mai jos.",
+    "password": "Parolă: {password}"
   },
   "Nav": {
     "aria": "Secțiuni meniu",
@@ -128,7 +130,8 @@
     "seating": "Plan așezare",
     "viewAsGuest": "Vezi ca invitat",
     "manageEvent": "Gestionează",
-    "raiseCap": "Mărește limita",
+    "raiseExpected": "Mărește numărul",
+    "reportFlood": "Raportează răspunsuri suspecte",
     "editLocksSoon": "Se blochează curând",
     "alreadyHappened": "Eveniment încheiat",
     "noDesign": "Alege un design mai întâi",
@@ -138,17 +141,18 @@
     "public": "Publică",
     "protected": "Protejată",
     "hiddenNote": "Doar tu poți vedea invitația.",
-    "publicNote": "Oricine are linkul poate vedea și răspunde.",
-    "protectedNote": "Accesibilă doar cu parolă.",
+    "publicNote": "Oricine are linkul poate vedea invitația și poate răspunde, chiar și persoane pe care nu le-ai invitat. Vor vedea și adresa, data și orice alt detaliu pe care îl adaugi despre eveniment.",
+    "protectedNote": "Invitații au nevoie de o parolă ca să vadă invitația, așa că o văd doar cei cărora le dai parola. Parola este tipărită pe card, sub link.",
     "editingClosed": "Editare închisă",
     "editingFreezes": "Editarea se blochează",
     "recordDeleted": "Înregistrare ștearsă",
     "replyFormCloses": "Răspunsurile se închid",
-    "meter": "<big>{replied}</big> răspunsuri din {cap} · {percent}%",
-    "meterAria": "{replied} răspunsuri din {cap}",
-    "safeguardAt": "Limită la {percent}%",
-    "safeguardAria": "Limita de participanți: {attending} participă și {declined} nu participă, dintr-o limită de {cap}",
-    "safeguardLine": "Limita de participanți {replied} din {cap} · {percent}%",
+    "meter": "<big>{replied}</big>/{expected} invitați așteptați au răspuns · {percent}%",
+    "meterAria": "{replied} din {expected} invitați așteptați au răspuns",
+    "expectedAt": "Răspunsuri la {percent}% din cei așteptați",
+    "overExpected": "Mai multe răspunsuri decât te așteptai",
+    "barAria": "Răspunsuri: {attending} participă și {declined} nu participă, din {expected} invitați așteptați",
+    "expectedLine": "Invitați așteptați {replied}/{expected} · {percent}%",
     "seatingPaidOnly": "Plan de așezare disponibil la pachetele plătite",
     "edition": "Pachet {name}",
     "copyLinkFor": "Copiază link pentru {title}",
@@ -157,7 +161,9 @@
     "copyPassword": "Copiază parola",
     "copied": "Copiat",
     "replyFormClosesOn": "Termen răspuns: {date}",
-    "safeguardShort": "Limită {replied} din {cap} · {percent}%",
+    "repliesClosedOn": "Răspunsuri închise pe {date}",
+    "repliesClosed": "Răspunsuri închise",
+    "expectedShort": "Așteptați {replied}/{expected} · {percent}%",
     "locksIn": "Se blochează în {time}",
     "previewAlt": "Previzualizare {title}",
     "dataDeletedOn": "Date șterse pe {date}, la {days} zile după eveniment."
@@ -216,13 +222,23 @@
     "closedTitle": "Editare închisă pe {date}",
     "closedBody": "Editarea s-a încheiat cu o zi înainte. Datele și fișierul rămân accesibile.",
     "closingTitle": "Editarea se închide în {time}",
-    "closingBody": "Editarea se închide pe {date}. Lista rămâne deschisă pentru apeluri.",
+    "closingBody": "Editarea evenimentului și a invitației se închide pe {date}, cu o zi înainte de eveniment.",
+    "repliesClosingTitle": "Răspunsurile se închid în {time}",
+    "repliesClosingBody": "Formularul de răspuns se închide pe {date}, {custom, select, yes {la ora pe care ai ales-o} other {cu o zi înainte de eveniment}}.",
+    "repliesClosedTitle": "Răspunsuri închise pe {date}",
+    "repliesClosedBody": "Formularul de răspuns s-a închis {custom, select, yes {la ora pe care ai ales-o} other {cu o zi înainte de eveniment}}. Poți adăuga în continuare în lista de invitați răspunsurile primite la telefon.",
     "unpaidTitle": "Ciornă neplătită",
     "unpaidBody": "Pachetul {tier} costă {price}. Pagina rămâne ascunsă și formularul de confirmare rămâne închis până se confirmă plata.",
     "hiddenTitle": "Invitație ascunsă",
     "hiddenBody": "Nimeni nu poate deschide pagina, nici măcar un invitat care are linkul, și nu poate sosi niciun răspuns. Setează mai jos vizibilitatea la Publică sau Protejată când ești gata s-o trimiți.",
     "unmatchedTitle": "{count, plural, one {# răspuns fără potrivire} few {# răspunsuri fără potrivire} other {# răspunsuri fără potrivire}}",
-    "unmatchedBody": "Sunt marcate NECUNOSCUT până le adaugi sau le potrivești cu un nume scris greșit."
+    "unmatchedBody": "Sunt marcate NECUNOSCUT până le adaugi sau le potrivești cu un nume scris greșit.",
+    "pausedTitle": "Răspunsurile sunt oprite",
+    "pausedBody": "Au răspuns neobișnuit de mulți invitați față de numărul pe care îl așteptai. Dacă sunt reali, mărește numărul ca să redeschizi formularul. Dacă nu, raportează problema.",
+    "nearExpectedTitle": "Răspunsuri la {percent}% din cei așteptați",
+    "nearExpectedBody": "Au răspuns {replied} din cei {expected} invitați pe care îi aștepți. Dacă mai vin și alții, mărește numărul de invitați așteptați.",
+    "overExpectedTitle": "Mai multe răspunsuri decât te așteptai",
+    "overExpectedBody": "Au răspuns {replied} invitați, dar te așteptai la {expected}. Mărește numărul de invitați așteptați ca cifrele să rămână corecte."
   },
   "EventEditor": {
     "details": "Detalii",
@@ -251,13 +267,17 @@
     "dataDeleted": "Datele se șterg",
     "alreadyDeleted": "S-a făcut deja.",
     "deletionNote": "Din motive GDPR, datele invitaților și ale evenimentului se păstrează doar {days} zile după data evenimentului.",
-    "capError": "{count, plural, one {Ai deja # răspuns.} few {Ai deja # răspunsuri.} other {Ai deja # răspunsuri.}} Limita nu poate fi sub numărul de răspunsuri.",
+    "expectedTooLow": "{count, plural, one {Ai deja # răspuns.} few {Ai deja # răspunsuri.} other {Ai deja # răspunsuri.}} Nu poți aștepta mai puțini invitați decât au răspuns deja.",
+    "expectedRequired": "Scrie câți invitați aștepți.",
     "slugTooShort": "Folosește cel puțin {min} caractere.",
     "slugTooLong": "Folosește cel mult {max} caractere.",
+    "slugTaken": "Acest link este deja folosit.",
+    "slugReserved": "Acest cuvânt este rezervat de Festio. Încearcă altul.",
+    "slugFree": "Libere:",
     "passwordInvalid": "Folosește cel puțin 4 caractere.",
     "link": "Link și acces",
     "address": "Adresă invitație",
-    "addressHint": "Dacă ai trimis deja linkul, modificarea lui va invalida copiile pe care le au invitații. Cele patru cifre nu pot fi modificate, sunt ale Festio — fac linkul imposibil de ghicit. ",
+    "addressHint": "Dacă ai trimis deja linkul, modificarea lui va invalida copiile pe care le au invitații.",
     "guestLink": "Link pentru invitați",
     "copyLink": "Copiază link",
     "addressWarningTitle": "Schimbarea adresei",
@@ -274,9 +294,8 @@
     "noindexTitle": "Nu va apărea în rezultatele căutărilor",
     "noindex": "Pentru intimitatea ta, nicio invitație nu va putea fi găsită căutând pe Google sau pe alte motoare de căutare, indiferent de setarea de vizibilitate aleasă.",
     "guests": "Invitați și răspunsuri",
-    "cap": "Limită maximă invitați",
-    "safeguardTitle": "Protecție tehnică",
-    "safeguard": "Maximul te apără doar de un val de răspunsuri automate. Îl poți mări oricând — merită setat puțin peste numărul de invitați pe care îi aștepți.",
+    "expected": "Câți invitați aștepți?",
+    "expectedHint": "Folosim acest număr ca să-ți arătăm cum vin răspunsurile și ca să te protejăm de spam: dacă vin mult mai multe răspunsuri decât te așteptai, oprim formularul. Poți mări numărul oricând.",
     "expecting": "Pe cine aștepți",
     "preloaded": "Folosește lista preîncărcată",
     "preloadedNote": "Compară răspunsurile primite cu o listă de nume pe care le aștepți. Tot ce nu se potrivește este marcat NECUNOSCUT, ca să-l rezolvi tu.",
@@ -381,24 +400,35 @@
   },
   "Notices": {
     "unmatched": {
-      "title": "{count, plural, one {# nume necunoscut} few {# nume necunoscute} other {# nume necunoscute}}",
-      "context": "la {event}",
-      "body": "Marcate NECUNOSCUT. Adaugă-le sau potrivește-le cu un nume scris greșit din lista încărcată.",
+      "context": "· {event}",
       "action": "Verifică numele"
     },
-    "editingCloses": {
-      "title": "Editarea se închide în {time}",
-      "body": "Conținutul și șablonul se blochează cu 24 de ore înainte de data evenimentului.",
+    "closing": {
+      "context": "· {event}",
       "action": "Ultimele modificări"
     },
-    "safeguard": {
-      "title": "Limita de participanți la {percent}%",
-      "body": "{replied} din limita ta de {cap}. O poți mări oricând — e o protecție tehnică, nu o limită de invitați.",
-      "action": "Mărește limita"
+    "repliesClosing": {
+      "context": "· {event}",
+      "action": "{change, select, yes {Schimbă ora de închidere} other {Deschide lista de invitați}}"
+    },
+    "repliesClosed": {
+      "context": "· {event}",
+      "action": "{change, select, yes {Schimbă ora de închidere} other {Deschide lista de invitați}}"
+    },
+    "nearExpected": {
+      "context": "· {event}",
+      "action": "Mărește numărul"
+    },
+    "overExpected": {
+      "context": "· {event}",
+      "action": "Mărește numărul"
+    },
+    "paused": {
+      "context": "· {event}",
+      "action": "Mărește numărul"
     },
     "unpaid": {
-      "title": "Ciorna {event} nu este plătită",
-      "body": "O invitație din pachetul {tier}. Pagina rămâne ascunsă până se confirmă plata.",
+      "context": "· {event}",
       "action": "Plătește acum"
     }
   },

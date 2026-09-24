@@ -16,9 +16,15 @@ import type { DashboardEvent } from "@/types/dashboard";
  * Every editable part of one event record. The form holds the host's edits
  * until they save; nothing here is persisted yet.
  */
-export function EventEditor({ event }: { event: DashboardEvent }) {
+interface EventEditorProps {
+  event: DashboardEvent;
+  /** Every other event's slug, which this one's link must not repeat. */
+  takenSlugs: string[];
+}
+
+export function EventEditor({ event, takenSlugs }: EventEditorProps) {
   const t = useTranslations("EventEditor");
-  const form = useEventForm(event);
+  const form = useEventForm(event, takenSlugs);
   const toast = useToast();
 
   function save() {

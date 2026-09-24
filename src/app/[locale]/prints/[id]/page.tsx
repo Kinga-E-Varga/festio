@@ -55,6 +55,11 @@ export default async function PrintPage({ params }: Props) {
       template={template}
       rsvpMessage={values.rsvpMessage ?? ""}
       link={invitationLink(event)}
+      passwordLine={
+        event.visibility === "protected" && event.password
+          ? t("password", { password: event.password })
+          : undefined
+      }
       defaultNote={t("defaultNote")}
     />
   );

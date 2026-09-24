@@ -1,19 +1,20 @@
 import { useTranslations } from "next-intl";
 import type { CSSProperties } from "react";
+import { expectedLevel, expectedPercent } from "@/lib/event";
 
 interface RepliesMeterProps {
   replied: number;
-  /** The host's attendee safeguard — a technical cap, not a guest limit. */
-  cap: number;
+  /** How many people the host expects. */
+  expected: number;
 }
 
 /**
- * Replies received against the cap: the count stated above a single fill.
- * The editor sets the cap with it, and the events list reports it.
+ * Replies received against expected guests: the count stated above a single
+ * fill. The editor sets the number with it, and the events list reports it.
  */
-export function RepliesMeter({ replied, cap }: RepliesMeterProps) {
+export function RepliesMeter({ replied, expected }: RepliesMeterProps) {
   const t = useTranslations("Event");
-  const percent = cap > 0 ? Math.round((replied / cap) * 100) : 100;
+  const percent = expectedPercent(replied, expected);
   const fill = { "--fill": `${Math.min(100, percent)}%` } as CSSProperties;
 
   return (
@@ -22,7 +23,7 @@ export function RepliesMeter({ replied, cap }: RepliesMeterProps) {
       <p className="mb-[5px] text-[12.5px] leading-[1.4] text-neutral-700">
         {t.rich("meter", {
           replied,
-          cap,
+          expected,
           percent,
           big: (chunks) => (
             <span className="align-[-1px] font-serif text-[22px] text-neutral-900 tabular-nums">
@@ -33,8 +34,9 @@ export function RepliesMeter({ replied, cap }: RepliesMeterProps) {
       </p>
       <div
         role="img"
-        aria-label={t("meterAria", { replied, cap })}
+        aria-label={t("meterAria", { replied, expected })}
         className="meter"
+        data-level={expectedLevel(percent)}
         style={fill}
       >
         <span aria-hidden="true" />

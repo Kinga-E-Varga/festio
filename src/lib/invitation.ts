@@ -18,7 +18,7 @@ import type {
 /**
  * A template's palette and fonts reach the DOM as custom properties, so the
  * card and the RSVP chrome both read one source and no colour is written
- * twice. Same reasoning as `safeguardBarVars`: the component hands over
+ * twice. Same reasoning as `repliesBarVars`: the component hands over
  * values, never presentation.
  */
 export function templateVars(template: InvitationTemplate): CSSProperties {
@@ -120,29 +120,12 @@ export function pageBackground(template: InvitationTemplate): {
   }
 }
 
-/**
- * Guest links are `slug-1657` — the host's slug with Festio's four digits
- * appended. The digits are the unguessable part, so a link missing them is
- * not a link at all.
- */
-export function parseInviteParam(
-  param: string,
-): { slug: string; digits: string } | null {
-  const match = /^(.+)-(\d{4})$/.exec(param)
-  if (!match) return null
-  return { slug: match[1], digits: match[2] }
-}
-
 /** The event a guest link points at, or undefined when nothing matches. */
 export function findByInvite(
   events: DashboardEvent[],
   param: string,
 ): DashboardEvent | undefined {
-  const parsed = parseInviteParam(param)
-  if (!parsed) return undefined
-  return events.find(
-    (event) => event.slug === parsed.slug && event.digits === parsed.digits,
-  )
+  return events.find((event) => event.slug === param)
 }
 
 /**

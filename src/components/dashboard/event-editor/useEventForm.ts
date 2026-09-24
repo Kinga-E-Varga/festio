@@ -10,10 +10,16 @@ import {
   formatDeadline,
   invitationLink,
   isRealDate,
-  normalizeSlug,
   toDateTimeLocal,
 } from "@/lib/event";
 import { invitationLanguage, type Language } from "@/lib/language";
+import {
+  isReservedSlug,
+  normalizeSlug,
+  SLUG_MAX,
+  SLUG_MIN,
+  slugSuggestions,
+} from "@/lib/slug";
 import type {
   DashboardEvent,
   EventKind,
@@ -33,8 +39,6 @@ export interface Warning {
   toggle: (value: boolean) => void;
 }
 
-const SLUG_MIN = 6;
-const SLUG_MAX = 32;
 const PASSWORD_PATTERN = /^[A-Za-z0-9]{4,}$/;
 
 interface EventFieldValues {
@@ -48,11 +52,15 @@ interface EventFieldValues {
   slug: string;
   visibility: Visibility;
   password: string;
-  cap: string;
+  expected: string;
   preloaded: boolean;
 }
 
-export function useEventForm(event: DashboardEvent) {
+/** `takenSlugs` holds every other event's slug; a link must be unique. */
+export function useEventForm(
+  event: DashboardEvent,
+  takenSlugs: readonly string[],
+) {
   const t = useTranslations("EventEditor");
   /* The host reads these dates, so they follow the host's locale. */
   const locale = useLocale();
@@ -69,12 +77,12 @@ export function useEventForm(event: DashboardEvent) {
         kind: event.kind,
         language: original.language,
         date: event.date,
-        closeEarly: false,
-        closeAt: "",
+        closeEarly: Boolean(event.repliesCloseAt),
+        closeAt: event.repliesCloseAt ?? "",
         slug: event.slug,
         visibility: event.visibility,
         password: original.password,
-        cap: String(event.safeguard.cap),
+        expected: String(event.expectedGuests),
         preloaded: event.preloaded,
       },
     });
@@ -88,7 +96,7 @@ export function useEventForm(event: DashboardEvent) {
   const slug = useWatch({ control, name: "slug" });
   const visibility = useWatch({ control, name: "visibility" });
   const password = useWatch({ control, name: "password" });
-  const cap = useWatch({ control, name: "cap" });
+  const expected = useWatch({ control, name: "expected" });
   const preloaded = useWatch({ control, name: "preloaded" });
 
   const [justSaved, setJustSaved] = useState(false);
@@ -161,18 +169,28 @@ export function useEventForm(event: DashboardEvent) {
     (warning) => warning.shown && !warning.acknowledged,
   ).length;
 
-  const capValue = Number.parseInt(cap, 10) || 0;
-  const capError =
-    capValue < event.rsvp.replied
-      ? t("capError", { count: event.rsvp.replied })
-      : null;
+  const expectedValue = Number.parseInt(expected, 10) || 0;
+  let expectedError: string | null = null;
+  if (expectedValue < 1) {
+    expectedError = t("expectedRequired");
+  } else if (expectedValue < event.rsvp.replied) {
+    expectedError = t("expectedTooLow", { count: event.rsvp.replied });
+  }
 
   let slugError: string | null = null;
   if (slug.trim().length > 0 && cleanSlug.length < SLUG_MIN) {
     slugError = t("slugTooShort", { min: SLUG_MIN });
   } else if (cleanSlug.length > SLUG_MAX) {
     slugError = t("slugTooLong", { max: SLUG_MAX });
+  } else if (isReservedSlug(cleanSlug)) {
+    slugError = t("slugReserved");
+  } else if (takenSlugs.includes(cleanSlug)) {
+    slugError = t("slugTaken");
   }
+  const slugOptions =
+    slugError && cleanSlug.length >= SLUG_MIN
+      ? slugSuggestions(cleanSlug, effectiveDate.slice(0, 4), takenSlugs)
+      : [];
 
   const passwordError =
     password.length > 0 && !PASSWORD_PATTERN.test(password)
@@ -203,7 +221,7 @@ export function useEventForm(event: DashboardEvent) {
       slug,
       visibility,
       password,
-      cap,
+      expected,
       preloaded,
     },
     set: {
@@ -232,12 +250,12 @@ export function useEventForm(event: DashboardEvent) {
         edit("password")(value);
         if (value === original.password) acknowledge("password", false);
       },
-      cap: edit("cap"),
+      expected: edit("expected"),
       preloaded: edit("preloaded"),
     },
     warnings,
     derived: {
-      link: invitationLink({ slug: cleanSlug, digits: event.digits }),
+      link: invitationLink({ slug: cleanSlug }),
       dateLabel: formatEventDate(new Date(`${effectiveDate}T00:00`), locale),
       /** The `max` a custom closing time cannot go past. */
       closeLimit: toDateTimeLocal(freeze),
@@ -251,9 +269,11 @@ export function useEventForm(event: DashboardEvent) {
         closeEarly && isRealDate(chosenClose) && chosenClose > freeze,
       freezeLabel: formatDeadline(freeze, locale),
       deletionLabel: formatEventDate(deletion, locale),
-      capValue,
-      capError,
+      expectedValue,
+      expectedError,
       slugError,
+      /** Free slugs to offer while the typed one is taken or reserved. */
+      slugOptions,
       passwordError,
     },
     save: {

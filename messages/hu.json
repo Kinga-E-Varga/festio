@@ -23,10 +23,12 @@
     "submit": "Válasz küldése",
     "privacy": "A neved és a válaszod csak az esemény házigazdáihoz jut el, és az esemény után {days} nappal töröljük. Semmit nem osztunk meg mással.",
     "sentTitle": "Köszönjük — a válaszod megérkezett a házigazdákhoz.",
-    "sentNote": "Módosítanál valamit? A házigazdák bármelyik választ ki tudják javítani helyetted."
+    "sentNote": "Módosítanál valamit? A házigazdák bármelyik választ ki tudják javítani helyetted.",
+    "paused": "A válaszadás egyelőre zárva. Kérjük, vedd fel a kapcsolatot a házigazdával."
   },
   "Print": {
-    "defaultNote": "Kérjük, 2024. augusztus 5-ig válaszolj az alábbi linken."
+    "defaultNote": "Kérjük, 2024. augusztus 5-ig válaszolj az alábbi linken.",
+    "password": "Jelszó: {password}"
   },
   "Nav": {
     "aria": "Vezérlőpult szakaszai",
@@ -128,7 +130,8 @@
     "seating": "Ültetés",
     "viewAsGuest": "Vendég nézet",
     "manageEvent": "Esemény kezelése",
-    "raiseCap": "Keret növelése",
+    "raiseExpected": "Szám növelése",
+    "reportFlood": "Gyanús válaszok jelentése",
     "editLocksSoon": "Szerkesztés zárása hamarosan",
     "alreadyHappened": "Ez az esemény már megtörtént",
     "noDesign": "Előbb válassz dizájnt ehhez a meghívóhoz",
@@ -138,17 +141,18 @@
     "public": "Nyilvános",
     "protected": "Védett",
     "hiddenNote": "Csak te látod a meghívót.",
-    "publicNote": "Bárki láthatja és válaszolhat, akinél ott van a link.",
-    "protectedNote": "A meghívó csak jelszóval tekinthető meg. Ne feledd elküldeni a jelszót a vendégeidnek.",
-    "editingClosed": "A szerkesztés lezárult",
-    "editingFreezes": "A szerkesztés lezár",
-    "recordDeleted": "Rekord törölve",
-    "replyFormCloses": "Az űrlap bezár",
-    "meter": "<big>{replied}</big> válasz érkezett a {cap} fős limitből · {percent}%",
-    "meterAria": "{replied} válasz a {cap} fős limitből",
-    "safeguardAt": "Biztonsági határ {percent}%-on",
-    "safeguardAria": "Létszámkorlát: {attending} részt vesz és {declined} nem vesz részt, a {cap} fős limitből",
-    "safeguardLine": "Létszámkorlát: {replied} / {cap} · {percent}%",
+    "publicNote": "Bárki, akinél ott van a link, megnézheti a meghívót és válaszolhat rá, azok is, akiket nem hívtál meg. Látni fogják az esemény címét, dátumát és minden más részletet is, amit megadsz.",
+    "protectedNote": "A vendégeknek jelszó kell a meghívó megtekintéséhez, így csak azok látják, akikkel megosztod. A jelszó a nyomtatott kártyán, a link alatt szerepel.",
+    "editingClosed": "Szerkesztés lezárult",
+    "editingFreezes": "Szerkesztés zárása",
+    "recordDeleted": "Adatok törlése",
+    "replyFormCloses": "Válaszűrlap zárása",
+    "meter": "<big>{replied}</big>/{expected} várt vendég válaszolt · {percent}%",
+    "meterAria": "{expected} várt vendégből {replied} válaszolt",
+    "expectedAt": "Válaszok a várt létszám {percent}%-án",
+    "overExpected": "Több válasz a vártnál",
+    "barAria": "Válaszok: {attending} részt vesz és {declined} nem vesz részt, {expected} várt vendégből",
+    "expectedLine": "Várt vendégek: {replied}/{expected} · {percent}%",
     "seatingPaidOnly": "Az ültetési rend a fizetős meghívók része",
     "edition": "{name} csomag",
     "copyLinkFor": "{title} meghívólinkjének másolása",
@@ -157,7 +161,9 @@
     "copyPassword": "Vendégjelszó másolása",
     "copied": "Másolva",
     "replyFormClosesOn": "A válaszűrlap lezárul: {date}",
-    "safeguardShort": "Korlát: {replied} / {cap} · {percent}%",
+    "repliesClosedOn": "A válaszadás lezárult: {date}",
+    "repliesClosed": "Válaszadás lezárult",
+    "expectedShort": "Várt: {replied}/{expected} · {percent}%",
     "locksIn": "{time} múlva zárul",
     "previewAlt": "{title} meghívó előnézete",
     "dataDeletedOn": "A vendégadatokat {date} napon töröltük, {days} nappal az esemény után."
@@ -213,16 +219,26 @@
   },
   "EventPage": {
     "allEvents": "Összes esemény",
-    "closedTitle": "A szerkesztés lezárult: {date}",
+    "closedTitle": "Szerkesztés lezárult: {date}",
     "closedBody": "Az esemény és a meghívó szerkesztése az esemény előtti napon lezárult. Az adatok továbbra is olvashatók, és a nyomtatható fájlt továbbra is letöltheted.",
-    "closingTitle": "A szerkesztés {time} múlva lezárul",
-    "closingBody": "Az esemény és a meghívó szerkesztése {date} napon lezárul, az esemény előtti napon. A vendéglista ezután is nyitva marad, így a telefonon érkező válaszokat továbbra is rögzítheted.",
-    "unpaidTitle": "Ez a piszkozat nincs kifizetve",
+    "closingTitle": "Szerkesztés {time} múlva lezárul",
+    "closingBody": "Az esemény és a meghívó szerkesztése {date} napon lezárul, az esemény előtti napon.",
+    "repliesClosingTitle": "Válaszűrlap {time} múlva lezárul",
+    "repliesClosingBody": "A válaszűrlap {date} napon lezárul, {custom, select, yes {az általad megadott időpontban} other {az esemény előtti napon}}.",
+    "repliesClosedTitle": "Válaszűrlap lezárult: {date}",
+    "repliesClosedBody": "Válaszűrlap {custom, select, yes {az általad megadott időpontban} other {az esemény előtti napon}} lezárult. A telefonon érkező válaszokat továbbra is felveheted a vendéglistára.",
+    "unpaidTitle": "Piszkozat nincs kifizetve",
     "unpaidBody": "A(z) {tier} csomag ára {price}. Az oldal rejtve, a visszajelzési űrlap pedig zárva marad, amíg a fizetés meg nem érkezik.",
-    "hiddenTitle": "Ez a meghívó rejtett",
+    "hiddenTitle": "Rejtett meghívó",
     "hiddenBody": "Senki sem nyithatja meg az oldalt, még a linkkel rendelkező vendég sem, és válasz sem érkezhet. Ha készen állsz a megosztásra, lent állítsd a láthatóságot Nyilvánosra vagy Védettre.",
-    "unmatchedTitle": "{count, plural, one {# válasz nem egyezik egyetlen névvel sem a listádon} other {# válasz nem egyezik egyetlen névvel sem a listádon}}",
-    "unmatchedBody": "ISMERETLEN címkét kapnak, amíg fel nem veszed őket, vagy össze nem párosítod őket egy elírt névvel."
+    "unmatchedTitle": "{count, plural, one {# nem egyező válasz} other {# nem egyező válasz}}",
+    "unmatchedBody": "A vendéglistádon nem szereplő névvel jeleztek vissza. ISMERETLEN címkét kapnak, amíg fel nem veszed őket, vagy össze nem párosítod őket egy elírt névvel a listádon.",
+    "pausedTitle": "Válaszűrlap befagyasztva",
+    "pausedBody": "Szokatlanul sok vendég válaszolt ahhoz képest, amennyit vártál. Ha valódiak, emeld meg a számot, hogy újra megnyíljon az űrlap. Ha nem, jelentsd a problémát.",
+    "nearExpectedTitle": "Válaszok a várt létszám {percent}%-án",
+    "nearExpectedBody": "A várt {expected} vendégből {replied} már válaszolt. Ha még többre számítasz, emeld meg a várt létszámot.",
+    "overExpectedTitle": "Vártnál több válasz",
+    "overExpectedBody": "{replied} vendég válaszolt, pedig {expected} vendéget vártál. Emeld meg a várt létszámot, hogy a számok pontosak maradjanak. Vagy jelentsd a problémát."
   },
   "EventEditor": {
     "details": "Részletek",
@@ -238,12 +254,12 @@
     "languageWarning": "Aki mostantól megnyitja a linket, az új nyelven látja a válaszűrlapot. A már elküldött válaszokat ez nem érinti — a kérdéshez vannak mentve, nem a megfogalmazásához. A már letöltött nyomtatható fájl azon a nyelven marad, amelyen készült; töltsd le újra az új nyelvhez.",
     "dateWarningTitle": "A dátum áthelyezése",
     "dateWarning": "A meghívón az új dátum jelenik meg, de a Festio nem értesíti a vendégeidet — ez a te feladatod. {count, plural, =0 {Erre az eseményre még senki sem válaszolt.} other {Erre az eseményre <b>már # vendég válaszolt</b>.}}",
-    "closeHeading": "Mikor zárul a válaszűrlap",
-    "closeEarly": "A válaszok korábbi lezárása",
-    "closeEarlyNote": "A válaszok <b>{date}</b> napon zárulnak — az esemény előtti napon. Kapcsold be, ha korábban szeretnéd lezárni.",
+    "closeHeading": "Válaszok fogadása",
+    "closeEarly": "Válaszűrlap korábbi lezárása",
+    "closeEarlyNote": "A Válaszűrlap <b>{date}</b> napon zárul — az esemény előtti napon. Kapcsold be, ha korábban szeretnéd lezárni.",
     "closeAt": "Az űrlap lezárása",
     "closeTooLate": "Olyan időpontot válassz, amely nem későbbi a 24 órás határidőnél.",
-    "repliesClose": "A válaszok zárulnak",
+    "repliesClose": "A válaszűrlap zárul",
     "closesEarlyNote": "A saját időpontod, a határidő előtt.",
     "closesDefaultNote": "Az esemény előtti napon.",
     "editingFreezes": "A szerkesztés lezárul",
@@ -251,13 +267,17 @@
     "dataDeleted": "Adatok törlése",
     "alreadyDeleted": "Már megtörtént.",
     "deletionNote": "A GDPR miatt a vendégek és az esemény adatait csak {days} napig őrizzük meg az esemény után.",
-    "capError": "{count, plural, other {Már # válaszod van.}} A maximum nem lehet kevesebb a kapott válaszoknál — a csökkentése senkit sem töröl.",
+    "expectedTooLow": "{count, plural, other {Már # válaszod van.}} Nem várhatsz kevesebb vendéget, mint ahányan már válaszoltak.",
+    "expectedRequired": "Add meg, hány vendéget vársz.",
     "slugTooShort": "Legalább {min} karaktert használj — betűket, számokat és kötőjelet.",
     "slugTooLong": "Legfeljebb {max} karaktert használj.",
+    "slugTaken": "Ez a link már foglalt.",
+    "slugReserved": "Ezt a szót a Festio lefoglalta. Próbálj másikat.",
+    "slugFree": "Szabad:",
     "passwordInvalid": "Legalább 4 betűt vagy számot használj.",
     "link": "Link és hozzáférés",
     "address": "A meghívó címe",
-    "addressHint": "A négy számjegy a Festióé — ettől kitalálhatatlan a link. Ha már megosztottad, a módosítása a vendégeidnél lévő összes példányt használhatatlanná teszi.",
+    "addressHint": "Ha már megosztottad a linket, a módosítása a vendégeidnél lévő összes példányt használhatatlanná teszi.",
     "guestLink": "A link, amelyet a vendégeid megnyitnak",
     "copyLink": "Meghívólink másolása",
     "addressWarningTitle": "A cím módosítása",
@@ -271,12 +291,11 @@
     "copyPassword": "A meghívó jelszavának másolása",
     "passwordWarningTitle": "A jelszó módosítása",
     "passwordWarning": "A régi jelszó a mentés pillanatában megszűnik működni. A vendégek addig nem látják a meghívót, amíg meg nem adod nekik az újat.",
-    "noindexTitle": "A keresőmotorok sosem látják ezt az oldalt",
-    "noindex": "Minden meghívó noindex fejléccel jelenik meg, bármilyen láthatóságot választasz.",
+    "noindexTitle": "A keresőmotorok nem látják a meghívódat",
+    "noindex": "A biztonságod érdekében egyetlen meghívó sem jelenik meg a Google-ben vagy más keresők találatai között, bármilyen láthatóságot is választasz.",
     "guests": "Vendégek és válaszok",
-    "cap": "Vendégek maximális száma",
-    "safeguardTitle": "Technikai védelem, nem vendéglimit",
-    "safeguard": "A maximum csak az automatikus válaszok áradata ellen véd. Bármikor megemelheted — érdemes kicsivel a tervezett vendégszám fölé állítani.",
+    "expected": "Hány vendéget vársz?",
+    "expectedHint": "Ebből mutatjuk meg, hogyan érkeznek a válaszok, és ezzel védünk a spam ellen: ha jóval több válasz jön a vártnál, szüneteltetjük az űrlapot. A számot bármikor megemelheted.",
     "expecting": "Kiket vársz",
     "preloaded": "Előre feltöltött vendéglista használata",
     "preloadedNote": "A beérkező válaszokat összeveti a várt nevek listájával. Ami nem egyezik, ISMERETLEN címkét kap, hogy te rendezd.",
@@ -380,24 +399,35 @@
   },
   "Notices": {
     "unmatched": {
-      "title": "{count, plural, one {# nem egyező név} other {# nem egyező név}}",
-      "context": "– {event}",
-      "body": "ISMERETLEN címkét kaptak. Vedd fel őket, vagy párosítsd egy elírt névvel az előre feltöltött listádon.",
+      "context": "· {event}",
       "action": "Nevek átnézése"
     },
-    "editingCloses": {
-      "title": "A szerkesztés {time} múlva lezárul",
-      "body": "Az esemény és a hozzátartozó meghívó szerkesztése 24 órával az esemény előtt zárolódik.",
+    "closing": {
+      "context": "· {event}",
       "action": "Utolsó módosítások"
     },
-    "safeguard": {
-      "title": "Létszámkorlát: {percent}%",
-      "body": "{replied} visszajelzés érkezett a(z) {cap} fős korlátból. Bármikor megemelheted — technikai védelem, nem vendéglimit.",
-      "action": "Korlát emelése"
+    "repliesClosing": {
+      "context": "· {event}",
+      "action": "{change, select, yes {Zárási idő módosítása} other {Vendéglista megnyitása}}"
+    },
+    "repliesClosed": {
+      "context": "· {event}",
+      "action": "{change, select, yes {Zárási idő módosítása} other {Vendéglista megnyitása}}"
+    },
+    "nearExpected": {
+      "context": "· {event}",
+      "action": "Szám növelése"
+    },
+    "overExpected": {
+      "context": "· {event}",
+      "action": "Szám növelése"
+    },
+    "paused": {
+      "context": "· {event}",
+      "action": "Szám növelése"
     },
     "unpaid": {
-      "title": "A(z) {event} piszkozat nincs kifizetve",
-      "body": "{tier} meghívó. Az oldal rejtve marad, amíg a fizetés meg nem érkezik.",
+      "context": "· {event}",
       "action": "Fizetés és közzététel"
     }
   },

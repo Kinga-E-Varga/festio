@@ -1,5 +1,11 @@
 import type { CSSProperties } from "react";
-import { GUEST_DATA_RETENTION_DAYS } from "@/lib/config";
+import {
+  EXPECTED_WARNING_PERCENT,
+  GUEST_DATA_RETENTION_DAYS,
+  REPLIES_CLOSING_SOON_DAYS,
+  REPLY_CAP_MARGIN,
+  REPLY_CAP_MIN_EXTRA,
+} from "@/lib/config";
 import { LANGUAGE_LOCALE, type Language } from "@/lib/language";
 import type {
   DashboardEvent,
@@ -25,53 +31,73 @@ export function orderEvents(
 }
 
 /** The guest-facing address as a route this app can navigate to. */
-export function invitationPath(event: {
-  slug: string;
-  digits: string;
-}): string {
-  return `/${event.slug}-${event.digits}`;
+export function invitationPath(event: { slug: string }): string {
+  return `/${event.slug}`;
 }
 
-/** The guest-facing address: the host's slug plus Festio's four random digits. */
-export function invitationLink(event: { slug: string; digits: string }): string {
+/** The guest-facing address: the host's slug, nothing added. */
+export function invitationLink(event: { slug: string }): string {
   return `festio.eu${invitationPath(event)}`;
 }
 
-/** Slugs carry lowercase letters, digits and single hyphens, nothing else. */
-export function normalizeSlug(value: string): string {
-  return value
-    .toLowerCase()
-    .replace(/[^a-z0-9-]/g, "-")
-    .replace(/-+/g, "-");
+interface ReplyCounts {
+  rsvp: { replied: number; attending: number; declined: number };
+  expectedGuests: number;
 }
 
 /**
- * Yes and no stack against the same cap, so the bar shows how much of the
- * safeguard is already spoken for and how much is still open.
+ * The hidden reply cap. Hosts only ever see their expected guests; the form
+ * pauses at this number, which sits well above it.
  */
-export function safeguardBarVars(event: {
-  rsvp: { attending: number; declined: number };
-  safeguard: { cap: number };
-}): CSSProperties {
-  const { cap } = event.safeguard;
-  const attending =
-    cap > 0 ? Math.min(100, (event.rsvp.attending / cap) * 100) : 0;
-  const declined =
-    cap > 0 ? Math.min(100 - attending, (event.rsvp.declined / cap) * 100) : 0;
+export function replyCap(expectedGuests: number): number {
+  const extra = Math.max(
+    Math.ceil(expectedGuests * REPLY_CAP_MARGIN),
+    REPLY_CAP_MIN_EXTRA,
+  );
+  return expectedGuests + extra;
+}
+
+/** True once replies reach the hidden cap and the form stops taking more. */
+export function repliesPaused(event: ReplyCounts): boolean {
+  return event.rsvp.replied >= replyCap(event.expectedGuests);
+}
+
+/** From 100% of expected guests, a host can report the replies as a flood. */
+export function canReportFlood(event: ReplyCounts): boolean {
+  return event.rsvp.replied > 0 && event.rsvp.replied >= event.expectedGuests;
+}
+
+export function floodReportPath(event: { id: string }): string {
+  return `/dashboard/events/${event.id}/report`;
+}
+
+/** Replies received as a share of expected guests. May pass 100. */
+export function expectedPercent(replied: number, expectedGuests: number): number {
+  return expectedGuests > 0 ? Math.round((replied / expectedGuests) * 100) : 100;
+}
+
+export type ExpectedLevel = "ok" | "warn" | "over";
+
+/** How the replies bars are coloured: normal, nearing expected, at or past it. */
+export function expectedLevel(percent: number): ExpectedLevel {
+  if (percent >= 100) return "over";
+  if (percent >= EXPECTED_WARNING_PERCENT) return "warn";
+  return "ok";
+}
+
+/**
+ * Yes and no stack against expected guests. Past expected, the bar is full
+ * and the two keep their share of the replies.
+ */
+export function repliesBarVars(event: ReplyCounts): CSSProperties {
+  const scale = Math.max(event.expectedGuests, event.rsvp.replied);
+  const attending = scale > 0 ? (event.rsvp.attending / scale) * 100 : 0;
+  const declined = scale > 0 ? (event.rsvp.declined / scale) * 100 : 0;
 
   return {
     "--attending": `${attending}%`,
     "--declined": `${declined}%`,
   } as CSSProperties;
-}
-
-/** How much of the safeguard cap the replies received so far have used. */
-export function safeguardReplyPercent(event: {
-  rsvp: { replied: number };
-  safeguard: { cap: number };
-}): number {
-  const { cap } = event.safeguard;
-  return cap > 0 ? Math.round((event.rsvp.replied / cap) * 100) : 100;
 }
 
 const DAY_MS = 86_400_000;
@@ -95,6 +121,38 @@ export function deletionDate(date: string): Date {
   return new Date(
     new Date(`${date}T00:00`).getTime() + GUEST_DATA_RETENTION_DAYS * DAY_MS,
   );
+}
+
+/** When the reply form closes: the host's own time, else the day before. */
+export function replyClose(event: {
+  date: string;
+  repliesCloseAt?: string;
+}): Date {
+  return event.repliesCloseAt
+    ? new Date(event.repliesCloseAt)
+    : contentFreeze(event.date);
+}
+
+export type ReplyWindow = "open" | "soon" | "closed";
+
+const SPAN_MS: Record<TimeSpan["unit"], number> = {
+  minute: 60_000,
+  hour: 3_600_000,
+  day: DAY_MS,
+  week: 7 * DAY_MS,
+};
+
+/** Open, closing within the warning window, or already closed. */
+export function replyWindow(event: {
+  status: EventStatus;
+  repliesCloseIn?: TimeSpan;
+}): ReplyWindow {
+  if (event.status === "past") return "closed";
+  const span = event.repliesCloseIn;
+  if (!span) return "open";
+  const ms = span.value * SPAN_MS[span.unit];
+  if (ms <= 0) return "closed";
+  return ms <= REPLIES_CLOSING_SOON_DAYS * DAY_MS ? "soon" : "open";
 }
 
 export function isRealDate(value: Date): boolean {

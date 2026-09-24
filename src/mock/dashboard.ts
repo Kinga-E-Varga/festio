@@ -5,6 +5,14 @@ import previewRevelion from '@/mock/inv-img/Screenshot 2026-07-27 155217.png'
 import previewCumetrie from '@/mock/inv-img/Screenshot 2026-06-16 173040.png'
 import previewMajorat from '@/mock/inv-img/Screenshot 2026-07-28 172900.png'
 import { GUEST_DATA_RETENTION_DAYS } from '@/lib/config'
+import {
+  canReportFlood,
+  expectedLevel,
+  expectedPercent,
+  floodReportPath,
+  repliesPaused,
+  replyWindow,
+} from '@/lib/event'
 import type {
   AttentionNotice,
   DashboardEvent,
@@ -120,8 +128,8 @@ export const EVENTS: DashboardEvent[] = [
     language: 'ro',
     paid: true,
     locksIn: { value: 30, unit: 'hour' },
+    repliesCloseIn: { value: 30, unit: 'hour' },
     slug: 'maria-andrei',
-    digits: '1657',
     password: 'andrei26',
     rsvp: {
       replied: 96,
@@ -130,7 +138,7 @@ export const EVENTS: DashboardEvent[] = [
       declined: 14,
       pending: 28,
     },
-    safeguard: { cap: 110 },
+    expectedGuests: 110,
     unmatched: 5,
     preloaded: true,
     preloadedCount: 124,
@@ -166,15 +174,14 @@ export const EVENTS: DashboardEvent[] = [
     paid: true,
     locksIn: { value: 5, unit: 'week' },
     slug: 'botez-sofia',
-    digits: '4093',
     rsvp: {
-      replied: 41,
+      replied: 70,
       invited: 70,
-      attending: 38,
-      declined: 3,
-      pending: 29,
+      attending: 63,
+      declined: 7,
+      pending: 0,
     },
-    safeguard: { cap: 100 },
+    expectedGuests: 70,
     unmatched: 0,
     preloaded: true,
     preloadedCount: 70,
@@ -203,10 +210,9 @@ export const EVENTS: DashboardEvent[] = [
     paid: true,
     locksIn: { value: 11, unit: 'week' },
     slug: 'ion-50',
-    digits: '7712',
     linkNoteKey: 'notSharedHidden',
     rsvp: { replied: 0, invited: 40, attending: 0, declined: 0, pending: 40 },
-    safeguard: { cap: 60 },
+    expectedGuests: 60,
     unmatched: 0,
     preloaded: false,
     preloadedCount: 0,
@@ -235,10 +241,9 @@ export const EVENTS: DashboardEvent[] = [
     paid: false,
     locksIn: { value: 17, unit: 'week' },
     slug: 'revelion-2027',
-    digits: '2208',
     linkNoteKey: 'hiddenUntilPaid',
     rsvp: { replied: 0, invited: 0, attending: 0, declined: 0, pending: 0 },
-    safeguard: { cap: 80 },
+    expectedGuests: 80,
     unmatched: 0,
     preloaded: false,
     preloadedCount: 0,
@@ -267,7 +272,6 @@ export const EVENTS: DashboardEvent[] = [
     invitationType: 2,
     paid: true,
     slug: 'cumetrie-luca',
-    digits: '3390',
     rsvp: {
       replied: 58,
       invited: 60,
@@ -275,7 +279,7 @@ export const EVENTS: DashboardEvent[] = [
       declined: 7,
       pending: 2,
     },
-    safeguard: { cap: 80 },
+    expectedGuests: 80,
     unmatched: 0,
     preloaded: true,
     preloadedCount: 60,
@@ -304,7 +308,6 @@ export const EVENTS: DashboardEvent[] = [
     invitationType: 1,
     paid: true,
     slug: 'majorat-ana',
-    digits: '8814',
     password: 'ana18ana',
     rsvp: {
       replied: 34,
@@ -313,7 +316,7 @@ export const EVENTS: DashboardEvent[] = [
       declined: 4,
       pending: 6,
     },
-    safeguard: { cap: 45 },
+    expectedGuests: 45,
     unmatched: 0,
     preloaded: false,
     preloadedCount: 0,
@@ -330,7 +333,55 @@ export function findEvent(id: string): DashboardEvent | undefined {
   return EVENTS.find((event) => event.id === id)
 }
 
-/* Keys into the `Notices` message namespace. */
+/**
+ * Reply notices come from the events' own numbers, so they always match the
+ * cards: paused once the hidden cap is hit, otherwise one from 80% of
+ * expected guests. Only active events can still take replies.
+ */
+function replyNotices(): AttentionNotice[] {
+  return EVENTS.filter((event) => event.status === 'active').flatMap(
+    (event): AttentionNotice[] => {
+      const name = event.title.split(' — ')[0]
+      const { replied } = event.rsvp
+      const reportHref = canReportFlood(event)
+        ? floodReportPath(event)
+        : undefined
+      if (repliesPaused(event)) {
+        return [
+          {
+            id: `paused-${event.id}`,
+            key: 'paused',
+            values: { event: name },
+            tone: 'paused',
+            reportHref,
+          },
+        ]
+      }
+      const percent = expectedPercent(replied, event.expectedGuests)
+      if (replied === 0 || expectedLevel(percent) === 'ok') return []
+      return [
+        {
+          id: `expected-${event.id}`,
+          key: replied > event.expectedGuests ? 'overExpected' : 'nearExpected',
+          values: {
+            percent,
+            replied,
+            expected: event.expectedGuests,
+            event: name,
+          },
+          tone: replied > event.expectedGuests ? 'overExpected' : 'expected',
+          reportHref,
+        },
+      ]
+    },
+  )
+}
+
+/*
+ * Each notice's title and body are the event editor's banner for the same
+ * thing (`EventPage.<key>Title` / `<key>Body`), so the two always read alike.
+ * `Notices.<key>` holds only the rail's own context and action.
+ */
 export const ATTENTION_NOTICES: AttentionNotice[] = [
   {
     id: 'unmatched',
@@ -338,18 +389,41 @@ export const ATTENTION_NOTICES: AttentionNotice[] = [
     values: { count: 5, event: 'Maria & Andrei' },
     tone: 'unmatched',
   },
-  {
-    id: 'editing-closes',
-    key: 'editingCloses',
-    span: { value: 30, unit: 'hour' },
-    tone: 'deadline',
-  },
-  {
-    id: 'safeguard',
-    key: 'safeguard',
-    values: { percent: 87, replied: 96, cap: 110 },
-    tone: 'safeguard',
-  },
+  ...EVENTS.filter(
+    (event) => event.isNextUp && event.locksIn && !event.locked,
+  ).map(
+    (event): AttentionNotice => ({
+      id: `editing-closes-${event.id}`,
+      key: 'closing',
+      span: event.locksIn,
+      eventDate: event.date,
+      values: { event: event.title.split(' — ')[0] },
+      tone: 'deadline',
+    }),
+  ),
+  ...replyNotices(),
+  ...EVENTS.filter(
+    (event) => event.status === 'active' && replyWindow(event) !== 'open',
+  ).map(
+    (event): AttentionNotice => ({
+      id: `replies-close-${event.id}`,
+      key: replyWindow(event) === 'closed' ? 'repliesClosed' : 'repliesClosing',
+      span: event.repliesCloseIn,
+      closesAt: event.repliesCloseAt,
+      eventDate: event.date,
+      values: {
+        event: event.title.split(' — ')[0],
+        custom: event.repliesCloseAt ? 'yes' : 'no',
+        /*
+         * A custom time can still move until the default close — the same
+         * moment editing freezes. On the default time there is nothing to
+         * change, so the guest list is offered instead.
+         */
+        change: event.repliesCloseAt && !event.locked ? 'yes' : 'no',
+      },
+      tone: 'deadline',
+    }),
+  ),
   {
     id: 'unpaid',
     key: 'unpaid',

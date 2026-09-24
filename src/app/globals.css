@@ -149,12 +149,12 @@
   }
 
   /*
-   * Attendee-safeguard bar: replies that said yes, then replies that said no,
-   * both measured against the cap. Every colour and dimension lives here, so
-   * the component hands over only the two percentages as custom properties
+   * Replies bar: replies that said yes, then replies that said no, both
+   * measured against expected guests. Every colour and dimension lives here,
+   * so the component hands over only the two percentages and a `data-level`,
    * and no presentation ends up in an inline style.
    */
-  .safeguard {
+  .replies-bar {
     display: flex;
     block-size: 6px;
     overflow: hidden;
@@ -162,24 +162,30 @@
     background-color: var(--color-mustard-200);
   }
 
-  .safeguard span {
+  .replies-bar span {
     display: block;
     block-size: 100%;
   }
 
-  .safeguard .attending {
+  .replies-bar .attending {
     inline-size: var(--attending);
     background-color: var(--color-forest-400);
   }
 
-  .safeguard .declined {
+  .replies-bar .declined {
     inline-size: var(--declined);
     background-color: var(--color-terracotta-400);
   }
 
+  /* At or past expected guests the bar is full, yes and no in one red. */
+  .replies-bar[data-level="over"] .attending,
+  .replies-bar[data-level="over"] .declined {
+    background-color: var(--color-rust-400);
+  }
+
   /*
-   * The editor's safeguard meter: one fill against the cap the host is
-   * setting. Same reasoning as above — the component hands over a percentage
+   * The editor's replies meter: one fill against the expected guests the
+   * host is setting. Same reasoning as above — the component hands over a percentage
    * and nothing else, so no presentation ends up in an inline style.
    */
   .meter {
@@ -195,6 +201,14 @@
     block-size: 100%;
     inline-size: var(--fill);
     background-color: var(--color-forest-400);
+  }
+
+  .meter[data-level="warn"] span {
+    background-color: var(--color-terracotta-400);
+  }
+
+  .meter[data-level="over"] span {
+    background-color: var(--color-rust-400);
   }
 
   /*

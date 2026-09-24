@@ -13,8 +13,9 @@ import {
   formatRelative,
   invitationLink,
   invitationPath,
-  safeguardBarVars,
-  safeguardReplyPercent,
+  expectedLevel,
+  expectedPercent,
+  repliesBarVars,
 } from '@/lib/event'
 import { TIERS } from '@/mock/dashboard'
 import type { DashboardEvent, EventStatus } from '@/types/dashboard'
@@ -98,10 +99,10 @@ export function EventRow({ event }: { event: DashboardEvent }) {
   const locale = useLocale()
   const deletion = formatEventDate(deletionDate(event.date), locale)
   const link = invitationLink(event)
-  const { cap } = event.safeguard
+  const expected = event.expectedGuests
   const replied = event.rsvp.replied
-  const safeguardPercent = safeguardReplyPercent(event)
-  const barVars = safeguardBarVars(event)
+  const percent = expectedPercent(replied, expected)
+  const barVars = repliesBarVars(event)
   /* Past and past its retention date: the record is a stub, not a tool. */
   const archived = event.status === 'past' && event.dataDeleted
   const past = event.status === 'past'
@@ -244,12 +245,13 @@ export function EventRow({ event }: { event: DashboardEvent }) {
 
                     <div
                       role="img"
-                      aria-label={t('safeguardAria', {
+                      aria-label={t('barAria', {
                         attending: event.rsvp.attending,
                         declined: event.rsvp.declined,
-                        cap,
+                        expected,
                       })}
-                      className="safeguard mt-3.5"
+                      className="replies-bar mt-3.5"
+                      data-level={expectedLevel(percent)}
                       style={barVars}
                     >
                       <span aria-hidden="true" className="attending" />
@@ -258,17 +260,13 @@ export function EventRow({ event }: { event: DashboardEvent }) {
 
                     <p className="mt-[9px] flex items-center gap-2 text-[11.5px] text-neutral-700">
                       <span className="flex-1">
-                        {t('safeguardLine', {
-                          replied,
-                          cap,
-                          percent: safeguardPercent,
-                        })}
+                        {t('expectedLine', { replied, expected, percent })}
                       </span>
                       <button
                         type="button"
                         className="text-forest-500 underline underline-offset-2 transition-colors hover:text-forest-600"
                       >
-                        {t('raiseCap')}
+                        {t('raiseExpected')}
                       </button>
                     </p>
                   </>

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { Invitation } from "@/components/invitation/Invitation";
+import { repliesPaused } from "@/lib/event";
 import { cardValues, findByInvite, seedValues } from "@/lib/invitation";
 import { invitationLanguage } from "@/lib/language";
 import { EVENTS } from "@/mock/dashboard";
@@ -31,7 +32,11 @@ export default async function InvitationPage({
   const language = invitationLanguage(event);
 
   return (
-    <Invitation template={template} values={values}>
+    <Invitation
+      template={template}
+      values={values}
+      repliesPaused={repliesPaused(event)}
+    >
       <Card values={cardValues(values, language)} />
     </Invitation>
   );

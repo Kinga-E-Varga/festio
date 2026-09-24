@@ -74,7 +74,7 @@ Full spec in `context/features/print.md`.
 ## Lifecycle
 
 - Invitations can be saved at any time, public or not. Content and template are editable until **24h before the event**.
-- Visibility per invitation: **Hidden / Public / Protected**. Protected reveals a password field (min 4 chars, letters or digits).
+- Visibility per invitation: **Hidden / Public / Protected**. Protected reveals a password field (min 4 chars, letters or digits). The password is printed on the physical card, directly below the link.
 - Saving changes while not Hidden requires acknowledging a blocking warning that guests won't be notified (shows current RSVP count); host must agree or cancel.
 - **Cancel event:** detailed confirmation + host re-enters password. RSVP form closes; invitation page is replaced with a header plus a short custom host message.
 - **Postpone** = just change the date. Notifying guests is the host's responsibility in both cases; nothing is automated.
@@ -85,11 +85,12 @@ Tier 2 and 3 only. Full spec in `context/features/seating-chart.md`. Not built y
 
 ## Security
 
-- Unguessable links: slug + 4 random digits, e.g. `festio.eu/maria-birthday-1657`.
+- Links are the host-chosen slug only, e.g. `festio.eu/maria-birthday`. Slugs are unique across Festio; slugs that clash with app routes are rejected.
+- Links are guessable. Privacy comes from Protected mode; the link editor tells the host so.
+- The guest list is never shown on the invitation page.
 - `noindex` headers — invitations must never be indexed.
-- Optional 4-digit access code for full page access.
-- Host-set "max total attendees" cap. Must be clearly presented as an adjustable technical safeguard, not a real guest limit.
-- Rate limiting by IP via Cloud Function, e.g. 5 submissions per link per hour.
+- Hosts must enter their expected guests (people). Replies are shown against it and may pass 100%. The form pauses at a hidden reply cap: the larger of expected + 50% or expected + 20, both set in `src/lib/config.ts`. Hosts are told only that the form pauses if far more replies come in than expected, and that they can raise the number anytime.
+- Rate limiting by IP via Cloud Function, on both RSVP submissions (e.g. 5 per link per hour) and invitation page views.
 
 ## GDPR
 
@@ -128,4 +129,3 @@ Conditional RSVP logic, PDF export, add-to-calendar / guest reminders, photo gal
 - Which slots exist in the Type 2 print layout and what content can fill each.
 - Which field input types templates need (text, long text, date, time, image, ...).
 - How a guest holding only a printed invitation reaches the online RSVP form (printed URL / QR / host shares separately).
-- Whether the access code appears on the printed invitation.

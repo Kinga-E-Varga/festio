@@ -11,6 +11,8 @@ interface PrintPreviewProps {
   settings: PrintSettings
   /** The guest-facing address, printed under the host's own two lines. */
   link: string
+  /** Printed under the link on Protected invitations; absent otherwise. */
+  passwordLine?: string
 }
 
 /**
@@ -23,20 +25,20 @@ interface PrintPreviewProps {
  * switching shape mounts a fresh card and the new one is always shut. Nothing
  * has to reach across and reset it.
  */
-export function PrintPreview({ settings, link }: PrintPreviewProps) {
+export function PrintPreview(props: PrintPreviewProps) {
   return (
     <div className="sheet">
-      {settings.shape === 'flat' ? (
-        <FlatCard settings={settings} link={link} />
+      {props.settings.shape === 'flat' ? (
+        <FlatCard {...props} />
       ) : (
-        <FoldedCard settings={settings} link={link} />
+        <FoldedCard {...props} />
       )}
     </div>
   )
 }
 
 /** One sheet, printed both sides and turned over. */
-function FlatCard({ settings, link }: PrintPreviewProps) {
+function FlatCard({ settings, ...written }: PrintPreviewProps) {
   const t = useTranslations('PrintPanel')
   const [open, setOpen] = useState(false)
 
@@ -57,7 +59,7 @@ function FlatCard({ settings, link }: PrintPreviewProps) {
             data-face="back"
             data-tint={settings.tinted}
           >
-            <Written settings={settings} link={link} />
+            <Written settings={settings} {...written} />
           </span>
         </span>
       </span>
@@ -70,7 +72,7 @@ function FlatCard({ settings, link }: PrintPreviewProps) {
  * page wide shut. Only the right-hand page never moves; the cover and its
  * reverse are the two faces of the half that swings.
  */
-function FoldedCard({ settings, link }: PrintPreviewProps) {
+function FoldedCard({ settings, ...written }: PrintPreviewProps) {
   const t = useTranslations('PrintPanel')
   const [open, setOpen] = useState(false)
 
@@ -86,7 +88,7 @@ function FoldedCard({ settings, link }: PrintPreviewProps) {
           {/* The half that stays put — what the cover swings away from. */}
           <span className="fold-page">
             <span className="leaf elevation-btn" data-tint={settings.tinted}>
-              <Written settings={settings} link={link} />
+              <Written settings={settings} {...written} />
             </span>
           </span>
 
@@ -222,7 +224,7 @@ const QR_PATH = QR_ROWS.map((row, y) =>
  * themselves in that, so they stay in the middle of the space they can see
  * rather than in the middle of the paper.
  */
-function Written({ settings, link }: PrintPreviewProps) {
+function Written({ settings, link, passwordLine }: PrintPreviewProps) {
   return (
     <span className="flex h-full flex-col px-[2.5em] py-[1.8em] text-center">
       <span className="flex flex-1 flex-col items-center justify-center gap-[1.1em]">
@@ -248,7 +250,10 @@ function Written({ settings, link }: PrintPreviewProps) {
         >
           <path d={QR_PATH} />
         </svg>
-        <span className="text-[0.8em] tracking-[0.08em]">{link}</span>
+        <span className="flex flex-col items-center gap-[0.3em] text-[0.8em] tracking-[0.08em]">
+          <span>{link}</span>
+          {passwordLine ? <span>{passwordLine}</span> : null}
+        </span>
       </span>
     </span>
   )

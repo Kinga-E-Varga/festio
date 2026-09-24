@@ -92,10 +92,22 @@ export function LinkSection({ event, form }: SectionProps) {
               onChange={(control) => set.slug(control.target.value)}
               className="min-w-0 flex-1 border-0 bg-transparent px-3 py-[9px] text-[13.5px] text-neutral-900 focus:outline-2 focus:-outline-offset-2 focus:outline-mustard-500 disabled:cursor-not-allowed"
             />
-            <span className="grid place-items-center bg-mustard-200 px-3 text-[13.5px] whitespace-nowrap text-neutral-800">
-              -{event.digits}
-            </span>
           </div>
+          {derived.slugOptions.length > 0 ? (
+            <p className="flex flex-wrap items-center gap-1.5 text-[11.5px] text-neutral-700">
+              {t("slugFree")}
+              {derived.slugOptions.map((option) => (
+                <button
+                  key={option}
+                  type="button"
+                  onClick={() => set.slug(option)}
+                  className="rounded-sm border border-forest-500 bg-mustard-50 px-2 py-0.5 font-medium text-forest-500 transition-colors hover:bg-forest-200"
+                >
+                  {option}
+                </button>
+              ))}
+            </p>
+          ) : null}
         </Field>
 
         <Field label={t("guestLink")}>
@@ -130,7 +142,7 @@ export function LinkSection({ event, form }: SectionProps) {
           return (
             <div
               key={id}
-              className={`flex min-w-0 flex-col border transition-colors has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 ${
+              className={`flex min-w-0 flex-col border transition-colors has-[[name=visibility]:focus-visible]:outline-2 has-[[name=visibility]:focus-visible]:outline-offset-2 ${
                 selected
                   ? "border-mustard-500 bg-mustard-200 outline-mustard-500"
                   : "border-mustard-300 bg-neutral-50 outline-mustard-300 hover:bg-mustard-100"
@@ -140,7 +152,7 @@ export function LinkSection({ event, form }: SectionProps) {
                 <span className="flex items-center gap-2 font-semibold text-neutral-900">
                   <span
                     aria-hidden="true"
-                    className={`grid size-[13px] shrink-0 place-items-center rounded-full border-[1.5px] ${
+                    className={`grid size-[14px] shrink-0 place-items-center rounded-full border ${
                       selected ? "border-mustard-500" : "border-neutral-500"
                     }`}
                   >

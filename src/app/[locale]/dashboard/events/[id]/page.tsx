@@ -6,13 +6,20 @@ import { Banner } from "@/components/dashboard/event-editor/Banner";
 import { EventEditor } from "@/components/dashboard/event-editor/EventEditor";
 import { Icon } from "@/components/icons";
 import {
+  canReportFlood,
   contentFreeze,
+  expectedLevel,
+  floodReportPath,
+  replyClose,
+  replyWindow,
+  expectedPercent,
   formatDay,
   formatDeadline,
   formatDuration,
   formatRelative,
+  repliesPaused,
 } from "@/lib/event";
-import { findEvent, TIERS } from "@/mock/dashboard";
+import { EVENTS, findEvent, TIERS } from "@/mock/dashboard";
 
 type Props = PageProps<"/[locale]/dashboard/events/[id]">;
 
@@ -35,6 +42,24 @@ export default async function EventPage({ params }: Props) {
   const tier = TIERS[event.tier];
   const locale = await getLocale();
   const freeze = formatDeadline(contentFreeze(event.date), locale);
+  const tEvent = await getTranslations("Event");
+  /* Offered from 100% of expected guests, under whichever banner shows. */
+  const report = canReportFlood(event) ? (
+    <>
+      {" "}
+      <Link
+        href={floodReportPath(event)}
+        className="font-semibold underline underline-offset-[3px] transition-colors hover:text-neutral-900"
+      >
+        {tEvent("reportFlood")}
+      </Link>
+    </>
+  ) : null;
+  const replies = {
+    replied: event.rsvp.replied,
+    expected: event.expectedGuests,
+    percent: expectedPercent(event.rsvp.replied, event.expectedGuests),
+  };
 
   return (
     <div className="@container">
@@ -89,6 +114,34 @@ export default async function EventPage({ params }: Props) {
         </Banner>
       ) : null}
 
+      {/* The reply form, when it is about to close or already has. */}
+      {replyWindow(event) === "closed" ? (
+        <Banner
+          tone="warn"
+          icon="lock"
+          title={t("repliesClosedTitle", {
+            date: formatDeadline(replyClose(event), locale),
+          })}
+        >
+          {t("repliesClosedBody", {
+            custom: event.repliesCloseAt ? "yes" : "no",
+          })}
+        </Banner>
+      ) : replyWindow(event) === "soon" && event.repliesCloseIn ? (
+        <Banner
+          tone="warn"
+          icon="clock"
+          title={t("repliesClosingTitle", {
+            time: formatDuration(event.repliesCloseIn, locale),
+          })}
+        >
+          {t("repliesClosingBody", {
+            date: formatDeadline(replyClose(event), locale),
+            custom: event.repliesCloseAt ? "yes" : "no",
+          })}
+        </Banner>
+      ) : null}
+
       {event.paid ? null : (
         <Banner tone="warn" icon="info" title={t("unpaidTitle")}>
           {t("unpaidBody", {
@@ -105,6 +158,28 @@ export default async function EventPage({ params }: Props) {
         </Banner>
       ) : null}
 
+      {/* One replies banner at most: paused says everything the others do. */}
+      {repliesPaused(event) ? (
+        <Banner tone="warn" icon="alert" title={t("pausedTitle")}>
+          {t("pausedBody")}
+          {report}
+        </Banner>
+      ) : replies.replied > replies.expected ? (
+        <Banner tone="warn" icon="guests" title={t("overExpectedTitle")}>
+          {t("overExpectedBody", replies)}
+          {report}
+        </Banner>
+      ) : replies.replied > 0 && expectedLevel(replies.percent) !== "ok" ? (
+        <Banner
+          tone="warn"
+          icon="guests"
+          title={t("nearExpectedTitle", replies)}
+        >
+          {t("nearExpectedBody", replies)}
+          {report}
+        </Banner>
+      ) : null}
+
       {event.unmatched > 0 ? (
         <Banner
           tone="warn"
@@ -115,7 +190,12 @@ export default async function EventPage({ params }: Props) {
         </Banner>
       ) : null}
 
-      <EventEditor event={event} />
+      <EventEditor
+        event={event}
+        takenSlugs={EVENTS.filter((other) => other.id !== event.id).map(
+          (other) => other.slug,
+        )}
+      />
     </div>
   );
 }

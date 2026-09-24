@@ -44,6 +44,8 @@ interface PrintEditorProps {
   rsvpMessage: string
   /** The guest-facing address, printed on the card. */
   link: string
+  /** Printed under the link on Protected invitations, in their language. */
+  passwordLine?: string
   /**
    * The line the second input opens on, until the host writes their own.
    * Festio's copy, and it is printed, so it arrives already written in the
@@ -64,6 +66,7 @@ export function PrintEditor({
   template,
   rsvpMessage,
   link,
+  passwordLine,
   defaultNote,
 }: PrintEditorProps) {
   const [settings, setSettings] = useState<PrintSettings>({
@@ -127,7 +130,11 @@ export function PrintEditor({
           />
 
           <div className="relative flex min-h-0 min-w-0 flex-1">
-            <PrintPreview settings={settings} link={link} />
+            <PrintPreview
+              settings={settings}
+              link={link}
+              passwordLine={passwordLine}
+            />
           </div>
         </div>
 

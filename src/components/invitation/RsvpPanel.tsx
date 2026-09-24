@@ -22,6 +22,8 @@ interface RsvpPanelProps {
   onSubmit?: (payload: RsvpPayload) => void
   /** True while the host's edit panel is covering this one, so it can't be tabbed into. */
   inert?: boolean
+  /** Replies are closed for now; a neutral line stands in for the form. */
+  paused?: boolean
 }
 
 /**
@@ -37,6 +39,7 @@ export function RsvpPanel({
   values,
   onSubmit,
   inert,
+  paused,
 }: RsvpPanelProps) {
   const t = useTranslations('Rsvp')
   const form = useRsvpForm()
@@ -50,6 +53,28 @@ export function RsvpPanel({
   const message = values.rsvpMessage?.trim() || t('defaultMessage')
   const sent = form.derived.sent
   const shown = open || sent
+
+  /*
+   * Guests are told only that replies are closed — never why. The bar keeps
+   * its resting height, so the card above it doesn't move.
+   */
+  if (paused) {
+    return (
+      <>
+        <div className="invite:hidden h-[70px] shrink-0" />
+
+        <aside className={`reply ${PANEL}`} data-open={false} inert={inert}>
+          <div className="edge" data-axis="reply" data-shape={template.edge} />
+          <div className="flex flex-1 flex-col justify-center bg-[var(--c1)] px-5 invite:p-8">
+            <p className={`${TITLE} hidden invite:block`}>{message}</p>
+            <p className="flex min-h-[50px] items-center justify-center text-center text-[14px] leading-[1.45] text-[color:var(--c3)] invite:min-h-0">
+              {t('paused')}
+            </p>
+          </div>
+        </aside>
+      </>
+    )
+  }
 
   function send() {
     const payload = form.buildPayload()

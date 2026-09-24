@@ -100,11 +100,6 @@ export interface RsvpTally {
   pending: number;
 }
 
-/** Host-set cap on replies — a technical safeguard, not a guest limit. */
-export interface AttendeeSafeguard {
-  cap: number;
-}
-
 /**
  * A sentence Festio writes from an event's own numbers: the catalog key and
  * the values it is filled with. The wording lives in the catalogs, so it is
@@ -159,16 +154,18 @@ export interface DashboardEvent {
    */
   language?: Language;
   paid: boolean;
-  /** The host-editable half of the link. */
+  /** The whole guest link path; unique across Festio. */
   slug: string;
-  /** Festio's four random digits, which keep the link unguessable. */
-  digits: string;
   /** Set only on Protected invitations; min 4 chars, letters or digits. */
   password?: string;
   /** Replaces the copy row when there is nothing to share yet. A key into `EventNotes`. */
   linkNoteKey?: string;
   rsvp: RsvpTally;
-  safeguard: AttendeeSafeguard;
+  /**
+   * How many people the host expects. Replies are shown against it, and the
+   * hidden reply cap is worked out from it (`replyCap` in `lib/event.ts`).
+   */
+  expectedGuests: number;
   /** Replies that matched no name on the pre-loaded list. */
   unmatched: number;
   preloaded: boolean;
@@ -187,6 +184,13 @@ export interface DashboardEvent {
   locked: boolean;
   /** How long until the freeze, while it is still ahead. */
   locksIn?: TimeSpan;
+  /**
+   * The host's own reply-form closing time, `YYYY-MM-DDTHH:MM`. Absent means
+   * the default: the day before the event at 00:00.
+   */
+  repliesCloseAt?: string;
+  /** How long until the reply form closes; negative once it has. */
+  repliesCloseIn?: TimeSpan;
   /** True once the retention window has run out and the guest data is gone. */
   dataDeleted: boolean;
 }
@@ -205,19 +209,32 @@ export interface DashboardStat {
   detailValue?: number;
 }
 
-export type NoticeTone = "unmatched" | "deadline" | "safeguard" | "billing";
+export type NoticeTone =
+  | "unmatched"
+  | "deadline"
+  | "expected"
+  | "overExpected"
+  | "paused"
+  | "billing";
 
 /**
- * A notice's title, body, action and optional context are keys under
- * `Notices.<key>`, all filled from the same values.
+ * A notice's title and body are the event editor's banner texts,
+ * `EventPage.<key>Title` and `<key>Body`; its context and action are under
+ * `Notices.<key>`. All are filled from the same values.
  */
 export interface AttentionNotice extends Message {
   id: string;
   /** Filled in as `{time}`, written out in the reader's language. */
   span?: TimeSpan;
+  /** An event's ISO date; its editing cut-off is filled in as `{date}`. */
+  eventDate?: string;
+  /** A custom reply-form close; when set, `{date}` is this instead. */
+  closesAt?: string;
   /** Filled in as `{tier}`, the tier's own name in the reader's language. */
   tier?: TierId;
   tone: NoticeTone;
+  /** Set from 100% of expected guests: where the host reports a flood. */
+  reportHref?: string;
 }
 
 export interface RsvpActivity {

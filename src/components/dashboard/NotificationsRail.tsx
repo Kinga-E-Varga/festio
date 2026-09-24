@@ -2,7 +2,13 @@ import { useLocale, useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import type { ReactNode } from "react";
 import { GUEST_DATA_RETENTION_DAYS } from "@/lib/config";
-import { formatDuration, formatRelative } from "@/lib/event";
+import {
+  contentFreeze,
+  formatDeadline,
+  replyClose,
+  formatDuration,
+  formatRelative,
+} from "@/lib/event";
 import { ATTENTION_NOTICES, RECENT_RSVPS, TIERS } from "@/mock/dashboard";
 import type { NoticeTone } from "@/types/dashboard";
 
@@ -10,9 +16,25 @@ import type { NoticeTone } from "@/types/dashboard";
 const TONE: Record<NoticeTone, string> = {
   unmatched: "border-rust-500 text-rust-600",
   deadline: "border-mustard-500 text-mustard-600",
-  safeguard: "border-terracotta-500 text-terracotta-600",
+  expected: "border-terracotta-500 text-terracotta-600",
+  overExpected: "border-rust-500 text-rust-600",
+  paused: "border-rust-500 text-rust-600",
   billing: "border-steel-500 text-steel-600",
 };
+
+/** Most urgent first; notices of one tone keep their own order. */
+const TONE_ORDER: Record<NoticeTone, number> = {
+  unmatched: 0,
+  paused: 0,
+  overExpected: 0,
+  expected: 1,
+  deadline: 2,
+  billing: 3,
+};
+
+const NOTICES = [...ATTENTION_NOTICES].sort(
+  (first, second) => TONE_ORDER[first.tone] - TONE_ORDER[second.tone],
+);
 
 const PANEL_LABEL =
   "mb-3.5 text-[10px] font-semibold tracking-[0.18em] text-mustard-500 uppercase";
@@ -29,6 +51,9 @@ function Panel({ label, children }: { label: string; children: ReactNode }) {
 export function NotificationsRail() {
   const t = useTranslations("Rail");
   const tNotices = useTranslations("Notices");
+  /* Titles and bodies are the event editor's banners, word for word. */
+  const tBanner = useTranslations("EventPage");
+  const tEvent = useTranslations("Event");
   const tActivity = useTranslations("Activity");
   const tTiers = useTranslations("Tiers");
   const locale = useLocale();
@@ -37,15 +62,33 @@ export function NotificationsRail() {
     <div>
       <Panel label={t("needsAttention")}>
         <ul>
-          {ATTENTION_NOTICES.map((notice) => {
+          {NOTICES.map((notice) => {
             /* Title, body, action and context all read the same values. */
             const values = {
               ...notice.values,
               ...(notice.span
                 ? { time: formatDuration(notice.span, locale) }
                 : {}),
+              ...(notice.eventDate
+                ? {
+                    date: formatDeadline(
+                      notice.key.startsWith("replies")
+                        ? replyClose({
+                            date: notice.eventDate,
+                            repliesCloseAt: notice.closesAt,
+                          })
+                        : contentFreeze(notice.eventDate),
+                      locale,
+                    ),
+                  }
+                : {}),
               ...(notice.tier
-                ? { tier: tTiers(`${TIERS[notice.tier].key}.name`) }
+                ? {
+                    tier: tTiers(`${TIERS[notice.tier].key}.name`),
+                    price: tTiers("price", {
+                      amount: TIERS[notice.tier].price,
+                    }),
+                  }
                 : {}),
             };
             const contextKey = `${notice.key}.context`;
@@ -56,7 +99,7 @@ export function NotificationsRail() {
                 className={`mb-3.5 border-l-4 pb-3.5 pl-3.5 last:mb-0 last:pb-0 ${TONE[notice.tone]}`}
               >
                 <p className="mb-[3px] font-semibold text-neutral-900">
-                  {tNotices(`${notice.key}.title`, values)}
+                  {tBanner(`${notice.key}Title`, values)}
                   {tNotices.has(contextKey) ? (
                     <span className="font-normal">
                       {" "}
@@ -65,7 +108,7 @@ export function NotificationsRail() {
                   ) : null}
                 </p>
                 <p className="mb-1.5 text-[12.5px] leading-[1.45] text-neutral-700">
-                  {tNotices(`${notice.key}.body`, values)}
+                  {tBanner(`${notice.key}Body`, values)}
                 </p>
                 <button
                   type="button"
@@ -73,6 +116,14 @@ export function NotificationsRail() {
                 >
                   {tNotices(`${notice.key}.action`, values)}
                 </button>
+                {notice.reportHref ? (
+                  <Link
+                    href={notice.reportHref}
+                    className="ml-4 text-[12.5px] font-semibold text-current underline underline-offset-[3px] transition-colors hover:text-neutral-900"
+                  >
+                    {tEvent("reportFlood")}
+                  </Link>
+                ) : null}
               </li>
             );
           })}

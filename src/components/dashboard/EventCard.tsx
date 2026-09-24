@@ -6,19 +6,19 @@ import { RULE } from '@/components/dashboard/EventRow'
 import { PasswordField } from '@/components/dashboard/PasswordField'
 import { Icon } from '@/components/icons'
 import {
-  contentFreeze,
   formatDay,
   formatDeadline,
   formatRelative,
+  expectedLevel,
+  expectedPercent,
   invitationLink,
-  safeguardBarVars,
-  safeguardReplyPercent,
+  replyClose,
+  replyWindow,
+  repliesBarVars,
+  repliesPaused,
+  type ExpectedLevel,
 } from '@/lib/event'
 import type { DashboardEvent, IconName } from '@/types/dashboard'
-
-/** The card's left edge says at a glance which pile the event is in. */
-/** How full the safeguard has to be before it is worth a chip of its own. */
-const SAFEGUARD_WARNING = 80
 
 const FIELD_BASE =
   'flex items-center gap-[9px] border border-mustard-300 px-3 py-2 text-[13px] text-neutral-900'
@@ -40,7 +40,11 @@ interface Warning {
  * have to open the event to learn what locks. The exact hours are on the event
  * itself; the card only has to say it is close.
  */
-function warningsFor(event: DashboardEvent, safeguardPercent: number) {
+function warningsFor(
+  event: DashboardEvent,
+  percent: number,
+  level: ExpectedLevel,
+) {
   const warnings: Warning[] = []
 
   if (!event.paid) {
@@ -53,12 +57,14 @@ function warningsFor(event: DashboardEvent, safeguardPercent: number) {
     warnings.push({ icon: 'clock', key: 'editLocksSoon' })
   }
 
-  /* A cap nobody is near is a safeguard working, not news. */
-  if (event.rsvp.replied > 0 && safeguardPercent >= SAFEGUARD_WARNING) {
+  /* Replies well short of expected guests are not news. */
+  if (event.rsvp.replied > event.expectedGuests) {
+    warnings.push({ icon: 'guests', key: 'overExpected' })
+  } else if (event.rsvp.replied > 0 && level !== 'ok') {
     warnings.push({
-      icon: 'shield',
-      key: 'safeguardAt',
-      values: { percent: safeguardPercent },
+      icon: 'guests',
+      key: 'expectedAt',
+      values: { percent },
     })
   }
 
@@ -96,16 +102,20 @@ export function EventCard({ event }: { event: DashboardEvent }) {
   const link = invitationLink(event)
   /* Past and past its retention date: the record is a stub, not a tool. */
   const archived = event.status === 'past' && event.dataDeleted
-  const { cap } = event.safeguard
+  const expected = event.expectedGuests
   const replied = event.rsvp.replied
-  const safeguardPercent = safeguardReplyPercent(event)
-  const barVars = safeguardBarVars(event)
+  const percent = expectedPercent(replied, expected)
+  const level = expectedLevel(percent)
+  const barVars = repliesBarVars(event)
+  const paused = repliesPaused(event)
   const t = useTranslations('Event')
   const tNotes = useTranslations('EventNotes')
-  const warnings = warningsFor(event, safeguardPercent)
+  const tBanner = useTranslations('EventPage')
+  const warnings = warningsFor(event, percent, level)
   const locale = useLocale()
-  const replyCloses = formatDeadline(contentFreeze(event.date), locale)
-  const safeguardValues = { replied, cap, percent: safeguardPercent }
+  const replyCloses = formatDeadline(replyClose(event), locale)
+  const replies = replyWindow(event)
+  const expectedValues = { replied, expected, percent }
 
   return (
     /*
@@ -200,12 +210,28 @@ export function EventCard({ event }: { event: DashboardEvent }) {
                     </div>
                   ) : null}
 
-                  <p className="mb-[18px] flex items-center gap-1.5 text-[12.5px] text-neutral-700">
+                  {/* Closing soon or closed reads in the countdown's own colour. */}
+                  <p
+                    className={`mb-[18px] flex items-center gap-1.5 text-[12.5px] ${
+                      replies === 'open'
+                        ? 'text-neutral-700'
+                        : 'font-medium text-terracotta-600'
+                    }`}
+                  >
                     <Icon
                       name="calendar"
-                      className="size-3.5 shrink-0 text-forest-500"
+                      className={`size-3.5 shrink-0 ${
+                        replies === 'open'
+                          ? 'text-forest-500'
+                          : 'text-terracotta-600'
+                      }`}
                     />
-                    {t('replyFormClosesOn', { date: replyCloses })}
+                    {t(
+                      replies === 'closed'
+                        ? 'repliesClosedOn'
+                        : 'replyFormClosesOn',
+                      { date: replyCloses },
+                    )}
                   </p>
 
                   {/* Stacked fields butt together and share their edges. */}
@@ -247,7 +273,7 @@ export function EventCard({ event }: { event: DashboardEvent }) {
            * card in the pile lines up with the next.
            *
            * The replies are a container of their own: the tallies and the
-           * safeguard line follow the room the replies actually have, not the
+           * expected-guests line follow the room the replies actually have, not the
            * card's layout.
            */}
           <div
@@ -273,12 +299,13 @@ export function EventCard({ event }: { event: DashboardEvent }) {
 
               <div
                 role="img"
-                aria-label={t('safeguardAria', {
+                aria-label={t('barAria', {
                   attending: event.rsvp.attending,
                   declined: event.rsvp.declined,
-                  cap,
+                  expected,
                 })}
-                className="safeguard"
+                className="replies-bar"
+                data-level={level}
                 style={barVars}
               >
                 <span aria-hidden="true" className="attending" />
@@ -288,12 +315,23 @@ export function EventCard({ event }: { event: DashboardEvent }) {
               <p className="mt-[7px] text-[11.5px] text-neutral-700">
                 {/* Roomy only while the tallies have room for a single row. */}
                 <span className="hidden @min-[436px]:inline">
-                  {t('safeguardLine', safeguardValues)}
+                  {t('expectedLine', expectedValues)}
                 </span>
                 <span className="@min-[436px]:hidden">
-                  {t('safeguardShort', safeguardValues)}
+                  {t('expectedShort', expectedValues)}
                 </span>
               </p>
+
+              {paused ? (
+                <div className="mt-[18px] flex gap-[9px] border border-rust-400 bg-rust-200 px-[13px] py-[11px] text-[12.5px] leading-[1.45] text-rust-600">
+                  <Icon name="alert" className="mt-px size-[15px] shrink-0" />
+                  {/* The editor banner's own words, so every place reads alike. */}
+                  <p>
+                    <b className="block">{tBanner('pausedTitle')}</b>
+                    {tBanner('pausedBody')}
+                  </p>
+                </div>
+              ) : null}
 
               {event.note ? (
                 event.note.tone === 'warning' ? (

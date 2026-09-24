@@ -23,6 +23,7 @@ one) — see the comments in `[locale]/layout.tsx` and `invite/[invite]/layout.t
 | `[locale]/dashboard/layout.tsx` | Dashboard shell wrapper |
 | `[locale]/dashboard/events/page.tsx` | Events list |
 | `[locale]/dashboard/events/[id]/page.tsx` | Event editor |
+| `[locale]/dashboard/events/[id]/report/page.tsx` | Draft: report a flood of unexpected replies |
 | `[locale]/dashboard/invitations/page.tsx` | Invitations grid |
 
 **Guest invitation**, outside next-intl entirely, no language switch:
@@ -30,7 +31,7 @@ one) — see the comments in `[locale]/layout.tsx` and `invite/[invite]/layout.t
 | Path | Purpose |
 | ---- | ------- |
 | `invite/[invite]/layout.tsx` | Its own root layout — same fonts/chrome; `lang` and the message catalog come from the invitation's own `language` |
-| `invite/[invite]/page.tsx` | Public guest-facing invitation. URL is unprefixed (`/maria-birthday-1657`) — `next.config.ts` rewrites it here invisibly |
+| `invite/[invite]/page.tsx` | Public guest-facing invitation. URL is unprefixed (`/maria-birthday`) — `next.config.ts` rewrites it here invisibly |
 
 `fonts.ts` — the app-wide `next/font/google` declarations (Work Sans +
 Libre Baskerville), shared by both root layouts.
@@ -83,8 +84,9 @@ Widgets: `HostToday.tsx`, `StatStrip.tsx`, `RepliesMeter.tsx`, `DatesThatMatter.
 
 | File | Holds |
 | ---- | ----- |
-| `config.ts` | `GUEST_DATA_RETENTION_DAYS` — the single GDPR retention parameter. Never inline it. |
-| `event.ts` | Slugs, `invitationLink`, `contentFreeze` (24h rule), `deletionDate`, date formatting |
+| `config.ts` | `GUEST_DATA_RETENTION_DAYS` — the single GDPR retention parameter. Never inline it. Also the reply-cap margins, the expected-guests warning percent and the replies-closing-soon window. |
+| `event.ts` | `invitationLink`, `contentFreeze` (24h rule), `deletionDate`, date formatting, expected-guests and reply-cap helpers, `replyClose` / `replyWindow` |
+| `slug.ts` | `RESERVED_SLUGS` (the one list), slug limits, `normalizeSlug`, suggestions, the invite rewrite pattern. Relative imports only — `next.config.ts` reads it. |
 | `invitation.ts` | Template vars, `findByInvite`, seed/fallback values, `DATE_FORMATS` |
 | `fonts.ts` | Invitation fonts via `next/font/google` (per-template, not the app chrome — that's `src/app/fonts.ts`) |
 | `history.ts` | Local visit tracking |

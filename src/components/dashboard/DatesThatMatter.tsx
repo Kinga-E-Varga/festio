@@ -5,6 +5,8 @@ import {
   deletionDate,
   formatDeadline,
   formatEventDate,
+  replyClose,
+  replyWindow,
 } from "@/lib/event";
 import type { DashboardEvent } from "@/types/dashboard";
 
@@ -84,10 +86,12 @@ export function DatesThatMatter({
 
       <DateNote
         edge="border-steel-500"
-        title={t("replyFormCloses")}
+        title={t(
+          replyWindow(event) === "closed" ? "repliesClosed" : "replyFormCloses",
+        )}
         row={row}
       >
-        {freeze}
+        {formatDeadline(replyClose(event), locale)}
       </DateNote>
 
       <DateNote
