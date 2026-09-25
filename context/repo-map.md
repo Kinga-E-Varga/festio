@@ -37,6 +37,9 @@ one) — see the comments in `[locale]/layout.tsx` and `invite/[invite]/layout.t
 `fonts.ts` — the app-wide `next/font/google` declarations (Work Sans +
 Libre Baskerville), shared by both root layouts.
 
+`ReactGrab.tsx` — dev-only React Grab script, also in both root layouts.
+Lives in `app/` because `beforeInteractive` scripts belong to a root layout.
+
 ## i18n — `src/i18n/` and `messages/`
 
 - `src/i18n/routing.ts` — `next-intl`'s locale list/default/prefix strategy.

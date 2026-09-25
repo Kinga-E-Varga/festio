@@ -4,6 +4,7 @@ import { getTranslations } from "next-intl/server";
 import { notFound } from "next/navigation";
 import { routing } from "@/i18n/routing";
 import { HistoryTracker } from "@/components/HistoryTracker";
+import { ReactGrab } from "@/app/ReactGrab";
 import { appFontClassName } from "@/app/fonts";
 import "@/app/globals.css";
 
@@ -32,6 +33,7 @@ export default async function LocaleRootLayout({
     <html lang={locale} className={`${appFontClassName} h-full antialiased`}>
       <body className="flex min-h-full flex-col text-sm">
         <NextIntlClientProvider>
+          <ReactGrab />
           <HistoryTracker />
           {children}
         </NextIntlClientProvider>

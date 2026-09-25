@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { NextIntlClientProvider } from "next-intl";
 import { getTranslations } from "next-intl/server";
 import { HistoryTracker } from "@/components/HistoryTracker";
+import { ReactGrab } from "@/app/ReactGrab";
 import { loadMessages } from "@/i18n/messages";
 import { DEFAULT_LANGUAGE, invitationLanguage } from "@/lib/language";
 import { findByInvite } from "@/lib/invitation";
@@ -50,6 +51,7 @@ export default async function InviteRootLayout({
     <html lang={language} className={`${appFontClassName} h-full antialiased`}>
       <body className="flex min-h-full flex-col text-sm">
         <NextIntlClientProvider locale={language} messages={messages}>
+          <ReactGrab />
           <HistoryTracker />
           {children}
         </NextIntlClientProvider>
