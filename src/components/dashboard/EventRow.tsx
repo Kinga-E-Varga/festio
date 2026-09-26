@@ -51,7 +51,7 @@ const PANEL = 'min-w-0 border-t border-mustard-300 pt-5'
 
 /** The six actions share one size and fill the width of their column. */
 const ACTION =
-  'inline-flex w-full min-w-[135px] items-center justify-center gap-2 rounded-md border border-forest-500 bg-mustard-50 px-2.5 py-[9px] text-center text-[13px] leading-[1.3] font-medium text-forest-500 transition-colors hover:border-forest-600 hover:bg-forest-200 hover:text-forest-600 disabled:cursor-not-allowed disabled:opacity-50'
+  'inline-flex w-full min-w-[135px] items-center justify-center gap-2 rounded-md border border-forest-500 bg-mustard-50 px-2.5 py-[12px] text-center text-[13px] leading-[1.3] font-medium text-forest-500 transition-colors hover:border-forest-600 hover:bg-forest-200 hover:text-forest-600 disabled:cursor-not-allowed disabled:opacity-50'
 
 const FIELD_BASE =
   'flex items-center gap-[9px] border border-mustard-300 px-3 py-2 text-[13px] text-neutral-900'

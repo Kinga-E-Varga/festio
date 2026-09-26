@@ -26,7 +26,7 @@ function Tile({
         <Icon name={icon} className="size-[17px]" />
       </span>
       <span className="min-w-0">
-        <b className="mb-[3px] block text-mustard-600">{title}</b>
+        <b className="mb-[3px] block font-semibold text-mustard-600">{title}</b>
         <span className="block text-xs leading-[1.45] text-mustard-600">
           {children}
         </span>
@@ -52,7 +52,7 @@ export function EditionSection({ event }: { event: DashboardEvent }) {
             <Icon name="layers" className="size-[17px]" />
           </span>
           <span className="min-w-0">
-            <b className="mb-[3px] block text-forest-500">
+            <b className="mb-[3px] block font-semibold text-forest-500">
               {t(event.paid ? "tierPaid" : "tierUnpaid", {
                 name: tTiers(`${tier.key}.name`),
                 price: price(tier.price),

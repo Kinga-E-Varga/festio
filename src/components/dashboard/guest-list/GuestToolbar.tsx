@@ -1,46 +1,33 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { BTN_GHOST } from "@/components/dashboard/event-editor/styles";
-import { Toggle } from "@/components/dashboard/event-editor/Toggle";
+import { BTN_GHOST_LIGHT, BTN_PRIMARY } from "@/components/dashboard/event-editor/styles";
+import { HEADER_BTN_WIDTH } from "@/components/dashboard/guest-list/styles";
 import { Icon } from "@/components/icons";
 
 interface GuestToolbarProps {
   useList: boolean;
-  onUseList: (value: boolean) => void;
   onAddNames: () => void;
   onAddGuest: () => void;
 }
 
-export function GuestToolbar({ useList, onUseList, onAddNames, onAddGuest }: GuestToolbarProps) {
+export function GuestToolbar({ useList, onAddNames, onAddGuest }: GuestToolbarProps) {
   const t = useTranslations("GuestList");
-  /* The same setting the event editor offers, so the same words. */
-  const tEditor = useTranslations("EventEditor");
 
   return (
-    <div>
-      <Toggle
-        label={tEditor("preloaded")}
-        description={tEditor("preloadedNote")}
-        checked={useList}
-        onChange={onUseList}
-      />
-
-      <div className="mt-3 flex flex-wrap items-center gap-2.5">
-        <button type="button" onClick={onAddNames} className={BTN_GHOST}>
-          <Icon name="list" className="size-4" />
-          {t("addNames")}
+    // Side by side; stacked only when even the two don't fit.
+    <div className="flex flex-wrap gap-2.5">
+      {/* The list only has something to edit while it's in use. */}
+      {useList ? (
+        <button type="button" onClick={onAddNames} className={`${HEADER_BTN_WIDTH} ${BTN_GHOST_LIGHT}`}>
+          <Icon name="pencil" className="size-4" />
+          {t("editList")}
         </button>
-        <button type="button" onClick={onAddGuest} className={BTN_GHOST}>
-          <Icon name="plus" className="size-4" />
-          {t("addGuest")}
-        </button>
-        {/* Not wired yet: export comes in a later feature. */}
-        <button type="button" className={BTN_GHOST}>
-          <Icon name="download" className="size-4" />
-          {t("export")}
-        </button>
-      </div>
+      ) : null}
+      <button type="button" onClick={onAddGuest} className={`${HEADER_BTN_WIDTH} ${BTN_PRIMARY}`}>
+        <Icon name="plus" className="size-[18px]" strokeWidth={2} />
+        {t("addReply")}
+      </button>
     </div>
   );
 }

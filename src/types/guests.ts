@@ -13,6 +13,12 @@ export interface ListName {
   sent: boolean;
 }
 
+/** The age question every form asks, for each person coming. */
+export type AgeGroup = "adult" | "child" | "baby";
+
+/** The dietary presets every form offers, for each person coming. */
+export type DietNeed = "vegetarian" | "vegan" | "glutenFree" | "lactoseFree" | "nutAllergy";
+
 /**
  * One attendee from one reply. A reply fans out into one of these per
  * person, all sharing its `submissionId`, with the note copied onto each.
@@ -24,8 +30,14 @@ export interface GuestReply {
   status: RsvpStatus;
   /** The reply's note to the host. Null = asked and skipped. */
   note: string | null;
-  /** The guest chose "No, add mine" on a name that was already there. */
-  duplicate: boolean;
+  /* Asked only of people coming: missing = never asked, null = asked and skipped. */
+  ageGroup?: AgeGroup | null;
+  /** Empty = no needs. */
+  diet?: DietNeed[] | null;
+  /** When the reply came in, as a local ISO date-time. */
+  repliedAt: string;
+  /** The host confirmed this isn't the guest behind an earlier reply with the same name. */
+  differentPerson: boolean;
   /** The list name the host matched this reply to by hand. */
   listNameId?: string;
 }
@@ -35,23 +47,22 @@ export interface EventGuests {
   replies: GuestReply[];
 }
 
-export type UnknownKind = "unmatched" | "duplicate";
-
 export type GuestRow =
   | {
       kind: "reply";
       id: string;
       reply: GuestReply;
-      unknown: UnknownKind | null;
       /** The list is on and the name isn't on it: the Unknown tag. */
       unlisted: boolean;
-      /** Another reply came in under this name as a duplicate: the Duplicate tag. */
-      repeated: boolean;
+      /** Another reply the host hasn't told apart has the same name. */
+      identical: boolean;
+      /** Identical, and not the first reply with that name: it gets "Different person". */
+      later: boolean;
     }
   | { kind: "waiting"; id: string; listName: ListName };
 
 /** The table's blocks, in the order they show. */
-export type GuestCategory = "unknown" | "going" | "notGoing" | "waiting";
+export type GuestCategory = "attention" | "going" | "notGoing" | "waiting";
 
 /** People who replied together, or one waiting name on its own. */
 export interface GuestGroup {
@@ -63,24 +74,32 @@ export interface GuestGroup {
   with: string[];
 }
 
+/** A card in the Needs attention section. */
+export type AttentionItem =
+  | { kind: "unknown"; id: string; group: GuestGroup }
+  | {
+      kind: "identical";
+      id: string;
+      name: string;
+      /** Each reply's row with the name, oldest first. */
+      entries: Extract<GuestRow, { kind: "reply" }>[];
+    };
+
 export type GuestFilter =
   | "all"
   | "going"
   | "not_going"
   | "waiting"
   | "notSent"
-  | "unknown"
-  | "duplicate";
+  | "attention";
 
 export interface GuestCounts {
   going: number;
   notGoing: number;
   waiting: number;
   notSent: number;
-  unknown: number;
-  duplicate: number;
-  unmatched: number;
-  replied: number;
+  /** Rows to sort out: unknown names plus identical ones. */
+  attention: number;
 }
 
 export interface NameRepeat {

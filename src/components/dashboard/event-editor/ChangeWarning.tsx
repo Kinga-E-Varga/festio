@@ -27,7 +27,7 @@ export function ChangeWarning({
     <div className="mt-[18px] flex gap-[11px] border border-terracotta-400 bg-terracotta-200 px-[15px] py-[13px] text-[12.5px] leading-[1.5] text-terracotta-600">
       <Icon name="alert" className="mt-px size-4 shrink-0" />
       <div>
-        <b className="mb-[3px] block">{title}</b>
+        <b className="mb-[3px] block font-semibold">{title}</b>
         {children}
 
         <label className="mt-[11px] flex cursor-pointer items-start gap-[9px] border-t border-terracotta-400 pt-2.5 font-semibold">

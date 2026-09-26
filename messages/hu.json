@@ -82,11 +82,11 @@
     "liveInvitations": "Élő meghívók",
     "nextEvent": "Következő esemény",
     "newReplies": "Új válaszok",
-    "unmatchedNames": "Párosítatlan nevek",
+    "repliesToReview": "Átnézendő válaszok",
     "ofTotal": "a {count}-ből",
     "daysAway": "nap múlva",
     "sinceLastVisit": "az utolsó látogatás óta",
-    "unknown": "ismeretlen"
+    "toReview": "rendezendő"
   },
   "Rail": {
     "needsAttention": "Figyelmet igényel",
@@ -192,18 +192,13 @@
   "Tiers": {
     "price": "{amount, plural, =0 {Ingyenes} other {# RON}}",
     "free": {
-      "name": "Ingyenes",
-      "blurb": "Rögzített sablon egyszerű visszajelzési űrlappal. Ültetési rend nélkül."
+      "name": "Ingyenes"
     },
     "standard": {
-      "name": "Standard",
-      "blurb": "Rögzített sablon egyszerű visszajelzési űrlappal, ültetési renddel együtt.",
-      "upsell": "Ültetési rendet ad ehhez a meghívóhoz. Csak a különbözetet fizeted, és semmi sem vész el abból, amit megírtál."
+      "name": "Standard"
     },
     "custom": {
-      "name": "Egyedi",
-      "blurb": "Egyedileg alakítható meghívó sablonok és válaszűrlap. Tartalmaz ültetési rendet.",
-      "upsell": "Biztosítja az egyedileg alakítható meghívó sablonok és válaszűrlap használatát. Csak a különbözetet fizeted, és semmi sem vész el abból, amit megírtál."
+      "name": "Egyedi"
     }
   },
   "Occasions": {
@@ -231,8 +226,8 @@
     "unpaidBody": "A(z) {tier} csomag ára {price}. Az oldal rejtve, a visszajelzési űrlap pedig zárva marad, amíg a fizetés meg nem érkezik.",
     "hiddenTitle": "Rejtett meghívó",
     "hiddenBody": "Senki sem nyithatja meg az oldalt, még a linkkel rendelkező vendég sem, és válasz sem érkezhet. Ha készen állsz a megosztásra, lent állítsd a láthatóságot Nyilvánosra vagy Védettre.",
-    "unmatchedTitle": "{count, plural, one {# nem egyező válasz} other {# nem egyező válasz}}",
-    "unmatchedBody": "A vendéglistádon nem szereplő névvel jeleztek vissza. ISMERETLEN címkét kapnak, amíg fel nem veszed őket, vagy össze nem párosítod őket egy elírt névvel a listádon.",
+    "attentionTitle": "{count, plural, one {# válasz átnézendő} other {# válasz átnézendő}}",
+    "attentionBody": "Néhány név nincs a listádon, vagy több válasz is ugyanazt a nevet használta. A vendéglista tetején rendezheted őket.",
     "pausedTitle": "Válaszűrlap befagyasztva",
     "pausedBody": "Szokatlanul sok vendég válaszolt ahhoz képest, amennyit vártál. Ha valódiak, emeld meg a számot, hogy újra megnyíljon az űrlap. Ha nem, jelentsd a problémát.",
     "nearExpectedTitle": "Válaszok a várt létszám {percent}%-án",
@@ -255,8 +250,6 @@
     "dateWarningTitle": "A dátum áthelyezése",
     "dateWarning": "A meghívón az új dátum jelenik meg, de a Festio nem értesíti a vendégeidet — ez a te feladatod. {count, plural, =0 {Erre az eseményre még senki sem válaszolt.} other {Erre az eseményre <b>már # vendég válaszolt</b>.}}",
     "closeHeading": "Válaszok fogadása",
-    "closeEarly": "Válaszűrlap korábbi lezárása",
-    "closeEarlyNote": "A Válaszűrlap <b>{date}</b> napon zárul — az esemény előtti napon. Kapcsold be, ha korábban szeretnéd lezárni.",
     "closeAt": "Az űrlap lezárása",
     "closeTooLate": "Olyan időpontot válassz, amely nem későbbi a 24 órás határidőnél.",
     "repliesClose": "A válaszűrlap zárul",
@@ -297,10 +290,6 @@
     "expected": "Hány vendéget vársz?",
     "expectedHint": "Ebből mutatjuk meg, hogyan érkeznek a válaszok, és ezzel védünk a spam ellen: ha jóval több válasz jön a vártnál, szüneteltetjük az űrlapot. A számot bármikor megemelheted.",
     "expecting": "Kiket vársz",
-    "preloaded": "Előre feltöltött vendéglista használata",
-    "preloadedNote": "A beérkező válaszokat összeveti a várt nevek listájával. Ami nem egyezik, ISMERETLEN címkét kap, hogy te rendezd.",
-    "preloadedCount": "{count, plural, other {Jelenleg # név van az előre feltöltött listádon}}",
-    "editList": "Lista szerkesztése",
     "edition": "Csomag",
     "tierPaid": "{name} — {price} · kifizetve",
     "tierUnpaid": "{name} — {price} · nincs kifizetve",
@@ -339,7 +328,18 @@
     "stateDirty": "Mentetlen módosítások",
     "back": "Vissza",
     "save": "Mentés",
-    "saved": "Módosítások mentve — a vendégeidet nem értesítettük"
+    "saved": "Módosítások mentve — a vendégeidet nem értesítettük",
+    "replyUntil": "A vendégek eddig válaszolhatnak:",
+    "closeEarlier": "Korábbi lezárás",
+    "useDefault": "Alapértelmezett használata",
+    "closeDefaultHint": "Alapértelmezés szerint az űrlap az esemény előtti napon zárul. Zárd le korábban, ha a helyszínnek hamarabb kellenek a számok.",
+    "useList": "Vendéglista használata",
+    "stopList": "Lista kikapcsolása",
+    "noListHint": "Add meg a várt neveket, és a Festio jelzi azokat a válaszokat, amelyek egyikkel sem egyeznek.",
+    "replyUntilDate": "A vendégek eddig válaszolhatnak: {date}",
+    "matchedNoList": "A válaszok nincsenek listához párosítva.",
+    "matchedList": "A válaszok a vendéglistádhoz vannak párosítva.",
+    "listNow": "{count, plural, one {A listádon most # név szerepel.} other {A listádon most # név szerepel.}} A vendéglista oldalon módosíthatod."
   },
   "HostEditor": {
     "back": "Vissza",
@@ -386,8 +386,8 @@
   "EventNotes": {
     "notSharedHidden": "Még nincs megosztva — az oldal rejtett",
     "hiddenUntilPaid": "Rejtett, amíg a fizetés meg nem érkezik",
-    "unmatched": "{count, plural, one {# név nem egyezett az előre feltöltött listáddal.} other {# név nem egyezett az előre feltöltött listáddal.}}",
-    "reviewNames": "Nevek átnézése",
+    "attention": "{count, plural, one {# válasz átnézendő: egy név nincs a listádon, vagy kétszer szerepel.} other {# válasz átnézendő: nevek, amelyek nincsenek a listádon, vagy kétszer szerepelnek.}}",
+    "reviewReplies": "Válaszok átnézése",
     "opensWhenPublic": "A válaszűrlap akkor nyílik meg, amikor nyilvánossá teszed az oldalt.",
     "paymentPending": "A fizetés függőben van, ezért az oldal rejtve marad.",
     "payPublish": "Fizetés és közzététel",
@@ -398,9 +398,9 @@
     "stepFree": "{count, plural, one {# főnek akadálymentes bejutás kell} other {# főnek akadálymentes bejutás kell}}"
   },
   "Notices": {
-    "unmatched": {
+    "attention": {
       "context": "· {event}",
-      "action": "Nevek átnézése"
+      "action": "Válaszok átnézése"
     },
     "closing": {
       "context": "· {event}",
@@ -459,29 +459,39 @@
     "guests": "{title} · Vendéglista · Festio"
   },
   "GuestList": {
+    "sectionSummary": "Összegzés",
+    "sectionList": "Vendéglista",
+    "listCount": "{count, plural, one {A listádon most # név szerepel.} other {A listádon most # név szerepel.}}",
     "summaryLabel": "Vendégek szűrése",
     "all": "Mind {count}",
     "going": "Jön {count}",
     "notGoing": "Nem jön {count}",
     "waiting": "Várakozik {count}",
     "notSent": "Még nincs elküldve {count}",
-    "unknown": "Ismeretlen {count}",
-    "duplicates": "Duplikált {count}",
-    "repliedOfExpected": "{expected} várt vendégből {replied} válaszolt",
-    "addNames": "Nevek hozzáadása",
-    "addGuest": "Vendég hozzáadása",
-    "export": "Exportálás",
+    "editList": "Előre feltöltött lista",
+    "addReply": "Új válasz",
+    "export": "Válaszok exportálása",
     "search": "Keresés név szerint",
+    "detailsFor": "{name} részletei",
+    "messageLabel": "Üzenet",
+    "ageLabel": "Életkor",
+    "ageAdult": "Felnőtt",
+    "ageChild": "Gyerek",
+    "ageBaby": "Baba",
+    "dietLabel": "Étrendi igények",
+    "dietVegetarian": "Vegetáriánus",
+    "dietVegan": "Vegán",
+    "dietGlutenFree": "Gluténmentes",
+    "dietLactoseFree": "Laktózmentes",
+    "dietNutAllergy": "Dióallergia",
+    "dietNone": "Nincs",
+    "skipped": "Nem válaszolt",
     "statusGoing": "Jön",
     "statusNotGoing": "Nem jön",
     "unknownTag": "Ismeretlen",
-    "unmatchedHint": "Nincs a listádon",
-    "duplicateTag": "Duplikált",
-    "duplicateHint": "Egy már meglévő névvel válaszolt",
-    "repliedWith": "Velük válaszolt: {names}",
-    "sent": "Meghívó elküldve",
-    "sentLabel": "Meghívó elküldve neki: {name}",
-    "edit": "Szerkesztés",
+    "duplicateTag": "Ismétlődő",
+    "unmatchedHint": "Ez a név nincs az előre feltöltött listádon. Ha másképp írták, párosítsd egy névvel. Ha nem, add hozzá újként.",
+    "repliedWith": "Velük válaszolt: <b>{names}</b>",
     "editLabel": "{name} szerkesztése",
     "name": "Név",
     "status": "Válasz",
@@ -493,13 +503,11 @@
     "unsaved": "Ebben a sorban mentetlen módosítások vannak.",
     "discard": "Módosítások elvetése",
     "keepEditing": "Szerkesztés folytatása",
-    "matchTo": "Párosítás…",
+    "matchTo": "Párosítás egy névvel",
     "matchSearch": "Keresés a listádban",
     "noWaiting": "Nincs várakozó név, amivel párosíthatnád.",
     "noMatches": "Nincs egyező név.",
     "addAsNew": "Hozzáadás újként",
-    "keepBoth": "Mindkettő marad",
-    "samePerson": "Ugyanaz a személy",
     "addNamesTitle": "Nevek hozzáadása a vendéglistához",
     "addNamesHint": "Soronként egy név. Illessz be egy oszlopot egy táblázatból, vagy írj be egy nevet és nyomj Entert.",
     "addNamesCount": "{count, plural, =0 {Még nincs név} other {# név hozzáadásra}}",
@@ -511,7 +519,6 @@
     "emptyTitle": "A válaszok itt jelennek meg, ahogy beérkeznek.",
     "emptyList": "Van vendéglistád? Add hozzá a neveket, és a válaszokat párosítjuk velük.",
     "noResults": "Nincs egyező vendég.",
-    "categoryUnknown": "Ismeretlen vendégek",
     "categoryGoing": "Visszaigazolt",
     "categoryNotGoing": "Lemondta",
     "categoryWaiting": "Válaszra vár",
@@ -523,7 +530,22 @@
     "toastAdded": "{count, plural, other {# név hozzáadva}}",
     "toastMatched": "Párosítva: {name}",
     "toastAddedToList": "{name} felkerült a listádra",
-    "toastKept": "Mindkettő maradt",
-    "toastKeptUnknown": "Mindkettő megmaradt. {name} még nincs a listán: párosítsd vagy add hozzá."
+    "matchTitle": "{name} párosítása egy listás névvel",
+    "matchHint": "Válaszd ki, kire gondoltak. A válasz a listád írásmódját kapja.",
+    "match": "Párosítás",
+    "matchToName": "Párosítás: {name}",
+    "invitationSent": "Meghívó elküldve",
+    "invitationNotSent": "Meghívó nincs elküldve",
+    "inviteSentFor": "Meghívó elküldve neki: {name}",
+    "deleteLabel": "{name} törlése",
+    "filter": "További szűrők",
+    "filterActive": "Szűrő: {filter}",
+    "attention": "Átnézendő {count}",
+    "categoryAttention": "Átnézendő",
+    "sameName": "{count} válasz ezzel a névvel. Ha ugyanaz a személy, töröld a felesleges választ. Ha nem, jelöld másik személyként, vagy egyszerűen írd át a nevet, hogy ne egyezzen.",
+    "repliedOn": "Válaszolt: {date}",
+    "differentPerson": "Másik személy",
+    "toastDifferent": "Másik személyként megjelölve",
+    "toastDifferentUnknown": "Másik személyként megjelölve. {name} még nincs a listádon: párosítsd vagy vedd fel."
   }
 }

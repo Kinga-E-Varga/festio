@@ -26,7 +26,7 @@ export function Banner({ tone, icon, title, children }: BannerProps) {
     >
       <Icon name={icon} className="mt-px size-4 shrink-0" />
       <div>
-        <b className="mb-[3px] block">{title}</b>
+        <b className="mb-[3px] block font-semibold">{title}</b>
         {children}
       </div>
     </div>

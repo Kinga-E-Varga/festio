@@ -75,12 +75,6 @@ const PATHS: Record<IconName, ReactNode> = {
       <circle cx="17.5" cy="19" r="1.5" />
     </>
   ),
-  user: (
-    <>
-      <circle cx="12" cy="8.5" r="3.5" />
-      <path d="M4.75 20.5a7.25 7.25 0 0 1 14.5 0" />
-    </>
-  ),
   bell: (
     <>
       <path d="M18 15.75V10.5a6 6 0 1 0-12 0v5.25L4.5 18.25h15z" />
@@ -232,6 +226,16 @@ const PATHS: Record<IconName, ReactNode> = {
       <path d="m6 6 12 12M18 6 6 18" />
     </>
   ),
+  note: (
+    <>
+      <path d="M4 5.5h16v11H10.5L6 20v-3.5H4z" />
+    </>
+  ),
+  chevron: (
+    <>
+      <path d="m6 9 6 6 6-6" />
+    </>
+  ),
 };
 
 export function Icon({
@@ -248,7 +252,8 @@ export function Icon({
       strokeLinecap="round"
       strokeLinejoin="round"
       aria-hidden="true"
-      className={className}
+      /* Icons keep their size beside text that wraps or runs long. */
+      className={`shrink-0 ${className}`}
     >
       {PATHS[name]}
     </svg>

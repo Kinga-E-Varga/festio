@@ -1,0 +1,55 @@
+import type { ReactNode } from 'react'
+import { HINT } from '@/components/dashboard/event-editor/styles'
+import { Icon } from '@/components/icons'
+import type { IconName } from '@/types/dashboard'
+
+interface SummarySwitchProps {
+  icon: IconName
+  /** The setting as one sentence; it always stays beside the icon. */
+  text: ReactNode
+  /** What follows the sentence when there's room: a picker, a link. */
+  children?: ReactNode
+  /** Switches between the default and the host's own choice. */
+  action: string
+  onAction: () => void
+  disabled?: boolean
+  hint: ReactNode
+}
+
+/**
+ * A setting read as one sentence, with one button to leave or return to the
+ * default. Narrow: sentence, controls and a full-width button stack. Wider:
+ * the button moves to the right. Widest: everything sits in one row.
+ */
+export function SummarySwitch({
+  icon,
+  text,
+  children,
+  action,
+  onAction,
+  disabled = false,
+  hint,
+}: SummarySwitchProps) {
+  return (
+    <>
+      <div className="flex min-h-[72px] flex-col gap-3 border border-mustard-300 bg-neutral-50 py-3.5 pr-4 pl-5 font-medium text-neutral-800 @min-[460px]:flex-row @min-[460px]:items-center @min-[460px]:gap-4">
+        <div className="flex min-w-0 flex-1 flex-col gap-3 @min-[680px]:flex-row @min-[680px]:items-center @min-[680px]:gap-4">
+          <div className="flex min-w-0 items-center gap-4">
+            <Icon name={icon} className="size-[22px] text-mustard-500" />
+            <span className="min-w-0">{text}</span>
+          </div>
+          {children}
+        </div>
+        <button
+          type="button"
+          onClick={onAction}
+          disabled={disabled}
+          className="w-full shrink-0 cursor-pointer @min-[460px]:w-auto @min-[460px]:min-w-[145px] rounded-sm border border-mustard-300 bg-mustard-200 px-2.5 py-[12px] text-center text-[13px] leading-[1.3] font-medium text-mustard-600 transition-colors hover:bg-mustard-100 disabled:cursor-not-allowed disabled:opacity-50"
+        >
+          {action}
+        </button>
+      </div>
+      <div className={`mt-1.5 ${HINT}`}>{hint}</div>
+    </>
+  )
+}

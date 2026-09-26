@@ -12,8 +12,8 @@ import type { DashboardEvent } from "@/types/dashboard";
 
 interface RepliesBannerProps {
   event: DashboardEvent;
-  /** The editor warns from the warning level; the guest list only from 100%. */
-  from: "warn" | "over";
+  /** The editor warns from the warning level; the guest list only once replies are paused. */
+  from: "warn" | "paused";
 }
 
 /** One replies banner at most: paused says everything the others do. */
@@ -38,7 +38,6 @@ export async function RepliesBanner({ event, from }: RepliesBannerProps) {
     percent: expectedPercent(event.rsvp.replied, event.expectedGuests),
   };
   const level = expectedLevel(replies.percent);
-  const near = from === "warn" ? level !== "ok" : level === "over";
 
   if (repliesPaused(event)) {
     return (
@@ -48,6 +47,7 @@ export async function RepliesBanner({ event, from }: RepliesBannerProps) {
       </Banner>
     );
   }
+  if (from === "paused") return null;
   if (replies.replied > replies.expected) {
     return (
       <Banner tone="warn" icon="guests" title={t("overExpectedTitle")}>
@@ -56,7 +56,7 @@ export async function RepliesBanner({ event, from }: RepliesBannerProps) {
       </Banner>
     );
   }
-  if (replies.replied > 0 && near) {
+  if (replies.replied > 0 && level !== "ok") {
     return (
       <Banner tone="warn" icon="guests" title={t("nearExpectedTitle", replies)}>
         {t("nearExpectedBody", replies)}

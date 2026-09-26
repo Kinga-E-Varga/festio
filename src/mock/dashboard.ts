@@ -106,7 +106,7 @@ export const STATS: DashboardStat[] = [
   },
   { labelKey: 'nextEvent', value: '2', detailKey: 'daysAway' },
   { labelKey: 'newReplies', value: '12', detailKey: 'sinceLastVisit' },
-  { labelKey: 'unmatchedNames', value: '7', detailKey: 'unknown' },
+  { labelKey: 'repliesToReview', value: '7', detailKey: 'toReview' },
 ]
 
 export const EVENTS: DashboardEvent[] = [
@@ -139,14 +139,14 @@ export const EVENTS: DashboardEvent[] = [
       pending: 28,
     },
     expectedGuests: 110,
-    unmatched: 5,
+    needsAttention: 5,
     preloaded: true,
     preloadedCount: 124,
     note: {
       tone: 'warning',
-      key: 'unmatched',
+      key: 'attention',
       values: { count: 5 },
-      actionKey: 'reviewNames',
+      actionKey: 'reviewReplies',
     },
     attendeeNotes: [
       { key: 'childrenBabies', values: { children: 4, babies: 1 } },
@@ -182,7 +182,7 @@ export const EVENTS: DashboardEvent[] = [
       pending: 0,
     },
     expectedGuests: 70,
-    unmatched: 0,
+    needsAttention: 0,
     preloaded: true,
     preloadedCount: 70,
     attendeeNotes: [
@@ -214,7 +214,7 @@ export const EVENTS: DashboardEvent[] = [
     /* Matches the rows in `mock/guests.ts`. */
     rsvp: { replied: 8, invited: 8, attending: 7, declined: 1, pending: 3 },
     expectedGuests: 8,
-    unmatched: 2,
+    needsAttention: 2,
     preloaded: true,
     preloadedCount: 8,
     preview: previewAniversare,
@@ -241,7 +241,7 @@ export const EVENTS: DashboardEvent[] = [
     linkNoteKey: 'notSharedHidden',
     rsvp: { replied: 0, invited: 40, attending: 0, declined: 0, pending: 40 },
     expectedGuests: 60,
-    unmatched: 0,
+    needsAttention: 0,
     preloaded: false,
     preloadedCount: 0,
     note: {
@@ -272,7 +272,7 @@ export const EVENTS: DashboardEvent[] = [
     linkNoteKey: 'hiddenUntilPaid',
     rsvp: { replied: 0, invited: 0, attending: 0, declined: 0, pending: 0 },
     expectedGuests: 80,
-    unmatched: 0,
+    needsAttention: 0,
     preloaded: false,
     preloadedCount: 0,
     note: {
@@ -308,7 +308,7 @@ export const EVENTS: DashboardEvent[] = [
       pending: 2,
     },
     expectedGuests: 80,
-    unmatched: 0,
+    needsAttention: 0,
     preloaded: true,
     preloadedCount: 60,
     note: {
@@ -345,7 +345,7 @@ export const EVENTS: DashboardEvent[] = [
       pending: 6,
     },
     expectedGuests: 45,
-    unmatched: 0,
+    needsAttention: 0,
     preloaded: false,
     preloadedCount: 0,
     preview: previewMajorat,
@@ -412,10 +412,10 @@ function replyNotices(): AttentionNotice[] {
  */
 export const ATTENTION_NOTICES: AttentionNotice[] = [
   {
-    id: 'unmatched',
-    key: 'unmatched',
+    id: 'attention',
+    key: 'attention',
     values: { count: 5, event: 'Maria & Andrei' },
-    tone: 'unmatched',
+    tone: 'attention',
   },
   ...EVENTS.filter(
     (event) => event.isNextUp && event.locksIn && !event.locked,

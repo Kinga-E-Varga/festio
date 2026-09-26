@@ -82,11 +82,11 @@
     "liveInvitations": "Live invitations",
     "nextEvent": "Next event",
     "newReplies": "New replies",
-    "unmatchedNames": "Unmatched names",
+    "repliesToReview": "Replies to review",
     "ofTotal": "of {count}",
     "daysAway": "days away",
     "sinceLastVisit": "since last visit",
-    "unknown": "unknown"
+    "toReview": "to sort out"
   },
   "Rail": {
     "needsAttention": "Needs your attention",
@@ -192,18 +192,13 @@
   "Tiers": {
     "price": "{amount, plural, =0 {Free} other {# RON}}",
     "free": {
-      "name": "Free",
-      "blurb": "A fixed template with a minimal RSVP form. No seating chart."
+      "name": "Free"
     },
     "standard": {
-      "name": "Standard",
-      "blurb": "A fixed template with a minimal RSVP form, and a seating chart included.",
-      "upsell": "Adds a seating chart to this invitation. You pay the difference, and nothing you have written is lost."
+      "name": "Standard"
     },
     "custom": {
-      "name": "Custom",
-      "blurb": "Modular invitation and RSVP sections, template customisation, and a seating chart.",
-      "upsell": "Unlocks modular sections, your own palette and fonts, and custom RSVP questions. You pay the difference, and nothing you have written is lost."
+      "name": "Custom"
     }
   },
   "Occasions": {
@@ -231,8 +226,8 @@
     "unpaidBody": "The {tier} edition costs {price}. The page stays hidden and the RSVP form stays closed until payment clears.",
     "hiddenTitle": "This invitation is hidden",
     "hiddenBody": "Nobody can open the page, not even a guest holding the link, and no reply can arrive. Set the visibility to Public or Protected below once you are ready to share it.",
-    "unmatchedTitle": "{count, plural, one {# unmatched reply} other {# unmatched replies}}",
-    "unmatchedBody": "They are tagged UNKNOWN until you add them or match them to a name someone mistyped.",
+    "attentionTitle": "{count, plural, one {# reply needs a look} other {# replies need a look}}",
+    "attentionBody": "Some names aren't on your list, or more than one reply used the same name. Sort them out at the top of the guest list.",
     "pausedTitle": "Replies are paused",
     "pausedBody": "An unusually high number of guests replied compared to the number you expected. If they're real, raise the number to reopen the form. If not, report it.",
     "nearExpectedTitle": "Replies at {percent}%",
@@ -255,8 +250,6 @@
     "dateWarningTitle": "Moving the date",
     "dateWarning": "Your invitation will show the new date, but Festio will not tell your guests — that part is yours to do. {count, plural, =0 {No one has replied for this event yet.} one {<b># guest has already replied</b> for this event.} other {<b># guests have already replied</b> for this event.}}",
     "closeHeading": "When the reply form closes",
-    "closeEarly": "Close the replies earlier",
-    "closeEarlyNote": "Replies close on <b>{date}</b> — the day before the event. Switch this on to close sooner.",
     "closeAt": "Close the form at",
     "closeTooLate": "Pick a time no later than the 24-hour cut-off.",
     "repliesClose": "Replies close",
@@ -297,10 +290,6 @@
     "expected": "How many guests do you expect?",
     "expectedHint": "We use this to show how your replies are coming in, and to protect you from spam: if far more replies come in than you expected, we'll pause the form. You can raise the number anytime.",
     "expecting": "Who you are expecting",
-    "preloaded": "Use pre-loaded guest list",
-    "preloadedNote": "Match incoming replies against a list of names you expect. Anything that doesn't match is tagged UNKNOWN for you to sort out.",
-    "preloadedCount": "{count, plural, one {Currently # name on your pre-loaded list} other {Currently # names on your pre-loaded list}}",
-    "editList": "Edit list",
     "edition": "Edition",
     "tierPaid": "{name} — {price} · paid",
     "tierUnpaid": "{name} — {price} · unpaid",
@@ -339,7 +328,18 @@
     "stateDirty": "Unsaved changes",
     "back": "Back to events",
     "save": "Save changes",
-    "saved": "Changes saved — your guests were not notified"
+    "saved": "Changes saved — your guests were not notified",
+    "replyUntil": "Guests can reply until",
+    "closeEarlier": "Close earlier",
+    "useDefault": "Use the default",
+    "closeDefaultHint": "By default the form closes the day before the event. Close earlier if your venue needs numbers sooner.",
+    "useList": "Use a guest list",
+    "stopList": "Stop using the list",
+    "noListHint": "Add the names you expect and Festio will flag any reply that doesn't match one.",
+    "replyUntilDate": "Guests can reply until {date}",
+    "matchedNoList": "Replies are matched against no list.",
+    "matchedList": "Replies are matched against your guest list.",
+    "listNow": "{count, plural, one {Your list has # name right now.} other {Your list has # names right now.}} You can change it on the guest list page."
   },
   "HostEditor": {
     "back": "Back",
@@ -386,8 +386,8 @@
   "EventNotes": {
     "notSharedHidden": "Not shared yet — the page is hidden",
     "hiddenUntilPaid": "Hidden until payment clears",
-    "unmatched": "{count, plural, one {# name didn't match your pre-loaded list.} other {# names didn't match your pre-loaded list.}}",
-    "reviewNames": "Review names",
+    "attention": "{count, plural, one {# reply needs a look: a name not on your list or used twice.} other {# replies need a look: names not on your list or used twice.}}",
+    "reviewReplies": "Review replies",
     "opensWhenPublic": "The RSVP form opens when you make the page public.",
     "paymentPending": "Payment is pending, so the page stays hidden.",
     "payPublish": "Pay & publish",
@@ -398,9 +398,9 @@
     "stepFree": "{count, plural, one {# needs step-free access} other {# need step-free access}}"
   },
   "Notices": {
-    "unmatched": {
+    "attention": {
       "context": "· {event}",
-      "action": "Review names"
+      "action": "Review replies"
     },
     "closing": {
       "context": "· {event}",
@@ -459,29 +459,39 @@
     "guests": "{title} · Guest list · Festio"
   },
   "GuestList": {
+    "sectionSummary": "Summary",
+    "sectionList": "Guest list",
+    "listCount": "{count, plural, one {Your list has # name right now.} other {Your list has # names right now.}}",
     "summaryLabel": "Filter guests",
     "all": "All {count}",
     "going": "Coming {count}",
     "notGoing": "Not coming {count}",
     "waiting": "Waiting {count}",
     "notSent": "Not sent yet {count}",
-    "unknown": "Unknown {count}",
-    "duplicates": "Duplicates {count}",
-    "repliedOfExpected": "{replied} of {expected} expected replied",
-    "addNames": "Add names",
-    "addGuest": "Add guest",
-    "export": "Export",
+    "editList": "Preloaded list",
+    "addReply": "New reply",
+    "export": "Export replies",
     "search": "Search by name",
+    "detailsFor": "Details for {name}",
+    "messageLabel": "Message",
+    "ageLabel": "Age",
+    "ageAdult": "Adult",
+    "ageChild": "Child",
+    "ageBaby": "Baby",
+    "dietLabel": "Dietary needs",
+    "dietVegetarian": "Vegetarian",
+    "dietVegan": "Vegan",
+    "dietGlutenFree": "Gluten-free",
+    "dietLactoseFree": "Lactose-free",
+    "dietNutAllergy": "Nut allergy",
+    "dietNone": "None",
+    "skipped": "Skipped",
     "statusGoing": "Coming",
     "statusNotGoing": "Not coming",
     "unknownTag": "Unknown",
-    "unmatchedHint": "Not on your list",
     "duplicateTag": "Duplicate",
-    "duplicateHint": "Replied under a name that was already there",
-    "repliedWith": "Replied with {names}",
-    "sent": "Invite sent",
-    "sentLabel": "Invitation sent to {name}",
-    "edit": "Edit",
+    "unmatchedHint": "This name isn't on your preloaded list. If it's spelled differently, match it to a name. If not, add it as new.",
+    "repliedWith": "Replied with <b>{names}</b>",
     "editLabel": "Edit {name}",
     "name": "Name",
     "status": "Status",
@@ -493,13 +503,11 @@
     "unsaved": "You have unsaved changes on this row.",
     "discard": "Discard changes",
     "keepEditing": "Keep editing",
-    "matchTo": "Match to…",
+    "matchTo": "Match to a name",
     "matchSearch": "Search your list",
     "noWaiting": "No waiting names to match.",
     "noMatches": "No names match.",
     "addAsNew": "Add as new",
-    "keepBoth": "Keep both",
-    "samePerson": "Same person",
     "addNamesTitle": "Add names to your guest list",
     "addNamesHint": "One name per line. Paste a column from a spreadsheet, or type a name and press Enter.",
     "addNamesCount": "{count, plural, =0 {No names yet} one {# name to add} other {# names to add}}",
@@ -511,7 +519,6 @@
     "emptyTitle": "Replies will show here as they come in.",
     "emptyList": "Have a guest list? Add names and replies will be matched to it.",
     "noResults": "No guests match.",
-    "categoryUnknown": "Unknown guests",
     "categoryGoing": "Confirmed",
     "categoryNotGoing": "Declined",
     "categoryWaiting": "Waiting for a reply",
@@ -523,7 +530,22 @@
     "toastAdded": "{count, plural, one {# name added} other {# names added}}",
     "toastMatched": "Matched to {name}",
     "toastAddedToList": "{name} added to your list",
-    "toastKept": "Kept both",
-    "toastKeptUnknown": "Kept both. {name} isn't on your list yet: match or add them."
+    "matchTitle": "Match {name} to a list name",
+    "matchHint": "Pick the name they meant. The reply will use your list's spelling.",
+    "match": "Match",
+    "matchToName": "Match to {name}",
+    "invitationSent": "Invitation sent",
+    "invitationNotSent": "Invitation not sent",
+    "inviteSentFor": "Invitation sent to {name}",
+    "deleteLabel": "Delete {name}",
+    "filter": "Other filters",
+    "filterActive": "Filter: {filter}",
+    "attention": "Needs attention {count}",
+    "categoryAttention": "Needs your attention",
+    "sameName": "{count} replies with this name. If it's the same person, delete the extra reply. If not, mark it as a different person, or simply edit their name so they don't match.",
+    "repliedOn": "Replied {date}",
+    "differentPerson": "Different person",
+    "toastDifferent": "Marked as a different person",
+    "toastDifferentUnknown": "Marked as a different person. {name} isn't on your list yet: match or add them."
   }
 }

@@ -4,6 +4,7 @@
  * script can load this file.
  */
 import type {
+  AttentionItem,
   EventGuests,
   GuestCategory,
   GuestCounts,
@@ -13,7 +14,6 @@ import type {
   GuestRow,
   ListName,
   NameRepeat,
-  UnknownKind,
 } from "@/types/guests";
 
 /** Case, accents and spacing never make two names different people. */
@@ -38,72 +38,79 @@ export function rowName(row: GuestRow): string {
   return row.kind === "reply" ? row.reply.name : row.listName.name;
 }
 
-function replyRow(reply: GuestReply, unknown: UnknownKind | null, unlisted = false): GuestRow {
-  return { kind: "reply", id: reply.id, reply, unknown, unlisted, repeated: false };
+function replyRow(reply: GuestReply, unlisted: boolean): GuestRow {
+  return { kind: "reply", id: reply.id, reply, unlisted, identical: false, later: false };
 }
 
-/** Every reply sharing a name with a duplicate carries the Duplicate tag. */
-function markRepeated(rows: GuestRow[]): GuestRow[] {
-  const names = new Set(
-    rows.flatMap((row) =>
-      row.kind === "reply" && row.unknown === "duplicate" ? [normalizeName(row.reply.name)] : [],
-    ),
-  );
-  return rows.map((row) =>
-    row.kind === "reply" && names.has(normalizeName(row.reply.name)) ? { ...row, repeated: true } : row,
-  );
+/**
+ * Replies sharing a name are identical until the host marks the later ones
+ * as a different person. The first in reply order is never "later".
+ */
+function markIdentical(rows: GuestRow[]): GuestRow[] {
+  const byName = new Map<string, string[]>();
+  for (const row of rows) {
+    if (row.kind !== "reply" || row.reply.differentPerson) continue;
+    const key = normalizeName(row.reply.name);
+    byName.set(key, [...(byName.get(key) ?? []), row.id]);
+  }
+  return rows.map((row) => {
+    if (row.kind !== "reply") return row;
+    const ids = byName.get(normalizeName(row.reply.name)) ?? [];
+    if (ids.length < 2 || !ids.includes(row.id)) return row;
+    return { ...row, identical: true, later: ids[0] !== row.id };
+  });
 }
 
 /**
  * With the list on, each reply claims one list name: the host's own match
  * first, then an unclaimed name spelled the same. A reply that claims none
- * is unmatched; a name nobody claimed is Waiting. Duplicates never claim.
+ * is unlisted; a name nobody claimed is Waiting. Replies claim in reply
+ * order, so a later reply with the same name finds its name taken.
  */
 export function buildRows(guests: EventGuests, useList: boolean): GuestRow[] {
-  if (!useList) {
-    return markRepeated(
-      guests.replies.map((reply) => replyRow(reply, reply.duplicate ? "duplicate" : null)),
-    );
-  }
+  if (!useList) return markIdentical(guests.replies.map((reply) => replyRow(reply, false)));
 
   const ids = new Set(guests.list.map((name) => name.id));
-  const hostMatched = (reply: GuestReply) =>
-    !reply.duplicate && reply.listNameId !== undefined && ids.has(reply.listNameId);
+  const hostMatched = (reply: GuestReply) => reply.listNameId !== undefined && ids.has(reply.listNameId);
   const claimed = new Set(
     guests.replies.flatMap((reply) =>
       hostMatched(reply) && reply.listNameId ? [reply.listNameId] : [],
     ),
   );
 
-  const listed = new Set(guests.list.map((name) => normalizeName(name.name)));
   const rows = guests.replies.map((reply) => {
-    if (reply.duplicate) return replyRow(reply, "duplicate", !listed.has(normalizeName(reply.name)));
-    if (hostMatched(reply)) return replyRow(reply, null);
+    if (hostMatched(reply)) return replyRow(reply, false);
     const key = normalizeName(reply.name);
     const match = guests.list.find(
       (name) => !claimed.has(name.id) && normalizeName(name.name) === key,
     );
-    if (!match) return replyRow(reply, "unmatched", true);
+    if (!match) return replyRow(reply, true);
     claimed.add(match.id);
-    return replyRow(reply, null);
+    return replyRow(reply, false);
   });
 
   const waiting = guests.list
     .filter((name) => !claimed.has(name.id))
     .map((listName): GuestRow => ({ kind: "waiting", id: listName.id, listName }));
 
-  return [...markRepeated(rows), ...waiting];
+  return [...markIdentical(rows), ...waiting];
 }
 
-function hasUnknown(group: GuestGroup): boolean {
-  return group.rows.some((row) => row.kind === "reply" && row.unknown !== null);
+/** Something for the host to sort out: an unknown name, or one shared with another reply. */
+export function needsAttention(row: GuestRow): boolean {
+  return row.kind === "reply" && (row.identical || row.unlisted);
 }
 
-export const CATEGORIES: GuestCategory[] = ["unknown", "going", "notGoing", "waiting"];
+/** The Unknown tag and its fixes wait until an identical name is told apart. */
+export function showsUnknown(row: GuestRow): boolean {
+  return row.kind === "reply" && row.unlisted && !row.identical;
+}
+
+export const CATEGORIES: GuestCategory[] = ["attention", "going", "notGoing", "waiting"];
 
 function rowCategory(row: GuestRow): GuestCategory {
   if (row.kind === "waiting") return "waiting";
-  if (row.unlisted) return "unknown";
+  if (needsAttention(row)) return "attention";
   return row.reply.status === "going" ? "going" : "notGoing";
 }
 
@@ -115,7 +122,7 @@ export function groupCategory(group: GuestGroup): GuestCategory {
 /**
  * Categories work like filters: a reply whose people land in different
  * categories splits, one part per category. Each part names the rest in
- * "Replied with"; the note stays on the first part that isn't Unknown.
+ * "Replied with"; the note stays on the first part that isn't Needs attention.
  * Once everyone lands in the same category, the reply is whole again.
  */
 function splitByCategory(group: GuestGroup): GuestGroup[] {
@@ -124,7 +131,7 @@ function splitByCategory(group: GuestGroup): GuestGroup[] {
     return rows.length > 0 ? [{ category, rows }] : [];
   });
   if (parts.length === 1) return [group];
-  const noteOn = parts.find((part) => part.category !== "unknown") ?? parts[0];
+  const noteOn = parts.find((part) => part.category !== "attention") ?? parts[0];
   return parts.map((part) => ({
     id: `${group.id}:${part.category}`,
     rows: part.rows,
@@ -133,7 +140,7 @@ function splitByCategory(group: GuestGroup): GuestGroup[] {
   }));
 }
 
-/** One group per reply, in the guest's order; unknown groups first, then A–Z. */
+/** One group per reply, in the guest's order; A–Z by the first name in it. */
 export function groupRows(
   rows: GuestRow[],
   compare: (first: string, second: string) => number,
@@ -145,11 +152,41 @@ export function groupRows(
     if (group) group.rows.push(row);
     else groups.set(id, { id, rows: [row], note: row.kind === "reply" ? row.reply.note : null, with: [] });
   }
-  return [...groups.values()].flatMap(splitByCategory).sort(
-    (first, second) =>
-      Number(hasUnknown(second)) - Number(hasUnknown(first)) ||
-      compare(rowName(first.rows[0]), rowName(second.rows[0])),
-  );
+  return [...groups.values()]
+    .flatMap(splitByCategory)
+    .sort((first, second) => compare(rowName(first.rows[0]), rowName(second.rows[0])));
+}
+
+/**
+ * The Needs attention section's cards: replies sharing a name side by side,
+ * oldest first, and each unknown reply on its own. Shared names come first:
+ * they're sorted out before an unknown name can be.
+ */
+export function attentionItems(groups: GuestGroup[]): AttentionItem[] {
+  const items: AttentionItem[] = [];
+  const byName = new Map<string, Extract<AttentionItem, { kind: "identical" }>>();
+  for (const group of groups) {
+    const rest = group.rows.filter((row) => row.kind !== "reply" || !row.identical);
+    if (rest.length > 0) {
+      const part = rest.length === group.rows.length ? group : { ...group, id: `${group.id}:unknown`, rows: rest };
+      items.push({ kind: "unknown", id: part.id, group: part });
+    }
+    for (const row of group.rows) {
+      if (row.kind !== "reply" || !row.identical) continue;
+      const key = normalizeName(row.reply.name);
+      const item = byName.get(key);
+      if (item) item.entries.push(row);
+      else {
+        const created = { kind: "identical" as const, id: `same:${key}`, name: row.reply.name, entries: [row] };
+        byName.set(key, created);
+        items.push(created);
+      }
+    }
+  }
+  for (const item of byName.values()) {
+    item.entries.sort((first, second) => first.reply.repliedAt.localeCompare(second.reply.repliedAt));
+  }
+  return [...items.filter((item) => item.kind === "identical"), ...items.filter((item) => item.kind === "unknown")];
 }
 
 export function countRows(rows: GuestRow[]): GuestCounts {
@@ -158,10 +195,7 @@ export function countRows(rows: GuestRow[]): GuestCounts {
     notGoing: 0,
     waiting: 0,
     notSent: 0,
-    unknown: 0,
-    duplicate: 0,
-    unmatched: 0,
-    replied: 0,
+    attention: 0,
   };
   for (const row of rows) {
     if (row.kind === "waiting") {
@@ -169,12 +203,9 @@ export function countRows(rows: GuestRow[]): GuestCounts {
       if (!row.listName.sent) counts.notSent += 1;
       continue;
     }
-    counts.replied += 1;
     if (row.reply.status === "going") counts.going += 1;
     else counts.notGoing += 1;
-    if (row.unlisted) counts.unknown += 1;
-    if (row.repeated) counts.duplicate += 1;
-    if (row.unknown === "unmatched") counts.unmatched += 1;
+    if (needsAttention(row)) counts.attention += 1;
   }
   return counts;
 }
@@ -193,10 +224,8 @@ export function rowMatches(row: GuestRow, filter: GuestFilter, query: string): b
       return row.kind === "waiting";
     case "notSent":
       return row.kind === "waiting" && !row.listName.sent;
-    case "unknown":
-      return row.kind === "reply" && row.unlisted;
-    case "duplicate":
-      return row.kind === "reply" && row.repeated;
+    case "attention":
+      return needsAttention(row);
   }
 }
 
@@ -220,8 +249,7 @@ export function resolveFilter(
 ): GuestFilter {
   if (filter === "waiting" && !useList) return "all";
   if (filter === "notSent" && !(useList && counts.notSent > 0)) return "all";
-  if (filter === "unknown" && counts.unknown === 0) return "all";
-  if (filter === "duplicate" && counts.duplicate === 0) return "all";
+  if (filter === "attention" && counts.attention === 0) return "all";
   return filter;
 }
 
@@ -296,6 +324,6 @@ export function openRow(editing: string | null, rows: GuestRow[]): string | null
   return rows.some((row) => row.id === editing) ? editing : null;
 }
 
-export function keepBoth(guests: EventGuests, replyId: string): EventGuests {
-  return updateReply(guests, replyId, { duplicate: false });
+export function markDifferent(guests: EventGuests, replyId: string): EventGuests {
+  return updateReply(guests, replyId, { differentPerson: true });
 }

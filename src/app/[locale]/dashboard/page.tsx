@@ -50,7 +50,7 @@ export default async function DashboardPage() {
       <section>
         <h2 className="mt-[34px] mb-[18px] flex items-center gap-[18px] font-serif text-xl tracking-[0.14em] text-neutral-900 uppercase">
           {t('activeEvents')}
-          <span aria-hidden="true" className="h-px flex-1 bg-forest-500" />
+          <span aria-hidden="true" className="h-px flex-1 bg-neutral-900" />
         </h2>
 
         <EventList

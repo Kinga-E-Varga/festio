@@ -12,7 +12,6 @@ export type IconName =
   | "shield"
   | "settings"
   | "cart"
-  | "user"
   | "bell"
   | "pencil"
   | "eye"
@@ -37,7 +36,9 @@ export type IconName =
   | "check"
   | "search"
   | "menu"
-  | "close";
+  | "close"
+  | "note"
+  | "chevron";
 
 /**
  * The nav is Festio's own structure, so what each entry is *called* lives in
@@ -62,10 +63,7 @@ export interface NavSection {
 /** Tier is per invitation and can only ever go up (project spec). */
 export type TierId = 1 | 2 | 3;
 
-/**
- * Key into the `Tiers` message namespace, which holds each tier's name, blurb
- * and — for the tiers a host can raise to — its upsell.
- */
+/** Key into the `Tiers` message namespace, which holds each tier's name. */
 export type TierKey = "free" | "standard" | "custom";
 
 export interface Tier {
@@ -166,8 +164,8 @@ export interface DashboardEvent {
    * hidden reply cap is worked out from it (`replyCap` in `lib/event.ts`).
    */
   expectedGuests: number;
-  /** Replies that matched no name on the pre-loaded list. */
-  unmatched: number;
+  /** Replies to sort out: names not on the pre-loaded list, or used by more than one reply. */
+  needsAttention: number;
   preloaded: boolean;
   preloadedCount: number;
   note?: EventNote;
@@ -210,7 +208,7 @@ export interface DashboardStat {
 }
 
 export type NoticeTone =
-  | "unmatched"
+  | "attention"
   | "deadline"
   | "expected"
   | "overExpected"

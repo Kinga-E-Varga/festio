@@ -1,109 +1,239 @@
 "use client";
 
-import { useTranslations } from "next-intl";
-import { useState } from "react";
-import { MatchPicker } from "@/components/dashboard/guest-list/MatchPicker";
-import { COLUMNS, ISSUE, ISSUE_LABEL, SMALL_BTN } from "@/components/dashboard/guest-list/styles";
+import { useLocale, useTranslations } from "next-intl";
+import { type MouseEvent, useState } from "react";
+import { BTN_DANGER, BTN_GHOST } from "@/components/dashboard/event-editor/styles";
+import { ATTENTION_TAG, BADGE, BADGE_TEXT, BOX_BADGE, ICON_BTN, ICON_BTN_DANGER } from "@/components/dashboard/guest-list/styles";
 import type { GuestActions } from "@/components/dashboard/guest-list/useGuestActions";
+import { UnknownFix } from "@/components/dashboard/guest-list/UnknownFix";
 import { Icon } from "@/components/icons";
-import { rowName } from "@/lib/guests";
-import type { GuestRow, ListName } from "@/types/guests";
+import { rowName, showsUnknown } from "@/lib/guests";
+import type { AgeGroup, DietNeed, GuestReply, GuestRow, ListName } from "@/types/guests";
 
 interface RowViewProps {
   row: GuestRow;
   waiting: ListName[];
   actions: GuestActions;
   onEdit: () => void;
+  /** Holds an action back while another row has unsaved changes. */
+  guard: (action: () => void) => void;
+  /** Sits in a duplicate card: the note joins the details, and the row lays out against the card. */
+  inCard?: boolean;
 }
 
 const STATUS = {
-  going: { key: "statusGoing", tone: "text-forest-500" },
-  not_going: { key: "statusNotGoing", tone: "text-rust-500" },
+  going: { key: "statusGoing", tone: "border-forest-300 bg-forest-100 text-forest-600" },
+  not_going: { key: "statusNotGoing", tone: "border-terracotta-300 bg-terracotta-100 text-terracotta-600" },
 } as const;
 
-export function RowView({ row, waiting, actions, onEdit }: RowViewProps) {
+/** Sent or not, the invite badge looks the same; only its words and the box change. */
+const INVITE_BADGE =
+  "cursor-pointer border-neutral-300 bg-neutral-100 text-neutral-700 transition-colors hover:border-neutral-500";
+
+/*
+ * Where the badge joins the name's line: at the table's own breakpoint, or
+ * sooner in a duplicate card, which is its own, narrower container. The tag
+ * stays beside the name well below that, cutting the name short first, and
+ * only drops under it on the narrowest rows.
+ */
+const LAYOUT = {
+  table: {
+    grid: "@min-[720px]:grid-cols-[minmax(0,1fr)_auto_auto]",
+    name: "@min-[440px]:flex-row @min-[440px]:items-center @min-[440px]:gap-2 @min-[720px]:self-auto",
+    badge: "@min-[720px]:col-start-auto @min-[720px]:row-start-auto",
+    actions: "@min-[720px]:col-start-auto @min-[720px]:row-start-auto @min-[720px]:self-auto",
+  },
+  card: {
+    grid: "@min-[360px]:grid-cols-[minmax(0,1fr)_auto_auto]",
+    name: "@min-[260px]:flex-row @min-[260px]:items-center @min-[260px]:gap-2 @min-[360px]:self-auto",
+    badge: "@min-[360px]:col-start-auto @min-[360px]:row-start-auto",
+    actions: "@min-[360px]:col-start-auto @min-[360px]:row-start-auto @min-[360px]:self-auto",
+  },
+} as const;
+
+/**
+ * Name and tags · one status badge · edit and delete · the fold. Narrow screens
+ * put the badge under the name and keep edit and delete on the name's line, at
+ * the right; a long name is cut short to make room. A row with answers opens on a click anywhere
+ * that isn't one of its own controls, like a category band.
+ */
+export function RowView({ row, waiting, actions, onEdit, guard, inCard = false }: RowViewProps) {
+  const layout = LAYOUT[inCard ? "card" : "table"];
   const t = useTranslations("GuestList");
-  const [matching, setMatching] = useState(false);
+  const [confirming, setConfirming] = useState(false);
+  const [open, setOpen] = useState(false);
   const name = rowName(row);
   const reply = row.kind === "reply" ? row : null;
+  /* Only people coming are asked the extra questions, so only they have details, plus a note when shown here. */
+  const hasDetails =
+    reply !== null &&
+    (reply.reply.ageGroup !== undefined || reply.reply.diet !== undefined || (inCard && reply.reply.note !== null));
+
+  function remove() {
+    if (row.kind === "reply") actions.removeReply(row.reply.id);
+    else actions.removeListName(row.listName.id);
+  }
+
+  function toggle(event: MouseEvent<HTMLDivElement>) {
+    if (!hasDetails || (event.target as Element).closest("button, a, input")) return;
+    setOpen(!open);
+  }
 
   return (
     <div>
-      <div className={`flex flex-wrap items-center gap-x-3 gap-y-2 px-3 py-2.5 ${COLUMNS}`}>
-        <span className="min-w-0 flex-1 truncate text-[14px] text-neutral-900">{name}</span>
-
-        {row.kind === "waiting" ? (
-          <label className="inline-flex cursor-pointer items-center gap-1.5 text-[12.5px] text-neutral-800">
-            <input
-              type="checkbox"
-              checked={row.listName.sent}
-              onChange={() => actions.toggleSent(row.listName)}
-              aria-label={t("sentLabel", { name })}
-              className="size-4 cursor-pointer accent-forest-500"
-            />
-            {t("sent")}
-          </label>
-        ) : (
-          <span className={`text-[12.5px] font-medium ${STATUS[row.reply.status].tone}`}>
-            {t(STATUS[row.reply.status].key)}
+      {/* The fold's button is there for the keyboard; a mouse can use the whole row. */}
+      <div
+        onClick={toggle}
+        className={`grid min-h-11 grid-cols-[minmax(0,1fr)_auto] items-center gap-x-4 gap-y-1 py-1 ${layout.grid} ${
+          hasDetails ? "cursor-pointer" : ""
+        }`}
+      >
+        {/*
+         * Narrowest, the tag sits under the name on every row; else beside it. The
+         * name's line is as tall as the buttons and pinned to the top with them,
+         * so the thread's dot stays on the name.
+         */}
+        <div className={`flex min-w-0 flex-col items-start self-start ${layout.name}`}>
+          {/* The name and its arrow never part: a long name is cut short instead. */}
+          <span className="flex min-h-8 max-w-full min-w-0 items-center gap-1">
+            <span className="min-w-0 truncate text-[14.5px] font-medium text-neutral-900">{name}</span>
+            {hasDetails ? (
+              <button
+                type="button"
+                aria-expanded={open}
+                aria-label={t("detailsFor", { name })}
+                onClick={() => setOpen(!open)}
+                className="grid size-6 shrink-0 cursor-pointer place-items-center text-neutral-600"
+              >
+                <Icon name="chevron" className={`size-4 transition-transform ${open ? "rotate-180" : ""}`} />
+              </button>
+            ) : null}
           </span>
-        )}
-
-        <div>
-          {reply?.unlisted ? (
-            <div className={ISSUE} title={t("unmatchedHint")}>
-              <span className={ISSUE_LABEL}>{t("unknownTag")}</span>
-              {reply.unknown === "unmatched" ? (
-                <>
-                  <button type="button" onClick={() => setMatching(true)} className={SMALL_BTN}>
-                    {t("matchTo")}
-                  </button>
-                  <button type="button" onClick={() => actions.addAsNew(reply.reply)} className={SMALL_BTN}>
-                    {t("addAsNew")}
-                  </button>
-                </>
-              ) : null}
-            </div>
+          {showsUnknown(row) ? (
+            <span className={ATTENTION_TAG}>
+              {t("unknownTag")}
+            </span>
           ) : null}
         </div>
 
-        <div>
-          {reply?.repeated ? (
-            <div className={ISSUE} title={t("duplicateHint")}>
-              <span className={ISSUE_LABEL}>{t("duplicateTag")}</span>
-              {/* The choice belongs to the reply that came in second. */}
-              {reply.unknown === "duplicate" ? (
-                <>
-                  <button type="button" onClick={() => actions.keep(reply.reply.id)} className={SMALL_BTN}>
-                    {t("keepBoth")}
-                  </button>
-                  <button type="button" onClick={() => actions.removeReply(reply.reply.id)} className={SMALL_BTN}>
-                    {t("samePerson")}
-                  </button>
-                </>
-              ) : null}
-            </div>
-          ) : null}
+        <div className={`col-start-1 row-start-2 flex items-center gap-2 ${layout.badge}`}>
+          {row.kind === "reply" ? (
+            <span className={`${BADGE} ${STATUS[row.reply.status].tone}`}>{t(STATUS[row.reply.status].key)}</span>
+          ) : (
+            /* One badge that flips the invite either way; the box says which. */
+            <button
+              type="button"
+              role="checkbox"
+              aria-checked={row.listName.sent}
+              aria-label={t("inviteSentFor", { name })}
+              onClick={() => actions.toggleSent(row.listName)}
+              className={`${BOX_BADGE} ${INVITE_BADGE}`}
+            >
+              <span className="grid w-6 shrink-0 place-items-center border-r border-inherit">
+                {row.listName.sent ? <Icon name="check" className="size-3.5" strokeWidth={2.25} /> : null}
+              </span>
+              {/* Both labels share one cell, so the badge keeps one width sent or not, in any language. */}
+              <span className={`grid ${BADGE_TEXT}`}>
+                <span className={`[grid-area:1/1] ${row.listName.sent ? "" : "invisible"}`}>{t("invitationSent")}</span>
+                <span className={`[grid-area:1/1] ${row.listName.sent ? "invisible" : ""}`}>{t("invitationNotSent")}</span>
+              </span>
+            </button>
+          )}
         </div>
 
-        <div className="@min-[720px]:flex @min-[720px]:justify-end">
-          <button type="button" onClick={onEdit} aria-label={t("editLabel", { name })} className={SMALL_BTN}>
-            <Icon name="pencil" className="size-3.5" />
-            {t("edit")}
+        <div className={`col-start-2 row-start-1 flex items-center self-start ${layout.actions}`}>
+          <button type="button" onClick={onEdit} aria-label={t("editLabel", { name })} className={ICON_BTN}>
+            <Icon name="pencil" className="size-[18px]" />
+          </button>
+          <button
+            type="button"
+            onClick={() => guard(() => setConfirming(true))}
+            aria-label={t("deleteLabel", { name })}
+            className={ICON_BTN_DANGER}
+          >
+            <Icon name="trash" className="size-[18px]" />
           </button>
         </div>
       </div>
 
-      {matching && row.kind === "reply" ? (
-        <MatchPicker
-          waiting={waiting}
-          onPick={(listName) => {
-            actions.match(row.reply.id, listName);
-            setMatching(false);
-          }}
-          onClose={() => setMatching(false)}
-        />
+      {/* Grows from and shrinks to nothing, like a category; `inert` keeps it out of reach while folded. */}
+      {hasDetails && reply ? (
+        <div
+          inert={!open}
+          className={`grid transition-[grid-template-rows,opacity] duration-300 ease-out motion-reduce:transition-none ${
+            open ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"
+          }`}
+        >
+          <div className="min-h-0 overflow-hidden">
+            <ReplyDetails reply={reply.reply} spaced={showsUnknown(reply)} withNote={inCard} />
+          </div>
+        </div>
       ) : null}
+
+      {/* A shared name is sorted out first; its card holds that choice. */}
+      {reply && showsUnknown(reply) ? <UnknownFix reply={reply.reply} waiting={waiting} actions={actions} /> : null}
+
+      {confirming ? (
+        <div role="alert" className="flex flex-wrap items-center gap-2.5 pb-2 text-[12.5px] text-rust-600">
+          <span className="mr-auto">{t("deleteConfirm", { name })}</span>
+          <button type="button" onClick={remove} className={BTN_DANGER}>{t("delete")}</button>
+          <button type="button" onClick={() => setConfirming(false)} className={BTN_GHOST}>{t("cancel")}</button>
+        </div>
+      ) : null}
+
     </div>
+  );
+}
+
+const AGE_KEY = {
+  adult: "ageAdult",
+  child: "ageChild",
+  baby: "ageBaby",
+} as const satisfies Record<AgeGroup, string>;
+
+const DIET_KEY = {
+  vegetarian: "dietVegetarian",
+  vegan: "dietVegan",
+  glutenFree: "dietGlutenFree",
+  lactoseFree: "dietLactoseFree",
+  nutAllergy: "dietNutAllergy",
+} as const satisfies Record<DietNeed, string>;
+
+interface ReplyDetailsProps {
+  reply: GuestReply;
+  /** The unknown fix line follows: leave it more room, so the two don't read as one. */
+  spaced: boolean;
+  withNote: boolean;
+}
+
+/** What the person answered beyond their name and status. A question never asked shows nothing. */
+function ReplyDetails({ reply, spaced, withNote }: ReplyDetailsProps) {
+  const t = useTranslations("GuestList");
+  const locale = useLocale();
+  const { ageGroup, diet, note } = reply;
+
+  function dietText(needs: DietNeed[]) {
+    if (needs.length === 0) return t("dietNone");
+    return new Intl.ListFormat(locale).format(needs.map((need) => t(DIET_KEY[need])));
+  }
+
+  /* One line per question, so a form with many more still reads as a list. */
+  const answers = [
+    ageGroup === undefined
+      ? null
+      : { label: t("ageLabel"), value: ageGroup === null ? t("skipped") : t(AGE_KEY[ageGroup]) },
+    diet === undefined ? null : { label: t("dietLabel"), value: diet === null ? t("skipped") : dietText(diet) },
+    withNote && note !== null ? { label: t("messageLabel"), value: note } : null,
+  ].filter((answer) => answer !== null);
+
+  return (
+    <dl className={`flex flex-col gap-y-1 pt-1 text-[12.5px] ${spaced ? "pb-5" : "pb-3"}`}>
+      {answers.map((answer) => (
+        <div key={answer.label} className="flex gap-1">
+          <dt className="text-neutral-700">{answer.label}:</dt>
+          <dd className="min-w-0 font-medium text-neutral-900">{answer.value}</dd>
+        </div>
+      ))}
+    </dl>
   );
 }

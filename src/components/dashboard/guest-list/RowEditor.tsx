@@ -1,18 +1,17 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { useEffect, useRef, useState } from "react";
-import { useForm } from "react-hook-form";
+import { useEffect, useRef } from "react";
+import { useForm, useWatch } from "react-hook-form";
 import {
-  BTN_DANGER,
   BTN_GHOST,
   BTN_PRIMARY,
   ERROR,
+  HINT,
   INPUT,
   LABEL,
 } from "@/components/dashboard/event-editor/styles";
 import { NAME_LIMIT } from "@/components/invitation/useRsvpForm";
-import { Icon } from "@/components/icons";
 import type { RowValues } from "@/types/guests";
 
 interface RowEditorProps {
@@ -21,7 +20,6 @@ interface RowEditorProps {
   withStatus: boolean;
   onSave: (values: RowValues) => void;
   onCancel: () => void;
-  onDelete?: () => void;
   /** Whether the fields differ from how they started; typing it back clears it. */
   onDirty: (dirty: boolean) => void;
   pending: { onDiscard: () => void; onKeep: () => void } | null;
@@ -33,10 +31,10 @@ const STATUSES = [
 ] as const;
 
 /** One row's inputs. Stacks on narrow screens, sits in a line on wide ones. */
-export function RowEditor({ initial, withStatus, onSave, onCancel, onDelete, onDirty, pending }: RowEditorProps) {
+export function RowEditor({ initial, withStatus, onSave, onCancel, onDirty, pending }: RowEditorProps) {
   const t = useTranslations("GuestList");
-  const { register, handleSubmit, setFocus, formState } = useForm<RowValues>({ defaultValues: initial });
-  const [confirming, setConfirming] = useState(false);
+  const { register, handleSubmit, setFocus, formState, control } = useForm<RowValues>({ defaultValues: initial });
+  const typed = useWatch({ control, name: "name" });
   const name = register("name", {
     validate: (value) => value.trim() !== "" || t("nameRequired"),
     maxLength: NAME_LIMIT,
@@ -57,13 +55,17 @@ export function RowEditor({ initial, withStatus, onSave, onCancel, onDelete, onD
   }, [prompting]);
 
   return (
-    <form onSubmit={handleSubmit(onSave)} className="flex flex-wrap items-end gap-3 bg-mustard-50 px-3 py-3.5">
+    <form
+      onSubmit={handleSubmit(onSave)}
+      className="-mx-3 my-1 flex flex-wrap items-start gap-3 bg-forest-100 px-3 py-3"
+    >
       <label className="min-w-[200px] flex-1">
         <span className={`mb-1.5 block ${LABEL}`}>{t("name")}</span>
         <input {...name} maxLength={NAME_LIMIT} className={INPUT} />
-        {formState.errors.name ? (
-          <span className={`mt-1 block ${ERROR}`}>{formState.errors.name.message}</span>
-        ) : null}
+        <span className="mt-1 flex justify-between gap-3">
+          <span className={ERROR}>{formState.errors.name?.message}</span>
+          <span className={HINT}>{`${typed.length}/${NAME_LIMIT}`}</span>
+        </span>
       </label>
 
       {withStatus ? (
@@ -87,24 +89,10 @@ export function RowEditor({ initial, withStatus, onSave, onCancel, onDelete, onD
         </fieldset>
       ) : null}
 
-      <div className="flex flex-wrap gap-2">
-        <button type="submit" className={BTN_PRIMARY}>{t("save")}</button>
+      <div className="ml-auto flex flex-wrap gap-2 self-center">
         <button type="button" onClick={onCancel} className={BTN_GHOST}>{t("cancel")}</button>
-        {onDelete ? (
-          <button type="button" onClick={() => setConfirming(true)} className={BTN_DANGER}>
-            <Icon name="trash" className="size-4" />
-            {t("delete")}
-          </button>
-        ) : null}
+        <button type="submit" className={BTN_PRIMARY}>{t("save")}</button>
       </div>
-
-      {confirming && onDelete ? (
-        <div role="alert" className="flex basis-full flex-wrap items-center gap-2.5 text-[12.5px] text-rust-600">
-          <span className="mr-auto">{t("deleteConfirm", { name: initial.name })}</span>
-          <button type="button" onClick={onDelete} className={BTN_DANGER}>{t("delete")}</button>
-          <button type="button" onClick={() => setConfirming(false)} className={BTN_GHOST}>{t("cancel")}</button>
-        </div>
-      ) : null}
 
       {pending ? (
         <div ref={prompt} role="alert" className="flex basis-full flex-wrap items-center gap-2.5 text-[12.5px] text-terracotta-600">

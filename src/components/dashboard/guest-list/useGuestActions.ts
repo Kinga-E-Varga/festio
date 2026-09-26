@@ -1,7 +1,7 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { addReply, addReplyToList, buildRows, keepBoth, matchReply } from "@/lib/guests";
+import { addReply, addReplyToList, buildRows, markDifferent, matchReply, showsUnknown } from "@/lib/guests";
 import type { EventGuests, GuestReply, ListName, RowValues } from "@/types/guests";
 
 type Edit = (recipe: (current: EventGuests) => EventGuests) => void;
@@ -10,6 +10,12 @@ type Edit = (recipe: (current: EventGuests) => EventGuests) => void;
 interface Shown {
   guests: EventGuests;
   useList: boolean;
+}
+
+/** Now as a local ISO date-time, the way replies record when they came in. */
+function localNow(): string {
+  const now = new Date();
+  return new Date(now.getTime() - now.getTimezoneOffset() * 60_000).toISOString().slice(0, 16);
 }
 
 /** Every change the host can make, each confirmed with a toast. */
@@ -26,7 +32,8 @@ export function useGuestActions(edit: Edit, notify: (message: string) => void, s
         name,
         status: values.status,
         note: null,
-        duplicate: false,
+        repliedAt: localNow(),
+        differentPerson: false,
       };
       edit((current) => addReply(current, added));
     } else {
@@ -79,14 +86,14 @@ export function useGuestActions(edit: Edit, notify: (message: string) => void, s
     notify(t("toastAddedToList", { name: reply.name }));
   }
 
-  function keep(replyId: string) {
-    /* With one spot on the list already taken, the kept reply turns Unknown: say so. */
-    const after = buildRows(keepBoth(shown.guests, replyId), shown.useList).find((row) => row.id === replyId);
-    edit((current) => keepBoth(current, replyId));
+  function different(replyId: string) {
+    /* With the name's spot on the list already taken, the reply turns Unknown: say so. */
+    const after = buildRows(markDifferent(shown.guests, replyId), shown.useList).find((row) => row.id === replyId);
+    edit((current) => markDifferent(current, replyId));
     notify(
-      after?.kind === "reply" && after.unknown === "unmatched"
-        ? t("toastKeptUnknown", { name: after.reply.name })
-        : t("toastKept"),
+      after?.kind === "reply" && showsUnknown(after)
+        ? t("toastDifferentUnknown", { name: after.reply.name })
+        : t("toastDifferent"),
     );
   }
 
@@ -104,7 +111,7 @@ export function useGuestActions(edit: Edit, notify: (message: string) => void, s
     toggleSent,
     match,
     addAsNew,
-    keep,
+    different,
     addNames,
   };
 }

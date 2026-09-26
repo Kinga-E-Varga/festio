@@ -3,7 +3,7 @@
 import { useTranslations } from "next-intl";
 import { useEffect, useRef, useState } from "react";
 import { useForm, useWatch } from "react-hook-form";
-import { BTN_GHOST, BTN_PRIMARY, HINT, INPUT, SUBBOX } from "@/components/dashboard/event-editor/styles";
+import { BTN_OUTLINE, BTN_PRIMARY, HINT, INPUT, SUBBOX } from "@/components/dashboard/event-editor/styles";
 import { findRepeats, parseNames } from "@/lib/guests";
 import type { ListName, NameRepeat } from "@/types/guests";
 
@@ -42,7 +42,7 @@ export function AddNamesBox({ list, onAdd, onCancel }: AddNamesBoxProps) {
   }
 
   return (
-    <div ref={box} id="list" className={`mt-3 scroll-mt-24 ${SUBBOX}`}>
+    <div ref={box} id="list" className={`scroll-mt-24 ${SUBBOX}`}>
       <h3 className="font-bold text-neutral-900">{t("addNamesTitle")}</h3>
       <p className={`mt-1 ${HINT}`}>{t("addNamesHint")}</p>
 
@@ -58,7 +58,7 @@ export function AddNamesBox({ list, onAdd, onCancel }: AddNamesBoxProps) {
             <button type="button" onClick={() => onAdd(names)} className={BTN_PRIMARY}>
               {t("keepThem")}
             </button>
-            <button type="button" onClick={back} className={BTN_GHOST}>
+            <button type="button" onClick={back} className={BTN_OUTLINE}>
               {t("backToEdit")}
             </button>
           </div>
@@ -73,7 +73,7 @@ export function AddNamesBox({ list, onAdd, onCancel }: AddNamesBoxProps) {
           />
           <div className="mt-3 flex flex-wrap items-center gap-2.5">
             <span className={`mr-auto ${HINT}`}>{t("addNamesCount", { count: names.length })}</span>
-            <button type="button" onClick={onCancel} className={BTN_GHOST}>
+            <button type="button" onClick={onCancel} className={BTN_OUTLINE}>
               {t("cancel")}
             </button>
             <button type="submit" disabled={names.length === 0} className={BTN_PRIMARY}>

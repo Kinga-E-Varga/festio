@@ -7,8 +7,9 @@
 export const FIELD_GRID =
   "grid grid-cols-1 gap-4 gap-x-5 @min-[820px]:grid-cols-2";
 
-export const INPUT =
-  "w-full border border-mustard-300 bg-neutral-50 px-3 py-[9px] text-[13.5px] text-neutral-900 transition-colors outline-mustard-500 hover:border-mustard-500 focus:border-mustard-500 focus:outline-2 focus:-outline-offset-1 disabled:cursor-not-allowed disabled:border-mustard-300 disabled:bg-neutral-300 disabled:text-neutral-800";
+const FIELD =
+  "w-full border border-mustard-300 px-3 py-[9px] text-[13.5px] text-neutral-900 transition-colors outline-mustard-500 hover:border-mustard-500 focus:border-mustard-500 focus:outline-2 focus:-outline-offset-1 disabled:cursor-not-allowed disabled:border-mustard-300 disabled:bg-neutral-300 disabled:text-neutral-800";
+export const INPUT = `${FIELD} bg-neutral-50`;
 
 /** Field labels and the standalone legends above a group of controls. */
 export const LABEL =
@@ -22,10 +23,16 @@ export const ERROR = "text-[11.5px] font-medium text-rust-600";
 const BUTTON =
   "inline-flex items-center justify-center gap-2 rounded-md border px-4 py-2.5 font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-50";
 
-export const BTN = `${BUTTON} border-forest-500 bg-mustard-50 text-forest-500 hover:border-forest-600 hover:bg-forest-200`;
 export const BTN_PRIMARY = `${BUTTON} border-forest-500 bg-forest-500 text-neutral-50 hover:border-forest-600 hover:bg-forest-600`;
 /* The outlined action borrows the solid one's fill for its edge. */
-export const BTN_GHOST = `${BUTTON} border-forest-500 bg-mustard-50 text-forest-500 hover:border-forest-600 hover:bg-forest-200 hover:text-forest-600`;
+const OUTLINE = `${BUTTON} border-forest-500 text-forest-500 hover:border-forest-600 hover:bg-forest-200 hover:text-forest-600`;
+export const BTN_GHOST = `${OUTLINE} bg-mustard-50`;
+/** The same outline on the inputs' lighter fill, to sit in a row with them. */
+export const BTN_GHOST_LIGHT = `${OUTLINE} bg-neutral-50`;
+/** The outlined action with no fill, for tinted surfaces like the guest list header. */
+export const BTN_OUTLINE = `${OUTLINE} bg-transparent`;
+/** The top bar's own dark, for a page action that should read apart from the forest ones. */
+export const BTN_DARK = `${BUTTON} border-neutral-900 bg-neutral-900 text-neutral-50 hover:border-neutral-800 hover:bg-neutral-800`;
 export const BTN_DANGER = `${BUTTON} border-rust-500 bg-rust-100 text-rust-500 hover:bg-rust-500 hover:text-neutral-50`;
 
 /** The small icon-only control that sits inside a field. */
@@ -34,4 +41,4 @@ export const MINI =
 
 /** A panel that hangs off the control above it, sharing its edge. */
 export const SUBBOX =
-  "-mt-px border border-mustard-300 bg-neutral-50 p-4";
+  "-mt-px border border-mustard-300 p-4";

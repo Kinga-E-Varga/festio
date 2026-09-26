@@ -14,7 +14,7 @@ import type { NoticeTone } from "@/types/dashboard";
 
 /** Each notice's edge colour carries through to its call to action. */
 const TONE: Record<NoticeTone, string> = {
-  unmatched: "border-rust-500 text-rust-600",
+  attention: "border-rust-500 text-rust-600",
   deadline: "border-mustard-500 text-mustard-600",
   expected: "border-terracotta-500 text-terracotta-600",
   overExpected: "border-rust-500 text-rust-600",
@@ -24,7 +24,7 @@ const TONE: Record<NoticeTone, string> = {
 
 /** Most urgent first; notices of one tone keep their own order. */
 const TONE_ORDER: Record<NoticeTone, number> = {
-  unmatched: 0,
+  attention: 0,
   paused: 0,
   overExpected: 0,
   expected: 1,
@@ -212,7 +212,7 @@ export function NotificationsRail() {
             link: (chunks) => (
               <Link
                 href="/legal/terms"
-                className="font-bold underline underline-offset-[3px]"
+                className="font-semibold underline underline-offset-[3px]"
               >
                 {chunks}
               </Link>

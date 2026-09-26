@@ -128,7 +128,7 @@ export function LinkSection({ event, form }: SectionProps) {
       >
         {t.rich("addressWarning", {
           count: event.rsvp.replied,
-          b: (chunks) => <b>{chunks}</b>,
+          b: (chunks) => <b className="font-semibold">{chunks}</b>,
         })}
       </ChangeWarning>
 
@@ -149,7 +149,7 @@ export function LinkSection({ event, form }: SectionProps) {
               }`}
             >
               <label className="flex cursor-pointer flex-col gap-1.5 p-3.5">
-                <span className="flex items-center gap-2 font-semibold text-neutral-900">
+                <span className="flex items-center gap-2 font-medium text-neutral-800">
                   <span
                     aria-hidden="true"
                     className={`grid size-[14px] shrink-0 place-items-center rounded-full border ${

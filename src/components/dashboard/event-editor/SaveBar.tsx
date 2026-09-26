@@ -37,8 +37,9 @@ export function SaveBar({ form, onSave }: SaveBarProps) {
 
   return (
     // Docked to the bottom of the viewport, so it stays reachable to the end.
-    <div className="sticky bottom-0 z-20 mt-10 flex flex-wrap items-center gap-4 border-t-2 border-mustard-500 bg-neutral-900 px-[18px] py-3.5">
-      <span className="flex flex-[100%] items-center gap-[9px] text-[12.5px] text-neutral-300 @min-[560px]:flex-1">
+    // Narrow, the status takes its own line and everything centres.
+    <div className="sticky bottom-0 z-20 mt-10 flex flex-wrap items-center justify-center gap-4 border-t-2 border-mustard-500 bg-neutral-900 px-[18px] py-3.5 @min-[560px]:justify-start">
+      <span className="flex flex-[100%] items-center justify-center gap-[9px] text-[12.5px] text-neutral-300 @min-[560px]:flex-1 @min-[560px]:justify-start">
         <span
           aria-hidden="true"
           className={`size-[7px] shrink-0 rounded-full ${

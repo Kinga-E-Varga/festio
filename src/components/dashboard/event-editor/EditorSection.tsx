@@ -24,7 +24,7 @@ export function EditorSection({
         <h2 className="font-serif text-[17px] tracking-[0.14em] text-neutral-900 uppercase">
           {title}
         </h2>
-        <span aria-hidden="true" className="h-px flex-1 bg-forest-500" />
+        <span aria-hidden="true" className="h-px flex-1 bg-neutral-900" />
       </header>
 
       {hint ? (

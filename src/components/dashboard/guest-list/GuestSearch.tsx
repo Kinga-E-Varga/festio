@@ -13,7 +13,7 @@ export function GuestSearch({ query, onQuery }: GuestSearchProps) {
   const t = useTranslations("GuestList");
 
   return (
-    <label className="relative min-w-[200px] flex-1 @min-[720px]:ml-auto @min-[720px]:max-w-[280px]">
+    <label className="relative block w-full">
       <span className="sr-only">{t("search")}</span>
       <Icon
         name="search"

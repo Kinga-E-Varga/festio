@@ -82,11 +82,11 @@
     "liveInvitations": "Invitații active",
     "nextEvent": "Următorul eveniment",
     "newReplies": "Răspunsuri noi",
-    "unmatchedNames": "Nume negăsite",
+    "repliesToReview": "Răspunsuri de verificat",
     "ofTotal": "din {count}",
     "daysAway": "zile",
     "sinceLastVisit": "de la ultima vizită",
-    "unknown": "necunoscut"
+    "toReview": "de rezolvat"
   },
   "Rail": {
     "needsAttention": "Necesită atenție",
@@ -192,18 +192,13 @@
   "Tiers": {
     "price": "{amount, plural, =0 {Gratuit} other {# RON}}",
     "free": {
-      "name": "Gratuit",
-      "blurb": "Șablon fix cu formular de confirmare minimal. Fără plan de așezare."
+      "name": "Gratuit"
     },
     "standard": {
-      "name": "Standard",
-      "blurb": "Șablon fix cu formular minimal. Plan de așezare inclus.",
-      "upsell": "Adaugă un plan de așezare acestei invitații. Plătești doar diferența și nu pierzi nimic din ce ai scris."
+      "name": "Standard"
     },
     "custom": {
-      "name": "Personalizat",
-      "blurb": "Secțiuni modulare pentru invitație și formular de confirmare. Șablon personalizabil. Plan de așezare inclus.",
-      "upsell": "Deblochează o invitație personalizabilă, cu secțiuni modulare și întrebări proprii. Plătești doar diferența."
+      "name": "Personalizat"
     }
   },
   "Occasions": {
@@ -231,8 +226,8 @@
     "unpaidBody": "Pachetul {tier} costă {price}. Pagina rămâne ascunsă și formularul de confirmare rămâne închis până se confirmă plata.",
     "hiddenTitle": "Invitație ascunsă",
     "hiddenBody": "Nimeni nu poate deschide pagina, nici măcar un invitat care are linkul, și nu poate sosi niciun răspuns. Setează mai jos vizibilitatea la Publică sau Protejată când ești gata s-o trimiți.",
-    "unmatchedTitle": "{count, plural, one {# răspuns fără potrivire} few {# răspunsuri fără potrivire} other {# răspunsuri fără potrivire}}",
-    "unmatchedBody": "Sunt marcate NECUNOSCUT până le adaugi sau le potrivești cu un nume scris greșit.",
+    "attentionTitle": "{count, plural, one {# răspuns de verificat} few {# răspunsuri de verificat} other {# de răspunsuri de verificat}}",
+    "attentionBody": "Unele nume nu sunt pe lista ta sau mai multe răspunsuri au folosit același nume. Rezolvă-le în partea de sus a listei de invitați.",
     "pausedTitle": "Răspunsurile sunt oprite",
     "pausedBody": "Au răspuns neobișnuit de mulți invitați față de numărul pe care îl așteptai. Dacă sunt reali, mărește numărul ca să redeschizi formularul. Dacă nu, raportează problema.",
     "nearExpectedTitle": "Răspunsuri la {percent}% din cei așteptați",
@@ -255,8 +250,6 @@
     "dateWarningTitle": "Mutarea datei",
     "dateWarning": "Invitația va arăta noua dată, dar Festio nu le va spune invitaților — asta rămâne în grija ta. {count, plural, =0 {Nimeni nu a răspuns încă pentru acest eveniment.} one {<b># invitat a răspuns deja</b> pentru acest eveniment.} few {<b># invitați au răspuns deja</b> pentru acest eveniment.} other {<b># de invitați au răspuns deja</b> pentru acest eveniment.}}",
     "closeHeading": "Închiderea formularului de răspuns",
-    "closeEarly": "Închidere mai devreme",
-    "closeEarlyNote": "Formularul de răspuns se închide pe <b>{date}</b> — cu o zi înainte de eveniment. Activează opțiunea pentru a-l închide mai devreme.",
     "closeAt": "Închide formularul la",
     "closeTooLate": "Alege o oră cu cel puțin 24h înainte.",
     "repliesClose": "Formularul de răspuns se închide",
@@ -297,10 +290,6 @@
     "expected": "Câți invitați aștepți?",
     "expectedHint": "Folosim acest număr ca să-ți arătăm cum vin răspunsurile și ca să te protejăm de spam: dacă vin mult mai multe răspunsuri decât te așteptai, oprim formularul. Poți mări numărul oricând.",
     "expecting": "Pe cine aștepți",
-    "preloaded": "Folosește lista preîncărcată",
-    "preloadedNote": "Compară răspunsurile primite cu o listă de nume pe care le aștepți. Tot ce nu se potrivește este marcat NECUNOSCUT, ca să-l rezolvi tu.",
-    "preloadedCount": "{count, plural, one {Acum ai # nume în lista încărcată} few {Acum ai # nume în lista încărcată} other {Acum ai # nume în lista încărcată}}",
-    "editList": "Editează lista",
     "edition": "Pachet",
     "tierPaid": "{name} — {price} · plătit",
     "tierUnpaid": "{name} — {price} · neplătit",
@@ -339,7 +328,18 @@
     "stateDirty": "Modificări nesalvate",
     "back": "Înapoi",
     "save": "Salvere",
-    "saved": "Modificări salvate"
+    "saved": "Modificări salvate",
+    "replyUntil": "Invitații pot răspunde până pe",
+    "closeEarlier": "Închide mai devreme",
+    "useDefault": "Folosește implicitul",
+    "closeDefaultHint": "Implicit, formularul se închide cu o zi înainte de eveniment. Închide-l mai devreme dacă locația are nevoie de cifre mai repede.",
+    "useList": "Folosește o listă de invitați",
+    "stopList": "Nu mai folosi lista",
+    "noListHint": "Adaugă numele pe care le aștepți și Festio va semnala orice răspuns care nu se potrivește.",
+    "replyUntilDate": "Invitații pot răspunde până pe {date}",
+    "matchedNoList": "Răspunsurile nu sunt potrivite cu nicio listă.",
+    "matchedList": "Răspunsurile sunt potrivite cu lista ta de invitați.",
+    "listNow": "{count, plural, one {Lista ta are acum # nume.} few {Lista ta are acum # nume.} other {Lista ta are acum # de nume.}} O poți modifica pe pagina listei de invitați."
   },
   "HostEditor": {
     "back": "Înapoi",
@@ -386,8 +386,8 @@
   "EventNotes": {
     "notSharedHidden": "Încă nedistribuită — pagina este ascunsă",
     "hiddenUntilPaid": "Ascunsă până la confirmarea plății",
-    "unmatched": "{count, plural, one {# nume fără potrivire} few {# nume fără potrivire} other {# de nume fără potrivire}}",
-    "reviewNames": "Verifică numele",
+    "attention": "{count, plural, one {# răspuns de verificat: un nume care nu e pe listă sau folosit de două ori.} few {# răspunsuri de verificat: nume care nu sunt pe listă sau folosite de două ori.} other {# de răspunsuri de verificat: nume care nu sunt pe listă sau folosite de două ori.}}",
+    "reviewReplies": "Verifică răspunsurile",
     "opensWhenPublic": "Formularul de răspuns se deschide când faci pagina publică.",
     "paymentPending": "Plata e în așteptare, așa că pagina rămâne ascunsă.",
     "payPublish": "Plătește și publică",
@@ -398,9 +398,9 @@
     "stepFree": "{count, plural, one {# persoană are nevoie de acces fără trepte} few {# persoane au nevoie de acces fără trepte} other {# de persoane au nevoie de acces fără trepte}}"
   },
   "Notices": {
-    "unmatched": {
+    "attention": {
       "context": "· {event}",
-      "action": "Verifică numele"
+      "action": "Verifică răspunsurile"
     },
     "closing": {
       "context": "· {event}",
@@ -459,29 +459,39 @@
     "guests": "{title} · Lista de invitați · Festio"
   },
   "GuestList": {
+    "sectionSummary": "Rezumat",
+    "sectionList": "Lista de invitați",
+    "listCount": "{count, plural, one {Lista ta are acum # nume.} few {Lista ta are acum # nume.} other {Lista ta are acum # de nume.}}",
     "summaryLabel": "Filtrează invitații",
     "all": "Toți {count}",
     "going": "Vin {count}",
     "notGoing": "Nu vin {count}",
     "waiting": "În așteptare {count}",
     "notSent": "Netrimise încă {count}",
-    "unknown": "Necunoscuți {count}",
-    "duplicates": "Duplicate {count}",
-    "repliedOfExpected": "{replied} din {expected} așteptați au răspuns",
-    "addNames": "Adaugă nume",
-    "addGuest": "Adaugă invitat",
-    "export": "Exportă",
+    "editList": "Listă preîncărcată",
+    "addReply": "Răspuns nou",
+    "export": "Exportă răspunsurile",
     "search": "Caută după nume",
+    "detailsFor": "Detalii pentru {name}",
+    "messageLabel": "Mesaj",
+    "ageLabel": "Vârstă",
+    "ageAdult": "Adult",
+    "ageChild": "Copil",
+    "ageBaby": "Bebeluș",
+    "dietLabel": "Restricții alimentare",
+    "dietVegetarian": "Vegetarian",
+    "dietVegan": "Vegan",
+    "dietGlutenFree": "Fără gluten",
+    "dietLactoseFree": "Fără lactoză",
+    "dietNutAllergy": "Alergie la nuci",
+    "dietNone": "Niciuna",
+    "skipped": "Fără răspuns",
     "statusGoing": "Vine",
     "statusNotGoing": "Nu vine",
     "unknownTag": "Necunoscut",
-    "unmatchedHint": "Nu e pe lista ta",
     "duplicateTag": "Duplicat",
-    "duplicateHint": "A răspuns cu un nume care exista deja",
-    "repliedWith": "A răspuns împreună cu {names}",
-    "sent": "Invitație trimisă",
-    "sentLabel": "Invitație trimisă lui {name}",
-    "edit": "Editează",
+    "unmatchedHint": "Numele nu e pe lista ta preîncărcată. Dacă e scris altfel, potrivește-l cu un nume. Dacă nu, adaugă-l ca nou.",
+    "repliedWith": "A răspuns împreună cu <b>{names}</b>",
     "editLabel": "Editează {name}",
     "name": "Nume",
     "status": "Răspuns",
@@ -493,13 +503,11 @@
     "unsaved": "Ai modificări nesalvate pe acest rând.",
     "discard": "Renunță la modificări",
     "keepEditing": "Continuă editarea",
-    "matchTo": "Potrivește cu…",
+    "matchTo": "Potrivește cu un nume",
     "matchSearch": "Caută în lista ta",
     "noWaiting": "Niciun nume în așteptare de potrivit.",
     "noMatches": "Niciun nume nu se potrivește.",
     "addAsNew": "Adaugă ca nou",
-    "keepBoth": "Păstrează-i pe amândoi",
-    "samePerson": "Aceeași persoană",
     "addNamesTitle": "Adaugă nume pe lista de invitați",
     "addNamesHint": "Un nume pe rând. Lipește o coloană dintr-un tabel sau scrie un nume și apasă Enter.",
     "addNamesCount": "{count, plural, =0 {Niciun nume încă} one {# nume de adăugat} other {# nume de adăugat}}",
@@ -511,7 +519,6 @@
     "emptyTitle": "Răspunsurile vor apărea aici pe măsură ce sosesc.",
     "emptyList": "Ai o listă de invitați? Adaugă numele și răspunsurile vor fi potrivite cu ea.",
     "noResults": "Niciun invitat nu se potrivește.",
-    "categoryUnknown": "Invitați necunoscuți",
     "categoryGoing": "Confirmați",
     "categoryNotGoing": "Au refuzat",
     "categoryWaiting": "Așteaptă răspuns",
@@ -523,7 +530,22 @@
     "toastAdded": "{count, plural, one {# nume adăugat} other {# nume adăugate}}",
     "toastMatched": "Potrivit cu {name}",
     "toastAddedToList": "{name} a fost adăugat pe lista ta",
-    "toastKept": "Păstrați amândoi",
-    "toastKeptUnknown": "Le-ai păstrat pe amândouă. {name} nu e încă pe listă: potrivește sau adaugă numele."
+    "matchTitle": "Potrivește {name} cu un nume din listă",
+    "matchHint": "Alege numele la care s-au referit. Răspunsul va folosi scrierea din lista ta.",
+    "match": "Potrivește",
+    "matchToName": "Potrivește cu {name}",
+    "invitationSent": "Invitație trimisă",
+    "invitationNotSent": "Invitație netrimisă",
+    "inviteSentFor": "Invitație trimisă către {name}",
+    "deleteLabel": "Șterge {name}",
+    "filter": "Alte filtre",
+    "filterActive": "Filtru: {filter}",
+    "attention": "De verificat {count}",
+    "categoryAttention": "De verificat",
+    "sameName": "{count, plural, one {# răspuns cu acest nume} few {# răspunsuri cu acest nume} other {# de răspunsuri cu acest nume}}. Dacă e aceeași persoană, șterge răspunsul în plus. Dacă nu, marchează-l ca altă persoană sau pur și simplu modifică-i numele ca să nu mai coincidă.",
+    "repliedOn": "A răspuns pe {date}",
+    "differentPerson": "Altă persoană",
+    "toastDifferent": "Marcat ca altă persoană",
+    "toastDifferentUnknown": "Marcat ca altă persoană. {name} nu e încă pe lista ta: potrivește-l sau adaugă-l."
   }
 }
