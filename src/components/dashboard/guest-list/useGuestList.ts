@@ -8,6 +8,7 @@ import {
   filterGroup,
   groupRows,
   resolveFilter,
+  tallyGuests,
 } from "@/lib/guests";
 import type { EventGuests, GuestFilter, GuestGroup } from "@/types/guests";
 
@@ -35,6 +36,7 @@ export function useGuestList(initial: EventGuests, preloaded: boolean) {
     guests,
     rows,
     counts,
+    tally: tallyGuests(rows, guests.questions),
     groups,
     filter: active,
     query,

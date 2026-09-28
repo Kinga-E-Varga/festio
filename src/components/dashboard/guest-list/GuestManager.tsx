@@ -11,6 +11,7 @@ import { GuestSearch } from "@/components/dashboard/guest-list/GuestSearch";
 import { GuestSummary } from "@/components/dashboard/guest-list/GuestSummary";
 import { GuestTable } from "@/components/dashboard/guest-list/GuestTable";
 import { GuestToolbar } from "@/components/dashboard/guest-list/GuestToolbar";
+import { ReplySummary } from "@/components/dashboard/guest-list/ReplySummary";
 import { useGuestActions } from "@/components/dashboard/guest-list/useGuestActions";
 import { useGuestList } from "@/components/dashboard/guest-list/useGuestList";
 import { NEW_ROW, useRowEditor } from "@/components/dashboard/guest-list/useRowEditor";
@@ -26,7 +27,6 @@ interface GuestManagerProps {
 export function GuestManager({ event, initial }: GuestManagerProps) {
   const t = useTranslations("GuestList");
   const tPage = useTranslations("EventPage");
-  const tNotes = useTranslations("EventNotes");
   const tEditor = useTranslations("EventEditor");
   const toast = useToast();
   const list = useGuestList(initial, event.preloaded);
@@ -57,8 +57,7 @@ export function GuestManager({ event, initial }: GuestManagerProps) {
       ) : null}
 
       <EditorSection title={t("sectionSummary")} first>
-        {/* Left empty on purpose: what the summary shows comes later. */}
-        <div className="min-h-[120px] border border-dashed border-mustard-400" />
+        <ReplySummary tally={list.tally} counts={list.counts} useList={list.useList} />
       </EditorSection>
 
       <EditorSection title={t("sectionList")}>
@@ -84,12 +83,6 @@ export function GuestManager({ event, initial }: GuestManagerProps) {
             }
           />
         </div>
-
-        {event.attendeeNotes?.length ? (
-          <p className="mb-[22px] text-[12.5px] text-neutral-700">
-            {event.attendeeNotes.map((note) => tNotes(note.key, note.values)).join(" · ")}
-          </p>
-        ) : null}
 
         {/* The table's header: search and filters, the list and reply actions to the right. */}
         <div className="mb-4 flex flex-col gap-6">

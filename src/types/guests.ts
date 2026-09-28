@@ -16,8 +16,28 @@ export interface ListName {
 /** The age question every form asks, for each person coming. */
 export type AgeGroup = "adult" | "child" | "baby";
 
-/** The dietary presets every form offers, for each person coming. */
-export type DietNeed = "vegetarian" | "vegan" | "glutenFree" | "lactoseFree" | "nutAllergy";
+/** The dietary presets every form offers, for each person coming; `other` comes with the guest's own words. */
+export type DietNeed = "vegetarian" | "vegan" | "glutenFree" | "lactoseFree" | "nutAllergy" | "other";
+
+/** Asked of each person coming, or once for the whole reply. */
+export type QuestionScope = "person" | "reply";
+
+interface QuestionBase {
+  /** Permanent: answers are keyed by it. */
+  id: string;
+  /** The host's own wording, in the invitation's language. */
+  label: string;
+  scope: QuestionScope;
+}
+
+/** A host's custom question. Asked only of people coming. */
+export type GuestQuestion =
+  | (QuestionBase & { kind: "choice"; options: { id: string; label: string }[] })
+  | (QuestionBase & { kind: "yesNo" })
+  | (QuestionBase & { kind: "text" });
+
+/** A choice's option id, a yes/no, or free text. */
+export type AnswerValue = string | boolean;
 
 /**
  * One attendee from one reply. A reply fans out into one of these per
@@ -34,6 +54,13 @@ export interface GuestReply {
   ageGroup?: AgeGroup | null;
   /** Empty = no needs. */
   diet?: DietNeed[] | null;
+  /** What the guest wrote for `other`. */
+  dietOther?: string;
+  /**
+   * Custom answers by question id: missing = never asked, null = asked and
+   * skipped. A reply-wide answer is copied onto each person, like the note.
+   */
+  answers?: Record<string, AnswerValue | null>;
   /** When the reply came in, as a local ISO date-time. */
   repliedAt: string;
   /** The host confirmed this isn't the guest behind an earlier reply with the same name. */
@@ -45,6 +72,8 @@ export interface GuestReply {
 export interface EventGuests {
   list: ListName[];
   replies: GuestReply[];
+  /** The host's custom questions; empty when the form asks none. */
+  questions: GuestQuestion[];
 }
 
 export type GuestRow =
@@ -100,6 +129,23 @@ export interface GuestCounts {
   notSent: number;
   /** Rows to sort out: unknown names plus identical ones. */
   attention: number;
+}
+
+/** One custom question's answers, from the people (or replies) coming. */
+export interface QuestionTally {
+  question: GuestQuestion;
+  /** By option id for a choice, `yes` / `no` for a yes/no. */
+  answers: Record<string, number>;
+  answered: number;
+}
+
+/** The Summary section's numbers. Age, diet and questions count people coming. */
+export interface GuestTally {
+  ages: Record<AgeGroup, number>;
+  diets: Record<DietNeed, number>;
+  questions: QuestionTally[];
+  /** Replies that came with a note, once per reply. */
+  messages: number;
 }
 
 export interface NameRepeat {

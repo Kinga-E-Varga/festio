@@ -191,12 +191,14 @@ const AGE_KEY = {
   baby: "ageBaby",
 } as const satisfies Record<AgeGroup, string>;
 
-const DIET_KEY = {
+/** Also read by the summary, so a diet is named the same in both. */
+export const DIET_KEY = {
   vegetarian: "dietVegetarian",
   vegan: "dietVegan",
   glutenFree: "dietGlutenFree",
   lactoseFree: "dietLactoseFree",
   nutAllergy: "dietNutAllergy",
+  other: "dietOther",
 } as const satisfies Record<DietNeed, string>;
 
 interface ReplyDetailsProps {
@@ -214,7 +216,9 @@ function ReplyDetails({ reply, spaced, withNote }: ReplyDetailsProps) {
 
   function dietText(needs: DietNeed[]) {
     if (needs.length === 0) return t("dietNone");
-    return new Intl.ListFormat(locale).format(needs.map((need) => t(DIET_KEY[need])));
+    /* The row shows what the guest wrote for Other; the summary only counts it. */
+    const named = needs.map((need) => (need === "other" && reply.dietOther ? reply.dietOther : t(DIET_KEY[need])));
+    return new Intl.ListFormat(locale).format(named);
   }
 
   /* One line per question, so a form with many more still reads as a list. */

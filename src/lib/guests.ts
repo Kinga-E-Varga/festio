@@ -10,10 +10,13 @@ import type {
   GuestCounts,
   GuestFilter,
   GuestGroup,
+  GuestQuestion,
   GuestReply,
   GuestRow,
+  GuestTally,
   ListName,
   NameRepeat,
+  QuestionTally,
 } from "@/types/guests";
 
 /** Case, accents and spacing never make two names different people. */
@@ -208,6 +211,48 @@ export function countRows(rows: GuestRow[]): GuestCounts {
     if (needsAttention(row)) counts.attention += 1;
   }
   return counts;
+}
+
+/** A choice counts by option id, a yes/no as `yes` / `no`, free text only as answered. */
+function tallyQuestion(question: GuestQuestion, replies: GuestReply[]): QuestionTally {
+  const tally: QuestionTally = { question, answers: {}, answered: 0 };
+  for (const reply of replies) {
+    /* Never asked or skipped: nothing to count. */
+    const value = reply.answers?.[question.id];
+    if (value === undefined || value === null || value === "") continue;
+    tally.answered += 1;
+    if (question.kind === "text") continue;
+    const key = question.kind === "yesNo" ? (value ? "yes" : "no") : String(value);
+    tally.answers[key] = (tally.answers[key] ?? 0) + 1;
+  }
+  return tally;
+}
+
+/**
+ * The Summary section's numbers. Age, diet and custom answers come from the
+ * people coming; a reply-wide question counts each reply once, as does a note.
+ */
+export function tallyGuests(rows: GuestRow[], questions: GuestQuestion[]): GuestTally {
+  const replies = rows.flatMap((row) => (row.kind === "reply" ? [row.reply] : []));
+  const coming = replies.filter((reply) => reply.status === "going");
+  const onePerReply = (list: GuestReply[]) =>
+    [...new Map(list.map((reply) => [reply.submissionId, reply])).values()];
+
+  const tally: GuestTally = {
+    ages: { adult: 0, child: 0, baby: 0 },
+    diets: { vegetarian: 0, vegan: 0, glutenFree: 0, lactoseFree: 0, nutAllergy: 0, other: 0 },
+    questions: [],
+    messages: onePerReply(replies.filter((reply) => reply.note?.trim())).length,
+  };
+  for (const reply of coming) {
+    if (reply.ageGroup) tally.ages[reply.ageGroup] += 1;
+    for (const need of reply.diet ?? []) tally.diets[need] += 1;
+  }
+  const perReply = onePerReply(coming);
+  tally.questions = questions.map((question) =>
+    tallyQuestion(question, question.scope === "reply" ? perReply : coming),
+  );
+  return tally;
 }
 
 export function rowMatches(row: GuestRow, filter: GuestFilter, query: string): boolean {
