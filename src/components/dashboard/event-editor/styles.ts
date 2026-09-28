@@ -20,7 +20,11 @@ export const HINT = "text-[11.5px] leading-[1.45] text-neutral-700";
 
 export const ERROR = "text-[11.5px] font-medium text-rust-600";
 
-const BUTTON =
+/** The gold action's colours ("Stop using the list", "Different person", the list box's Save), at any size. */
+export const GOLD_BTN = "border-mustard-300 bg-mustard-200 text-mustard-600 hover:bg-mustard-100";
+
+/** The big buttons' shape, without colours: every variant below builds on it. */
+export const BUTTON =
   "inline-flex items-center justify-center gap-2 rounded-md border px-4 py-2.5 font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-50";
 
 export const BTN_PRIMARY = `${BUTTON} border-forest-500 bg-forest-500 text-neutral-50 hover:border-forest-600 hover:bg-forest-600`;

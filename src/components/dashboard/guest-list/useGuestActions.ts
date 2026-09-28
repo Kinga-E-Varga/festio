@@ -97,10 +97,14 @@ export function useGuestActions(edit: Edit, notify: (message: string) => void, s
     );
   }
 
-  function addNames(names: string[]) {
-    const added = names.map((name) => ({ id: crypto.randomUUID(), name, sent: false }));
-    edit((current) => ({ ...current, list: [...current.list, ...added] }));
-    notify(t("toastAdded", { count: names.length }));
+  /** Only the difference, so list changes made while the box was open survive. */
+  function saveList(added: ListName[], removedIds: string[]) {
+    const removed = new Set(removedIds);
+    edit((current) => ({
+      ...current,
+      list: [...current.list.filter((entry) => !removed.has(entry.id)), ...added],
+    }));
+    notify(t("toastListSaved"));
   }
 
   return {
@@ -112,7 +116,7 @@ export function useGuestActions(edit: Edit, notify: (message: string) => void, s
     match,
     addAsNew,
     different,
-    addNames,
+    saveList,
   };
 }
 

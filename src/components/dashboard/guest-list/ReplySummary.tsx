@@ -112,12 +112,15 @@ export function ReplySummary({ tally, counts, useList }: ReplySummaryProps) {
 interface BlockProps {
   title: string;
   lines: Line[];
-  /** Set on the blocks behind the toggle: hidden while true, fading in when it turns false. */
+  /** Set on the blocks behind the toggle: hidden while true, fading in and out as it turns. */
   folded?: boolean;
 }
 
-/** A block the toggle shows comes in softly instead of all at once. */
-const FADE_IN = "transition-opacity duration-300 starting:opacity-0 motion-reduce:transition-none";
+/**
+ * A block the toggle shows fades in, and fades out before it hides: `display`
+ * waits out the fade (`transition-discrete`). Browsers without that just hide it.
+ */
+const FADE = "transition-[opacity,display] transition-discrete duration-300 starting:opacity-0 motion-reduce:transition-none";
 
 /** A title, then label-and-number rows; rows at 0 drop out unless kept. */
 function Block({ title, lines, folded }: BlockProps) {
@@ -125,7 +128,7 @@ function Block({ title, lines, folded }: BlockProps) {
   const shown = lines.filter((line) => line.keep || line.count === undefined || line.count > 0);
 
   return (
-    <section className={`min-w-0 ${folded === undefined ? "" : folded ? "hidden" : FADE_IN}`}>
+    <section className={`min-w-0 ${folded === undefined ? "" : `${FADE} ${folded ? "hidden opacity-0" : ""}`}`}>
       <h3 className="bg-mustard-200 px-3 py-1.5 font-serif text-[14px] text-neutral-900">{title}</h3>
       {shown.length > 0 ? (
         <dl>

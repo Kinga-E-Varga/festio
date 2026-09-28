@@ -1,27 +1,38 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { useEffect, useRef, useState } from "react";
+import { type ChangeEvent, useEffect, useRef, useState } from "react";
 import { useForm, useWatch } from "react-hook-form";
-import { BTN_OUTLINE, BTN_PRIMARY, HINT, INPUT, SUBBOX } from "@/components/dashboard/event-editor/styles";
+import { HINT, INPUT, SUBBOX } from "@/components/dashboard/event-editor/styles";
+import { DraftNameList } from "@/components/dashboard/guest-list/DraftNameList";
+import { BTN_LIST, BTN_LIST_OUTLINE, SMALL_BTN_WARN, SMALL_BTN_WARN_SOLID } from "@/components/dashboard/guest-list/styles";
+import { useListDraft } from "@/components/dashboard/guest-list/useListDraft";
 import { findRepeats, parseNames } from "@/lib/guests";
 import type { ListName, NameRepeat } from "@/types/guests";
 
 interface AddNamesBoxProps {
   list: ListName[];
-  onAdd: (names: string[]) => void;
+  repliedIds: ReadonlySet<string>;
+  onSave: (added: ListName[], removedIds: string[]) => void;
   onCancel: () => void;
 }
 
-/** Paste or type names; repeats are shown before saving, never dropped. */
-export function AddNamesBox({ list, onAdd, onCancel }: AddNamesBoxProps) {
+/** What stops a Save or Cancel until the host answers it. */
+type Notice = "unadded" | "discard";
+
+const ALERT = "mt-3 border border-terracotta-400 bg-terracotta-200 px-4 py-3 text-[12.5px] text-terracotta-600";
+
+/** The whole preloaded list as a draft: paste names in, remove the unwanted, then save. */
+export function AddNamesBox({ list, repliedIds, onSave, onCancel }: AddNamesBoxProps) {
   const t = useTranslations("GuestList");
-  const { register, control, handleSubmit, setFocus } = useForm<{ text: string }>({
+  const { register, control, handleSubmit, setFocus, reset } = useForm<{ text: string }>({
     defaultValues: { text: "" },
   });
   const text = useWatch({ control, name: "text" });
   const names = parseNames(text);
+  const draft = useListDraft(list);
   const [repeats, setRepeats] = useState<NameRepeat[] | null>(null);
+  const [notice, setNotice] = useState<Notice | null>(null);
   const box = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -29,11 +40,19 @@ export function AddNamesBox({ list, onAdd, onCancel }: AddNamesBoxProps) {
     setFocus("text");
   }, [setFocus]);
 
-  function submit() {
+  function add() {
+    setNotice(null);
     if (names.length === 0) return;
-    const found = findRepeats(names, list);
+    /* Against the whole draft: the saved names and the ones added before this paste. */
+    const found = findRepeats(names, draft.names);
     if (found.length > 0) setRepeats(found);
-    else onAdd(names);
+    else keep();
+  }
+
+  function keep() {
+    draft.add(names);
+    setRepeats(null);
+    reset();
   }
 
   function back() {
@@ -41,13 +60,65 @@ export function AddNamesBox({ list, onAdd, onCancel }: AddNamesBoxProps) {
     requestAnimationFrame(() => setFocus("text"));
   }
 
+  /* The note is about names still in the box: once they're gone, so is the note. */
+  function clearUnadded(event: ChangeEvent<HTMLTextAreaElement>) {
+    if (parseNames(event.target.value).length === 0) {
+      setNotice((current) => (current === "unadded" ? null : current));
+    }
+  }
+
+  function clearInput() {
+    reset();
+    setNotice((current) => (current === "unadded" ? null : current));
+    setFocus("text");
+  }
+
+  function save() {
+    if (names.length > 0) setNotice("unadded");
+    else onSave(draft.added, draft.removedIds);
+  }
+
+  function cancel() {
+    if (draft.changed || names.length > 0) setNotice("discard");
+    else onCancel();
+  }
+
   return (
     <div ref={box} id="list" className={`scroll-mt-24 ${SUBBOX}`}>
-      <h3 className="font-bold text-neutral-900">{t("addNamesTitle")}</h3>
-      <p className={`mt-1 ${HINT}`}>{t("addNamesHint")}</p>
+      <div className="flex flex-wrap items-center gap-x-4 gap-y-3">
+        <h3 className="mr-auto font-serif text-[17px] tracking-[0.14em] text-neutral-900 uppercase">{t("listTitle")}</h3>
+        <div className="flex gap-2.5">
+          <button type="button" onClick={cancel} className={BTN_LIST_OUTLINE}>
+            {t("cancel")}
+          </button>
+          <button type="button" onClick={save} disabled={!draft.changed && names.length === 0} className={BTN_LIST}>
+            {t("save")}
+          </button>
+        </div>
+      </div>
+
+      {notice === "unadded" ? (
+        <div role="alert" className={`${ALERT} flex flex-wrap items-center gap-2.5`}>
+          <span className="mr-auto">{t("unaddedTitle")}</span>
+          <button type="button" onClick={add} className={SMALL_BTN_WARN_SOLID}>
+            {t("addThem")}
+          </button>
+        </div>
+      ) : null}
+      {notice === "discard" ? (
+        <div role="alert" className={`${ALERT} flex flex-wrap items-center gap-2.5`}>
+          <span className="mr-auto">{t("discardTitle")}</span>
+          <button type="button" onClick={onCancel} className={SMALL_BTN_WARN}>
+            {t("discard")}
+          </button>
+          <button type="button" onClick={() => setNotice(null)} className={SMALL_BTN_WARN_SOLID}>
+            {t("keepEditing")}
+          </button>
+        </div>
+      ) : null}
 
       {repeats ? (
-        <div role="alert" className="mt-3 border border-terracotta-400 bg-terracotta-200 px-4 py-3 text-[12.5px] text-terracotta-600">
+        <div role="alert" className={ALERT}>
           <b className="block">{t("repeatsTitle")}</b>
           <ul className="mt-1.5 list-disc pl-5">
             {repeats.map((repeat) => (
@@ -55,33 +126,35 @@ export function AddNamesBox({ list, onAdd, onCancel }: AddNamesBoxProps) {
             ))}
           </ul>
           <div className="mt-3 flex flex-wrap gap-2.5">
-            <button type="button" onClick={() => onAdd(names)} className={BTN_PRIMARY}>
+            <button type="button" onClick={keep} className={SMALL_BTN_WARN_SOLID}>
               {t("keepThem")}
             </button>
-            <button type="button" onClick={back} className={BTN_OUTLINE}>
+            <button type="button" onClick={back} className={SMALL_BTN_WARN}>
               {t("backToEdit")}
             </button>
           </div>
         </div>
       ) : (
-        <form onSubmit={handleSubmit(submit)} className="mt-3">
+        <form onSubmit={handleSubmit(add)} className="mt-4">
+          <p className={`mb-2 ${HINT}`}>{t("addNamesHint")}</p>
           <textarea
-            {...register("text")}
-            rows={6}
+            {...register("text", { onChange: clearUnadded })}
+            rows={5}
             aria-label={t("addNamesTitle")}
             className={`${INPUT} resize-y`}
           />
-          <div className="mt-3 flex flex-wrap items-center gap-2.5">
-            <span className={`mr-auto ${HINT}`}>{t("addNamesCount", { count: names.length })}</span>
-            <button type="button" onClick={onCancel} className={BTN_OUTLINE}>
-              {t("cancel")}
+          <div className="mt-3 flex justify-end gap-2.5">
+            <button type="button" onClick={clearInput} disabled={text.length === 0} className={BTN_LIST_OUTLINE}>
+              {t("clearInput")}
             </button>
-            <button type="submit" disabled={names.length === 0} className={BTN_PRIMARY}>
+            <button type="submit" disabled={names.length === 0} className={BTN_LIST}>
               {t("addNamesSubmit", { count: names.length })}
             </button>
           </div>
         </form>
       )}
+
+      <DraftNameList names={draft.names} repliedIds={repliedIds} onRemove={draft.remove} />
     </div>
   );
 }

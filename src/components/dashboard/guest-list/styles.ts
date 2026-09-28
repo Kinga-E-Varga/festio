@@ -1,3 +1,5 @@
+import { BUTTON, GOLD_BTN } from "@/components/dashboard/event-editor/styles";
+
 /** Guest-list controls, on top of the event editor's shared form styles. */
 
 export const CHIP =
@@ -6,11 +8,16 @@ export const CHIP =
 export const HEADER_BTN_WIDTH = "min-w-[160px] grow whitespace-nowrap @min-[560px]:grow-0";
 export const CHIP_ON = "border-forest-500 bg-forest-500 text-neutral-50";
 export const CHIP_OFF =
-  "border-mustard-300 bg-neutral-50 text-neutral-800 hover:border-mustard-500";
+  "border-mustard-300 bg-neutral-50 text-neutral-800 hover:border-forest-500 hover:bg-forest-200";
 
 /** The small gold action the editor's "Edit list" uses. */
-export const SMALL_BTN =
-  "inline-flex cursor-pointer items-center gap-1.5 rounded-sm border border-mustard-400 bg-mustard-200 px-3 py-1.5 text-xs font-medium whitespace-nowrap text-mustard-600 transition-colors hover:border-mustard-500";
+const SMALL_BTN_SHAPE =
+  "inline-flex cursor-pointer items-center gap-1.5 rounded-sm border px-3 py-1.5 text-xs font-medium whitespace-nowrap transition-colors";
+export const SMALL_BTN = `${SMALL_BTN_SHAPE} ${GOLD_BTN}`;
+/** The same small action in terracotta, for the prompts on a terracotta alert. */
+export const SMALL_BTN_WARN = `${SMALL_BTN_SHAPE} border-terracotta-600 bg-mustard-50 text-terracotta-600 hover:border-terracotta-500 hover:text-terracotta-500`;
+/** Its solid pair, for the choice the prompt leans to. */
+export const SMALL_BTN_WARN_SOLID = `${SMALL_BTN_SHAPE} border-terracotta-600 bg-terracotta-600 text-mustard-50 hover:border-terracotta-500 hover:bg-terracotta-500`;
 
 /** A small flag beside a name: Unknown, Duplicate. */
 export const TAG =
@@ -32,3 +39,10 @@ export const ICON_BTN = `${ICON_BASE} hover:bg-mustard-200 hover:text-neutral-90
 /** Delete: the same button, turning rust on hover. */
 export const ICON_BTN_DANGER = `${ICON_BASE} hover:bg-rust-200 hover:text-rust-500`;
 
+
+/**
+ * The preloaded list box's buttons, apart from the page's forest actions:
+ * the big shape in the gold action's colours.
+ */
+export const BTN_LIST = `${BUTTON} ${GOLD_BTN}`;
+export const BTN_LIST_OUTLINE = `${BUTTON} border-mustard-300 bg-transparent text-mustard-600 hover:bg-neutral-50`;

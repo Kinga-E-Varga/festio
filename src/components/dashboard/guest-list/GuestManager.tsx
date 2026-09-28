@@ -1,7 +1,7 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { useEffect, useEffectEvent } from "react";
+import { useEffect, useEffectEvent, useState } from "react";
 import { Toast, useToast } from "@/components/dashboard/Toast";
 import { Banner } from "@/components/dashboard/event-editor/Banner";
 import { EditorSection } from "@/components/dashboard/event-editor/EditorSection";
@@ -16,12 +16,17 @@ import { useGuestActions } from "@/components/dashboard/guest-list/useGuestActio
 import { useGuestList } from "@/components/dashboard/guest-list/useGuestList";
 import { NEW_ROW, useRowEditor } from "@/components/dashboard/guest-list/useRowEditor";
 import type { DashboardEvent } from "@/types/dashboard";
-import type { EventGuests } from "@/types/guests";
+import type { EventGuests, ListName } from "@/types/guests";
 
 interface GuestManagerProps {
   event: DashboardEvent;
   initial: EventGuests;
 }
+
+/** The list box eases in and out, a short drop and a fade, instead of popping. */
+const BOX_FADE =
+  "transition-[opacity,translate] duration-300 ease-out starting:-translate-y-2 starting:opacity-0 motion-reduce:transition-none";
+const BOX_LEAVING = "pointer-events-none -translate-y-2 opacity-0";
 
 /** Everyone the event knows about, in one list the host can read and fix. */
 export function GuestManager({ event, initial }: GuestManagerProps) {
@@ -42,10 +47,30 @@ export function GuestManager({ event, initial }: GuestManagerProps) {
     return () => cancelAnimationFrame(frame);
   }, []);
 
-  function addNames(names: string[]) {
-    actions.addNames(names);
+  /* The box stays until its fade-out ends; with reduced motion there's none, so it goes at once. */
+  const [leaving, setLeaving] = useState(false);
+  function closeBox() {
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) closeNow();
+    else setLeaving(true);
+  }
+  /* Opening again mid-fade keeps the box, draft and all. */
+  function openBox() {
+    setLeaving(false);
+    list.openAddNames();
+  }
+  function closeNow() {
+    setLeaving(false);
     list.set.addOpen(false);
   }
+
+  function saveList(added: ListName[], removedIds: string[]) {
+    actions.saveList(added, removedIds);
+    closeBox();
+  }
+
+  /* Replied = on the list but no longer waiting: the table's own reading. */
+  const waitingIds = new Set(list.waiting.map((entry) => entry.id));
+  const repliedIds = new Set(list.guests.list.flatMap((entry) => (waitingIds.has(entry.id) ? [] : [entry.id])));
 
   return (
     <>
@@ -118,18 +143,30 @@ export function GuestManager({ event, initial }: GuestManagerProps) {
             <div className="basis-full @min-[560px]:basis-auto">
               <GuestToolbar
                 useList={list.useList}
-                onAddNames={() => editor.guard(list.openAddNames)}
+                onAddNames={() => editor.guard(openBox)}
                 onAddGuest={() => editor.open(NEW_ROW)}
               />
             </div>
+            {/* Lines run bottom up, so the last item, the list box, sits on top of them all. 20px + the 12px row gap = the 32px above it. */}
+            {list.addOpen ? (
+              <div
+                onTransitionEnd={(event) => {
+                  if (leaving && event.target === event.currentTarget) closeNow();
+                }}
+                className={`mb-5 basis-full ${BOX_FADE} ${leaving ? BOX_LEAVING : ""}`}
+              >
+                <AddNamesBox
+                  list={list.guests.list}
+                  repliedIds={repliedIds}
+                  onSave={saveList}
+                  onCancel={closeBox}
+                />
+              </div>
+            ) : null}
           </div>
-
-          {list.addOpen ? (
-            <AddNamesBox list={list.guests.list} onAdd={addNames} onCancel={() => list.set.addOpen(false)} />
-          ) : null}
         </div>
 
-        <GuestTable list={list} actions={actions} editor={editor} onStartList={() => editor.guard(list.openAddNames)} />
+        <GuestTable list={list} actions={actions} editor={editor} onStartList={() => editor.guard(openBox)} />
       </EditorSection>
 
       <Toast message={toast.message} />
