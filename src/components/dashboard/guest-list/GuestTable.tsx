@@ -2,9 +2,9 @@
 
 import { useLocale, useTranslations } from "next-intl";
 import { type ReactNode, useId, useState } from "react";
-import { BTN_GHOST } from "@/components/dashboard/event-editor/styles";
 import { ATTENTION_TAG, SMALL_BTN } from "@/components/dashboard/guest-list/styles";
-import { RowEditor } from "@/components/dashboard/guest-list/RowEditor";
+import { NameEditor } from "@/components/dashboard/guest-list/NameEditor";
+import { ReplyEditor } from "@/components/dashboard/guest-list/ReplyEditor";
 import { RowView } from "@/components/dashboard/guest-list/RowView";
 import type { GuestActions } from "@/components/dashboard/guest-list/useGuestActions";
 import type { GuestListState } from "@/components/dashboard/guest-list/useGuestList";
@@ -89,10 +89,6 @@ export function GuestTable({ list, actions, editor, onStartList }: GuestTablePro
     return (
       <div className="border border-dashed border-mustard-400 px-6 py-10 text-center">
         <p className="font-serif text-[17px] text-neutral-900">{t("emptyTitle")}</p>
-        <button type="button" onClick={() => editor.open(NEW_ROW)} className={`mt-4 ${BTN_GHOST}`}>
-          <Icon name="plus" className="size-4" />
-          {t("addReply")}
-        </button>
         {list.useList ? null : (
           <button
             type="button"
@@ -111,9 +107,10 @@ export function GuestTable({ list, actions, editor, onStartList }: GuestTablePro
     <div className="border border-mustard-300 bg-neutral-50 px-4 py-4 @min-[720px]:px-5">
       {adding ? (
         <div className="border-b border-mustard-300 py-2">
-          <RowEditor
-            initial={{ name: "", status: "going" }}
-            withStatus
+          <ReplyEditor
+            reply={null}
+            questions={list.guests.questions}
+            party={[]}
             onSave={(values) => {
               actions.saveReply(null, values);
               editor.close();
@@ -261,7 +258,7 @@ const STATUS_KEY = {
   not_going: "statusNotGoing",
 } as const;
 
-/** One of the replies with a shared name: when it came, the person (the note in their details), who came with them. */
+/** One of the replies with a shared name: when it came, the person (their message in the details), who came with them. */
 function SameNameReply({ row, list, actions, editor }: SameNameReplyProps) {
   const t = useTranslations("GuestList");
   const locale = useLocale();
@@ -279,7 +276,6 @@ function SameNameReply({ row, list, actions, editor }: SameNameReplyProps) {
   return (
     <div className="@container border border-mustard-300 bg-neutral-50 px-3 py-2">
       <p className="text-[11.5px] text-neutral-700">{t("repliedOn", { date })}</p>
-      {/* The note waits in the details here, so the two replies compare at a glance. */}
       <RowItem row={row} list={list} actions={actions} editor={editor} inCard />
       {party.length > 0 ? (
         <p className="py-1 text-[12.5px] text-neutral-700">
@@ -290,19 +286,10 @@ function SameNameReply({ row, list, actions, editor }: SameNameReplyProps) {
         </p>
       ) : null}
       {row.later ? (
-        <button type="button" onClick={() => actions.different(row.reply.id)} className={`my-1.5 ${SMALL_BTN}`}>
+        <button type="button" onClick={() => editor.guard(() => actions.different(row.reply.id))} className={`my-1.5 ${SMALL_BTN}`}>
           {t("differentPerson")}
         </button>
       ) : null}
-    </div>
-  );
-}
-
-function NoteBubble({ note }: { note: string }) {
-  return (
-    <div className="my-1 flex max-w-[60ch] gap-2 px-3 py-2 text-[13px] text-neutral-800">
-      <Icon name="note" className="mt-0.5 size-3.5 shrink-0 text-neutral-600" />
-      <span>{note}</span>
     </div>
   );
 }
@@ -323,12 +310,12 @@ interface GroupViewProps {
   editor: RowEditorState;
 }
 
-/** People who replied together share a thread and one note; a split-off part names the rest. */
+/** People who replied together share a thread; a split-off part names the rest. Their message is in each one's details. */
 function GroupView({ group, list, actions, editor }: GroupViewProps) {
   const category = groupCategory(group);
   const t = useTranslations("GuestList");
   const locale = useLocale();
-  const parts = group.rows.length + (group.note ? 1 : 0) + (group.with.length > 0 ? 1 : 0);
+  const parts = group.rows.length + (group.with.length > 0 ? 1 : 0);
   const place = (at: number) => ({
     joined: parts > 1,
     first: at === 0,
@@ -342,16 +329,6 @@ function GroupView({ group, list, actions, editor }: GroupViewProps) {
           <RowItem row={row} list={list} actions={actions} editor={editor} />
         </Strand>
       ))}
-      {group.note ? (
-        <Strand
-          {...place(group.rows.length)}
-          category={category}
-          at="note"
-          mark={<span className={`h-px w-3.5 -translate-y-1/2 @min-[720px]:w-5.5 ${CATEGORY[category].line}`} />}
-        >
-          <NoteBubble note={group.note} />
-        </Strand>
-      ) : null}
       {group.with.length > 0 ? (
         <Strand
           {...place(parts - 1)}
@@ -393,7 +370,6 @@ const STRAND = {
     above: "h-[20px] @min-[720px]:h-[22px]",
     below: "top-[20px] @min-[720px]:top-[22px]",
   },
-  note: { mark: "top-[21px]", above: "h-[21px]", below: "top-[21px]" },
   with: { mark: "top-1/2", above: "h-1/2", below: "top-1/2" },
 } as const;
 
@@ -422,7 +398,7 @@ function Strand({ joined, first, last, category, at, mark, children }: StrandPro
       {joined && !last ? <span aria-hidden className={`${LINE} bottom-0 ${y.below} ${line}`} /> : null}
       <span
         aria-hidden
-        className={`absolute flex ${y.mark} ${at === "note" ? "-left-5 @min-[720px]:-left-7" : "-left-[26px] @min-[720px]:-left-[34px]"}`}
+        className={`absolute -left-[26px] flex @min-[720px]:-left-[34px] ${y.mark}`}
       >
         {mark}
       </span>
@@ -446,6 +422,7 @@ function RowItem({ row, list, actions, editor, inCard = false }: RowItemProps) {
       <RowView
         row={row}
         waiting={list.waiting}
+        questions={list.guests.questions}
         actions={actions}
         onEdit={() => editor.open(row.id)}
         guard={editor.guard}
@@ -462,25 +439,30 @@ function RowItem({ row, list, actions, editor, inCard = false }: RowItemProps) {
 
   if (row.kind === "waiting") {
     return (
-      <RowEditor
+      <NameEditor
         {...shared}
-        initial={{ name: row.listName.name, status: "going" }}
-        withStatus={false}
-        onSave={(values) => {
-          actions.renameListName(row.listName.id, values.name);
+        initial={row.listName.name}
+        onSave={(name) => {
+          actions.renameListName(row.listName.id, name);
           editor.close();
         }}
       />
     );
   }
 
+  const { reply } = row;
+  const party = list.guests.replies.flatMap((other) =>
+    other.id !== reply.id && other.submissionId === reply.submissionId ? [other.name] : [],
+  );
+
   return (
-    <RowEditor
+    <ReplyEditor
       {...shared}
-      initial={{ name: row.reply.name, status: row.reply.status }}
-      withStatus
+      reply={reply}
+      questions={list.guests.questions}
+      party={party}
       onSave={(values) => {
-        actions.saveReply(row.reply.id, values);
+        actions.saveReply(reply.id, values);
         editor.close();
       }}
     />

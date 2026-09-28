@@ -8,16 +8,18 @@ import type { GuestActions } from "@/components/dashboard/guest-list/useGuestAct
 import { UnknownFix } from "@/components/dashboard/guest-list/UnknownFix";
 import { Icon } from "@/components/icons";
 import { rowName, showsUnknown } from "@/lib/guests";
-import type { AgeGroup, DietNeed, GuestReply, GuestRow, ListName } from "@/types/guests";
+import type { AgeGroup, AnswerValue, DietNeed, GuestQuestion, GuestReply, GuestRow, ListName } from "@/types/guests";
 
 interface RowViewProps {
   row: GuestRow;
   waiting: ListName[];
+  /** The host's own questions, for their answers in the details. */
+  questions: GuestQuestion[];
   actions: GuestActions;
   onEdit: () => void;
   /** Holds an action back while another row has unsaved changes. */
   guard: (action: () => void) => void;
-  /** Sits in a duplicate card: the note joins the details, and the row lays out against the card. */
+  /** Sits in a duplicate card: the row lays out against the card. */
   inCard?: boolean;
 }
 
@@ -57,17 +59,20 @@ const LAYOUT = {
  * the right; a long name is cut short to make room. A row with answers opens on a click anywhere
  * that isn't one of its own controls, like a category band.
  */
-export function RowView({ row, waiting, actions, onEdit, guard, inCard = false }: RowViewProps) {
+export function RowView({ row, waiting, questions, actions, onEdit, guard, inCard = false }: RowViewProps) {
   const layout = LAYOUT[inCard ? "card" : "table"];
   const t = useTranslations("GuestList");
   const [confirming, setConfirming] = useState(false);
   const [open, setOpen] = useState(false);
   const name = rowName(row);
   const reply = row.kind === "reply" ? row : null;
-  /* Only people coming are asked the extra questions, so only they have details, plus a note when shown here. */
+  /* The extra questions are asked only of people coming; a message can come with any reply. */
   const hasDetails =
     reply !== null &&
-    (reply.reply.ageGroup !== undefined || reply.reply.diet !== undefined || (inCard && reply.reply.note !== null));
+    (reply.reply.ageGroup !== undefined ||
+      reply.reply.diet !== undefined ||
+      questions.some((question) => reply.reply.answers?.[question.id] !== undefined) ||
+      reply.reply.note !== null);
 
   function remove() {
     if (row.kind === "reply") actions.removeReply(row.reply.id);
@@ -165,19 +170,21 @@ export function RowView({ row, waiting, actions, onEdit, guard, inCard = false }
           }`}
         >
           <div className="min-h-0 overflow-hidden">
-            <ReplyDetails reply={reply.reply} spaced={showsUnknown(reply)} withNote={inCard} />
+            <ReplyDetails reply={reply.reply} questions={questions} spaced={showsUnknown(reply)} />
           </div>
         </div>
       ) : null}
 
       {/* A shared name is sorted out first; its card holds that choice. */}
-      {reply && showsUnknown(reply) ? <UnknownFix reply={reply.reply} waiting={waiting} actions={actions} /> : null}
+      {reply && showsUnknown(reply) ? <UnknownFix reply={reply.reply} waiting={waiting} actions={actions} guard={guard} /> : null}
 
       {confirming ? (
         <div role="alert" className="flex flex-wrap items-center gap-2.5 pb-2 text-[12.5px] text-rust-600">
           <span className="mr-auto">{t("deleteConfirm", { name })}</span>
-          <button type="button" onClick={remove} className={BTN_DANGER}>{t("delete")}</button>
-          <button type="button" onClick={() => setConfirming(false)} className={BTN_GHOST}>{t("cancel")}</button>
+          <div className="flex shrink-0 gap-2.5">
+            <button type="button" onClick={remove} className={BTN_DANGER}>{t("delete")}</button>
+            <button type="button" onClick={() => setConfirming(false)} className={BTN_GHOST}>{t("cancel")}</button>
+          </div>
         </div>
       ) : null}
 
@@ -203,13 +210,13 @@ export const DIET_KEY = {
 
 interface ReplyDetailsProps {
   reply: GuestReply;
+  questions: GuestQuestion[];
   /** The unknown fix line follows: leave it more room, so the two don't read as one. */
   spaced: boolean;
-  withNote: boolean;
 }
 
 /** What the person answered beyond their name and status. A question never asked shows nothing. */
-function ReplyDetails({ reply, spaced, withNote }: ReplyDetailsProps) {
+function ReplyDetails({ reply, questions, spaced }: ReplyDetailsProps) {
   const t = useTranslations("GuestList");
   const locale = useLocale();
   const { ageGroup, diet, note } = reply;
@@ -221,19 +228,33 @@ function ReplyDetails({ reply, spaced, withNote }: ReplyDetailsProps) {
     return new Intl.ListFormat(locale).format(named);
   }
 
+  /* A choice by its option's wording, a yes/no in words, text as written. */
+  function answerText(question: GuestQuestion, value: AnswerValue | null) {
+    if (value === null || value === "") return t("skipped");
+    if (typeof value === "boolean") return t(value ? "summaryYes" : "summaryNo");
+    if (question.kind === "choice") return question.options.find((option) => option.id === value)?.label ?? value;
+    return value;
+  }
+
   /* One line per question, so a form with many more still reads as a list. */
   const answers = [
     ageGroup === undefined
       ? null
-      : { label: t("ageLabel"), value: ageGroup === null ? t("skipped") : t(AGE_KEY[ageGroup]) },
-    diet === undefined ? null : { label: t("dietLabel"), value: diet === null ? t("skipped") : dietText(diet) },
-    withNote && note !== null ? { label: t("messageLabel"), value: note } : null,
+      : { key: "age", label: t("ageLabel"), value: ageGroup === null ? t("skipped") : t(AGE_KEY[ageGroup]) },
+    diet === undefined
+      ? null
+      : { key: "diet", label: t("dietLabel"), value: diet === null ? t("skipped") : dietText(diet) },
+    ...questions.map((question) => {
+      const value = reply.answers?.[question.id];
+      return value === undefined ? null : { key: question.id, label: question.label, value: answerText(question, value) };
+    }),
+    note !== null ? { key: "note", label: t("messageLabel"), value: note } : null,
   ].filter((answer) => answer !== null);
 
   return (
     <dl className={`flex flex-col gap-y-1 pt-1 text-[12.5px] ${spaced ? "pb-5" : "pb-3"}`}>
       {answers.map((answer) => (
-        <div key={answer.label} className="flex gap-1">
+        <div key={answer.key} className="flex gap-1">
           <dt className="text-neutral-700">{answer.label}:</dt>
           <dd className="min-w-0 font-medium text-neutral-900">{answer.value}</dd>
         </div>

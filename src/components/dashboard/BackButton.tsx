@@ -12,6 +12,7 @@ export function BackButton() {
   return (
     <button
       type="button"
+      data-leaves
       onClick={leave}
       className="inline-flex cursor-pointer items-center gap-2 text-[11px] font-semibold tracking-[0.16em] text-forest-500 uppercase transition-colors hover:text-forest-600 hover:underline hover:underline-offset-4"
     >

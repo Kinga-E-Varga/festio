@@ -12,9 +12,11 @@ import { GuestSummary } from "@/components/dashboard/guest-list/GuestSummary";
 import { GuestTable } from "@/components/dashboard/guest-list/GuestTable";
 import { GuestToolbar } from "@/components/dashboard/guest-list/GuestToolbar";
 import { ReplySummary } from "@/components/dashboard/guest-list/ReplySummary";
+import { FADE_IN } from "@/components/dashboard/guest-list/styles";
 import { useGuestActions } from "@/components/dashboard/guest-list/useGuestActions";
 import { useGuestList } from "@/components/dashboard/guest-list/useGuestList";
 import { NEW_ROW, useRowEditor } from "@/components/dashboard/guest-list/useRowEditor";
+import { useLeaveWarning } from "@/lib/leave-warning";
 import type { DashboardEvent } from "@/types/dashboard";
 import type { EventGuests, ListName } from "@/types/guests";
 
@@ -23,9 +25,7 @@ interface GuestManagerProps {
   initial: EventGuests;
 }
 
-/** The list box eases in and out, a short drop and a fade, instead of popping. */
-const BOX_FADE =
-  "transition-[opacity,translate] duration-300 ease-out starting:-translate-y-2 starting:opacity-0 motion-reduce:transition-none";
+/** The list box eases out the way it eased in (`FADE_IN`). */
 const BOX_LEAVING = "pointer-events-none -translate-y-2 opacity-0";
 
 /** Everyone the event knows about, in one list the host can read and fix. */
@@ -36,7 +36,9 @@ export function GuestManager({ event, initial }: GuestManagerProps) {
   const toast = useToast();
   const list = useGuestList(initial, event.preloaded);
   const actions = useGuestActions(list.edit, toast.show, { guests: list.guests, useList: list.useList });
-  const editor = useRowEditor(list.rows);
+  const editor = useRowEditor(list.rows, startEditing, holdForBox);
+  /* The list box's draft, as the page-leave warning needs it; gone with the box. */
+  const [boxDirty, setBoxDirty] = useState(false);
 
   /* The editor's "Edit list" lands here on `#list`: open the box it means. */
   const openFromHash = useEffectEvent(() => {
@@ -49,18 +51,48 @@ export function GuestManager({ event, initial }: GuestManagerProps) {
 
   /* The box stays until its fade-out ends; with reduced motion there's none, so it goes at once. */
   const [leaving, setLeaving] = useState(false);
+  /* Fading out, the box is already saved or discarded. */
+  const boxUnsaved = list.addOpen && !leaving && boxDirty;
+  useLeaveWarning(editor.unsaved || boxUnsaved, t("leaveUnsaved"));
+  /* An action held back by the list box's unsaved changes; wrapped, like the row editor's. */
+  const [boxPending, setBoxPending] = useState<(() => void) | null>(null);
   function closeBox() {
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) closeNow();
     else setLeaving(true);
   }
-  /* Opening again mid-fade keeps the box, draft and all. */
+  /*
+   * The list box and a row editor are never open together: opening one
+   * closes the other (each asks first when the other has unsaved changes).
+   * Opening again mid-fade keeps the box, draft and all.
+   */
   function openBox() {
+    editor.close();
     setLeaving(false);
     list.openAddNames();
   }
+  function startEditing(id: string | null) {
+    list.set.keep(id);
+    if (id !== null && list.addOpen && !leaving) closeBox();
+  }
   function closeNow() {
     setLeaving(false);
+    setBoxPending(null);
     list.set.addOpen(false);
+  }
+
+  /*
+   * While the list box has unsaved changes, any change to the table (edit,
+   * New reply, delete, the fixes, the list switch) asks with the box's own
+   * discard prompt; Discard closes the box, then does it.
+   */
+  function holdForBox(action: () => void) {
+    if (boxUnsaved) setBoxPending(() => action);
+    else action();
+  }
+  function discardBox() {
+    const action = boxPending;
+    closeNow();
+    action?.();
   }
 
   function saveList(added: ListName[], removedIds: string[]) {
@@ -143,7 +175,7 @@ export function GuestManager({ event, initial }: GuestManagerProps) {
             <div className="basis-full @min-[560px]:basis-auto">
               <GuestToolbar
                 useList={list.useList}
-                onAddNames={() => editor.guard(openBox)}
+                onAddNames={() => (list.addOpen ? openBox() : editor.guard(openBox))}
                 onAddGuest={() => editor.open(NEW_ROW)}
               />
             </div>
@@ -153,13 +185,15 @@ export function GuestManager({ event, initial }: GuestManagerProps) {
                 onTransitionEnd={(event) => {
                   if (leaving && event.target === event.currentTarget) closeNow();
                 }}
-                className={`mb-5 basis-full ${BOX_FADE} ${leaving ? BOX_LEAVING : ""}`}
+                className={`mb-5 basis-full ${FADE_IN} ${leaving ? BOX_LEAVING : ""}`}
               >
                 <AddNamesBox
                   list={list.guests.list}
                   repliedIds={repliedIds}
                   onSave={saveList}
                   onCancel={closeBox}
+                  onDirty={setBoxDirty}
+                  ask={boxPending ? { onDiscard: discardBox, onKeep: () => setBoxPending(null) } : null}
                 />
               </div>
             ) : null}

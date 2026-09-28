@@ -86,7 +86,7 @@ Event pages: `EventHeader.tsx` (BACK + title + date), `BackButton.tsx`, `Replies
 
 `event-editor/` — the event edit form. `EventEditor.tsx` composes `*Section.tsx` parts; state in `useEventForm.ts`, shared classes in `styles.ts`.
 
-`guest-list/` — the guest manager. `GuestManager.tsx` composes toolbar, add-names box, summary chips + `GuestSearch.tsx`, and table (`GuestTable.tsx` → categories → groups → `RowView.tsx` / `RowEditor.tsx`); state in `useGuestList.ts` / `useGuestActions.ts` / `useRowEditor.ts`.
+`guest-list/` — the guest manager. `GuestManager.tsx` composes toolbar, add-names box, summary chips + `GuestSearch.tsx`, and table (`GuestTable.tsx` → categories → groups → `RowView.tsx` / an editor); state in `useGuestList.ts` / `useGuestActions.ts` / `useRowEditor.ts`. Editors: `ReplyEditor.tsx` (a reply's questions, or a new reply with several people) and `NameEditor.tsx` (a waiting name), both in the `RowEditor.tsx` frame; fields in `ReplyFields.tsx` (diet's tick dropdown in `MultiSelect.tsx`), reply ↔ form values in `replyValues.ts`.
 
 ## Lib — `src/lib/`
 
@@ -99,6 +99,7 @@ Event pages: `EventHeader.tsx` (BACK + title + date), `BackButton.tsx`, `Replies
 | `fonts.ts` | Invitation fonts via `next/font/google` (per-template, not the app chrome — that's `src/app/fonts.ts`) |
 | `history.ts` | Local visit tracking; `useLeaveFestio(fallback)` — the one BACK, with each page's own fallback when no Festio page is behind it |
 | `guests.ts` | Guest rows from list + replies: matching, Unknown/Duplicate tags, grouping and splitting by category, counts, filters, repeat check. Type imports only. |
+| `leave-warning.ts` | `useLeaveWarning(active, message)` — while there are unsaved changes, asks before reload/close (the browser's prompt) and before in-app links or a `data-leaves` control (BACK) |
 | `language.ts` | `LANGUAGES` (the one list, read by both `i18n/routing.ts` and an invitation's `language`), `invitationLanguage`, `LocalizedText`/`localized`, locale tags and names |
 
 ## Other

@@ -5,7 +5,7 @@ import { type ChangeEvent, useEffect, useRef, useState } from "react";
 import { useForm, useWatch } from "react-hook-form";
 import { HINT, INPUT, SUBBOX } from "@/components/dashboard/event-editor/styles";
 import { DraftNameList } from "@/components/dashboard/guest-list/DraftNameList";
-import { BTN_LIST, BTN_LIST_OUTLINE, SMALL_BTN_WARN, SMALL_BTN_WARN_SOLID } from "@/components/dashboard/guest-list/styles";
+import { ALERT, BTN_LIST, BTN_LIST_OUTLINE, SMALL_BTN_WARN, SMALL_BTN_WARN_SOLID } from "@/components/dashboard/guest-list/styles";
 import { useListDraft } from "@/components/dashboard/guest-list/useListDraft";
 import { findRepeats, parseNames } from "@/lib/guests";
 import type { ListName, NameRepeat } from "@/types/guests";
@@ -15,15 +15,17 @@ interface AddNamesBoxProps {
   repliedIds: ReadonlySet<string>;
   onSave: (added: ListName[], removedIds: string[]) => void;
   onCancel: () => void;
+  /** Whether anything is waiting to be saved: a draft change or names still in the box. */
+  onDirty: (dirty: boolean) => void;
+  /** A change to the table was asked for with changes waiting here: the discard prompt asks, and Discard lets it through. */
+  ask: { onDiscard: () => void; onKeep: () => void } | null;
 }
 
 /** What stops a Save or Cancel until the host answers it. */
 type Notice = "unadded" | "discard";
 
-const ALERT = "mt-3 border border-terracotta-400 bg-terracotta-200 px-4 py-3 text-[12.5px] text-terracotta-600";
-
 /** The whole preloaded list as a draft: paste names in, remove the unwanted, then save. */
-export function AddNamesBox({ list, repliedIds, onSave, onCancel }: AddNamesBoxProps) {
+export function AddNamesBox({ list, repliedIds, onSave, onCancel, onDirty, ask }: AddNamesBoxProps) {
   const t = useTranslations("GuestList");
   const { register, control, handleSubmit, setFocus, reset } = useForm<{ text: string }>({
     defaultValues: { text: "" },
@@ -39,6 +41,18 @@ export function AddNamesBox({ list, repliedIds, onSave, onCancel }: AddNamesBoxP
     box.current?.scrollIntoView({ block: "nearest" });
     setFocus("text");
   }, [setFocus]);
+
+  /* Asked from the table or the switch: bring the prompt into view and onto its first button. */
+  const discardPrompt = useRef<HTMLDivElement>(null);
+  const asking = ask !== null;
+  useEffect(() => {
+    if (!asking) return;
+    discardPrompt.current?.scrollIntoView({ block: "nearest" });
+    discardPrompt.current?.querySelector("button")?.focus();
+  }, [asking]);
+
+  const dirty = draft.changed || names.length > 0;
+  useEffect(() => onDirty(dirty), [onDirty, dirty]);
 
   function add() {
     setNotice(null);
@@ -98,34 +112,43 @@ export function AddNamesBox({ list, repliedIds, onSave, onCancel }: AddNamesBoxP
       </div>
 
       {notice === "unadded" ? (
-        <div role="alert" className={`${ALERT} flex flex-wrap items-center gap-2.5`}>
+        <div role="alert" className={`mt-3 ${ALERT} flex flex-wrap items-center gap-2.5`}>
           <span className="mr-auto">{t("unaddedTitle")}</span>
           <button type="button" onClick={add} className={SMALL_BTN_WARN_SOLID}>
             {t("addThem")}
           </button>
         </div>
       ) : null}
-      {notice === "discard" ? (
-        <div role="alert" className={`${ALERT} flex flex-wrap items-center gap-2.5`}>
+      {notice === "discard" || ask ? (
+        <div ref={discardPrompt} role="alert" className={`mt-3 ${ALERT} flex flex-wrap items-center gap-2.5`}>
           <span className="mr-auto">{t("discardTitle")}</span>
-          <button type="button" onClick={onCancel} className={SMALL_BTN_WARN}>
-            {t("discard")}
-          </button>
-          <button type="button" onClick={() => setNotice(null)} className={SMALL_BTN_WARN_SOLID}>
-            {t("keepEditing")}
-          </button>
+          <div className="flex shrink-0 gap-2.5">
+            <button type="button" onClick={ask ? ask.onDiscard : onCancel} className={SMALL_BTN_WARN}>
+              {t("discard")}
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                setNotice(null);
+                ask?.onKeep();
+              }}
+              className={SMALL_BTN_WARN_SOLID}
+            >
+              {t("keepEditing")}
+            </button>
+          </div>
         </div>
       ) : null}
 
       {repeats ? (
-        <div role="alert" className={ALERT}>
+        <div role="alert" className={`mt-3 ${ALERT}`}>
           <b className="block">{t("repeatsTitle")}</b>
           <ul className="mt-1.5 list-disc pl-5">
             {repeats.map((repeat) => (
               <li key={repeat.name}>{t("repeatsItem", { name: repeat.name, count: repeat.count })}</li>
             ))}
           </ul>
-          <div className="mt-3 flex flex-wrap gap-2.5">
+          <div className="mt-3 flex gap-2.5">
             <button type="button" onClick={keep} className={SMALL_BTN_WARN_SOLID}>
               {t("keepThem")}
             </button>

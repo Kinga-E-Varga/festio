@@ -20,6 +20,8 @@ export function useGuestList(initial: EventGuests, preloaded: boolean) {
   const [filter, setFilter] = useState<GuestFilter>("all");
   const [query, setQuery] = useState("");
   const [addOpen, setAddOpen] = useState(false);
+  /* The row open in the editor: a search or filter never hides it mid-edit. */
+  const [keep, setKeep] = useState<string | null>(null);
 
   const rows = buildRows(guests, useList);
   const counts = countRows(rows);
@@ -28,7 +30,7 @@ export function useGuestList(initial: EventGuests, preloaded: boolean) {
   if (active !== filter) setFilter(active);
   const compare = new Intl.Collator(locale, { sensitivity: "base" }).compare;
   const groups: GuestGroup[] = groupRows(rows, compare).flatMap((group) => {
-    const shown = filterGroup(group, active, query);
+    const shown = filterGroup(group, active, query, keep);
     return shown ? [shown] : [];
   });
 
@@ -43,7 +45,7 @@ export function useGuestList(initial: EventGuests, preloaded: boolean) {
     useList,
     addOpen: useList && addOpen,
     waiting: rows.flatMap((row) => (row.kind === "waiting" ? [row.listName] : [])),
-    set: { filter: setFilter, query: setQuery, useList: setUseList, addOpen: setAddOpen },
+    set: { filter: setFilter, query: setQuery, useList: setUseList, addOpen: setAddOpen, keep: setKeep },
     openAddNames: () => {
       setUseList(true);
       setAddOpen(true);

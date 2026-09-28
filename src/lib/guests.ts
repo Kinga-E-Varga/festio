@@ -125,8 +125,8 @@ export function groupCategory(group: GuestGroup): GuestCategory {
 /**
  * Categories work like filters: a reply whose people land in different
  * categories splits, one part per category. Each part names the rest in
- * "Replied with"; the note stays on the first part that isn't Needs attention.
- * Once everyone lands in the same category, the reply is whole again.
+ * "Replied with". Once everyone lands in the same category, the reply is
+ * whole again.
  */
 function splitByCategory(group: GuestGroup): GuestGroup[] {
   const parts = CATEGORIES.flatMap((category) => {
@@ -134,11 +134,9 @@ function splitByCategory(group: GuestGroup): GuestGroup[] {
     return rows.length > 0 ? [{ category, rows }] : [];
   });
   if (parts.length === 1) return [group];
-  const noteOn = parts.find((part) => part.category !== "attention") ?? parts[0];
   return parts.map((part) => ({
     id: `${group.id}:${part.category}`,
     rows: part.rows,
-    note: part === noteOn ? group.note : null,
     with: group.rows.filter((row) => !part.rows.includes(row)).map(rowName),
   }));
 }
@@ -153,7 +151,7 @@ export function groupRows(
     const id = row.kind === "reply" ? `reply:${row.reply.submissionId}` : `list:${row.id}`;
     const group = groups.get(id);
     if (group) group.rows.push(row);
-    else groups.set(id, { id, rows: [row], note: row.kind === "reply" ? row.reply.note : null, with: [] });
+    else groups.set(id, { id, rows: [row], with: [] });
   }
   return [...groups.values()]
     .flatMap(splitByCategory)
@@ -278,8 +276,14 @@ export function rowMatches(row: GuestRow, filter: GuestFilter, query: string): b
  * Only the members who pass stay, still together; the ones left out join the
  * "Replied with" names, the same way an unknown person splits off.
  */
-export function filterGroup(group: GuestGroup, filter: GuestFilter, query: string): GuestGroup | null {
-  const shown = group.rows.filter((row) => rowMatches(row, filter, query));
+/** `keep` stays shown whatever the filter: the row open in the editor. */
+export function filterGroup(
+  group: GuestGroup,
+  filter: GuestFilter,
+  query: string,
+  keep: string | null = null,
+): GuestGroup | null {
+  const shown = group.rows.filter((row) => row.id === keep || rowMatches(row, filter, query));
   if (shown.length === 0) return null;
   if (shown.length === group.rows.length) return group;
   const left = group.rows.filter((row) => !shown.includes(row)).map(rowName);

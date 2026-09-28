@@ -1,10 +1,6 @@
-# Current Feature: Reply Editor
+# Reply Editor
 
 The guest list page's row editor (New reply and Edit) asks everything the RSVP form asks, and takes the preloaded list box's look.
-
-## Status
-
-Completed
 
 ## Goals
 
@@ -80,28 +76,3 @@ Completed
 - Files: `RowEditor.tsx`, `GuestTable.tsx`, `useGuestActions.ts` (`saveReply`), `useRowEditor.ts`, `AddNamesBox.tsx`, guest list `styles.ts`, `types/guests.ts` (`RowValues`)
 - The engagement (`logodna-ana-vlad`) is the event with rows, age, diet and custom questions in `src/mock/guests.ts`
 - Doesn't depend on the event's tier or type — see `context/fixes/event-edition.md`
-
-## History
-
-<!-- Keep this updated latest to earliest -->
-
-- Preloaded guest list — the list box as a draft editor: paste and add names, an A→Z list with a sticky search, × for waiting names and "replied" for the rest, Save / Cancel with unadded-names and discard prompts; opens above the list buttons, fades in and out; one shared gold button colour
-- Guest summary — the guest list page's Summary: Replies, Age and Dietary needs tables, custom question answers and messages behind a Show/Hide toggle, an Other diet option, and mock custom questions on the engagement
-- Guest list row design — one sheet with category sections, reply threads, a Needs your attention section for unknown and identical names, foldable reply details, a header that gives up space in order, and Summary / Guest list page sections
-- React Grab — dev-only tool to copy an element's component and file location for Claude Code
-- Event guest list — one page per event with the merged list, categories, Unknown/Duplicate resolving, inline editing, pasted names and invite-sent tracking; BACK falls back to each page's own list
-- Safety features — clean slug-only links, the Protected password on the printed card, expected guests with a hidden reply cap, reply-form closing, and one set of warning texts for banners and the notifications rail
-- Language / i18n — Romanian and Hungarian for the host app and guest invitations, each invitation with its own language
-- Invitation print page — a flat or folded printable at `/prints`, with its own settings form
-- Host action bar — one bar over the card: back, edit toggle, save, dismiss
-- Invitations page — grid of invitation cards, plus one-record arrivals from Events and the dashboard
-- Dashboard & events UX fixes — header action, card restack, warning-only tags
-- Dashboard design fixes — stats, card/list layout, editor banners, focus rings
-- Invitation composition — card + reply in one component, one tree per panel
-- Type 1 invitation page and editing platform
-- Events list — "Edit invitation" label + safeguard/dates info
-- Scanner fixes — cart badge + safeguard bar helper
-- Dashboard events + event edit pages
-- Dashboard redesign
-- Dashboard UI
-- Initial setup

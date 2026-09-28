@@ -11,10 +11,12 @@ interface UnknownFixProps {
   reply: GuestReply;
   waiting: ListName[];
   actions: GuestActions;
+  /** Holds the fix back while another row has unsaved changes. */
+  guard: (action: () => void) => void;
 }
 
 /** What's off with an unknown reply in one sentence, then, on the line below, the ways to sort it out. */
-export function UnknownFix({ reply, waiting, actions }: UnknownFixProps) {
+export function UnknownFix({ reply, waiting, actions, guard }: UnknownFixProps) {
   const t = useTranslations("GuestList");
   const [matching, setMatching] = useState(false);
 
@@ -22,10 +24,10 @@ export function UnknownFix({ reply, waiting, actions }: UnknownFixProps) {
     <div className="pb-2 text-[12.5px] text-neutral-700">
       <p>{t("unmatchedHint")}</p>
       <div className="mt-3 flex flex-wrap gap-2">
-        <button type="button" onClick={() => setMatching(true)} className={SMALL_BTN}>
+        <button type="button" onClick={() => guard(() => setMatching(true))} className={SMALL_BTN}>
           {t("matchTo")}
         </button>
-        <button type="button" onClick={() => actions.addAsNew(reply)} className={SMALL_BTN}>
+        <button type="button" onClick={() => guard(() => actions.addAsNew(reply))} className={SMALL_BTN}>
           {t("addAsNew")}
         </button>
       </div>

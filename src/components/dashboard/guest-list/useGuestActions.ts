@@ -1,8 +1,9 @@
 "use client";
 
 import { useTranslations } from "next-intl";
+import { editReply, newReplies } from "@/components/dashboard/guest-list/replyValues";
 import { addReply, addReplyToList, buildRows, markDifferent, matchReply, showsUnknown } from "@/lib/guests";
-import type { EventGuests, GuestReply, ListName, RowValues } from "@/types/guests";
+import type { EventGuests, GuestReply, ListName, ReplyValues } from "@/types/guests";
 
 type Edit = (recipe: (current: EventGuests) => EventGuests) => void;
 
@@ -22,29 +23,18 @@ function localNow(): string {
 export function useGuestActions(edit: Edit, notify: (message: string) => void, shown: Shown) {
   const t = useTranslations("GuestList");
 
-  function saveReply(id: string | null, values: RowValues) {
-    const name = values.name.trim();
+  /** A new reply (null) or one person's edit. */
+  function saveReply(id: string | null, values: ReplyValues) {
     if (id === null) {
-      const replyId = crypto.randomUUID();
-      const added: GuestReply = {
-        id: replyId,
-        submissionId: replyId,
-        name,
-        status: values.status,
-        note: null,
-        repliedAt: localNow(),
-        differentPerson: false,
-      };
-      edit((current) => addReply(current, added));
+      const ids = values.people.map(() => crypto.randomUUID());
+      edit((current) =>
+        newReplies(values, current.questions, ids, localNow()).reduce((guests, added) => addReply(guests, added), current),
+      );
     } else {
-      edit((current) => ({
-        ...current,
-        replies: current.replies.map((reply) =>
-          reply.id === id ? { ...reply, name, status: values.status } : reply,
-        ),
-      }));
+      const ownId = crypto.randomUUID();
+      edit((current) => ({ ...current, replies: editReply(current.replies, id, values, current.questions, ownId) }));
     }
-    notify(t("toastSaved"));
+    notify(t(values.separate ? "toastSeparated" : "toastSaved"));
   }
 
   function renameListName(id: string, name: string) {

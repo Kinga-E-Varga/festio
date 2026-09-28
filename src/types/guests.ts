@@ -97,8 +97,6 @@ export type GuestCategory = "attention" | "going" | "notGoing" | "waiting";
 export interface GuestGroup {
   id: string;
   rows: GuestRow[];
-  /** The reply's note, shown once for the group. */
-  note: string | null;
   /** Split off from its reply: the names that stayed in the other part. */
   with: string[];
 }
@@ -153,8 +151,26 @@ export interface NameRepeat {
   count: number;
 }
 
-/** What a row editor hands back. Waiting names ignore `status`. */
-export interface RowValues {
+/** A diet pick in the editor: a need, or `none` for no needs at all. */
+export type DietPick = DietNeed | "none";
+
+/**
+ * One person in the reply editor. Empty strings and lists are unanswered;
+ * answers are by question id: an option id, `yes` / `no`, or the text.
+ */
+export interface PersonValues {
   name: string;
+  ageGroup: AgeGroup | "";
+  diet: DietPick[];
+  dietOther: string;
+  answers: Record<string, string>;
+}
+
+/** What the reply editor hands back: one status for everyone, and the reply-wide answers once. */
+export interface ReplyValues {
   status: RsvpStatus;
+  people: PersonValues[];
+  shared: Record<string, string>;
+  /** Take this person out of the reply they came with, into one of their own. */
+  separate: boolean;
 }

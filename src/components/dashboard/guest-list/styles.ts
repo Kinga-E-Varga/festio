@@ -39,10 +39,37 @@ export const ICON_BTN = `${ICON_BASE} hover:bg-mustard-200 hover:text-neutral-90
 /** Delete: the same button, turning rust on hover. */
 export const ICON_BTN_DANGER = `${ICON_BASE} hover:bg-rust-200 hover:text-rust-500`;
 
-
 /**
  * The preloaded list box's buttons, apart from the page's forest actions:
  * the big shape in the gold action's colours.
  */
 export const BTN_LIST = `${BUTTON} ${GOLD_BTN}`;
-export const BTN_LIST_OUTLINE = `${BUTTON} border-mustard-300 bg-transparent text-mustard-600 hover:bg-neutral-50`;
+/** The gold action's outline pair: a pale fill, and on hover the same fill as the gold action's hover. */
+const GOLD_OUTLINE = "border-mustard-300 bg-neutral-50 text-mustard-600 hover:bg-mustard-300";
+export const BTN_LIST_OUTLINE = `${BUTTON} ${GOLD_OUTLINE}`;
+
+/*
+ * The row editor's buttons and choices: the list box's gold pair.
+ * Unpicked reads like Cancel, picked like Save.
+ */
+const EDITOR_FILL = GOLD_BTN;
+const EDITOR_OUTLINE = GOLD_OUTLINE;
+export const BTN_EDITOR = `${BUTTON} ${EDITOR_FILL}`;
+export const BTN_EDITOR_OUTLINE = `${BUTTON} ${EDITOR_OUTLINE}`;
+/** "Add person": the small action's shape in the editor's colours. */
+export const SMALL_BTN_EDITOR = `${SMALL_BTN_SHAPE} ${EDITOR_FILL}`;
+/** Remove a person: the quiet icon button. */
+export const ICON_BTN_EDITOR = `${ICON_BASE} hover:bg-mustard-200 hover:text-neutral-900`;
+
+/* The inputs' own padding and type size, so a chip is as tall as the field beside it. */
+const CHOICE_SHAPE =
+  "cursor-pointer border px-3 py-[9px] text-[13.5px] font-medium transition-colors focus-visible:outline-2 focus-visible:outline-mustard-500";
+export const CHOICE_OFF = `${CHOICE_SHAPE} ${EDITOR_OUTLINE}`;
+export const CHOICE_ON = `${CHOICE_SHAPE} ${EDITOR_FILL}`;
+
+/** A panel eases in, a short drop and a fade, instead of popping: the list box and the row editors. */
+export const FADE_IN =
+  "transition-[opacity,translate] duration-300 ease-out starting:-translate-y-2 starting:opacity-0 motion-reduce:transition-none";
+
+/** The terracotta box that holds a prompt: the list box's and the row editor's. */
+export const ALERT = "border border-terracotta-400 bg-terracotta-200 px-4 py-3 text-[12.5px] text-terracotta-600";
