@@ -360,6 +360,11 @@ export function findEvent(id: string): DashboardEvent | undefined {
   return EVENTS.find((event) => event.id === id)
 }
 
+/* The part of a title before " — ", which is how the notices name an event. */
+function shortTitle(event: DashboardEvent): string {
+  return event.title.split(' — ')[0]
+}
+
 /**
  * Reply notices come from the events' own numbers, so they always match the
  * cards: paused once the hidden cap is hit, otherwise one from 80% of
@@ -368,7 +373,7 @@ export function findEvent(id: string): DashboardEvent | undefined {
 function replyNotices(): AttentionNotice[] {
   return EVENTS.filter((event) => event.status === 'active').flatMap(
     (event): AttentionNotice[] => {
-      const name = event.title.split(' — ')[0]
+      const name = shortTitle(event)
       const { replied } = event.rsvp
       const reportHref = canReportFlood(event)
         ? floodReportPath(event)
@@ -386,17 +391,18 @@ function replyNotices(): AttentionNotice[] {
       }
       const percent = expectedPercent(replied, event.expectedGuests)
       if (replied === 0 || expectedLevel(percent) === 'ok') return []
+      const over = replied > event.expectedGuests
       return [
         {
           id: `expected-${event.id}`,
-          key: replied > event.expectedGuests ? 'overExpected' : 'nearExpected',
+          key: over ? 'overExpected' : 'nearExpected',
           values: {
             percent,
             replied,
             expected: event.expectedGuests,
             event: name,
           },
-          tone: replied > event.expectedGuests ? 'overExpected' : 'expected',
+          tone: over ? 'overExpected' : 'expected',
           reportHref,
         },
       ]
@@ -424,7 +430,7 @@ export const ATTENTION_NOTICES: AttentionNotice[] = [
       key: 'closing',
       span: event.locksIn,
       eventDate: event.date,
-      values: { event: event.title.split(' — ')[0] },
+      values: { event: shortTitle(event) },
       tone: 'deadline',
     }),
   ),
@@ -439,7 +445,7 @@ export const ATTENTION_NOTICES: AttentionNotice[] = [
       closesAt: event.repliesCloseAt,
       eventDate: event.date,
       values: {
-        event: event.title.split(' — ')[0],
+        event: shortTitle(event),
         custom: event.repliesCloseAt ? 'yes' : 'no',
         /*
          * A custom time can still move until the default close — the same

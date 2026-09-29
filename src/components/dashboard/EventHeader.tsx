@@ -1,7 +1,6 @@
-import { getLocale } from 'next-intl/server'
 import type { ReactNode } from 'react'
 import { BackButton } from '@/components/dashboard/BackButton'
-import { formatDay, formatRelative } from '@/lib/event'
+import { EventWhen } from '@/components/dashboard/EventWhen'
 import type { DashboardEvent } from '@/types/dashboard'
 
 interface EventHeaderProps {
@@ -11,9 +10,7 @@ interface EventHeaderProps {
 }
 
 /** The way back, the event's name and when it is — every event page opens so. */
-export async function EventHeader({ event, action }: EventHeaderProps) {
-  const locale = await getLocale()
-
+export function EventHeader({ event, action }: EventHeaderProps) {
   return (
     <>
       {/* The way back doubles as the page's eyebrow. */}
@@ -27,21 +24,7 @@ export async function EventHeader({ event, action }: EventHeaderProps) {
           </h1>
 
           {/* When it is, said the way the events list says it. */}
-          <p className="mt-2.5 text-[14px] leading-none text-neutral-900">
-            <span className="font-medium">{formatDay(event.date, locale)}</span>
-            <span aria-hidden="true" className="text-neutral-700">
-              {' · '}
-            </span>
-            <span
-              className={
-                event.isNextUp
-                  ? 'font-medium text-terracotta-600'
-                  : 'text-neutral-700'
-              }
-            >
-              {formatRelative(event.countdown, locale)}
-            </span>
-          </p>
+          <EventWhen event={event} />
         </div>
         {action}
       </div>

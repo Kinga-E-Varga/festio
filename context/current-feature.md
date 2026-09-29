@@ -1,6 +1,6 @@
-# Current Feature: Event Package
+# Current Feature: Simplify Codebase
 
-An event has one **package** — Free, Standard or Custom — in place of a tier plus a separate invitation type. Also fixes the Edition (now Package) section showing message keys instead of text.
+A cleanup pass over the whole of `src/`, one chunk at a time. Quality only — no change in behaviour or looks, no new features.
 
 ## Status
 
@@ -8,42 +8,25 @@ Completed
 
 ## Goals
 
-### One package instead of tier + type
-
-| Package  | Price   | Invitation                                                  | Seating chart |
-| -------- | ------- | ----------------------------------------------------------- | ------------- |
-| Free     | Free    | Simple, free templates only                                 | No            |
-| Standard | 100 RON | Simple, all simple templates                                | Yes           |
-| Custom   | 200 RON | All templates, simple or modular (sections, own RSVP questions, palette/fonts/images) | Yes           |
-
-- **Custom unlocks every template**, simple or modular — same as today's Tier 3. Modular templates need Custom; simple ones stay available on it too
-- The package only ever goes up: Free → Standard → Custom. No downgrades, no partial refunds (unchanged)
-- Events: drop `invitationType` (nothing reads it) and replace `tier` with `package`
-- Templates: one `package` field, the lowest package that can use it, in place of `type` + `minTier` (`wolf-dance` has `type: 1, minTier: 1` → free)
-- **Named "package" everywhere** — code, message keys and English text (HU *csomag*, RO *pachet* already). The `Tiers` namespace becomes `Packages`; its `free` / `standard` / `custom` keys stay; `tierPaid` / `{tier}` / `edition` keys become `package…`. `package` is reserved in strict JS, so locals are `pkg`
-- Mock: the engagement (`logodna-ana-vlad`) is `tier: 1` but `paid: true` — make it **Custom**
-- Update `context/project-overview.md` (Tiers table, Invitation types) to talk about packages
-
-### Bug: Edition section shows keys
-
-- On the event edit page, the Edition section shows `Tiers.standard.blurb` (and the upgrade tile `Tiers.custom.upsell`) instead of text
-- Cause: `66bd5df` removed every `blurb` and `upsell` from `Tiers` in all three catalogs; `EditionSection.tsx` still reads them
-- Fix: restore them in `en`, `ro` and `hu` (the removed texts are in that commit's diff), updated to the package wording above
-
-### Event row actions order
-
-- The six actions on an event's row (events page) run: Edit event, Guest list, Seating, View as guest, Print, Edit invitation
-- Shorter labels for the two edit buttons: HU *Esemény* / *Meghívó*, RO *Eveniment* / *Invitație* (EN stays Edit event / Edit invitation)
+- Run a simplify review on each chunk, in this order: `lib` + `types` + `i18n` → `templates` + `mock` → `print` → `invitation` → dashboard shell + widgets → dashboard events + invitations + event pages → `event-editor` → `guest-list` → `app`
+- Look for reuse, simplification, efficiency and logic in the wrong place
+- Each chunk only edits its own files; ideas that cross chunks are reported, not done
+- Never delete a file; leave `messages/*.json` and `context/` untouched (apart from the review file)
+- Each chunk must pass `npm run lint` and `npm run build`, or its changes are undone
+- One commit per chunk on `fix/simplify-codebase`, squashed into one commit before merging to `main`
+- Every chunk writes a plain-language section (problem, fix, files, pages to check) to `context/reviews/2026-09-29.md`
+- A final report-only bug hunt over the whole codebase adds a "Possible bugs" section; nothing is fixed
 
 ## Notes
 
-- Code that reads the tier: `types/dashboard.ts` (`TierId`, `Tier`, `tier` on events and notices), `types/invitation.ts` (`minTier`), `mock/dashboard.ts` (`TIERS`, events), `EditionSection.tsx`, `EventMeta.tsx`, `EventRow.tsx`, `NotificationsRail.tsx`, `app/[locale]/dashboard/events/[id]/page.tsx`, `templates/wolf-dance/index.tsx`
-- Separate from the reply editor (`context/features/reply-editor.md`)
+- Add `context/reviews/` to the do-not-read rules in `context/ai-interaction.md`
+- Reviews are committed, unlike plans
 
 ## History
 
 <!-- Keep this updated latest to earliest -->
 
+- Event package — one Free / Standard / Custom package in place of tier + invitation type, named package everywhere (HU csomag, RO pachet); Custom unlocks every template; package texts restored in the edit page; event row actions reordered with shorter HU/RO edit labels
 - Reply editor — edit a reply with every RSVP question (age, diet with None/Other, the host's questions, reply-wide answers with Separate from group); New reply with several people; unsaved-changes guards shared with the list box and a leave-page warning; custom answers and the message in the reply details; keyboard diet dropdown
 - Preloaded guest list — the list box as a draft editor: paste and add names, an A→Z list with a sticky search, × for waiting names and "replied" for the rest, Save / Cancel with unadded-names and discard prompts; opens above the list buttons, fades in and out; one shared gold button colour
 - Guest summary — the guest list page's Summary: Replies, Age and Dietary needs tables, custom question answers and messages behind a Show/Hide toggle, an Other diet option, and mock custom questions on the engagement

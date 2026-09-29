@@ -3,12 +3,13 @@
 import { useLocale, useTranslations } from "next-intl";
 import { type MouseEvent, useState } from "react";
 import { BTN_DANGER, BTN_GHOST } from "@/components/dashboard/event-editor/styles";
-import { ATTENTION_TAG, BADGE, BADGE_TEXT, BOX_BADGE, ICON_BTN, ICON_BTN_DANGER } from "@/components/dashboard/guest-list/styles";
+import { AGE_KEY, DIET_KEY, STATUS_KEY } from "@/components/dashboard/guest-list/labels";
+import { ATTENTION_TAG, BADGE, BADGE_TEXT, BOX_BADGE, fold, ICON_BTN, ICON_BTN_DANGER } from "@/components/dashboard/guest-list/styles";
 import type { GuestActions } from "@/components/dashboard/guest-list/useGuestActions";
 import { UnknownFix } from "@/components/dashboard/guest-list/UnknownFix";
 import { Icon } from "@/components/icons";
 import { rowName, showsUnknown } from "@/lib/guests";
-import type { AgeGroup, AnswerValue, DietNeed, GuestQuestion, GuestReply, GuestRow, ListName } from "@/types/guests";
+import type { AnswerValue, DietNeed, GuestQuestion, GuestReply, GuestRow, ListName } from "@/types/guests";
 
 interface RowViewProps {
   row: GuestRow;
@@ -23,9 +24,9 @@ interface RowViewProps {
   inCard?: boolean;
 }
 
-const STATUS = {
-  going: { key: "statusGoing", tone: "border-forest-300 bg-forest-100 text-forest-600" },
-  not_going: { key: "statusNotGoing", tone: "border-terracotta-300 bg-terracotta-100 text-terracotta-600" },
+const STATUS_TONE = {
+  going: "border-forest-300 bg-forest-100 text-forest-600",
+  not_going: "border-terracotta-300 bg-terracotta-100 text-terracotta-600",
 } as const;
 
 /** Sent or not, the invite badge looks the same; only its words and the box change. */
@@ -66,6 +67,7 @@ export function RowView({ row, waiting, questions, actions, onEdit, guard, inCar
   const [open, setOpen] = useState(false);
   const name = rowName(row);
   const reply = row.kind === "reply" ? row : null;
+  const unknown = showsUnknown(row);
   /* The extra questions are asked only of people coming; a message can come with any reply. */
   const hasDetails =
     reply !== null &&
@@ -114,7 +116,7 @@ export function RowView({ row, waiting, questions, actions, onEdit, guard, inCar
               </button>
             ) : null}
           </span>
-          {showsUnknown(row) ? (
+          {unknown ? (
             <span className={ATTENTION_TAG}>
               {t("unknownTag")}
             </span>
@@ -123,7 +125,7 @@ export function RowView({ row, waiting, questions, actions, onEdit, guard, inCar
 
         <div className={`col-start-1 row-start-2 flex items-center gap-2 ${layout.badge}`}>
           {row.kind === "reply" ? (
-            <span className={`${BADGE} ${STATUS[row.reply.status].tone}`}>{t(STATUS[row.reply.status].key)}</span>
+            <span className={`${BADGE} ${STATUS_TONE[row.reply.status]}`}>{t(STATUS_KEY[row.reply.status])}</span>
           ) : (
             /* One badge that flips the invite either way; the box says which. */
             <button
@@ -165,18 +167,16 @@ export function RowView({ row, waiting, questions, actions, onEdit, guard, inCar
       {hasDetails && reply ? (
         <div
           inert={!open}
-          className={`grid transition-[grid-template-rows,opacity] duration-300 ease-out motion-reduce:transition-none ${
-            open ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"
-          }`}
+          className={fold(open)}
         >
           <div className="min-h-0 overflow-hidden">
-            <ReplyDetails reply={reply.reply} questions={questions} spaced={showsUnknown(reply)} />
+            <ReplyDetails reply={reply.reply} questions={questions} spaced={unknown} />
           </div>
         </div>
       ) : null}
 
       {/* A shared name is sorted out first; its card holds that choice. */}
-      {reply && showsUnknown(reply) ? <UnknownFix reply={reply.reply} waiting={waiting} actions={actions} guard={guard} /> : null}
+      {reply && unknown ? <UnknownFix reply={reply.reply} waiting={waiting} actions={actions} guard={guard} /> : null}
 
       {confirming ? (
         <div role="alert" className="flex flex-wrap items-center gap-2.5 pb-2 text-[12.5px] text-rust-600">
@@ -191,22 +191,6 @@ export function RowView({ row, waiting, questions, actions, onEdit, guard, inCar
     </div>
   );
 }
-
-const AGE_KEY = {
-  adult: "ageAdult",
-  child: "ageChild",
-  baby: "ageBaby",
-} as const satisfies Record<AgeGroup, string>;
-
-/** Also read by the summary, so a diet is named the same in both. */
-export const DIET_KEY = {
-  vegetarian: "dietVegetarian",
-  vegan: "dietVegan",
-  glutenFree: "dietGlutenFree",
-  lactoseFree: "dietLactoseFree",
-  nutAllergy: "dietNutAllergy",
-  other: "dietOther",
-} as const satisfies Record<DietNeed, string>;
 
 interface ReplyDetailsProps {
   reply: GuestReply;

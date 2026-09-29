@@ -4,6 +4,7 @@ import { useTranslations } from 'next-intl'
 import { useState } from 'react'
 import { GUEST_DATA_RETENTION_DAYS } from '@/lib/config'
 import type { RsvpStatus } from '@/types/invitation'
+import { XIcon } from './icons'
 import {
   HINT,
   INPUT,
@@ -74,7 +75,7 @@ export function RsvpForm({ form, onSubmit }: RsvpFormProps) {
                 onClick={() => set.removeName(row.id)}
                 className="pb-[7px] text-[color:var(--c2)] transition-opacity hover:text-[color:var(--c3)]"
               >
-                <XIcon />
+                <XIcon size={14} />
               </button>
             ) : null}
           </div>
@@ -137,22 +138,5 @@ export function RsvpForm({ form, onSubmit }: RsvpFormProps) {
         </p>
       </div>
     </form>
-  )
-}
-
-function XIcon() {
-  return (
-    <svg
-      viewBox="0 0 16 16"
-      width="14"
-      height="14"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.5"
-      strokeLinecap="round"
-      aria-hidden="true"
-    >
-      <path d="M2 2l12 12M14 2L2 14" />
-    </svg>
   )
 }

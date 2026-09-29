@@ -1,5 +1,5 @@
 import type { CSSProperties } from 'react'
-import { isRealDate } from '@/lib/event'
+import { DATE_PARTS, isRealDate, pad } from '@/lib/event'
 import {
   DEFAULT_LANGUAGE,
   LANGUAGE_LOCALE,
@@ -15,6 +15,20 @@ import type {
   TemplateValues,
 } from '@/types/invitation'
 
+/** Each palette role's custom property, as the card and RSVP chrome read it. */
+const COLOR_VAR: Record<keyof Palette, string> = {
+  color1: '--c1',
+  color2: '--c2',
+  color3: '--c3',
+  color4: '--c4',
+  color5: '--c5',
+  color6: '--c6',
+  color7: '--c7',
+  color8: '--c8',
+  color9: '--c9',
+  color10: '--c10',
+}
+
 /**
  * A template's palette and fonts reach the DOM as custom properties, so the
  * card and the RSVP chrome both read one source and no colour is written
@@ -23,17 +37,9 @@ import type {
  */
 export function templateVars(template: InvitationTemplate): CSSProperties {
   const { palette } = template
+  const roles = Object.keys(COLOR_VAR) as (keyof Palette)[]
   return {
-    '--c1': palette.color1,
-    '--c2': palette.color2,
-    '--c3': palette.color3,
-    '--c4': palette.color4,
-    '--c5': palette.color5,
-    '--c6': palette.color6,
-    '--c7': palette.color7,
-    '--c8': palette.color8,
-    '--c9': palette.color9,
-    '--c10': palette.color10,
+    ...Object.fromEntries(roles.map((role) => [COLOR_VAR[role], palette[role]])),
     ...templateFontVars(template),
   } as CSSProperties
 }
@@ -77,19 +83,6 @@ export function printVars(template: InvitationTemplate): CSSProperties {
     '--print-card': colorValue(template, print.background),
     '--print-ink': colorValue(template, print.ink),
   } as CSSProperties
-}
-
-const COLOR_VAR: Record<keyof Palette, string> = {
-  color1: '--c1',
-  color2: '--c2',
-  color3: '--c3',
-  color4: '--c4',
-  color5: '--c5',
-  color6: '--c6',
-  color7: '--c7',
-  color8: '--c8',
-  color9: '--c9',
-  color10: '--c10',
 }
 
 /**
@@ -209,8 +202,6 @@ export interface DateFormatOption {
   notIn?: Language[]
 }
 
-const pad = (part: number) => String(part).padStart(2, '0')
-
 /** The month as the invitation's language writes it. */
 function monthName(date: Date, locale: string): string {
   return new Intl.DateTimeFormat(locale, { month: 'long' }).format(date)
@@ -220,11 +211,7 @@ export const DATE_FORMATS: DateFormatOption[] = [
   {
     id: 'long',
     render: (date, locale) =>
-      date.toLocaleDateString(locale, {
-        day: 'numeric',
-        month: 'long',
-        year: 'numeric',
-      }),
+      date.toLocaleDateString(locale, DATE_PARTS),
   },
   {
     /*
@@ -245,12 +232,7 @@ export const DATE_FORMATS: DateFormatOption[] = [
   {
     id: 'weekday',
     render: (date, locale) =>
-      date.toLocaleDateString(locale, {
-        weekday: 'long',
-        day: 'numeric',
-        month: 'long',
-        year: 'numeric',
-      }),
+      date.toLocaleDateString(locale, { weekday: 'long', ...DATE_PARTS }),
   },
   {
     /* Hungarian writes a numeric date year first: 2026. 09. 06. */

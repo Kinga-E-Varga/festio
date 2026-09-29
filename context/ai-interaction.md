@@ -12,14 +12,17 @@
 
 ## Archived specs — do not read unless asked
 
-`context/features/`, `context/fixes/` (including `pending/`) and `context/plans/` are completed
-work. The code is the source of truth.
+`context/features/`, `context/fixes/` (including `pending/`), `context/plans/` and
+`context/reviews/` are completed work. The code is the source of truth.
 
 - **Never read a file there on your own initiative** — only when the user names it, or the
   `feature` skill resolves a name to it.
 - **Plans are stricter:** read one only when the user names it, or when the `Plan:` line in
   @context/current-feature.md Notes points to it while that feature is being built. Never
   list or search `context/plans/`.
+- **Reviews are written, not read:** `context/reviews/[date].md` holds plain-language
+  write-ups of a cleanup run, one section per commit, for the user's review. Only the
+  workflow agents of that run append to that day's file. Read one only when the user names it.
 - **Exclude these folders from every Grep and Glob.** They produce false matches.
 - A match there is not evidence about current behaviour. Check the code or
   @context/project-overview.md.

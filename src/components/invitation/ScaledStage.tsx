@@ -25,7 +25,6 @@ interface ScaledStageProps {
   height: number;
   minScale?: number;
   maxScale?: number;
-  className?: string;
   children: ReactNode;
 }
 
@@ -42,7 +41,6 @@ export function ScaledStage({
   height,
   minScale = MIN_SCALE,
   maxScale = MAX_SCALE,
-  className = "",
   children,
 }: ScaledStageProps) {
   const slot = useRef<HTMLDivElement>(null);
@@ -79,7 +77,7 @@ export function ScaledStage({
       ref={slot}
       style={vars}
       data-measured={scale > 0}
-      className={`stage ${className}`}
+      className="stage"
     >
       <div className="frame">
         <div className="card">{children}</div>

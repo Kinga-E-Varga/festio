@@ -1,9 +1,8 @@
 import { useLocale, useTranslations } from 'next-intl'
 import Image from 'next/image'
 import { Link } from '@/i18n/navigation'
-import { CopyButton } from '@/components/dashboard/CopyButton'
 import { RULE } from '@/components/dashboard/EventRow'
-import { PasswordField } from '@/components/dashboard/PasswordField'
+import { ShareFields } from '@/components/dashboard/ShareFields'
 import { Icon } from '@/components/icons'
 import {
   formatDay,
@@ -11,7 +10,6 @@ import {
   formatRelative,
   expectedLevel,
   expectedPercent,
-  invitationLink,
   replyClose,
   replyWindow,
   repliesBarVars,
@@ -19,12 +17,6 @@ import {
   type ExpectedLevel,
 } from '@/lib/event'
 import type { DashboardEvent, IconName } from '@/types/dashboard'
-
-const FIELD_BASE =
-  'flex items-center gap-[9px] border border-mustard-300 px-3 py-2 text-[13px] text-neutral-900'
-const FIELD = `${FIELD_BASE} bg-mustard-50`
-/** Stands in for the link row when there is nothing to share yet. */
-const FIELD_NOTE = `${FIELD_BASE} bg-terracotta-200`
 
 interface Warning {
   icon: IconName
@@ -99,7 +91,6 @@ function Tally({
 }
 
 export function EventCard({ event }: { event: DashboardEvent }) {
-  const link = invitationLink(event)
   /* Past and past its retention date: the record is a stub, not a tool. */
   const archived = event.status === 'past' && event.dataDeleted
   const expected = event.expectedGuests
@@ -234,34 +225,10 @@ export function EventCard({ event }: { event: DashboardEvent }) {
                     )}
                   </p>
 
-                  {/* Stacked fields butt together and share their edges. */}
-                  <div className="relative z-10 flex max-w-[330px] flex-col [&>*+*]:border-t-0">
-                    <span className={FIELD}>
-                      <Icon
-                        name="link"
-                        className="size-3.5 shrink-0 text-forest-500"
-                      />
-                      <span className="flex-1 truncate">{link}</span>
-                      <CopyButton
-                        value={`https://${link}`}
-                        label={t('copyLinkFor', { title: event.title })}
-                      />
-                    </span>
-
-                    {event.password ? (
-                      <PasswordField password={event.password} />
-                    ) : null}
-
-                    {event.linkNoteKey ? (
-                      <span className={FIELD_NOTE}>
-                        <Icon
-                          name="eyeOff"
-                          className="size-3.5 shrink-0 text-neutral-700"
-                        />
-                        {tNotes(event.linkNoteKey)}
-                      </span>
-                    ) : null}
-                  </div>
+                  <ShareFields
+                    event={event}
+                    className="relative z-10 max-w-[330px]"
+                  />
                 </div>
               )}
             </div>

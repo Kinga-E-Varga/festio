@@ -44,6 +44,7 @@ export function DashboardShell({
 
   const navOpen = open === 'nav'
   const noticesOpen = open === 'notices'
+  const anyOpen = open !== null
 
   function toggle(target: Drawer) {
     setOpen((current) => (current === target ? null : target))
@@ -65,13 +66,13 @@ export function DashboardShell({
   }
 
   useEffect(() => {
-    if (!navOpen && !noticesOpen) return
+    if (!anyOpen) return
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.key === 'Escape') setOpen(null)
     }
     window.addEventListener('keydown', onKeyDown)
     return () => window.removeEventListener('keydown', onKeyDown)
-  }, [navOpen, noticesOpen])
+  }, [anyOpen])
 
   // Each drawer has a static column above its breakpoint; close it on the way
   // up so the app never holds an open drawer nobody can see.
@@ -95,12 +96,9 @@ export function DashboardShell({
   }, [])
 
   useEffect(() => {
-    if (navOpen) navPanelRef.current?.focus()
-  }, [navOpen])
-
-  useEffect(() => {
-    if (noticesOpen) noticesPanelRef.current?.focus()
-  }, [noticesOpen])
+    if (open === 'nav') navPanelRef.current?.focus()
+    if (open === 'notices') noticesPanelRef.current?.focus()
+  }, [open])
 
   return (
     <div className="flex flex-1 flex-col">
@@ -133,9 +131,7 @@ export function DashboardShell({
         aria-hidden="true"
         onClick={close}
         className={`fixed inset-x-0 top-topbar bottom-0 z-30 bg-neutral-900/35 transition-opacity duration-200 ${
-          navOpen || noticesOpen
-            ? 'opacity-100'
-            : 'pointer-events-none opacity-0'
+          anyOpen ? 'opacity-100' : 'pointer-events-none opacity-0'
         }`}
       />
 

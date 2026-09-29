@@ -15,7 +15,18 @@ export async function generateMetadata(): Promise<Metadata> {
   return { title: t('events') }
 }
 
-const ALL: EventStatus[] = ['active', 'draft', 'past']
+/** One tab per pile: which statuses it holds and the texts it shows. */
+const PILES = [
+  { id: 'all', statuses: ['active', 'draft', 'past'], label: 'tabAll', empty: 'emptyAll' },
+  { id: 'active', statuses: ['active'], label: 'tabActive', empty: 'emptyActive' },
+  { id: 'drafts', statuses: ['draft'], label: 'tabDrafts', empty: 'emptyDrafts' },
+  { id: 'past', statuses: ['past'], label: 'tabPast', empty: 'emptyPast' },
+] as const satisfies readonly {
+  id: string
+  statuses: readonly EventStatus[]
+  label: string
+  empty: string
+}[]
 
 export default async function EventsPage({
   searchParams,
@@ -30,59 +41,21 @@ export default async function EventsPage({
   const focused =
     typeof requested === 'string' ? findEvent(requested) : undefined
 
-  const count = (status: EventStatus) =>
-    EVENTS.filter((event) => event.status === status).length
-
-  const tabs: EventTab[] = [
-    {
-      id: 'all',
-      label: t('tabAll'),
-      count: EVENTS.length,
+  const tabs: EventTab[] = PILES.map((pile) => {
+    const statuses: EventStatus[] = [...pile.statuses]
+    return {
+      id: pile.id,
+      label: t(pile.label),
+      count: EVENTS.filter((event) => statuses.includes(event.status)).length,
       panel: (
         <EventGroups
           events={EVENTS}
-          statuses={ALL}
-          emptyMessage={t('emptyAll')}
+          statuses={statuses}
+          emptyMessage={t(pile.empty)}
         />
       ),
-    },
-    {
-      id: 'active',
-      label: t('tabActive'),
-      count: count('active'),
-      panel: (
-        <EventGroups
-          events={EVENTS}
-          statuses={['active']}
-          emptyMessage={t('emptyActive')}
-        />
-      ),
-    },
-    {
-      id: 'drafts',
-      label: t('tabDrafts'),
-      count: count('draft'),
-      panel: (
-        <EventGroups
-          events={EVENTS}
-          statuses={['draft']}
-          emptyMessage={t('emptyDrafts')}
-        />
-      ),
-    },
-    {
-      id: 'past',
-      label: t('tabPast'),
-      count: count('past'),
-      panel: (
-        <EventGroups
-          events={EVENTS}
-          statuses={['past']}
-          emptyMessage={t('emptyPast')}
-        />
-      ),
-    },
-  ]
+    }
+  })
 
   return (
     <div className="@container">

@@ -76,7 +76,6 @@ export function useRsvpForm() {
     derived: {
       anyNameEmpty: rows.some((row) => row.value.trim() === ""),
       noteLeft: NOTE_LIMIT - note.length,
-      people: named.length,
       sent,
     },
     buildPayload,

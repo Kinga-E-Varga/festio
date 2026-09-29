@@ -2,7 +2,7 @@
 
 import { useTranslations } from "next-intl";
 import { type ReactNode, useState } from "react";
-import { DIET_KEY } from "@/components/dashboard/guest-list/RowView";
+import { DIET_KEY } from "@/components/dashboard/guest-list/labels";
 import { Icon } from "@/components/icons";
 import type { AgeGroup, DietNeed, GuestCounts, GuestTally, QuestionTally } from "@/types/guests";
 

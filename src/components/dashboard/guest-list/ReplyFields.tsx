@@ -4,7 +4,7 @@ import { useTranslations } from "next-intl";
 import { type Control, Controller, type UseFormRegisterReturn } from "react-hook-form";
 import { ERROR, INPUT, LABEL } from "@/components/dashboard/event-editor/styles";
 import { MultiSelect } from "@/components/dashboard/guest-list/MultiSelect";
-import { DIET_KEY } from "@/components/dashboard/guest-list/RowView";
+import { AGE_KEY, DIET_KEY, STATUS_KEY } from "@/components/dashboard/guest-list/labels";
 import { ANSWER_LIMIT } from "@/components/dashboard/guest-list/replyValues";
 import { CHOICE_OFF, CHOICE_ON } from "@/components/dashboard/guest-list/styles";
 import { NAME_LIMIT } from "@/components/invitation/useRsvpForm";
@@ -88,10 +88,7 @@ function SelectField({ label, options, value, onChange, error }: SelectFieldProp
   );
 }
 
-const STATUSES = [
-  { value: "going", key: "statusGoing" },
-  { value: "not_going", key: "statusNotGoing" },
-] as const;
+const STATUSES = Object.keys(STATUS_KEY) as ReplyValues["status"][];
 
 export function StatusField({ control }: { control: Control<ReplyValues> }) {
   const t = useTranslations("GuestList");
@@ -102,7 +99,7 @@ export function StatusField({ control }: { control: Control<ReplyValues> }) {
       render={({ field }) => (
         <Choices
           legend={t("status")}
-          options={STATUSES.map((status) => ({ value: status.value, label: t(status.key) }))}
+          options={STATUSES.map((status) => ({ value: status, label: t(STATUS_KEY[status]) }))}
           picked={(value) => field.value === value}
           onPick={field.onChange}
         />
@@ -111,11 +108,7 @@ export function StatusField({ control }: { control: Control<ReplyValues> }) {
   );
 }
 
-const AGES = [
-  { value: "adult", key: "ageAdult" },
-  { value: "child", key: "ageChild" },
-  { value: "baby", key: "ageBaby" },
-] as const satisfies { value: AgeGroup; key: string }[];
+const AGES = Object.keys(AGE_KEY) as AgeGroup[];
 
 /** None first: the most common answer, and the one that clears the rest. */
 const DIETS = ["none", ...(Object.keys(DIET_KEY) as (keyof typeof DIET_KEY)[])] as const;
@@ -151,7 +144,7 @@ export function PersonFields({ control, index, questions, requireAge, requireDie
         render={({ field, fieldState }) => (
           <SelectField
             label={t("ageLabel")}
-            options={AGES.map((age) => ({ value: age.value, label: t(age.key) }))}
+            options={AGES.map((age) => ({ value: age, label: t(AGE_KEY[age]) }))}
             value={field.value}
             onChange={field.onChange}
             error={fieldState.error?.message}

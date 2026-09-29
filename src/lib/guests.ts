@@ -274,9 +274,9 @@ export function rowMatches(row: GuestRow, filter: GuestFilter, query: string): b
 
 /**
  * Only the members who pass stay, still together; the ones left out join the
- * "Replied with" names, the same way an unknown person splits off.
+ * "Replied with" names, the same way an unknown person splits off. `keep`
+ * stays shown whatever the filter: the row open in the editor.
  */
-/** `keep` stays shown whatever the filter: the row open in the editor. */
 export function filterGroup(
   group: GuestGroup,
   filter: GuestFilter,

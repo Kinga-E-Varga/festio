@@ -39,6 +39,10 @@ const NOTICES = [...ATTENTION_NOTICES].sort(
 const PANEL_LABEL =
   "mb-3.5 text-[10px] font-semibold tracking-[0.18em] text-mustard-500 uppercase";
 
+/** A notice's call to action and its report link read as one pair. */
+const ACTION =
+  "text-[12.5px] font-semibold text-current underline underline-offset-[3px] transition-colors hover:text-neutral-900";
+
 function Panel({ label, children }: { label: string; children: ReactNode }) {
   return (
     <section className="mb-[22px] border-b border-mustard-300 pb-[22px] last:mb-0 last:border-b-0 last:pb-0">
@@ -112,14 +116,14 @@ export function NotificationsRail() {
                 </p>
                 <button
                   type="button"
-                  className="text-[12.5px] font-semibold text-current underline underline-offset-[3px] transition-colors hover:text-neutral-900"
+                  className={ACTION}
                 >
                   {tNotices(`${notice.key}.action`, values)}
                 </button>
                 {notice.reportHref ? (
                   <Link
                     href={notice.reportHref}
-                    className="ml-4 text-[12.5px] font-semibold text-current underline underline-offset-[3px] transition-colors hover:text-neutral-900"
+                    className={`ml-4 ${ACTION}`}
                   >
                     {tEvent("reportFlood")}
                   </Link>

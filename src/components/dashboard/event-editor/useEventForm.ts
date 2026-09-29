@@ -41,6 +41,13 @@ export interface Warning {
 
 const PASSWORD_PATTERN = /^[A-Za-z0-9]{4,}$/;
 
+const NONE_ACKNOWLEDGED: Record<WarningId, boolean> = {
+  date: false,
+  address: false,
+  password: false,
+  language: false,
+};
+
 interface EventFieldValues {
   title: string;
   kind: EventKind;
@@ -100,12 +107,8 @@ export function useEventForm(
   const preloaded = useWatch({ control, name: "preloaded" });
 
   const [justSaved, setJustSaved] = useState(false);
-  const [acknowledged, setAcknowledged] = useState<Record<WarningId, boolean>>({
-    date: false,
-    address: false,
-    password: false,
-    language: false,
-  });
+  const [acknowledged, setAcknowledged] =
+    useState<Record<WarningId, boolean>>(NONE_ACKNOWLEDGED);
 
   /** Nothing is editable once the content freeze has passed. */
   const locked = event.locked;
@@ -130,39 +133,32 @@ export function useEventForm(
   const effectiveDate = isRealDate(new Date(`${date}T00:00`)) ? date : event.date;
   const freeze = contentFreeze(effectiveDate);
   const deletion = deletionDate(effectiveDate);
+  const freezeLabel = formatDeadline(freeze, locale);
   const chosenClose = new Date(closeAt);
-  const closesEarly =
-    closeEarly && isRealDate(chosenClose) && chosenClose <= freeze;
+  const chosenReal = closeEarly && isRealDate(chosenClose);
+  const closesEarly = chosenReal && chosenClose <= freeze;
 
   // Only a link someone is already holding can be broken by a change.
   const shared = event.rsvp.replied > 0;
 
+  function warning(id: WarningId, shown: boolean): Warning {
+    return {
+      shown,
+      acknowledged: acknowledged[id],
+      toggle: (value) => acknowledge(id, value),
+    };
+  }
+
   const warnings: Record<WarningId, Warning> = {
-    date: {
-      shown: date !== event.date,
-      acknowledged: acknowledged.date,
-      toggle: (value) => acknowledge("date", value),
-    },
-    address: {
-      shown: shared && cleanSlug !== original.slug,
-      acknowledged: acknowledged.address,
-      toggle: (value) => acknowledge("address", value),
-    },
-    password: {
-      shown: shared && password !== original.password,
-      acknowledged: acknowledged.password,
-      toggle: (value) => acknowledge("password", value),
-    },
+    date: warning("date", date !== event.date),
+    address: warning("address", shared && cleanSlug !== original.slug),
+    password: warning("password", shared && password !== original.password),
     /*
      * A new language rewrites the reply form under guests who already have
      * the link — the same kind of change as moving the date, and warned
      * about the same way.
      */
-    language: {
-      shown: shared && language !== original.language,
-      acknowledged: acknowledged.language,
-      toggle: (value) => acknowledge("language", value),
-    },
+    language: warning("language", shared && language !== original.language),
   };
 
   const pending = Object.values(warnings).filter(
@@ -201,12 +197,7 @@ export function useEventForm(
     if (!formState.isDirty || pending > 0 || locked) return;
     reset(getValues());
     setJustSaved(true);
-    setAcknowledged({
-      date: false,
-      address: false,
-      password: false,
-      language: false,
-    });
+    setAcknowledged(NONE_ACKNOWLEDGED);
   }
 
   return {
@@ -259,15 +250,12 @@ export function useEventForm(
       dateLabel: formatEventDate(new Date(`${effectiveDate}T00:00`), locale),
       /** The `max` a custom closing time cannot go past. */
       closeLimit: toDateTimeLocal(freeze),
-      closeDefaultLabel: formatDeadline(freeze, locale),
-      closeLabel: closesEarly
-        ? formatDeadline(chosenClose, locale)
-        : formatDeadline(freeze, locale),
+      closeDefaultLabel: freezeLabel,
+      closeLabel: closesEarly ? formatDeadline(chosenClose, locale) : freezeLabel,
       closesEarly,
       /** Set while a chosen time sits past the cut-off, which cannot apply. */
-      closeTooLate:
-        closeEarly && isRealDate(chosenClose) && chosenClose > freeze,
-      freezeLabel: formatDeadline(freeze, locale),
+      closeTooLate: chosenReal && chosenClose > freeze,
+      freezeLabel,
       deletionLabel: formatEventDate(deletion, locale),
       expectedValue,
       expectedError,

@@ -129,35 +129,21 @@ export function PrintPanel({
           </label>
         </fieldset>
 
-        <div className="flex flex-col gap-2 mb-6">
-          <label htmlFor="print-headline" className={LABEL}>
-            {t('message')}
-          </label>
-          <textarea
-            id="print-headline"
-            rows={3}
-            maxLength={120}
-            placeholder={t('optional')}
-            value={settings.headline}
-            onChange={(control) => onChange('headline', control.target.value)}
-            className={TEXTAREA}
-          />
-        </div>
+        <LineField
+          id="print-headline"
+          label={t('message')}
+          placeholder={t('optional')}
+          value={settings.headline}
+          onChange={(value) => onChange('headline', value)}
+        />
 
-        <div className="flex flex-col gap-2 mb-6">
-          <label htmlFor="print-note" className={LABEL}>
-            {t('secondLine')}
-          </label>
-          <textarea
-            id="print-note"
-            rows={3}
-            maxLength={120}
-            placeholder={t('optional')}
-            value={settings.note}
-            onChange={(control) => onChange('note', control.target.value)}
-            className={TEXTAREA}
-          />
-        </div>
+        <LineField
+          id="print-note"
+          label={t('secondLine')}
+          placeholder={t('optional')}
+          value={settings.note}
+          onChange={(value) => onChange('note', value)}
+        />
 
         <div className="flex flex-col bg-[var(--c5)] text-[var(--c1)] border-1 border-[var(--c2)] p-4 rounded-sm">
           <p className="text-[14px] text-center font-semibold tracking-[0.1em] border-b-1 pb-2 mb-3 uppercase">
@@ -195,5 +181,33 @@ export function PrintPanel({
         <PanelViewButton onClose={onClose} className="mt-6" />
       </div>
     </SidePanel>
+  )
+}
+
+interface LineFieldProps {
+  id: string
+  label: string
+  placeholder: string
+  value: string
+  onChange: (value: string) => void
+}
+
+/** One of the two printed lines: a label over a short textarea. */
+function LineField({ id, label, placeholder, value, onChange }: LineFieldProps) {
+  return (
+    <div className="flex flex-col gap-2 mb-6">
+      <label htmlFor={id} className={LABEL}>
+        {label}
+      </label>
+      <textarea
+        id={id}
+        rows={3}
+        maxLength={120}
+        placeholder={placeholder}
+        value={value}
+        onChange={(control) => onChange(control.target.value)}
+        className={TEXTAREA}
+      />
+    </div>
   )
 }

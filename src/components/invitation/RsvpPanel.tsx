@@ -1,7 +1,7 @@
 'use client'
 
 import { useTranslations } from 'next-intl'
-import { useState } from 'react'
+import { type ReactNode, useState } from 'react'
 import type {
   InvitationTemplate,
   RsvpPayload,
@@ -60,19 +60,14 @@ export function RsvpPanel({
    */
   if (paused) {
     return (
-      <>
-        <div className="invite:hidden h-[70px] shrink-0" />
-
-        <aside className={`reply ${PANEL}`} data-open={false} inert={inert}>
-          <div className="edge" data-axis="reply" data-shape={template.edge} />
-          <div className="flex flex-1 flex-col justify-center bg-[var(--c1)] px-5 invite:p-8">
-            <p className={`${TITLE} hidden invite:block`}>{message}</p>
-            <p className="flex min-h-[50px] items-center justify-center text-center text-[14px] leading-[1.45] text-[color:var(--c3)] invite:min-h-0">
-              {t('paused')}
-            </p>
-          </div>
-        </aside>
-      </>
+      <Shell edge={template.edge} open={false} inert={inert}>
+        <div className="flex flex-1 flex-col justify-center bg-[var(--c1)] px-5 invite:p-8">
+          <p className={`${TITLE} hidden invite:block`}>{message}</p>
+          <p className="flex min-h-[50px] items-center justify-center text-center text-[14px] leading-[1.45] text-[color:var(--c3)] invite:min-h-0">
+            {t('paused')}
+          </p>
+        </div>
+      </Shell>
     )
   }
 
@@ -84,6 +79,104 @@ export function RsvpPanel({
   }
 
   return (
+    <Shell edge={template.edge} open={open} inert={inert}>
+      {/*
+       * Bar and reply are one painted box, not two. As separate boxes in
+       * the same --c1 they round their own edges independently while the
+       * block is mid-transform, and a hairline of the page ground flashes
+       * through the seam between them — the artefact the `.edge` rule
+       * fights with `translateZ(0)` and its -1px margin. One background
+       * has no seam to leak through. The edge itself is left unpainted
+       * behind so its wavy mask still shows the page ground through it,
+       * exactly as the spacer does at rest.
+       */}
+      <div className="flex flex-1 flex-col bg-[var(--c1)] invite:overflow-y-auto  invite:p-8">
+        {/*
+         * The bar is the narrow screen's only handle — it is what the
+         * closed block leaves on screen. Beside the card there is nothing
+         * to drag open, so the Respond button below takes over instead.
+         */}
+        <div className="invite:hidden relative flex h-[50px] shrink-0 items-center justify-center px-5">
+          {open ? (
+            <button
+              type="button"
+              aria-label={t('close')}
+              onClick={() => setOpen(false)}
+              className="absolute top-1/2 right-5 -translate-y-1/2 text-[color:var(--c3)] transition-opacity hover:opacity-60"
+            >
+              <XIcon size={20} />
+            </button>
+          ) : (
+            <button
+              type="button"
+              onClick={() => setOpen(true)}
+              className="absolute inset-0 flex items-center justify-center"
+            >
+              <span className="font-[family-name:var(--font-primary)] text-[16px] tracking-[0.06em] text-[color:var(--c3)]">
+                {t('respond')}
+              </span>
+            </button>
+          )}
+        </div>
+
+        {/*
+         * Auto margins centre the block beside the card while it is short
+         * and let it scroll once it is not. `justify-center` would make
+         * the overflowing top unreachable, which is exactly what happens
+         * after a few names. Below the breakpoint the reply scrolls
+         * within its own ceiling instead, so the bar stays reachable.
+         */}
+        <div className="max-h-[60dvh] overflow-y-auto px-5 pt-5 pb-8 invite:my-auto invite:max-h-none invite:overflow-visible invite:px-0 invite:pt-0 invite:pb-0">
+          {sent ? null : (
+            <p className={`${TITLE} hidden invite:block`}>{message}</p>
+          )}
+
+          <div className="reveal hidden invite:grid" data-open={!shown}>
+            <div className="flex justify-center">
+              <button
+                type="button"
+                onClick={() => setOpen(true)}
+                className={`${open ? 'opacity-0' : 'font-[family-name:var(--font-primary)] text-[16px] tracking-[0.06em] text-[color:var(--c1)] bg-[var(--c2)] border-1 border-[var(--c2)] py-2.5 px-8 rounded-sm hover:bg-[var(--c3)] hover:border-[var(--c3)] transition-all'}`}
+              >
+                {t('respond')}
+              </button>
+            </div>
+          </div>
+
+          {/*
+           * `contents` below the breakpoint: the whole block slides as a
+           * unit there, so collapsing the reply to `0fr` would leave the
+           * slide nothing to carry.
+           */}
+          <div className="reveal contents invite:grid" data-open={shown}>
+            <div>
+              <div className="invite:pt-6" inert={!shown}>
+                <Reply form={form} onSend={send} />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </Shell>
+  )
+}
+
+/**
+ * What both states share: the spacer, the panel box and its edge. The
+ * caller fills it — the reply, or the paused line.
+ */
+function Shell({
+  edge,
+  open,
+  inert,
+  children,
+}: {
+  edge: InvitationTemplate['edge']
+  open: boolean
+  inert?: boolean
+  children: ReactNode
+}) {
+  return (
     <>
       {/*
        * A transparent spacer, the exact resting height of the edge + bar,
@@ -94,85 +187,8 @@ export function RsvpPanel({
       <div className="invite:hidden h-[70px] shrink-0" />
 
       <aside className={`reply ${PANEL}`} data-open={open} inert={inert}>
-        <div className="edge" data-axis="reply" data-shape={template.edge} />
-
-        {/*
-         * Bar and reply are one painted box, not two. As separate boxes in
-         * the same --c1 they round their own edges independently while the
-         * block is mid-transform, and a hairline of the page ground flashes
-         * through the seam between them — the artefact the `.edge` rule
-         * fights with `translateZ(0)` and its -1px margin. One background
-         * has no seam to leak through. The edge itself is left unpainted
-         * behind so its wavy mask still shows the page ground through it,
-         * exactly as the spacer does at rest.
-         */}
-        <div className="flex flex-1 flex-col bg-[var(--c1)] invite:overflow-y-auto  invite:p-8">
-          {/*
-           * The bar is the narrow screen's only handle — it is what the
-           * closed block leaves on screen. Beside the card there is nothing
-           * to drag open, so the Respond button below takes over instead.
-           */}
-          <div className="invite:hidden relative flex h-[50px] shrink-0 items-center justify-center px-5">
-            {open ? (
-              <button
-                type="button"
-                aria-label={t('close')}
-                onClick={() => setOpen(false)}
-                className="absolute top-1/2 right-5 -translate-y-1/2 text-[color:var(--c3)] transition-opacity hover:opacity-60"
-              >
-                <XIcon size={20} />
-              </button>
-            ) : (
-              <button
-                type="button"
-                onClick={() => setOpen(true)}
-                className="absolute inset-0 flex items-center justify-center"
-              >
-                <span className="font-[family-name:var(--font-primary)] text-[16px] tracking-[0.06em] text-[color:var(--c3)]">
-                  {t('respond')}
-                </span>
-              </button>
-            )}
-          </div>
-
-          {/*
-           * Auto margins centre the block beside the card while it is short
-           * and let it scroll once it is not. `justify-center` would make
-           * the overflowing top unreachable, which is exactly what happens
-           * after a few names. Below the breakpoint the reply scrolls
-           * within its own ceiling instead, so the bar stays reachable.
-           */}
-          <div className="max-h-[60dvh] overflow-y-auto px-5 pt-5 pb-8 invite:my-auto invite:max-h-none invite:overflow-visible invite:px-0 invite:pt-0 invite:pb-0">
-            {sent ? null : (
-              <p className={`${TITLE} hidden invite:block`}>{message}</p>
-            )}
-
-            <div className="reveal hidden invite:grid" data-open={!shown}>
-              <div className="flex justify-center">
-                <button
-                  type="button"
-                  onClick={() => setOpen(true)}
-                  className={`${open ? 'opacity-0' : 'font-[family-name:var(--font-primary)] text-[16px] tracking-[0.06em] text-[color:var(--c1)] bg-[var(--c2)] border-1 border-[var(--c2)] py-2.5 px-8 rounded-sm hover:bg-[var(--c3)] hover:border-[var(--c3)] transition-all'}`}
-                >
-                  {t('respond')}
-                </button>
-              </div>
-            </div>
-
-            {/*
-             * `contents` below the breakpoint: the whole block slides as a
-             * unit there, so collapsing the reply to `0fr` would leave the
-             * slide nothing to carry.
-             */}
-            <div className="reveal contents invite:grid" data-open={shown}>
-              <div>
-                <div className="invite:pt-6" inert={!shown}>
-                  <Reply form={form} onSend={send} />
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+        <div className="edge" data-axis="reply" data-shape={edge} />
+        {children}
       </aside>
     </>
   )

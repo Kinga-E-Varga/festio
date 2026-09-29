@@ -35,6 +35,8 @@ export default async function EventPage({ params }: Props) {
   const pkg = PACKAGES[event.package];
   const locale = await getLocale();
   const freeze = formatDeadline(contentFreeze(event.date), locale);
+  const replies = replyWindow(event);
+  const repliesClose = formatDeadline(replyClose(event), locale);
 
   return (
     <div className="@container">
@@ -62,19 +64,19 @@ export default async function EventPage({ params }: Props) {
       ) : null}
 
       {/* The reply form, when it is about to close or already has. */}
-      {replyWindow(event) === "closed" ? (
+      {replies === "closed" ? (
         <Banner
           tone="warn"
           icon="lock"
           title={t("repliesClosedTitle", {
-            date: formatDeadline(replyClose(event), locale),
+            date: repliesClose,
           })}
         >
           {t("repliesClosedBody", {
             custom: event.repliesCloseAt ? "yes" : "no",
           })}
         </Banner>
-      ) : replyWindow(event) === "soon" && event.repliesCloseIn ? (
+      ) : replies === "soon" && event.repliesCloseIn ? (
         <Banner
           tone="warn"
           icon="clock"
@@ -83,7 +85,7 @@ export default async function EventPage({ params }: Props) {
           })}
         >
           {t("repliesClosingBody", {
-            date: formatDeadline(replyClose(event), locale),
+            date: repliesClose,
             custom: event.repliesCloseAt ? "yes" : "no",
           })}
         </Banner>

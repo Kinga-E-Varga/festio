@@ -1,9 +1,10 @@
-import { useLocale, useTranslations } from 'next-intl'
+import { useTranslations } from 'next-intl'
 import Image from 'next/image'
 import { Link } from '@/i18n/navigation'
-import { RULE } from '@/components/dashboard/EventRow'
+import { ACTION, RULE } from '@/components/dashboard/EventRow'
+import { EventWhen } from '@/components/dashboard/EventWhen'
 import { Icon } from '@/components/icons'
-import { formatDay, formatRelative, invitationPath } from '@/lib/event'
+import { invitationPath } from '@/lib/event'
 import type { DashboardEvent, EventStatus } from '@/types/dashboard'
 
 /**
@@ -16,10 +17,6 @@ const STATUS_EDGE: Record<EventStatus, string> = {
   past: 'border-t-neutral-600',
 }
 
-/** One button, one size — the events list's own action, verbatim. */
-const ACTION =
-  'inline-flex w-full min-w-[135px] items-center justify-center gap-2 rounded-md border border-forest-500 bg-mustard-50 px-2.5 py-[12px] text-center text-[13px] leading-[1.3] font-medium text-forest-500 transition-colors hover:border-forest-600 hover:bg-forest-200 hover:text-forest-600 disabled:cursor-not-allowed disabled:opacity-50'
-
 /**
  * One invitation: what it is and when, the artwork itself, and the handful of
  * places the host can be taken from it. The tab the card sits in already says
@@ -29,7 +26,6 @@ const ACTION =
 export function InvitationCard({ event }: { event: DashboardEvent }) {
   const t = useTranslations('Invitations')
   const tEvent = useTranslations('Event')
-  const locale = useLocale()
   /* Content freezes with the event; a past invitation is only downloadable. */
   const past = event.status === 'past'
 
@@ -50,21 +46,7 @@ export function InvitationCard({ event }: { event: DashboardEvent }) {
           {event.title}
         </h3>
 
-        <p className="mt-2.5 text-[14px] leading-none text-neutral-900">
-          <span className="font-medium">{formatDay(event.date, locale)}</span>
-          <span aria-hidden="true" className="text-neutral-700">
-            {' · '}
-          </span>
-          <span
-            className={
-              event.isNextUp
-                ? 'font-medium text-terracotta-600'
-                : 'text-neutral-700'
-            }
-          >
-            {formatRelative(event.countdown, locale)}
-          </span>
-        </p>
+        <EventWhen event={event} />
       </div>
 
       {/*

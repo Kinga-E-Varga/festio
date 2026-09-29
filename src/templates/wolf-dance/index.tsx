@@ -173,11 +173,7 @@ export const template: InvitationTemplate = {
  */
 export function Card({ values }: { values: TemplateValues }) {
   return (
-    <div
-      className="absolute inset-0 p-7 text-[var(--c1)] font-[family-name:var(--font-primary)]   
-    
-   "
-    >
+    <div className="absolute inset-0 p-7 text-[var(--c1)] font-[family-name:var(--font-primary)]">
       <div className="h-full p-3 bg-[var(--c3)] elevation-light">
         <div
           className="h-full flex flex-col justify-evenly items-center px-12 py-16  bg-[var(--c7)] bg-size-[550px] bg-repeat bg-center"
@@ -211,27 +207,23 @@ export function Card({ values }: { values: TemplateValues }) {
           </p>
 
           {/* Bottom text */}
-          <div className="text-[35px] italic text-center  ">
-            {values.text1 === '' && values.text2 === '' ? (
-              <></>
-            ) : (
-              <div className="pt-8">
-                <p className="font-semibold">{values.text1}</p>
-                <p className="">{values.text2}</p>
-              </div>
-            )}
-
-            {values?.text3 === '' && values?.text4 === '' ? (
-              <></>
-            ) : (
-              <div className="pt-8">
-                <p className="font-semibold">{values.text3}</p>
-                <p className="">{values.text4}</p>
-              </div>
-            )}
+          <div className="text-[35px] italic text-center">
+            <TextPair bold={values.text1} text={values.text2} />
+            <TextPair bold={values.text3} text={values.text4} />
           </div>
         </div>
       </div>
+    </div>
+  )
+}
+
+/* A bold line over a plain one; the pair drops out when both are blank. */
+function TextPair({ bold, text }: { bold: string; text: string }) {
+  if (bold === '' && text === '') return null
+  return (
+    <div className="pt-8">
+      <p className="font-semibold">{bold}</p>
+      <p>{text}</p>
     </div>
   )
 }

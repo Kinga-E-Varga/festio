@@ -59,7 +59,7 @@ export const BTN_EDITOR_OUTLINE = `${BUTTON} ${EDITOR_OUTLINE}`;
 /** "Add person": the small action's shape in the editor's colours. */
 export const SMALL_BTN_EDITOR = `${SMALL_BTN_SHAPE} ${EDITOR_FILL}`;
 /** Remove a person: the quiet icon button. */
-export const ICON_BTN_EDITOR = `${ICON_BASE} hover:bg-mustard-200 hover:text-neutral-900`;
+export const ICON_BTN_EDITOR = ICON_BTN;
 
 /* The inputs' own padding and type size, so a chip is as tall as the field beside it. */
 const CHOICE_SHAPE =
@@ -70,6 +70,12 @@ export const CHOICE_ON = `${CHOICE_SHAPE} ${EDITOR_FILL}`;
 /** A panel eases in, a short drop and a fade, instead of popping: the list box and the row editors. */
 export const FADE_IN =
   "transition-[opacity,translate] duration-300 ease-out starting:-translate-y-2 starting:opacity-0 motion-reduce:transition-none";
+
+/** Folds to nothing and back, height and fade together: a category, a row's details. Pair it with `inert` while folded. */
+export const fold = (open: boolean) =>
+  `grid transition-[grid-template-rows,opacity] duration-300 ease-out motion-reduce:transition-none ${
+    open ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"
+  }`;
 
 /** The terracotta box that holds a prompt: the list box's and the row editor's. */
 export const ALERT = "border border-terracotta-400 bg-terracotta-200 px-4 py-3 text-[12.5px] text-terracotta-600";

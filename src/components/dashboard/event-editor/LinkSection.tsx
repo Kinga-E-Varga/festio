@@ -11,6 +11,7 @@ import { Field } from "@/components/dashboard/event-editor/Field";
 import {
   ERROR,
   FIELD_GRID,
+  INSET_INPUT,
   LABEL,
   MINI,
 } from "@/components/dashboard/event-editor/styles";
@@ -36,7 +37,7 @@ function PasswordBox({ form }: { form: EventForm }) {
           disabled={form.locked}
           value={form.values.password}
           onChange={(control) => form.set.password(control.target.value)}
-          className="min-w-0 flex-1 border-0 bg-transparent px-3 py-[9px] text-[13.5px] text-neutral-900 focus:outline-2 focus:-outline-offset-2 focus:outline-mustard-500 disabled:cursor-not-allowed"
+          className={INSET_INPUT}
         />
         <button
           type="button"
@@ -90,7 +91,7 @@ export function LinkSection({ event, form }: SectionProps) {
               disabled={locked}
               value={values.slug}
               onChange={(control) => set.slug(control.target.value)}
-              className="min-w-0 flex-1 border-0 bg-transparent px-3 py-[9px] text-[13.5px] text-neutral-900 focus:outline-2 focus:-outline-offset-2 focus:outline-mustard-500 disabled:cursor-not-allowed"
+              className={INSET_INPUT}
             />
           </div>
           {derived.slugOptions.length > 0 ? (

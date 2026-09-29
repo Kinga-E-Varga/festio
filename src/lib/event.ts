@@ -102,7 +102,13 @@ export function repliesBarVars(event: ReplyCounts): CSSProperties {
 
 const DAY_MS = 86_400_000;
 
-const DATE_PARTS: Intl.DateTimeFormatOptions = {
+/** A clock or calendar number at two digits: 9 → "09". */
+export function pad(part: number): string {
+  return String(part).padStart(2, "0");
+}
+
+/** "6 September 2026": the long date every card and host screen starts from. */
+export const DATE_PARTS: Intl.DateTimeFormatOptions = {
   day: "numeric",
   month: "long",
   year: "numeric",
@@ -187,9 +193,7 @@ export function formatDuration(span: TimeSpan, language: Language): string {
 
 /** "5 September 2026, 00:00" — the long form, behind `formatDeadline`. */
 function formatStamp(value: Date, language: Language): string {
-  const hours = String(value.getHours()).padStart(2, "0");
-  const minutes = String(value.getMinutes()).padStart(2, "0");
-  return `${formatEventDate(value, language)}, ${hours}:${minutes}`;
+  return `${formatEventDate(value, language)}, ${pad(value.getHours())}:${pad(value.getMinutes())}`;
 }
 
 /**
@@ -207,7 +211,6 @@ export function formatDeadline(value: Date, language: Language): string {
 
 /** The `YYYY-MM-DDTHH:MM` shape a `datetime-local` input expects. */
 export function toDateTimeLocal(value: Date): string {
-  const pad = (part: number) => String(part).padStart(2, "0");
   return (
     `${value.getFullYear()}-${pad(value.getMonth() + 1)}-${pad(value.getDate())}` +
     `T${pad(value.getHours())}:${pad(value.getMinutes())}`

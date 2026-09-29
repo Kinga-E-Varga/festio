@@ -11,6 +11,14 @@ import { appFontClassName } from "@/app/fonts";
 import "@/app/globals.css";
 
 /**
+ * The invitation's own language, or the default for a link that matches none.
+ */
+function inviteLanguage(invite: string) {
+  const event = findByInvite(EVENTS, invite);
+  return event ? invitationLanguage(event) : DEFAULT_LANGUAGE;
+}
+
+/**
  * A separate root layout from `[locale]` — guest invitation links have no
  * language switch and stay outside next-intl's routing entirely. Lives under
  * a literal `invite/` folder (not `[invite]` at the app root) because
@@ -22,9 +30,8 @@ export async function generateMetadata({
   params,
 }: LayoutProps<"/invite/[invite]">): Promise<Metadata> {
   const { invite } = await params;
-  const event = findByInvite(EVENTS, invite);
   const t = await getTranslations({
-    locale: event ? invitationLanguage(event) : DEFAULT_LANGUAGE,
+    locale: inviteLanguage(invite),
     namespace: "Meta",
   });
   return { title: "Festio", description: t("description") };
@@ -43,8 +50,7 @@ export default async function InviteRootLayout({
    * ask, and the page below turns it into a 404; the default only dresses
    * that page.
    */
-  const event = findByInvite(EVENTS, invite);
-  const language = event ? invitationLanguage(event) : DEFAULT_LANGUAGE;
+  const language = inviteLanguage(invite);
   const messages = await loadMessages(language);
 
   return (

@@ -1,17 +1,14 @@
 import { useLocale, useTranslations } from 'next-intl'
 import Image from 'next/image'
 import { Link } from '@/i18n/navigation'
-import { CopyButton } from '@/components/dashboard/CopyButton'
 import { DatesThatMatter } from '@/components/dashboard/DatesThatMatter'
-import { PasswordField } from '@/components/dashboard/PasswordField'
+import { EventWhen } from '@/components/dashboard/EventWhen'
+import { ShareFields } from '@/components/dashboard/ShareFields'
 import { Icon } from '@/components/icons'
 import { GUEST_DATA_RETENTION_DAYS } from '@/lib/config'
 import {
   deletionDate,
-  formatDay,
   formatEventDate,
-  formatRelative,
-  invitationLink,
   invitationPath,
   expectedLevel,
   expectedPercent,
@@ -49,14 +46,8 @@ export const RULE = `relative before:pointer-events-none before:absolute before:
 const PANEL = 'min-w-0 border-t border-mustard-300 pt-5'
 
 /** The six actions share one size and fill the width of their column. */
-const ACTION =
+export const ACTION =
   'inline-flex w-full min-w-[135px] items-center justify-center gap-2 rounded-md border border-forest-500 bg-mustard-50 px-2.5 py-[12px] text-center text-[13px] leading-[1.3] font-medium text-forest-500 transition-colors hover:border-forest-600 hover:bg-forest-200 hover:text-forest-600 disabled:cursor-not-allowed disabled:opacity-50'
-
-const FIELD_BASE =
-  'flex items-center gap-[9px] border border-mustard-300 px-3 py-2 text-[13px] text-neutral-900'
-const FIELD = `${FIELD_BASE} bg-mustard-50`
-/** Stands in for the link row when there is nothing to share yet. */
-const FIELD_NOTE = `${FIELD_BASE} bg-terracotta-200`
 
 function Tally({
   label,
@@ -94,10 +85,8 @@ function Tally({
 export function EventRow({ event }: { event: DashboardEvent }) {
   const t = useTranslations('Event')
   const tPackages = useTranslations('Packages')
-  const tNotes = useTranslations('EventNotes')
   const locale = useLocale()
   const deletion = formatEventDate(deletionDate(event.date), locale)
-  const link = invitationLink(event)
   const expected = event.expectedGuests
   const replied = event.rsvp.replied
   const percent = expectedPercent(replied, expected)
@@ -150,23 +139,7 @@ export function EventRow({ event }: { event: DashboardEvent }) {
                 {event.title}
               </h3>
 
-              <p className="mt-2.5 text-[14px] leading-none text-neutral-900">
-                <span className="font-medium">
-                  {formatDay(event.date, locale)}
-                </span>
-                <span aria-hidden="true" className="text-neutral-700">
-                  {' · '}
-                </span>
-                <span
-                  className={
-                    event.isNextUp
-                      ? 'font-medium text-terracotta-600'
-                      : 'text-neutral-700'
-                  }
-                >
-                  {formatRelative(event.countdown, locale)}
-                </span>
-              </p>
+              <EventWhen event={event} />
 
               {/*
                * The package alone. "Custom" on its own reads as a property of
@@ -183,34 +156,7 @@ export function EventRow({ event }: { event: DashboardEvent }) {
             {archived ? null : (
               <div className={PANEL}>
                 <h4 className={PANEL_LABEL}>{t('sharing')}</h4>
-                {/* Stacked fields butt together and share their edges. */}
-                <div className="flex max-w-[340px] flex-col [&>*+*]:border-t-0">
-                  <span className={FIELD}>
-                    <Icon
-                      name="link"
-                      className="size-3.5 shrink-0 text-forest-500"
-                    />
-                    <span className="flex-1 truncate">{link}</span>
-                    <CopyButton
-                      value={`https://${link}`}
-                      label={t('copyLinkFor', { title: event.title })}
-                    />
-                  </span>
-
-                  {event.password ? (
-                    <PasswordField password={event.password} />
-                  ) : null}
-
-                  {event.linkNoteKey ? (
-                    <span className={FIELD_NOTE}>
-                      <Icon
-                        name="eyeOff"
-                        className="size-3.5 shrink-0 text-neutral-700"
-                      />
-                      {tNotes(event.linkNoteKey)}
-                    </span>
-                  ) : null}
-                </div>
+                <ShareFields event={event} className="max-w-[340px]" />
               </div>
             )}
 

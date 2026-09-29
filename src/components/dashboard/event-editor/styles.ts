@@ -33,11 +33,13 @@ const OUTLINE = `${BUTTON} border-forest-500 text-forest-500 hover:border-forest
 export const BTN_GHOST = `${OUTLINE} bg-mustard-50`;
 /** The same outline on the inputs' lighter fill, to sit in a row with them. */
 export const BTN_GHOST_LIGHT = `${OUTLINE} bg-neutral-50`;
-/** The outlined action with no fill, for tinted surfaces like the guest list header. */
-export const BTN_OUTLINE = `${OUTLINE} bg-transparent`;
 /** The top bar's own dark, for a page action that should read apart from the forest ones. */
 export const BTN_DARK = `${BUTTON} border-neutral-900 bg-neutral-900 text-neutral-50 hover:border-neutral-800 hover:bg-neutral-800`;
 export const BTN_DANGER = `${BUTTON} border-rust-500 bg-rust-100 text-rust-500 hover:bg-rust-500 hover:text-neutral-50`;
+
+/** A borderless input inside a framed box that carries the border (the link address, the password). */
+export const INSET_INPUT =
+  "min-w-0 flex-1 border-0 bg-transparent px-3 py-[9px] text-[13.5px] text-neutral-900 focus:outline-2 focus:-outline-offset-2 focus:outline-mustard-500 disabled:cursor-not-allowed";
 
 /** The small icon-only control that sits inside a field. */
 export const MINI =

@@ -2,7 +2,8 @@
 
 import { useLocale, useTranslations } from "next-intl";
 import { type ReactNode, useId, useState } from "react";
-import { ATTENTION_TAG, SMALL_BTN } from "@/components/dashboard/guest-list/styles";
+import { STATUS_KEY } from "@/components/dashboard/guest-list/labels";
+import { ATTENTION_TAG, fold, SMALL_BTN } from "@/components/dashboard/guest-list/styles";
 import { NameEditor } from "@/components/dashboard/guest-list/NameEditor";
 import { ReplyEditor } from "@/components/dashboard/guest-list/ReplyEditor";
 import { RowView } from "@/components/dashboard/guest-list/RowView";
@@ -187,9 +188,7 @@ function Category({ category, groups, list, actions, editor }: CategoryProps) {
       <div
         id={body}
         inert={!open}
-        className={`grid transition-[grid-template-rows,opacity] duration-300 ease-out motion-reduce:transition-none ${
-          open ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"
-        }`}
+        className={fold(open)}
       >
         <div className="min-h-0 divide-y divide-mustard-300 overflow-hidden">
           {category === "attention"
@@ -253,11 +252,6 @@ interface SameNameReplyProps {
   editor: RowEditorState;
 }
 
-const STATUS_KEY = {
-  going: "statusGoing",
-  not_going: "statusNotGoing",
-} as const;
-
 /** One of the replies with a shared name: when it came, the person (their message in the details), who came with them. */
 function SameNameReply({ row, list, actions, editor }: SameNameReplyProps) {
   const t = useTranslations("GuestList");
@@ -279,10 +273,7 @@ function SameNameReply({ row, list, actions, editor }: SameNameReplyProps) {
       <RowItem row={row} list={list} actions={actions} editor={editor} inCard />
       {party.length > 0 ? (
         <p className="py-1 text-[12.5px] text-neutral-700">
-          {t.rich("repliedWith", {
-            names: new Intl.ListFormat(locale).format(party),
-            b: (chunks) => <b className="font-semibold text-neutral-900">{chunks}</b>,
-          })}
+          <RepliedWith names={party} />
         </p>
       ) : null}
       {row.later ? (
@@ -292,6 +283,16 @@ function SameNameReply({ row, list, actions, editor }: SameNameReplyProps) {
       ) : null}
     </div>
   );
+}
+
+/** "Replied with …", the others' names in bold as one list. */
+function RepliedWith({ names }: { names: string[] }) {
+  const t = useTranslations("GuestList");
+  const locale = useLocale();
+  return t.rich("repliedWith", {
+    names: new Intl.ListFormat(locale).format(names),
+    b: (chunks) => <b className="font-semibold text-neutral-900">{chunks}</b>,
+  });
 }
 
 const DOT = "size-3 -translate-y-1/2 rounded-full border-2";
@@ -313,8 +314,6 @@ interface GroupViewProps {
 /** People who replied together share a thread; a split-off part names the rest. Their message is in each one's details. */
 function GroupView({ group, list, actions, editor }: GroupViewProps) {
   const category = groupCategory(group);
-  const t = useTranslations("GuestList");
-  const locale = useLocale();
   const parts = group.rows.length + (group.with.length > 0 ? 1 : 0);
   const place = (at: number) => ({
     joined: parts > 1,
@@ -343,10 +342,7 @@ function GroupView({ group, list, actions, editor }: GroupViewProps) {
           {/* One span inside the flex line, or flex drops the space before the name. */}
           <p className="flex min-h-8 items-center py-1 text-[12.5px] text-neutral-700">
             <span>
-              {t.rich("repliedWith", {
-                names: new Intl.ListFormat(locale).format(group.with),
-                b: (chunks) => <b className="font-semibold text-neutral-900">{chunks}</b>,
-              })}
+              <RepliedWith names={group.with} />
             </span>
           </p>
         </Strand>
