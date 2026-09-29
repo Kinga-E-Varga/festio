@@ -1,7 +1,6 @@
 import { useLocale, useTranslations } from "next-intl";
 import { Icon } from "@/components/icons";
 import { formatDuration } from "@/lib/event";
-import { TIERS } from "@/mock/dashboard";
 import type {
   DashboardEvent,
   IconName,
@@ -33,7 +32,7 @@ interface EventMetaProps {
   event: DashboardEvent;
   /**
    * The editor states every deadline in its own banners and summary, so the
-   * meta row under its title carries only visibility and tier.
+   * meta row under its title carries only visibility and package.
    */
   deadlines?: boolean;
   /** The events list gives the freeze a line of its own, further down. */
@@ -49,7 +48,7 @@ export function EventMeta({
   size = "sm",
 }: EventMetaProps) {
   const t = useTranslations("Event");
-  const tTiers = useTranslations("Tiers");
+  const tPackages = useTranslations("Packages");
   const locale = useLocale();
   const visibility = VISIBILITY[event.visibility];
 
@@ -63,7 +62,7 @@ export function EventMeta({
         <Icon name={visibility.icon} className={size === "md" ? "size-4" : "size-3.5"} />
         {t(visibility.labelKey)}
       </span>
-      <span>{tTiers(`${TIERS[event.tier].key}.name`)}</span>
+      <span>{tPackages(`${event.package}.name`)}</span>
 
       {deadlines && !event.paid ? (
         <span className={CHIP}>{t("paymentPending")}</span>

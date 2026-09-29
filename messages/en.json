@@ -60,7 +60,7 @@
     "forHosts": "For hosts",
     "legal": "Legal",
     "templateGallery": "Template gallery",
-    "editionsPricing": "Editions & pricing",
+    "packagesPricing": "Packages & pricing",
     "printSizes": "Print sizes",
     "seatingCharts": "Seating charts",
     "gettingStarted": "Getting started",
@@ -154,7 +154,7 @@
     "barAria": "Replies: {attending} attending and {declined} declined, of {expected} expected guests",
     "expectedLine": "Expected guests {replied}/{expected} · {percent}%",
     "seatingPaidOnly": "Seating charts come with paid invitations",
-    "edition": "{name} edition",
+    "package": "{name} package",
     "copyLinkFor": "Copy invitation link for {title}",
     "showPassword": "Show guest password",
     "hidePassword": "Hide guest password",
@@ -189,16 +189,21 @@
     "tabPast": "Past",
     "tabsLabel": "Invitation status"
   },
-  "Tiers": {
+  "Packages": {
     "price": "{amount, plural, =0 {Free} other {# RON}}",
     "free": {
-      "name": "Free"
+      "name": "Free",
+      "blurb": "A simple invitation from the free templates, with a minimal RSVP form. No seating chart."
     },
     "standard": {
-      "name": "Standard"
+      "name": "Standard",
+      "blurb": "Any simple template, with a minimal RSVP form and a seating chart.",
+      "upsell": "Opens every simple template and adds a seating chart. You pay the difference, and nothing you have written is lost."
     },
     "custom": {
-      "name": "Custom"
+      "name": "Custom",
+      "blurb": "Every template, simple or modular: your own sections, RSVP questions, palette, fonts and images. Seating chart included.",
+      "upsell": "Unlocks modular templates with your own sections, RSVP questions, palette and fonts. You pay the difference, and nothing you have written is lost."
     }
   },
   "Occasions": {
@@ -223,7 +228,7 @@
     "repliesClosedTitle": "Replies closed on {date}",
     "repliesClosedBody": "The reply form closed {custom, select, yes {at the time you set} other {the day before the event}}. You can still add replies that reach you in any other way.",
     "unpaidTitle": "This draft is unpaid",
-    "unpaidBody": "The {tier} edition costs {price}. The page stays hidden and the RSVP form stays closed until payment clears.",
+    "unpaidBody": "The {package} package costs {price}. The page stays hidden and the RSVP form stays closed until payment clears.",
     "hiddenTitle": "This invitation is hidden",
     "hiddenBody": "Nobody can open the page, not even a guest holding the link, and no reply can arrive. Set the visibility to Public or Protected below once you are ready to share it.",
     "attentionTitle": "{count, plural, one {# reply needs a look} other {# replies need a look}}",
@@ -290,9 +295,9 @@
     "expected": "How many guests do you expect?",
     "expectedHint": "We use this to show how your replies are coming in, and to protect you from spam: if far more replies come in than you expected, we'll pause the form. You can raise the number anytime.",
     "expecting": "Who you are expecting",
-    "edition": "Edition",
-    "tierPaid": "{name} — {price} · paid",
-    "tierUnpaid": "{name} — {price} · unpaid",
+    "package": "Package",
+    "packagePaid": "{name} — {price} · paid",
+    "packageUnpaid": "{name} — {price} · unpaid",
     "raiseTo": "Raise to {name} — {price}",
     "payAndPublish": "Pay {price} and publish",
     "payNote": "Clears the draft for sharing. Visibility stays where you set it until you change it yourself.",

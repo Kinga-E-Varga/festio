@@ -17,7 +17,6 @@ import {
   expectedPercent,
   repliesBarVars,
 } from '@/lib/event'
-import { TIERS } from '@/mock/dashboard'
 import type { DashboardEvent, EventStatus } from '@/types/dashboard'
 
 /** The card's left edge says which pile the event is in, as the dashboard's does. */
@@ -94,7 +93,7 @@ function Tally({
  */
 export function EventRow({ event }: { event: DashboardEvent }) {
   const t = useTranslations('Event')
-  const tTiers = useTranslations('Tiers')
+  const tPackages = useTranslations('Packages')
   const tNotes = useTranslations('EventNotes')
   const locale = useLocale()
   const deletion = formatEventDate(deletionDate(event.date), locale)
@@ -170,12 +169,12 @@ export function EventRow({ event }: { event: DashboardEvent }) {
               </p>
 
               {/*
-               * The edition alone. "Custom" on its own reads as a property of
+               * The package alone. "Custom" on its own reads as a property of
                * the invitation rather than as what was bought, so it says so.
                */}
               <p className="mt-2.5 text-[13px] text-neutral-700">
-                {t('edition', {
-                  name: tTiers(`${TIERS[event.tier].key}.name`),
+                {t('package', {
+                  name: tPackages(`${event.package}.name`),
                 })}
               </p>
             </div>
@@ -331,32 +330,24 @@ export function EventRow({ event }: { event: DashboardEvent }) {
                   {t('editEvent')}
                 </Link>
               )}
-
-              {/*
-               * The invitation is managed on its own page, so this lands on
-               * that event's card there rather than jumping straight into an
-               * editor — what can be done to it is stated on the card. The
-               * page arrives narrowed to that one invitation.
-               */}
-              {past ? (
-                <button
-                  type="button"
-                  disabled
-                  title={t('alreadyHappened')}
-                  className={ACTION}
-                >
-                  <Icon name="layers" className="size-[15px]" />
-                  {t('editInvitation')}
-                </button>
-              ) : (
-                <Link
-                  href={`/dashboard/invitations?event=${event.id}#focus`}
-                  className={ACTION}
-                >
-                  <Icon name="layers" className="size-[15px]" />
-                  {t('editInvitation')}
-                </Link>
-              )}
+              <Link
+                href={`/dashboard/events/${event.id}/guests`}
+                className={ACTION}
+              >
+                <Icon name="guests" className="size-[15px]" />
+                {t('guestList')}
+              </Link>
+              <button
+                type="button"
+                disabled={!event.seatingAvailable}
+                title={
+                  event.seatingAvailable ? undefined : t('seatingPaidOnly')
+                }
+                className={ACTION}
+              >
+                <Icon name="seating" className="size-[15px]" />
+                {t('seating')}
+              </button>
 
               {/*
                * The guest page itself, in a tab of its own so the host keeps
@@ -388,24 +379,32 @@ export function EventRow({ event }: { event: DashboardEvent }) {
                 <Icon name="printer" className="size-[15px]" />
                 {t('print')}
               </button>
-              <Link
-                href={`/dashboard/events/${event.id}/guests`}
-                className={ACTION}
-              >
-                <Icon name="guests" className="size-[15px]" />
-                {t('guestList')}
-              </Link>
-              <button
-                type="button"
-                disabled={!event.seatingAvailable}
-                title={
-                  event.seatingAvailable ? undefined : t('seatingPaidOnly')
-                }
-                className={ACTION}
-              >
-                <Icon name="seating" className="size-[15px]" />
-                {t('seating')}
-              </button>
+
+              {/*
+               * The invitation is managed on its own page, so this lands on
+               * that event's card there rather than jumping straight into an
+               * editor — what can be done to it is stated on the card. The
+               * page arrives narrowed to that one invitation.
+               */}
+              {past ? (
+                <button
+                  type="button"
+                  disabled
+                  title={t('alreadyHappened')}
+                  className={ACTION}
+                >
+                  <Icon name="layers" className="size-[15px]" />
+                  {t('editInvitation')}
+                </button>
+              ) : (
+                <Link
+                  href={`/dashboard/invitations?event=${event.id}#focus`}
+                  className={ACTION}
+                >
+                  <Icon name="layers" className="size-[15px]" />
+                  {t('editInvitation')}
+                </Link>
+              )}
             </div>
           </div>
         )}

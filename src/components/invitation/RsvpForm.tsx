@@ -28,8 +28,8 @@ interface RsvpFormProps {
 }
 
 /**
- * The Type 1 reply: names, one going choice for the whole reply, and an
- * optional note. Everything else a template might ask is Type 2's business.
+ * The simple invitation's reply: names, one going choice for the whole reply, and an
+ * optional note. Everything else a template might ask belongs to modular invitations.
  *
  * Every word here is Festio's, not the host's, so it comes from the catalog
  * of the invitation's own `language` — the provider around this tree, never

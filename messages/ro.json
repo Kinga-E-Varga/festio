@@ -60,7 +60,7 @@
     "forHosts": "Pentru gazde",
     "legal": "Legal",
     "templateGallery": "Galerie șabloane",
-    "editionsPricing": "Pachete și prețuri",
+    "packagesPricing": "Pachete și prețuri",
     "printSizes": "Dimensiuni print",
     "seatingCharts": "Planuri de așezare",
     "gettingStarted": "Primii pași",
@@ -123,8 +123,8 @@
     "datesThatMatter": "Date importante",
     "replies": "Răspunsuri",
     "sharing": "Distribuire",
-    "editEvent": "Editere eveniment",
-    "editInvitation": "Editere invitație",
+    "editEvent": "Eveniment",
+    "editInvitation": "Invitație",
     "guestList": "Listă invitați",
     "print": "Tipărire",
     "seating": "Plan așezare",
@@ -154,7 +154,7 @@
     "barAria": "Răspunsuri: {attending} participă și {declined} nu participă, din {expected} invitați așteptați",
     "expectedLine": "Invitați așteptați {replied}/{expected} · {percent}%",
     "seatingPaidOnly": "Plan de așezare disponibil la pachetele plătite",
-    "edition": "Pachet {name}",
+    "package": "Pachet {name}",
     "copyLinkFor": "Copiază link pentru {title}",
     "showPassword": "Arată parola",
     "hidePassword": "Ascunde parola",
@@ -189,16 +189,21 @@
     "tabPast": "Trecute",
     "tabsLabel": "Stare invitație"
   },
-  "Tiers": {
+  "Packages": {
     "price": "{amount, plural, =0 {Gratuit} other {# RON}}",
     "free": {
-      "name": "Gratuit"
+      "name": "Gratuit",
+      "blurb": "Invitație simplă din șabloanele gratuite, cu formular de confirmare minimal. Fără plan de așezare."
     },
     "standard": {
-      "name": "Standard"
+      "name": "Standard",
+      "blurb": "Orice șablon simplu, cu formular de confirmare minimal și plan de așezare.",
+      "upsell": "Deblochează toate șabloanele simple și adaugă un plan de așezare. Plătești doar diferența și nu pierzi nimic din ce ai scris."
     },
     "custom": {
-      "name": "Personalizat"
+      "name": "Personalizat",
+      "blurb": "Toate șabloanele, simple sau modulare: secțiuni, întrebări, culori, fonturi și imagini proprii. Plan de așezare inclus.",
+      "upsell": "Deblochează șabloanele modulare, cu secțiuni, întrebări, culori și fonturi proprii. Plătești doar diferența și nu pierzi nimic din ce ai scris."
     }
   },
   "Occasions": {
@@ -223,7 +228,7 @@
     "repliesClosedTitle": "Răspunsuri închise pe {date}",
     "repliesClosedBody": "Formularul de răspuns s-a închis {custom, select, yes {la ora pe care ai ales-o} other {cu o zi înainte de eveniment}}. Poți adăuga în continuare în lista de invitați răspunsurile primite la telefon.",
     "unpaidTitle": "Ciornă neplătită",
-    "unpaidBody": "Pachetul {tier} costă {price}. Pagina rămâne ascunsă și formularul de confirmare rămâne închis până se confirmă plata.",
+    "unpaidBody": "Pachetul {package} costă {price}. Pagina rămâne ascunsă și formularul de confirmare rămâne închis până se confirmă plata.",
     "hiddenTitle": "Invitație ascunsă",
     "hiddenBody": "Nimeni nu poate deschide pagina, nici măcar un invitat care are linkul, și nu poate sosi niciun răspuns. Setează mai jos vizibilitatea la Publică sau Protejată când ești gata s-o trimiți.",
     "attentionTitle": "{count, plural, one {# răspuns de verificat} few {# răspunsuri de verificat} other {# de răspunsuri de verificat}}",
@@ -290,9 +295,9 @@
     "expected": "Câți invitați aștepți?",
     "expectedHint": "Folosim acest număr ca să-ți arătăm cum vin răspunsurile și ca să te protejăm de spam: dacă vin mult mai multe răspunsuri decât te așteptai, oprim formularul. Poți mări numărul oricând.",
     "expecting": "Pe cine aștepți",
-    "edition": "Pachet",
-    "tierPaid": "{name} — {price} · plătit",
-    "tierUnpaid": "{name} — {price} · neplătit",
+    "package": "Pachet",
+    "packagePaid": "{name} — {price} · plătit",
+    "packageUnpaid": "{name} — {price} · neplătit",
     "raiseTo": "Treci la {name} — {price}",
     "payAndPublish": "Plătește {price} și publică",
     "payNote": "Ciorna devine gata de trimis. Vizibilitatea rămâne cum ai setat-o, până o schimbi tu.",

@@ -54,7 +54,7 @@ Lives in `app/` because `beforeInteractive` scripts belong to a root layout.
 One file per template, **auto-discovered — no registration step.**
 
 - `index.ts` — `loadTemplate(id)`, a dynamic `import('./' + id)`. Adding a template never touches this file.
-- `<id>/index.tsx` — the template itself (e.g. `wolf-dance/`). Holds identity, tier, palette, fonts, editable fields, sections, design. A field's `fallback` is `LocalizedText`: all three languages when it is a phrase, a plain string when it is sample content.
+- `<id>/index.tsx` — the template itself (e.g. `wolf-dance/`). Holds identity, package, palette, fonts, editable fields, sections, design. A field's `fallback` is `LocalizedText`: all three languages when it is a phrase, a plain string when it is sample content.
 - `TemplateCard.tsx` — template picker card.
 
 ## Invitation — `src/components/invitation/`

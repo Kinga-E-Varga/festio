@@ -60,15 +60,15 @@ export interface NavSection {
   items: NavItem[];
 }
 
-/** Tier is per invitation and can only ever go up (project spec). */
-export type TierId = 1 | 2 | 3;
+/**
+ * What an event was bought as. Per event, and it only ever goes up:
+ * free → standard → custom (project spec). Also the key into the `Packages`
+ * message namespace, which holds each package's name.
+ */
+export type PackageId = "free" | "standard" | "custom";
 
-/** Key into the `Tiers` message namespace, which holds each tier's name. */
-export type TierKey = "free" | "standard" | "custom";
-
-export interface Tier {
-  key: TierKey;
-  /** In RON; 0 is the free tier. */
+export interface Package {
+  /** In RON; 0 is the free package. */
   price: number;
   seating: boolean;
 }
@@ -137,9 +137,7 @@ export interface DashboardEvent {
   venue: string;
   address: string;
   visibility: Visibility;
-  tier: TierId;
-  /** 1 = fixed template, text only. 2 = modular sections. */
-  invitationType: 1 | 2;
+  package: PackageId;
   /** Which template file draws this invitation; see `src/templates/`. */
   templateId?: string;
   /**
@@ -228,8 +226,8 @@ export interface AttentionNotice extends Message {
   eventDate?: string;
   /** A custom reply-form close; when set, `{date}` is this instead. */
   closesAt?: string;
-  /** Filled in as `{tier}`, the tier's own name in the reader's language. */
-  tier?: TierId;
+  /** Filled in as `{package}`, the package's own name in the reader's language. */
+  package?: PackageId;
   tone: NoticeTone;
   /** Set from 100% of expected guests: where the host reports a flood. */
   reportHref?: string;

@@ -22,8 +22,7 @@ const LABELS = {
 export const template: InvitationTemplate = {
   id: 'wolf-dance',
   name: 'Wolf Dance',
-  type: 1,
-  minTier: 1,
+  package: 'free',
   eventTypes: ['wedding', 'other'],
   design: { width: 1080, height: 1532, minScale: 0.18, maxScale: 0.65 },
   printSize: 'A5 portrait — 148 × 210 mm at 300 dpi',

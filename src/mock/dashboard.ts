@@ -21,8 +21,8 @@ import type {
   FooterColumn,
   NavSection,
   RsvpActivity,
-  Tier,
-  TierId,
+  Package,
+  PackageId,
 } from '@/types/dashboard'
 
 /**
@@ -76,11 +76,17 @@ export const NAV_SECTIONS: NavSection[] = [
   },
 ]
 
-/** Prices and what each tier unlocks, straight from the project spec. */
-export const TIERS: Record<TierId, Tier> = {
-  1: { key: 'free', price: 0, seating: false },
-  2: { key: 'standard', price: 100, seating: true },
-  3: { key: 'custom', price: 200, seating: true },
+/** Prices and what each package unlocks, lowest first, straight from the project spec. */
+export const PACKAGES: Record<PackageId, Package> = {
+  free: { price: 0, seating: false },
+  standard: { price: 100, seating: true },
+  custom: { price: 200, seating: true },
+}
+
+/** The package one step up, or none from the top. */
+export function nextPackage(id: PackageId): PackageId | undefined {
+  const order = Object.keys(PACKAGES) as PackageId[]
+  return order[order.indexOf(id) + 1]
 }
 
 /* Keys into the `Occasions` message namespace, in the order they are offered. */
@@ -121,8 +127,7 @@ export const EVENTS: DashboardEvent[] = [
     venue: 'Restaurant Cetate',
     address: 'Piața Unirii 2, Cluj-Napoca',
     visibility: 'protected',
-    tier: 3,
-    invitationType: 2,
+    package: 'custom',
     templateId: 'wolf-dance',
     /* Events without one read as English — the rollout default. */
     language: 'ro',
@@ -169,8 +174,7 @@ export const EVENTS: DashboardEvent[] = [
     venue: 'Grădina Bunicii',
     address: 'Strada Plopilor 14, Florești',
     visibility: 'public',
-    tier: 2,
-    invitationType: 2,
+    package: 'standard',
     paid: true,
     locksIn: { value: 5, unit: 'week' },
     slug: 'botez-sofia',
@@ -205,8 +209,7 @@ export const EVENTS: DashboardEvent[] = [
     venue: 'Vila Florilor',
     address: 'Strada Florilor 5, Cluj-Napoca',
     visibility: 'public',
-    tier: 1,
-    invitationType: 1,
+    package: 'custom',
     language: 'ro',
     paid: true,
     locksIn: { value: 7, unit: 'week' },
@@ -233,8 +236,7 @@ export const EVENTS: DashboardEvent[] = [
     venue: 'Casa Ardeleană',
     address: 'Bulevardul Eroilor 8, Cluj-Napoca',
     visibility: 'hidden',
-    tier: 1,
-    invitationType: 1,
+    package: 'free',
     paid: true,
     locksIn: { value: 11, unit: 'week' },
     slug: 'ion-50',
@@ -264,8 +266,7 @@ export const EVENTS: DashboardEvent[] = [
     venue: 'Casa Mare',
     address: 'Strada Someșului 3, Gilău',
     visibility: 'hidden',
-    tier: 3,
-    invitationType: 2,
+    package: 'custom',
     paid: false,
     locksIn: { value: 17, unit: 'week' },
     slug: 'revelion-2027',
@@ -296,8 +297,7 @@ export const EVENTS: DashboardEvent[] = [
     venue: 'Restaurant Salcia',
     address: 'Strada Piatra Craiului 2, Cluj-Napoca',
     visibility: 'public',
-    tier: 2,
-    invitationType: 2,
+    package: 'standard',
     paid: true,
     slug: 'cumetrie-luca',
     rsvp: {
@@ -332,8 +332,7 @@ export const EVENTS: DashboardEvent[] = [
     venue: 'Terasa Verde',
     address: 'Strada Republicii 21, Turda',
     visibility: 'protected',
-    tier: 1,
-    invitationType: 1,
+    package: 'free',
     paid: true,
     slug: 'majorat-ana',
     password: 'ana18ana',
@@ -456,7 +455,7 @@ export const ATTENTION_NOTICES: AttentionNotice[] = [
     id: 'unpaid',
     key: 'unpaid',
     values: { event: 'Revelion' },
-    tier: 3,
+    package: 'custom',
     tone: 'billing',
   },
 ]
@@ -515,7 +514,7 @@ export const FOOTER_COLUMNS: FooterColumn[] = [
     labelKey: 'product',
     linkKeys: [
       'templateGallery',
-      'editionsPricing',
+      'packagesPricing',
       'printSizes',
       'seatingCharts',
     ],

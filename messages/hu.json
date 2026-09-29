@@ -60,7 +60,7 @@
     "forHosts": "Házigazdáknak",
     "legal": "Jogi tudnivalók",
     "templateGallery": "Sablongaléria",
-    "editionsPricing": "Csomagok és árak",
+    "packagesPricing": "Csomagok és árak",
     "printSizes": "Nyomtatási méretek",
     "seatingCharts": "Ültetési rend",
     "gettingStarted": "Első lépések",
@@ -123,8 +123,8 @@
     "datesThatMatter": "Fontos dátumok",
     "replies": "Válaszok",
     "sharing": "Megosztás",
-    "editEvent": "Esemény szerkesztése",
-    "editInvitation": "Meghívó szerkesztése",
+    "editEvent": "Esemény",
+    "editInvitation": "Meghívó",
     "guestList": "Vendéglista",
     "print": "Nyomtatás",
     "seating": "Ültetés",
@@ -154,7 +154,7 @@
     "barAria": "Válaszok: {attending} részt vesz és {declined} nem vesz részt, {expected} várt vendégből",
     "expectedLine": "Várt vendégek: {replied}/{expected} · {percent}%",
     "seatingPaidOnly": "Az ültetési rend a fizetős meghívók része",
-    "edition": "{name} csomag",
+    "package": "{name} csomag",
     "copyLinkFor": "{title} meghívólinkjének másolása",
     "showPassword": "Vendégjelszó mutatása",
     "hidePassword": "Vendégjelszó rejtése",
@@ -189,16 +189,21 @@
     "tabPast": "Múlt",
     "tabsLabel": "Meghívó állapota"
   },
-  "Tiers": {
+  "Packages": {
     "price": "{amount, plural, =0 {Ingyenes} other {# RON}}",
     "free": {
-      "name": "Ingyenes"
+      "name": "Ingyenes",
+      "blurb": "Egyszerű meghívó az ingyenes sablonokból, egyszerű visszajelzési űrlappal. Ültetési rend nélkül."
     },
     "standard": {
-      "name": "Standard"
+      "name": "Standard",
+      "blurb": "Bármelyik egyszerű sablon, egyszerű visszajelzési űrlappal és ültetési renddel.",
+      "upsell": "Minden egyszerű sablont elérhetővé tesz, és ültetési rendet ad hozzá. Csak a különbözetet fizeted, és semmi sem vész el abból, amit megírtál."
     },
     "custom": {
-      "name": "Egyedi"
+      "name": "Egyedi",
+      "blurb": "Minden sablon, egyszerű vagy egyedileg alakítható: saját szakaszok, kérdések, színek, betűtípusok és képek. Tartalmaz ültetési rendet.",
+      "upsell": "Elérhetővé teszi az egyedileg alakítható sablonokat saját szakaszokkal, kérdésekkel, színekkel és betűtípusokkal. Csak a különbözetet fizeted, és semmi sem vész el abból, amit megírtál."
     }
   },
   "Occasions": {
@@ -223,7 +228,7 @@
     "repliesClosedTitle": "Válaszűrlap lezárult: {date}",
     "repliesClosedBody": "Válaszűrlap {custom, select, yes {az általad megadott időpontban} other {az esemény előtti napon}} lezárult. A telefonon érkező válaszokat továbbra is felveheted a vendéglistára.",
     "unpaidTitle": "Piszkozat nincs kifizetve",
-    "unpaidBody": "A(z) {tier} csomag ára {price}. Az oldal rejtve, a visszajelzési űrlap pedig zárva marad, amíg a fizetés meg nem érkezik.",
+    "unpaidBody": "A(z) {package} csomag ára {price}. Az oldal rejtve, a visszajelzési űrlap pedig zárva marad, amíg a fizetés meg nem érkezik.",
     "hiddenTitle": "Rejtett meghívó",
     "hiddenBody": "Senki sem nyithatja meg az oldalt, még a linkkel rendelkező vendég sem, és válasz sem érkezhet. Ha készen állsz a megosztásra, lent állítsd a láthatóságot Nyilvánosra vagy Védettre.",
     "attentionTitle": "{count, plural, one {# válasz átnézendő} other {# válasz átnézendő}}",
@@ -290,9 +295,9 @@
     "expected": "Hány vendéget vársz?",
     "expectedHint": "Ebből mutatjuk meg, hogyan érkeznek a válaszok, és ezzel védünk a spam ellen: ha jóval több válasz jön a vártnál, szüneteltetjük az űrlapot. A számot bármikor megemelheted.",
     "expecting": "Kiket vársz",
-    "edition": "Csomag",
-    "tierPaid": "{name} — {price} · kifizetve",
-    "tierUnpaid": "{name} — {price} · nincs kifizetve",
+    "package": "Csomag",
+    "packagePaid": "{name} — {price} · kifizetve",
+    "packageUnpaid": "{name} — {price} · nincs kifizetve",
     "raiseTo": "Váltás erre: {name} — {price}",
     "payAndPublish": "{price} kifizetése és közzététel",
     "payNote": "A piszkozat megosztható lesz. A láthatóság úgy marad, ahogy beállítottad, amíg magad meg nem változtatod.",

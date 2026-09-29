@@ -4,7 +4,7 @@ import { useTranslations } from "next-intl";
 import { Toast, useToast } from "@/components/dashboard/Toast";
 import { DangerZone } from "@/components/dashboard/event-editor/DangerZone";
 import { DetailsSection } from "@/components/dashboard/event-editor/DetailsSection";
-import { EditionSection } from "@/components/dashboard/event-editor/EditionSection";
+import { PackageSection } from "@/components/dashboard/event-editor/PackageSection";
 import { GuestsSection } from "@/components/dashboard/event-editor/GuestsSection";
 import { LinkSection } from "@/components/dashboard/event-editor/LinkSection";
 import { RetentionSection } from "@/components/dashboard/event-editor/RetentionSection";
@@ -38,7 +38,7 @@ export function EventEditor({ event, takenSlugs }: EventEditorProps) {
       <DetailsSection event={event} form={form} />
       <LinkSection event={event} form={form} />
       <GuestsSection event={event} form={form} />
-      <EditionSection event={event} />
+      <PackageSection event={event} />
       <RetentionSection
         event={event}
         deletionLabel={form.derived.deletionLabel}

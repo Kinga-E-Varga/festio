@@ -12,21 +12,21 @@ Host-uploaded images go to **Firebase Storage** (same `europe-west` region); Fir
 
 For forms use React Hook Form.
 
-## Tiers
+## Packages
 
-Each invitation is individually tied to a tier. Paid invitations can never be downgraded; no partial refunds.
+Each event has one package. It only ever goes up (Free → Standard → Custom); paid events can never be downgraded; no partial refunds.
 
-| Tier | Price   | Templates                     | Seating chart |
-| ---- | ------- | ----------------------------- | ------------- |
-| 1    | Free    | Free templates only           | No            |
-| 2    | 100 RON | All Type 1 templates          | Yes           |
-| 3    | 200 RON | All Type 1 + Type 2 templates | Yes           |
+| Package  | Price   | Templates                        | Seating chart |
+| -------- | ------- | -------------------------------- | ------------- |
+| Free     | Free    | Free simple templates only       | No            |
+| Standard | 100 RON | All simple templates             | Yes           |
+| Custom   | 200 RON | All templates, simple or modular | Yes           |
 
-## Invitation types
+## Invitation kinds
 
-**Type 1 (simple):** fixed template, host edits text only. Minimal RSVP form.
+**Simple:** fixed template, host edits text only. Minimal RSVP form. Free or Standard templates; Custom can use them too.
 
-**Type 2 (modular):** host adds/removes/edits sections; RSVP form is modular the same way. Also gets template customization (palette, fonts, images).
+**Modular:** host adds/removes/edits sections; RSVP form is modular the same way. Also gets template customization (palette, fonts, images). Custom only.
 
 - Base sections, always present: hero/cover, title, date & time, location.
 - Optional sections: map, countdown, dress code, gift preferences, playlist, FAQ, schedule, menu, accommodation, transportation.
@@ -34,13 +34,13 @@ Each invitation is individually tied to a tier. Paid invitations can never be do
 
 ## Host flow
 
-Pick invitation → add event details → (Type 2) customize design → (Type 2) add optional sections + RSVP questions → save, then sign in/up and pay → share → configure & download printable → track RSVPs → (paid) seating chart.
+Pick invitation → add event details → (modular) customize design → (modular) add optional sections + RSVP questions → save, then sign in/up and pay → share → configure & download printable → track RSVPs → (paid) seating chart.
 
 ## RSVP
 
 - Guests RSVP **without an account**.
 - One guest can RSVP for multiple people, with a name per attendee plus any requested details (age group / child-baby tagging, dietary needs, etc.).
-- Type 2 hosts add optional questions from presets or fully custom.
+- Modular-invitation hosts add optional questions from presets or fully custom.
 - All non-core questions are attend-only conditionals (shown only when attending).
 - **No conditional question logic in v1** — explicit non-goal.
 - RSVP form auto-closes 24h before the event date.
@@ -66,8 +66,8 @@ Lists active events with edit / print / guest list actions.
 
 Every event has a downloadable printable invitation. **PNG export in v1.**
 
-- **Type 1:** printable = the same artifact as the online invitation. No separate layout.
-- **Type 2:** separate printable layout, fixed slots, no free-form editing.
+- **Simple:** printable = the same artifact as the online invitation. No separate layout.
+- **Modular:** separate printable layout, fixed slots, no free-form editing.
 
 Full spec in `context/features/print.md`.
 
@@ -81,7 +81,7 @@ Full spec in `context/features/print.md`.
 
 ## Seating chart (paid)
 
-Tier 2 and 3 only. Full spec in `context/features/seating-chart.md`. Not built yet.
+Standard and Custom only. Full spec in `context/features/seating-chart.md`. Not built yet.
 
 ## Security
 
@@ -104,7 +104,7 @@ Tier 2 and 3 only. Full spec in `context/features/seating-chart.md`. Not built y
 Structure is fixed by invitation type; design varies per template.
 
 1. **One file per template.** Adding a template = adding a single file. No registration step, no edits elsewhere. It then appears in the app automatically.
-2. **All dynamic data lives in that file:** identity and display name, invitation type + minimum tier, recommended event types, palette, fonts, background, recommended print size, the editable fields (labels, input types, defaults, limits), for Type 2 the supported/default/addable sections, and the design itself.
+2. **All dynamic data lives in that file:** identity and display name, the package it needs (simple templates: Free or Standard; modular: Custom), recommended event types, palette, fonts, background, recommended print size, the editable fields (labels, input types, defaults, limits), for modular templates the supported/default/addable sections, and the design itself.
 3. **Single-place edits.** Changing a colour, font, default, or field must never mean editing the same value in two places.
 4. **Never break existing events.** A template edit must not destroy content hosts already entered. Changes that can't be applied safely must not be applied to events already using the template.
 
@@ -126,6 +126,6 @@ Conditional RSVP logic, PDF export, add-to-calendar / guest reminders, photo gal
 ## Unsettled — ask, don't assume
 
 - **Firestore schema and document shapes.** No canonical schema exists. Before adding collections, fields, or changing document shape, read the existing code and ask rather than assume. The answer-storage rules under RSVP are decided and hold regardless of final layout.
-- Which slots exist in the Type 2 print layout and what content can fill each.
+- Which slots exist in the modular print layout and what content can fill each.
 - Which field input types templates need (text, long text, date, time, image, ...).
 - How a guest holding only a printed invitation reaches the online RSVP form (printed URL / QR / host shares separately).

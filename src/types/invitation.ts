@@ -1,5 +1,5 @@
 import type { LocalizedText } from '@/lib/language'
-import type { EventKind, TierId } from '@/types/dashboard'
+import type { PackageId, EventKind } from '@/types/dashboard'
 
 /**
  * The five colours the RSVP chrome is styled from. Roles are positional and
@@ -29,7 +29,7 @@ export interface Palette {
 
 /**
  * Input types templates can ask for. Deliberately small — the full set is
- * still unsettled, so a template may only request what Type 1 needs.
+ * still unsettled, so a template may only request what simple templates need.
  */
 export type FieldType = 'text' | 'longText' | 'date' | 'time' | 'dateFormat'
 
@@ -131,8 +131,11 @@ export interface TemplateFonts {
 export interface InvitationTemplate {
   id: string
   name: string
-  type: 1 | 2
-  minTier: TierId
+  /**
+   * The lowest package that can use this template. Simple templates are
+   * `free` or `standard`; modular ones are `custom`. Custom unlocks them all.
+   */
+  package: PackageId
   /** Event kinds this design suits — a recommendation, not a restriction. */
   eventTypes: EventKind[]
   design: {

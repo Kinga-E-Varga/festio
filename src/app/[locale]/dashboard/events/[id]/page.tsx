@@ -12,7 +12,7 @@ import {
   formatDeadline,
   formatDuration,
 } from "@/lib/event";
-import { EVENTS, findEvent, TIERS } from "@/mock/dashboard";
+import { PACKAGES, EVENTS, findEvent } from "@/mock/dashboard";
 
 type Props = PageProps<"/[locale]/dashboard/events/[id]">;
 
@@ -31,8 +31,8 @@ export default async function EventPage({ params }: Props) {
   if (!event) notFound();
 
   const t = await getTranslations("EventPage");
-  const tTiers = await getTranslations("Tiers");
-  const tier = TIERS[event.tier];
+  const tPackages = await getTranslations("Packages");
+  const pkg = PACKAGES[event.package];
   const locale = await getLocale();
   const freeze = formatDeadline(contentFreeze(event.date), locale);
 
@@ -92,8 +92,8 @@ export default async function EventPage({ params }: Props) {
       {event.paid ? null : (
         <Banner tone="warn" icon="info" title={t("unpaidTitle")}>
           {t("unpaidBody", {
-            tier: tTiers(`${tier.key}.name`),
-            price: tTiers("price", { amount: tier.price }),
+            package: tPackages(`${event.package}.name`),
+            price: tPackages("price", { amount: pkg.price }),
           })}
         </Banner>
       )}

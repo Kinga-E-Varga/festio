@@ -1,8 +1,8 @@
 import { useTranslations } from "next-intl";
 import { EditorSection } from "@/components/dashboard/event-editor/EditorSection";
 import { Icon } from "@/components/icons";
-import { TIERS } from "@/mock/dashboard";
-import type { DashboardEvent, IconName, TierId } from "@/types/dashboard";
+import { PACKAGES, nextPackage } from "@/mock/dashboard";
+import type { DashboardEvent, IconName } from "@/types/dashboard";
 
 /* Hovering steps the tile itself down one shade of the same mustard. */
 const TILE =
@@ -35,16 +35,15 @@ function Tile({
   );
 }
 
-export function EditionSection({ event }: { event: DashboardEvent }) {
+export function PackageSection({ event }: { event: DashboardEvent }) {
   const t = useTranslations("EventEditor");
-  const tTiers = useTranslations("Tiers");
-  const tier = TIERS[event.tier];
-  const nextId = (event.tier + 1) as TierId;
-  const next = event.tier < 3 ? TIERS[nextId] : undefined;
-  const price = (amount: number) => tTiers("price", { amount });
+  const tPackages = useTranslations("Packages");
+  const pkg = PACKAGES[event.package];
+  const next = nextPackage(event.package);
+  const price = (amount: number) => tPackages("price", { amount });
 
   return (
-    <EditorSection title={t("edition")}>
+    <EditorSection title={t("package")}>
       <div className="grid grid-cols-1 gap-3">
         {/* What this event already is, stated before anything on offer. */}
         <div className="flex gap-3.5 border border-forest-500 border-l-4 bg-forest-100 p-4">
@@ -53,13 +52,13 @@ export function EditionSection({ event }: { event: DashboardEvent }) {
           </span>
           <span className="min-w-0">
             <b className="mb-[3px] block font-semibold text-forest-500">
-              {t(event.paid ? "tierPaid" : "tierUnpaid", {
-                name: tTiers(`${tier.key}.name`),
-                price: price(tier.price),
+              {t(event.paid ? "packagePaid" : "packageUnpaid", {
+                name: tPackages(`${event.package}.name`),
+                price: price(pkg.price),
               })}
             </b>
             <span className="block text-xs leading-[1.45] text-forest-600">
-              {tTiers(`${tier.key}.blurb`)}
+              {tPackages(`${event.package}.blurb`)}
             </span>
           </span>
         </div>
@@ -68,18 +67,18 @@ export function EditionSection({ event }: { event: DashboardEvent }) {
           <Tile
             icon="arrowRight"
             title={t("raiseTo", {
-              name: tTiers(`${next.key}.name`),
-              price: price(next.price),
+              name: tPackages(`${next}.name`),
+              price: price(PACKAGES[next].price),
             })}
           >
-            {tTiers(`${next.key}.upsell`)}
+            {tPackages(`${next}.upsell`)}
           </Tile>
         ) : null}
 
         {event.paid ? null : (
           <Tile
             icon="arrowRight"
-            title={t("payAndPublish", { price: price(tier.price) })}
+            title={t("payAndPublish", { price: price(pkg.price) })}
           >
             {t("payNote")}
           </Tile>

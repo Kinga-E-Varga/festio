@@ -9,7 +9,7 @@ import {
   formatDuration,
   formatRelative,
 } from "@/lib/event";
-import { ATTENTION_NOTICES, RECENT_RSVPS, TIERS } from "@/mock/dashboard";
+import { ATTENTION_NOTICES, PACKAGES, RECENT_RSVPS } from "@/mock/dashboard";
 import type { NoticeTone } from "@/types/dashboard";
 
 /** Each notice's edge colour carries through to its call to action. */
@@ -55,7 +55,7 @@ export function NotificationsRail() {
   const tBanner = useTranslations("EventPage");
   const tEvent = useTranslations("Event");
   const tActivity = useTranslations("Activity");
-  const tTiers = useTranslations("Tiers");
+  const tPackages = useTranslations("Packages");
   const locale = useLocale();
 
   return (
@@ -82,11 +82,11 @@ export function NotificationsRail() {
                     ),
                   }
                 : {}),
-              ...(notice.tier
+              ...(notice.package
                 ? {
-                    tier: tTiers(`${TIERS[notice.tier].key}.name`),
-                    price: tTiers("price", {
-                      amount: TIERS[notice.tier].price,
+                    package: tPackages(`${notice.package}.name`),
+                    price: tPackages("price", {
+                      amount: PACKAGES[notice.package].price,
                     }),
                   }
                 : {}),
