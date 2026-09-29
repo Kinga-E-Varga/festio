@@ -1,6 +1,9 @@
 import type { LocalizedText } from '@/lib/language'
 import type { PackageId, EventKind } from '@/types/dashboard'
 
+/** How deep the card's shadow is; `null` for none. */
+export type CardShadow = 'light' | 'dark' | null
+
 /**
  * The five colours the RSVP chrome is styled from. Roles are positional and
  * load-bearing — the shared guest form reads them by number, so reordering a
@@ -144,6 +147,11 @@ export interface InvitationTemplate {
     /** Readability floor: below this the stage scrolls instead of shrinking. */
     minScale: number
     maxScale: number
+    /**
+     * The shadow around the card, on screen only. The stage leaves room for
+     * it, so the card never pads itself to keep its own shadow from clipping.
+     */
+    shadow: CardShadow
   }
   /** Shown beside the print preview, e.g. "A5 portrait — 148 × 210 mm". */
   printSize: string

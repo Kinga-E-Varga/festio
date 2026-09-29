@@ -7,6 +7,7 @@ import { EventRow } from '@/components/dashboard/EventRow'
 import { EventTabs, type EventTab } from '@/components/dashboard/EventTabs'
 import { FocusView } from '@/components/dashboard/FocusView'
 import { Icon } from '@/components/icons'
+import { eventStatus } from '@/lib/event'
 import { EVENTS, findEvent } from '@/mock/dashboard'
 import type { EventStatus } from '@/types/dashboard'
 
@@ -46,7 +47,7 @@ export default async function EventsPage({
     return {
       id: pile.id,
       label: t(pile.label),
-      count: EVENTS.filter((event) => statuses.includes(event.status)).length,
+      count: EVENTS.filter((event) => statuses.includes(eventStatus(event))).length,
       panel: (
         <EventGroups
           events={EVENTS}

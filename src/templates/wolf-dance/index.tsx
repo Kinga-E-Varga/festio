@@ -12,7 +12,11 @@ import animalCoupleDance from './animal-couple-dance.svg'
  */
 const LABELS = {
   message: { en: 'message', ro: 'mesaj', hu: 'üzenet' },
-  openingLine: { en: 'opening line', ro: 'rândul de deschidere', hu: 'nyitó sor' },
+  openingLine: {
+    en: 'opening line',
+    ro: 'rândul de deschidere',
+    hu: 'nyitó sor',
+  },
   name: { en: 'name', ro: 'nume', hu: 'név' },
   date: { en: 'date', ro: 'dată', hu: 'dátum' },
   boldText: { en: 'bold text', ro: 'text îngroșat', hu: 'félkövér szöveg' },
@@ -24,7 +28,13 @@ export const template: InvitationTemplate = {
   name: 'Wolf Dance',
   package: 'free',
   eventTypes: ['wedding', 'other'],
-  design: { width: 1080, height: 1532, minScale: 0.18, maxScale: 0.65 },
+  design: {
+    width: 1080,
+    height: 1532,
+    minScale: 0.18,
+    maxScale: 0.65,
+    shadow: 'light',
+  },
   printSize: 'A5 portrait — 148 × 210 mm at 300 dpi',
 
   /* The tinted face and the host's lines on it. See `TemplatePrint`. */
@@ -173,44 +183,42 @@ export const template: InvitationTemplate = {
  */
 export function Card({ values }: { values: TemplateValues }) {
   return (
-    <div className="absolute inset-0 p-7 text-[var(--c1)] font-[family-name:var(--font-primary)]">
-      <div className="h-full p-3 bg-[var(--c3)] elevation-light">
-        <div
-          className="h-full flex flex-col justify-evenly items-center px-12 py-16  bg-[var(--c7)] bg-size-[550px] bg-repeat bg-center"
-          style={{ backgroundImage: `url(${pattern.src})` }}
-        >
-          {/* Header */}
-          <div className="text-center leading-[1.25] pb-5 italic">
-            <p className=" text-[35px]">{values.title1}</p>
-            <p className="text-[35px]">{values.title2}</p>
-          </div>
+    <div className="absolute inset-0 text-[var(--c1)] font-[family-name:var(--font-primary)] bg-[var(--c3)] p-3">
+      <div
+        className="h-full flex flex-col justify-evenly items-center px-12 py-16  bg-[var(--c7)] bg-size-[550px] bg-repeat bg-center"
+        style={{ backgroundImage: `url(${pattern.src})` }}
+      >
+        {/* Header */}
+        <div className="text-center leading-[1.25] pb-5 italic">
+          <p className=" text-[35px]">{values.title1}</p>
+          <p className="text-[35px]">{values.title2}</p>
+        </div>
 
-          {/* Names */}
-          <div className="w-full leading-[0.7] flex items-center text-[var(--c3)] text-[160px] font-[family-name:var(--font-secondary)]">
-            <p className="flex-1 text-right ">{values.name1}</p>
-            <p className="text-[240px] text-[var(--c1)] text-center pl-6 pr-3 ">
-              &
-            </p>
-            <p className="flex-1 text-left">{values.name2}</p>
-          </div>
-
-          {/* Image */}
-          <Image
-            src={animalCoupleDance}
-            alt=""
-            className="h-[550px] w-auto py-4 pb-10"
-          />
-
-          {/* Date */}
-          <p className="leading-[1] flex items-center gap-2 text-center text-[100px] text-[var(--c3)] font-[family-name:var(--font-secondary)]">
-            {values.date}
+        {/* Names */}
+        <div className="w-full leading-[0.7] flex items-center text-[var(--c3)] text-[160px] font-[family-name:var(--font-secondary)]">
+          <p className="flex-1 text-right ">{values.name1}</p>
+          <p className="text-[240px] text-[var(--c1)] text-center pl-6 pr-3 ">
+            &
           </p>
+          <p className="flex-1 text-left">{values.name2}</p>
+        </div>
 
-          {/* Bottom text */}
-          <div className="text-[35px] italic text-center">
-            <TextPair bold={values.text1} text={values.text2} />
-            <TextPair bold={values.text3} text={values.text4} />
-          </div>
+        {/* Image */}
+        <Image
+          src={animalCoupleDance}
+          alt=""
+          className="h-[550px] w-auto py-4 pb-10"
+        />
+
+        {/* Date */}
+        <p className="leading-[1] flex items-center gap-2 text-center text-[100px] text-[var(--c3)] font-[family-name:var(--font-secondary)]">
+          {values.date}
+        </p>
+
+        {/* Bottom text */}
+        <div className="text-[35px] italic text-center">
+          <TextPair bold={values.text1} text={values.text2} />
+          <TextPair bold={values.text3} text={values.text4} />
         </div>
       </div>
     </div>

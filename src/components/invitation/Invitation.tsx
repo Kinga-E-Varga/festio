@@ -63,7 +63,7 @@ export function Invitation({
   repliesPaused,
   onSubmit,
 }: InvitationProps) {
-  const { width, height, minScale, maxScale } = template.design
+  const { width, height, minScale, maxScale, shadow } = template.design
   const ground = pageBackground(template)
 
   return (
@@ -79,12 +79,13 @@ export function Invitation({
       <div className="relative flex min-h-0 min-w-0 flex-1 flex-col">
         {hostBar}
 
-        <div className="relative flex min-h-0 min-w-0 flex-1">
+        <div className="relative flex min-h-0 min-w-0 flex-1 p-1">
           <ScaledStage
             width={width}
             height={height}
             minScale={minScale}
             maxScale={maxScale}
+            shadow={shadow}
           >
             {children}
           </ScaledStage>

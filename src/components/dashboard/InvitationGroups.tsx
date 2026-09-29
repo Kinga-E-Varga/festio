@@ -1,6 +1,6 @@
 import { useTranslations } from "next-intl";
 import { InvitationCard } from "@/components/dashboard/InvitationCard";
-import { orderEvents } from "@/lib/event";
+import { eventStatus, orderEvents } from "@/lib/event";
 import type { DashboardEvent, EventStatus } from "@/types/dashboard";
 
 /**
@@ -29,7 +29,7 @@ export function InvitationGroups({
   const groups = GROUPS.filter(
     (group) =>
       statuses.includes(group.status) &&
-      events.some((event) => event.status === group.status),
+      events.some((event) => eventStatus(event) === group.status),
   );
 
   if (groups.length === 0) {
@@ -57,7 +57,7 @@ export function InvitationGroups({
            */}
           <div className="grid grid-cols-1 gap-[28px] @min-[640px]:grid-cols-2 @min-[1000px]:grid-cols-3">
             {orderEvents(
-              events.filter((event) => event.status === group.status),
+              events.filter((event) => eventStatus(event) === group.status),
               group.status,
             ).map((event) => (
               <InvitationCard key={event.id} event={event} />

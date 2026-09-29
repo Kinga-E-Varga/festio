@@ -178,8 +178,8 @@
   }
 
   /* At or past expected guests the bar is full, yes and no in one red. */
-  .replies-bar[data-level="over"] .attending,
-  .replies-bar[data-level="over"] .declined {
+  .replies-bar[data-level='over'] .attending,
+  .replies-bar[data-level='over'] .declined {
     background-color: var(--color-rust-400);
   }
 
@@ -203,11 +203,11 @@
     background-color: var(--color-forest-400);
   }
 
-  .meter[data-level="warn"] span {
+  .meter[data-level='warn'] span {
     background-color: var(--color-terracotta-400);
   }
 
-  .meter[data-level="over"] span {
+  .meter[data-level='over'] span {
     background-color: var(--color-rust-400);
   }
 
@@ -235,8 +235,12 @@
   .stage > .frame {
     position: relative;
     flex-shrink: 0;
-    inline-size: calc(var(--design-w) * var(--scale));
-    block-size: calc(var(--design-h) * var(--scale));
+    inline-size: calc(
+      (var(--design-w) + 2 * var(--shadow-space)) * var(--scale)
+    );
+    block-size: calc(
+      (var(--design-h) + 2 * var(--shadow-space)) * var(--scale)
+    );
   }
 
   /* Hidden until the first measurement, so no unscaled frame ever flashes. */
@@ -250,12 +254,24 @@
    */
   .stage > .frame > .card {
     position: absolute;
-    inset-block-start: 0;
-    inset-inline-start: 0;
+    inset-block-start: calc(var(--shadow-space) * var(--scale));
+    inset-inline-start: calc(var(--shadow-space) * var(--scale));
     inline-size: var(--design-w);
     block-size: var(--design-h);
     transform: scale(var(--scale));
     transform-origin: top left;
+  }
+
+  /*
+   * The card's own shadow, in design px — the transform shrinks it with the
+   * card. The stage's `--shadow-space` strip is what keeps it from clipping.
+   */
+  .stage[data-shadow='light'] > .frame > .card {
+    box-shadow: 0px 5px 20px #2f281fa6;
+  }
+
+  .stage[data-shadow='dark'] > .frame > .card {
+    box-shadow: 0px 6px 22px #17130ee6;
   }
 
   /* The drawer's backdrop, mixed from the template's ink so no app colour shows. */
@@ -717,10 +733,6 @@
 
   .fold-page.fold-flap[data-open='true'] {
     transform: rotateY(-180deg);
-  }
-
-  .elevation-light {
-    box-shadow: 0px 5px 20px #2f281fa6;
   }
 
   .elevation-btn {

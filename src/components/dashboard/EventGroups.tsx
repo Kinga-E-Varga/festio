@@ -1,6 +1,6 @@
 import { useTranslations } from 'next-intl'
 import { EventRow } from '@/components/dashboard/EventRow'
-import { orderEvents } from '@/lib/event'
+import { eventStatus, orderEvents } from '@/lib/event'
 import type { DashboardEvent, EventStatus } from '@/types/dashboard'
 
 /**
@@ -29,7 +29,7 @@ export function EventGroups({
   const groups = GROUPS.filter(
     (group) =>
       statuses.includes(group.status) &&
-      events.some((event) => event.status === group.status),
+      events.some((event) => eventStatus(event) === group.status),
   )
 
   if (groups.length === 0) {
@@ -55,7 +55,7 @@ export function EventGroups({
            */}
           <div className="flex flex-col gap-7">
             {orderEvents(
-              events.filter((event) => event.status === group.status),
+              events.filter((event) => eventStatus(event) === group.status),
               group.status,
             ).map((event) => (
               <EventRow key={event.id} event={event} />

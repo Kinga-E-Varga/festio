@@ -4,6 +4,7 @@ import { useTranslations } from "next-intl";
 import { BTN_DANGER } from "@/components/dashboard/event-editor/styles";
 import { Icon } from "@/components/icons";
 import { GUEST_DATA_RETENTION_DAYS } from "@/lib/config";
+import { isPast } from "@/lib/event";
 import type { DashboardEvent } from "@/types/dashboard";
 
 interface DangerZoneProps {
@@ -15,7 +16,7 @@ export function DangerZone({ event, onAction }: DangerZoneProps) {
   const t = useTranslations("EventEditor");
   const replied = event.rsvp.replied;
   /* An unpaid draft was never reachable, so there is nothing to cancel. */
-  const explained = event.status === "past" || event.paid;
+  const explained = isPast(event) || event.paid;
 
   return (
     <section className="mt-[58px] border border-rust-300 bg-rust-100">
@@ -23,7 +24,7 @@ export function DangerZone({ event, onAction }: DangerZoneProps) {
         {t("danger")}
       </h2>
 
-      {event.status === "past" ? (
+      {isPast(event) ? (
         <div className="flex items-center gap-5 px-5 py-[18px]">
           <div className="flex-1 text-rust-500">
             <b className="mb-1 block font-semibold">{t("pastTitle")}</b>

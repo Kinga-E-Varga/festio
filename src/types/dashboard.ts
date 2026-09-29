@@ -174,7 +174,6 @@ export interface DashboardEvent {
    */
   attendeeNotes?: Message[];
   preview: StaticImageData;
-  status: EventStatus;
   seatingAvailable: boolean;
   /** True once the content freeze has passed; nothing is editable after it. */
   locked: boolean;

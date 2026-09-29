@@ -76,7 +76,7 @@ Geometry (`.sheet`, `.sheet-view`, `.leaf`, `.flip`, `.fold`, `.sheet-form`) liv
 
 Shell: `DashboardShell.tsx`, `SideNav.tsx`, `TopBar.tsx`, `SiteFooter.tsx`, `NavLink.tsx`, `LanguageSwitcher.tsx`.
 
-Events: `EventCard.tsx`, `EventRow.tsx`, `EventList.tsx`, `EventGroups.tsx`, `EventTabs.tsx`, `EventMeta.tsx`.
+Events: `EventCard.tsx`, `EventRow.tsx`, `EventList.tsx`, `EventGroups.tsx`, `EventTabs.tsx`, `EventMeta.tsx`, `EventWhen.tsx` (the day + how far off, shared by card, row and header), `ShareFields.tsx` (link, copy button and Protected password, shared by event and invitation cards).
 
 Invitations: `InvitationCard.tsx`, `InvitationGroups.tsx`.
 
@@ -86,7 +86,7 @@ Event pages: `EventHeader.tsx` (BACK + title + date), `BackButton.tsx`, `Replies
 
 `event-editor/` — the event edit form. `EventEditor.tsx` composes `*Section.tsx` parts; state in `useEventForm.ts`, shared classes in `styles.ts`.
 
-`guest-list/` — the guest manager. `GuestManager.tsx` composes toolbar, add-names box, summary chips + `GuestSearch.tsx`, and table (`GuestTable.tsx` → categories → groups → `RowView.tsx` / an editor); state in `useGuestList.ts` / `useGuestActions.ts` / `useRowEditor.ts`. Editors: `ReplyEditor.tsx` (a reply's questions, or a new reply with several people) and `NameEditor.tsx` (a waiting name), both in the `RowEditor.tsx` frame; fields in `ReplyFields.tsx` (diet's tick dropdown in `MultiSelect.tsx`), reply ↔ form values in `replyValues.ts`.
+`guest-list/` — the guest manager. `GuestManager.tsx` composes toolbar, add-names box, summary chips + `GuestSearch.tsx`, and table (`GuestTable.tsx` → categories → groups → `RowView.tsx` / an editor); state in `useGuestList.ts` / `useGuestActions.ts` / `useRowEditor.ts`. Editors: `ReplyEditor.tsx` (a reply's questions, or a new reply with several people) and `NameEditor.tsx` (a waiting name), both in the `RowEditor.tsx` frame; fields in `ReplyFields.tsx` (diet's tick dropdown in `MultiSelect.tsx`), reply ↔ form values in `replyValues.ts`; the status/age/diet message keys in `labels.ts`, shared by rows, editor and summary.
 
 ## Lib — `src/lib/`
 

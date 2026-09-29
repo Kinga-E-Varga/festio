@@ -8,6 +8,7 @@ import {
   formatDay,
   formatDeadline,
   formatRelative,
+  isPast,
   expectedLevel,
   expectedPercent,
   replyClose,
@@ -92,7 +93,7 @@ function Tally({
 
 export function EventCard({ event }: { event: DashboardEvent }) {
   /* Past and past its retention date: the record is a stub, not a tool. */
-  const archived = event.status === 'past' && event.dataDeleted
+  const archived = isPast(event) && event.dataDeleted
   const expected = event.expectedGuests
   const replied = event.rsvp.replied
   const percent = expectedPercent(replied, expected)

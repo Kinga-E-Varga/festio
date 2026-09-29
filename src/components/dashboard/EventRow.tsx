@@ -8,6 +8,8 @@ import { Icon } from '@/components/icons'
 import { GUEST_DATA_RETENTION_DAYS } from '@/lib/config'
 import {
   deletionDate,
+  eventStatus,
+  isPast,
   formatEventDate,
   invitationPath,
   expectedLevel,
@@ -92,8 +94,8 @@ export function EventRow({ event }: { event: DashboardEvent }) {
   const percent = expectedPercent(replied, expected)
   const barVars = repliesBarVars(event)
   /* Past and past its retention date: the record is a stub, not a tool. */
-  const archived = event.status === 'past' && event.dataDeleted
-  const past = event.status === 'past'
+  const archived = isPast(event) && event.dataDeleted
+  const past = isPast(event)
 
   return (
     /*
@@ -102,7 +104,7 @@ export function EventRow({ event }: { event: DashboardEvent }) {
      */
     <article
       id={`event-${event.id}`}
-      className={`@container scroll-mt-[88px] border border-mustard-300 border-l-4 bg-mustard-100 ${STATUS_EDGE[event.status]}`}
+      className={`@container scroll-mt-[88px] border border-mustard-300 border-l-4 bg-mustard-100 ${STATUS_EDGE[eventStatus(event)]}`}
     >
       {/*
        * Three columns on a wide card, with the actions in the last of them.

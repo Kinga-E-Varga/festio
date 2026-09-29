@@ -2,6 +2,7 @@
 
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import type { CSSProperties, ReactNode } from "react";
+import type { CardShadow } from "@/types/invitation";
 
 /**
  * Measurement has to land before paint or the card flashes at the wrong size.
@@ -16,6 +17,13 @@ const useMeasureEffect =
 const MIN_SCALE = 0.18;
 const MAX_SCALE = 1;
 
+/**
+ * The room left around a card with a shadow, in design px — so it shrinks
+ * with the card, and a small card looks like the big one. Deep enough for the
+ * deepest shadow in `globals.css`.
+ */
+const SHADOW_SPACE = 28;
+
 /** Re-rendering for a change this small buys nothing. */
 const STEP = 0.0005;
 
@@ -25,6 +33,7 @@ interface ScaledStageProps {
   height: number;
   minScale?: number;
   maxScale?: number;
+  shadow?: CardShadow;
   children: ReactNode;
 }
 
@@ -41,10 +50,12 @@ export function ScaledStage({
   height,
   minScale = MIN_SCALE,
   maxScale = MAX_SCALE,
+  shadow = null,
   children,
 }: ScaledStageProps) {
   const slot = useRef<HTMLDivElement>(null);
   const [scale, setScale] = useState(0);
+  const space = shadow ? SHADOW_SPACE : 0;
 
   useMeasureEffect(() => {
     const node = slot.current;
@@ -54,7 +65,10 @@ export function ScaledStage({
       const { clientWidth, clientHeight } = node;
       if (clientWidth === 0 || clientHeight === 0) return;
 
-      const fit = Math.min(clientWidth / width, clientHeight / height);
+      const fit = Math.min(
+        clientWidth / (width + 2 * space),
+        clientHeight / (height + 2 * space),
+      );
       const next = Math.min(Math.max(fit, minScale), maxScale);
 
       setScale((current) => (Math.abs(current - next) < STEP ? current : next));
@@ -64,11 +78,12 @@ export function ScaledStage({
     const observer = new ResizeObserver(measure);
     observer.observe(node);
     return () => observer.disconnect();
-  }, [width, height, minScale, maxScale]);
+  }, [width, height, space, minScale, maxScale]);
 
   const vars = {
     "--design-w": `${width}px`,
     "--design-h": `${height}px`,
+    "--shadow-space": `${space}px`,
     "--scale": String(scale),
   } as CSSProperties;
 
@@ -77,6 +92,7 @@ export function ScaledStage({
       ref={slot}
       style={vars}
       data-measured={scale > 0}
+      data-shadow={shadow ?? undefined}
       className="stage"
     >
       <div className="frame">

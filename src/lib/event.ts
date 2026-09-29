@@ -30,6 +30,25 @@ export function orderEvents(
   );
 }
 
+/**
+ * True once the event has happened. Read from the event's own countdown, so
+ * it always agrees with the "2 weeks ago" the cards show.
+ */
+export function isPast(event: { countdown: TimeSpan }): boolean {
+  return event.countdown.value < 0;
+}
+
+/**
+ * Which pile an event is in. Active means guests can open the invitation:
+ * paid for and not Hidden. Anything else still ahead is a draft.
+ */
+export function eventStatus(
+  event: Pick<DashboardEvent, "countdown" | "paid" | "visibility">,
+): EventStatus {
+  if (isPast(event)) return "past";
+  return event.paid && event.visibility !== "hidden" ? "active" : "draft";
+}
+
 /** The guest-facing address as a route this app can navigate to. */
 export function invitationPath(event: { slug: string }): string {
   return `/${event.slug}`;
@@ -150,10 +169,10 @@ const SPAN_MS: Record<TimeSpan["unit"], number> = {
 
 /** Open, closing within the warning window, or already closed. */
 export function replyWindow(event: {
-  status: EventStatus;
+  countdown: TimeSpan;
   repliesCloseIn?: TimeSpan;
 }): ReplyWindow {
-  if (event.status === "past") return "closed";
+  if (isPast(event)) return "closed";
   const span = event.repliesCloseIn;
   if (!span) return "open";
   const ms = span.value * SPAN_MS[span.unit];

@@ -4,7 +4,7 @@ import { EventList } from '@/components/dashboard/EventList'
 import { HostToday } from '@/components/dashboard/HostToday'
 import { StatStrip } from '@/components/dashboard/StatStrip'
 import { Icon } from '@/components/icons'
-import { orderEvents } from '@/lib/event'
+import { eventStatus, orderEvents } from '@/lib/event'
 import { EVENTS, HOST } from '@/mock/dashboard'
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -15,7 +15,7 @@ export async function generateMetadata(): Promise<Metadata> {
 export default async function DashboardPage() {
   const t = await getTranslations('Dashboard')
   const active = orderEvents(
-    EVENTS.filter((event) => event.status === 'active'),
+    EVENTS.filter((event) => eventStatus(event) === 'active'),
     'active',
   )
 

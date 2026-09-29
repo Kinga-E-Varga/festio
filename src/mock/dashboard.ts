@@ -7,6 +7,7 @@ import previewMajorat from '@/mock/inv-img/Screenshot 2026-07-28 172900.png'
 import { GUEST_DATA_RETENTION_DAYS } from '@/lib/config'
 import {
   canReportFlood,
+  eventStatus,
   expectedLevel,
   expectedPercent,
   floodReportPath,
@@ -159,7 +160,6 @@ export const EVENTS: DashboardEvent[] = [
       { key: 'stepFree', values: { count: 2 } },
     ],
     preview: previewCununie,
-    status: 'active',
     seatingAvailable: true,
     locked: false,
     dataDeleted: false,
@@ -194,7 +194,6 @@ export const EVENTS: DashboardEvent[] = [
       { key: 'glutenFree', values: { count: 3 } },
     ],
     preview: previewBotez,
-    status: 'active',
     seatingAvailable: true,
     locked: false,
     dataDeleted: false,
@@ -221,7 +220,6 @@ export const EVENTS: DashboardEvent[] = [
     preloaded: true,
     preloadedCount: 8,
     preview: previewAniversare,
-    status: 'active',
     seatingAvailable: false,
     locked: false,
     dataDeleted: false,
@@ -251,7 +249,6 @@ export const EVENTS: DashboardEvent[] = [
       key: 'opensWhenPublic',
     },
     preview: previewAniversare,
-    status: 'active',
     seatingAvailable: false,
     locked: false,
     dataDeleted: false,
@@ -282,7 +279,6 @@ export const EVENTS: DashboardEvent[] = [
       actionKey: 'payPublish',
     },
     preview: previewRevelion,
-    status: 'draft',
     seatingAvailable: false,
     locked: false,
     dataDeleted: false,
@@ -317,7 +313,6 @@ export const EVENTS: DashboardEvent[] = [
       values: { days: GUEST_DATA_RETENTION_DAYS },
     },
     preview: previewCumetrie,
-    status: 'past',
     seatingAvailable: true,
     locked: true,
     dataDeleted: true,
@@ -348,7 +343,6 @@ export const EVENTS: DashboardEvent[] = [
     preloaded: false,
     preloadedCount: 0,
     preview: previewMajorat,
-    status: 'past',
     seatingAvailable: false,
     locked: true,
     dataDeleted: false,
@@ -371,7 +365,7 @@ function shortTitle(event: DashboardEvent): string {
  * expected guests. Only active events can still take replies.
  */
 function replyNotices(): AttentionNotice[] {
-  return EVENTS.filter((event) => event.status === 'active').flatMap(
+  return EVENTS.filter((event) => eventStatus(event) === 'active').flatMap(
     (event): AttentionNotice[] => {
       const name = shortTitle(event)
       const { replied } = event.rsvp
@@ -436,7 +430,7 @@ export const ATTENTION_NOTICES: AttentionNotice[] = [
   ),
   ...replyNotices(),
   ...EVENTS.filter(
-    (event) => event.status === 'active' && replyWindow(event) !== 'open',
+    (event) => eventStatus(event) === 'active' && replyWindow(event) !== 'open',
   ).map(
     (event): AttentionNotice => ({
       id: `replies-close-${event.id}`,

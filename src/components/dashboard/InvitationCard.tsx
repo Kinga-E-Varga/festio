@@ -4,7 +4,7 @@ import { Link } from '@/i18n/navigation'
 import { ACTION, RULE } from '@/components/dashboard/EventRow'
 import { EventWhen } from '@/components/dashboard/EventWhen'
 import { Icon } from '@/components/icons'
-import { invitationPath } from '@/lib/event'
+import { eventStatus, invitationPath, isPast } from '@/lib/event'
 import type { DashboardEvent, EventStatus } from '@/types/dashboard'
 
 /**
@@ -27,11 +27,11 @@ export function InvitationCard({ event }: { event: DashboardEvent }) {
   const t = useTranslations('Invitations')
   const tEvent = useTranslations('Event')
   /* Content freezes with the event; a past invitation is only downloadable. */
-  const past = event.status === 'past'
+  const past = isPast(event)
 
   return (
     <article
-      className={`@container flex flex-col border border-mustard-300 border-t-4 bg-mustard-100 ${STATUS_EDGE[event.status]}`}
+      className={`@container flex flex-col border border-mustard-300 border-t-4 bg-mustard-100 ${STATUS_EDGE[eventStatus(event)]}`}
     >
       <div className="p-[18px] py-8">
         {/*
