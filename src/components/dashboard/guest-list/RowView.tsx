@@ -2,14 +2,36 @@
 
 import { useLocale, useTranslations } from "next-intl";
 import { type MouseEvent, useState } from "react";
-import { BTN_DANGER, BTN_GHOST } from "@/components/dashboard/event-editor/styles";
-import { AGE_KEY, DIET_KEY, STATUS_KEY } from "@/components/dashboard/guest-list/labels";
-import { ATTENTION_TAG, BADGE, BADGE_TEXT, BOX_BADGE, fold, ICON_BTN, ICON_BTN_DANGER } from "@/components/dashboard/guest-list/styles";
+import {
+  BTN_DANGER,
+  BTN_GHOST,
+} from "@/components/dashboard/event-editor/styles";
+import {
+  AGE_KEY,
+  DIET_KEY,
+  STATUS_KEY,
+} from "@/components/dashboard/guest-list/labels";
+import {
+  ATTENTION_TAG,
+  BADGE,
+  BADGE_TEXT,
+  BOX_BADGE,
+  fold,
+  ICON_BTN,
+  ICON_BTN_DANGER,
+} from "@/components/dashboard/guest-list/styles";
 import type { GuestActions } from "@/components/dashboard/guest-list/useGuestActions";
 import { UnknownFix } from "@/components/dashboard/guest-list/UnknownFix";
 import { Icon } from "@/components/icons";
 import { rowName, showsUnknown } from "@/lib/guests";
-import type { AnswerValue, DietNeed, GuestQuestion, GuestReply, GuestRow, ListName } from "@/types/guests";
+import type {
+  AnswerValue,
+  DietNeed,
+  GuestQuestion,
+  GuestReply,
+  GuestRow,
+  ListName,
+} from "@/types/guests";
 
 interface RowViewProps {
   row: GuestRow;
@@ -44,13 +66,15 @@ const LAYOUT = {
     grid: "@min-[720px]:grid-cols-[minmax(0,1fr)_auto_auto]",
     name: "@min-[440px]:flex-row @min-[440px]:items-center @min-[440px]:gap-2 @min-[720px]:self-auto",
     badge: "@min-[720px]:col-start-auto @min-[720px]:row-start-auto",
-    actions: "@min-[720px]:col-start-auto @min-[720px]:row-start-auto @min-[720px]:self-auto",
+    actions:
+      "@min-[720px]:col-start-auto @min-[720px]:row-start-auto @min-[720px]:self-auto",
   },
   card: {
     grid: "@min-[360px]:grid-cols-[minmax(0,1fr)_auto_auto]",
     name: "@min-[260px]:flex-row @min-[260px]:items-center @min-[260px]:gap-2 @min-[360px]:self-auto",
     badge: "@min-[360px]:col-start-auto @min-[360px]:row-start-auto",
-    actions: "@min-[360px]:col-start-auto @min-[360px]:row-start-auto @min-[360px]:self-auto",
+    actions:
+      "@min-[360px]:col-start-auto @min-[360px]:row-start-auto @min-[360px]:self-auto",
   },
 } as const;
 
@@ -60,7 +84,15 @@ const LAYOUT = {
  * the right; a long name is cut short to make room. A row with answers opens on a click anywhere
  * that isn't one of its own controls, like a category band.
  */
-export function RowView({ row, waiting, questions, actions, onEdit, guard, inCard = false }: RowViewProps) {
+export function RowView({
+  row,
+  waiting,
+  questions,
+  actions,
+  onEdit,
+  guard,
+  inCard = false,
+}: RowViewProps) {
   const layout = LAYOUT[inCard ? "card" : "table"];
   const t = useTranslations("GuestList");
   const [confirming, setConfirming] = useState(false);
@@ -73,7 +105,9 @@ export function RowView({ row, waiting, questions, actions, onEdit, guard, inCar
     reply !== null &&
     (reply.reply.ageGroup !== undefined ||
       reply.reply.diet !== undefined ||
-      questions.some((question) => reply.reply.answers?.[question.id] !== undefined) ||
+      questions.some(
+        (question) => reply.reply.answers?.[question.id] !== undefined,
+      ) ||
       reply.reply.note !== null);
 
   function remove() {
@@ -82,7 +116,8 @@ export function RowView({ row, waiting, questions, actions, onEdit, guard, inCar
   }
 
   function toggle(event: MouseEvent<HTMLDivElement>) {
-    if (!hasDetails || (event.target as Element).closest("button, a, input")) return;
+    if (!hasDetails || (event.target as Element).closest("button, a, input"))
+      return;
     setOpen(!open);
   }
 
@@ -100,10 +135,14 @@ export function RowView({ row, waiting, questions, actions, onEdit, guard, inCar
          * name's line is as tall as the buttons and pinned to the top with them,
          * so the thread's dot stays on the name.
          */}
-        <div className={`flex min-w-0 flex-col items-start self-start ${layout.name}`}>
+        <div
+          className={`flex min-w-0 flex-col items-start self-start ${layout.name}`}
+        >
           {/* The name and its arrow never part: a long name is cut short instead. */}
           <span className="flex min-h-8 max-w-full min-w-0 items-center gap-1">
-            <span className="min-w-0 truncate text-[14.5px] font-medium text-neutral-900">{name}</span>
+            <span className="min-w-0 truncate text-[14.5px] font-medium text-neutral-900">
+              {name}
+            </span>
             {hasDetails ? (
               <button
                 type="button"
@@ -112,20 +151,25 @@ export function RowView({ row, waiting, questions, actions, onEdit, guard, inCar
                 onClick={() => setOpen(!open)}
                 className="grid size-6 shrink-0 cursor-pointer place-items-center text-neutral-600"
               >
-                <Icon name="chevron" className={`size-4 transition-transform ${open ? "rotate-180" : ""}`} />
+                <Icon
+                  name="chevron"
+                  className={`size-4 transition-transform ${open ? "rotate-180" : ""}`}
+                />
               </button>
             ) : null}
           </span>
           {unknown ? (
-            <span className={ATTENTION_TAG}>
-              {t("unknownTag")}
-            </span>
+            <span className={ATTENTION_TAG}>{t("unknownTag")}</span>
           ) : null}
         </div>
 
-        <div className={`col-start-1 row-start-2 flex items-center gap-2 ${layout.badge}`}>
+        <div
+          className={`col-start-1 row-start-2 flex items-center gap-2 ${layout.badge}`}
+        >
           {row.kind === "reply" ? (
-            <span className={`${BADGE} ${STATUS_TONE[row.reply.status]}`}>{t(STATUS_KEY[row.reply.status])}</span>
+            <span className={`${BADGE} ${STATUS_TONE[row.reply.status]}`}>
+              {t(STATUS_KEY[row.reply.status])}
+            </span>
           ) : (
             /* One badge that flips the invite either way; the box says which. */
             <button
@@ -137,19 +181,36 @@ export function RowView({ row, waiting, questions, actions, onEdit, guard, inCar
               className={`${BOX_BADGE} ${INVITE_BADGE}`}
             >
               <span className="grid w-6 shrink-0 place-items-center border-r border-inherit">
-                {row.listName.sent ? <Icon name="check" className="size-3.5" strokeWidth={2.25} /> : null}
+                {row.listName.sent ? (
+                  <Icon name="check" className="size-3.5" strokeWidth={2.25} />
+                ) : null}
               </span>
               {/* Both labels share one cell, so the badge keeps one width sent or not, in any language. */}
               <span className={`grid ${BADGE_TEXT}`}>
-                <span className={`[grid-area:1/1] ${row.listName.sent ? "" : "invisible"}`}>{t("invitationSent")}</span>
-                <span className={`[grid-area:1/1] ${row.listName.sent ? "invisible" : ""}`}>{t("invitationNotSent")}</span>
+                <span
+                  className={`[grid-area:1/1] ${row.listName.sent ? "" : "invisible"}`}
+                >
+                  {t("invitationSent")}
+                </span>
+                <span
+                  className={`[grid-area:1/1] ${row.listName.sent ? "invisible" : ""}`}
+                >
+                  {t("invitationNotSent")}
+                </span>
               </span>
             </button>
           )}
         </div>
 
-        <div className={`col-start-2 row-start-1 flex items-center self-start ${layout.actions}`}>
-          <button type="button" onClick={onEdit} aria-label={t("editLabel", { name })} className={ICON_BTN}>
+        <div
+          className={`col-start-2 row-start-1 flex items-center self-start ${layout.actions}`}
+        >
+          <button
+            type="button"
+            onClick={onEdit}
+            aria-label={t("editLabel", { name })}
+            className={ICON_BTN}
+          >
             <Icon name="pencil" className="size-[18px]" />
           </button>
           <button
@@ -165,29 +226,47 @@ export function RowView({ row, waiting, questions, actions, onEdit, guard, inCar
 
       {/* Grows from and shrinks to nothing, like a category; `inert` keeps it out of reach while folded. */}
       {hasDetails && reply ? (
-        <div
-          inert={!open}
-          className={fold(open)}
-        >
+        <div inert={!open} className={fold(open)}>
           <div className="min-h-0 overflow-hidden">
-            <ReplyDetails reply={reply.reply} questions={questions} spaced={unknown} />
+            <ReplyDetails
+              reply={reply.reply}
+              questions={questions}
+              spaced={unknown}
+            />
           </div>
         </div>
       ) : null}
 
       {/* A shared name is sorted out first; its card holds that choice. */}
-      {reply && unknown ? <UnknownFix reply={reply.reply} waiting={waiting} actions={actions} guard={guard} /> : null}
+      {reply && unknown ? (
+        <UnknownFix
+          reply={reply.reply}
+          waiting={waiting}
+          actions={actions}
+          guard={guard}
+        />
+      ) : null}
 
       {confirming ? (
-        <div role="alert" className="flex flex-wrap items-center gap-2.5 pb-2 text-[12.5px] text-rust-600">
+        <div
+          role="alert"
+          className="flex flex-wrap items-center gap-2.5 pb-2 text-[12.5px] text-rust-600"
+        >
           <span className="mr-auto">{t("deleteConfirm", { name })}</span>
           <div className="flex shrink-0 gap-2.5">
-            <button type="button" onClick={remove} className={BTN_DANGER}>{t("delete")}</button>
-            <button type="button" onClick={() => setConfirming(false)} className={BTN_GHOST}>{t("cancel")}</button>
+            <button type="button" onClick={remove} className={BTN_DANGER}>
+              {t("delete")}
+            </button>
+            <button
+              type="button"
+              onClick={() => setConfirming(false)}
+              className={BTN_GHOST}
+            >
+              {t("cancel")}
+            </button>
           </div>
         </div>
       ) : null}
-
     </div>
   );
 }
@@ -208,15 +287,21 @@ function ReplyDetails({ reply, questions, spaced }: ReplyDetailsProps) {
   function dietText(needs: DietNeed[]) {
     if (needs.length === 0) return t("dietNone");
     /* The row shows what the guest wrote for Other; the summary only counts it. */
-    const named = needs.map((need) => (need === "other" && reply.dietOther ? reply.dietOther : t(DIET_KEY[need])));
+    const named = needs.map((need) =>
+      need === "other" && reply.dietOther ? reply.dietOther : t(DIET_KEY[need]),
+    );
     return new Intl.ListFormat(locale).format(named);
   }
 
   /* A choice by its option's wording, a yes/no in words, text as written. */
   function answerText(question: GuestQuestion, value: AnswerValue | null) {
     if (value === null || value === "") return t("skipped");
-    if (typeof value === "boolean") return t(value ? "summaryYes" : "summaryNo");
-    if (question.kind === "choice") return question.options.find((option) => option.id === value)?.label ?? value;
+    if (typeof value === "boolean")
+      return t(value ? "summaryYes" : "summaryNo");
+    if (question.kind === "choice")
+      return (
+        question.options.find((option) => option.id === value)?.label ?? value
+      );
     return value;
   }
 
@@ -224,23 +309,43 @@ function ReplyDetails({ reply, questions, spaced }: ReplyDetailsProps) {
   const answers = [
     ageGroup === undefined
       ? null
-      : { key: "age", label: t("ageLabel"), value: ageGroup === null ? t("skipped") : t(AGE_KEY[ageGroup]) },
+      : {
+          key: "age",
+          label: t("ageLabel"),
+          value: ageGroup === null ? t("skipped") : t(AGE_KEY[ageGroup]),
+        },
     diet === undefined
       ? null
-      : { key: "diet", label: t("dietLabel"), value: diet === null ? t("skipped") : dietText(diet) },
+      : {
+          key: "diet",
+          label: t("dietLabel"),
+          value: diet === null ? t("skipped") : dietText(diet),
+        },
     ...questions.map((question) => {
       const value = reply.answers?.[question.id];
-      return value === undefined ? null : { key: question.id, label: question.label, value: answerText(question, value) };
+      return value === undefined
+        ? null
+        : {
+            key: question.id,
+            label: question.label,
+            value: answerText(question, value),
+          };
     }),
-    note !== null ? { key: "note", label: t("messageLabel"), value: note } : null,
+    note !== null
+      ? { key: "note", label: t("messageLabel"), value: note }
+      : null,
   ].filter((answer) => answer !== null);
 
   return (
-    <dl className={`flex flex-col gap-y-1 pt-1 text-[12.5px] ${spaced ? "pb-5" : "pb-3"}`}>
+    <dl
+      className={`flex flex-col gap-y-1 pt-1 text-[12.5px] ${spaced ? "pb-5" : "pb-3"}`}
+    >
       {answers.map((answer) => (
         <div key={answer.key} className="flex gap-1">
           <dt className="text-neutral-700">{answer.label}:</dt>
-          <dd className="min-w-0 font-medium text-neutral-900">{answer.value}</dd>
+          <dd className="min-w-0 font-medium text-neutral-900">
+            {answer.value}
+          </dd>
         </div>
       ))}
     </dl>

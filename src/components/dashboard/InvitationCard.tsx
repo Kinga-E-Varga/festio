@@ -1,21 +1,21 @@
-import { useTranslations } from 'next-intl'
-import Image from 'next/image'
-import { Link } from '@/i18n/navigation'
-import { ACTION, RULE } from '@/components/dashboard/EventRow'
-import { EventWhen } from '@/components/dashboard/EventWhen'
-import { Icon } from '@/components/icons'
-import { eventStatus, invitationPath, isPast } from '@/lib/event'
-import type { DashboardEvent, EventStatus } from '@/types/dashboard'
+import { useTranslations } from "next-intl";
+import Image from "next/image";
+import { Link } from "@/i18n/navigation";
+import { ACTION, RULE } from "@/components/dashboard/EventRow";
+import { EventWhen } from "@/components/dashboard/EventWhen";
+import { Icon } from "@/components/icons";
+import { eventStatus, invitationPath, isPast } from "@/lib/event";
+import type { DashboardEvent, EventStatus } from "@/types/dashboard";
 
 /**
  * The top edge says which pile the card is in — the events list's status
  * colours, turned onto the head of the card rather than its side.
  */
 const STATUS_EDGE: Record<EventStatus, string> = {
-  active: 'border-t-forest-500',
-  draft: 'border-t-terracotta-500',
-  past: 'border-t-neutral-600',
-}
+  active: "border-t-forest-500",
+  draft: "border-t-terracotta-500",
+  past: "border-t-neutral-600",
+};
 
 /**
  * One invitation: what it is and when, the artwork itself, and the handful of
@@ -24,10 +24,10 @@ const STATUS_EDGE: Record<EventStatus, string> = {
  * links to somewhere that repeats it, so it takes no hover state.
  */
 export function InvitationCard({ event }: { event: DashboardEvent }) {
-  const t = useTranslations('Invitations')
-  const tEvent = useTranslations('Event')
+  const t = useTranslations("Invitations");
+  const tEvent = useTranslations("Event");
   /* Content freezes with the event; a past invitation is only downloadable. */
-  const past = isPast(event)
+  const past = isPast(event);
 
   return (
     <article
@@ -61,7 +61,7 @@ export function InvitationCard({ event }: { event: DashboardEvent }) {
         <div className="relative mx-auto aspect-[1/1.4142] max-w-[400px] overflow-hidden border border-mustard-300 bg-mustard-50">
           <Image
             src={event.preview}
-            alt={tEvent('previewAlt', { title: event.title })}
+            alt={tEvent("previewAlt", { title: event.title })}
             sizes="320px"
             className="h-full w-full object-cover"
           />
@@ -75,13 +75,13 @@ export function InvitationCard({ event }: { event: DashboardEvent }) {
        */}
       <div
         className={`grid gap-3 p-[18px] py-8 ${RULE} ${
-          past ? 'grid-cols-1' : 'grid-cols-1 @min-[340px]:grid-cols-2'
+          past ? "grid-cols-1" : "grid-cols-1 @min-[340px]:grid-cols-2"
         }`}
       >
         {past ? (
           <button type="button" className={ACTION}>
             <Icon name="download" className="size-[15px]" />
-            {t('downloadCard')}
+            {t("downloadCard")}
           </button>
         ) : (
           <>
@@ -89,23 +89,23 @@ export function InvitationCard({ event }: { event: DashboardEvent }) {
             {event.templateId ? (
               <Link href={`/invitations/${event.id}`} className={ACTION}>
                 <Icon name="pencil" className="size-[15px]" />
-                {t('editDetails')}
+                {t("editDetails")}
               </Link>
             ) : (
               <button
                 type="button"
                 disabled
-                title={tEvent('noDesign')}
+                title={tEvent("noDesign")}
                 className={ACTION}
               >
                 <Icon name="pencil" className="size-[15px]" />
-                {t('editDetails')}
+                {t("editDetails")}
               </button>
             )}
 
             <button type="button" className={ACTION}>
               <Icon name="layers" className="size-[15px]" />
-              {t('editDesign')}
+              {t("editDesign")}
             </button>
             {/* The guest page itself, in a tab of its own. */}
             {event.templateId ? (
@@ -116,39 +116,39 @@ export function InvitationCard({ event }: { event: DashboardEvent }) {
                 className={ACTION}
               >
                 <Icon name="eye" className="size-[15px]" />
-                {tEvent('viewAsGuest')}
+                {tEvent("viewAsGuest")}
               </a>
             ) : (
               <button
                 type="button"
                 disabled
-                title={tEvent('noDesign')}
+                title={tEvent("noDesign")}
                 className={ACTION}
               >
                 <Icon name="eye" className="size-[15px]" />
-                {tEvent('viewAsGuest')}
+                {tEvent("viewAsGuest")}
               </button>
             )}
             {/* The printable is built from the design, so it needs one too. */}
             {event.templateId ? (
               <Link href={`/prints/${event.id}`} className={ACTION}>
                 <Icon name="printer" className="size-[15px]" />
-                {tEvent('print')}
+                {tEvent("print")}
               </Link>
             ) : (
               <button
                 type="button"
                 disabled
-                title={tEvent('noDesign')}
+                title={tEvent("noDesign")}
                 className={ACTION}
               >
                 <Icon name="printer" className="size-[15px]" />
-                {tEvent('print')}
+                {tEvent("print")}
               </button>
             )}
           </>
         )}
       </div>
     </article>
-  )
+  );
 }

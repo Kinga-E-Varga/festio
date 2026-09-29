@@ -1,4 +1,4 @@
-@import 'tailwindcss';
+@import "tailwindcss";
 
 @theme {
   --font-sans: var(--font-work-sans), ui-sans-serif, system-ui, sans-serif;
@@ -114,7 +114,7 @@
    * arrow and say `cursor-not-allowed` for themselves.
    */
   button:not(:disabled),
-  [role='button']:not([aria-disabled='true']) {
+  [role="button"]:not([aria-disabled="true"]) {
     cursor: pointer;
   }
 
@@ -178,8 +178,8 @@
   }
 
   /* At or past expected guests the bar is full, yes and no in one red. */
-  .replies-bar[data-level='over'] .attending,
-  .replies-bar[data-level='over'] .declined {
+  .replies-bar[data-level="over"] .attending,
+  .replies-bar[data-level="over"] .declined {
     background-color: var(--color-rust-400);
   }
 
@@ -203,11 +203,11 @@
     background-color: var(--color-forest-400);
   }
 
-  .meter[data-level='warn'] span {
+  .meter[data-level="warn"] span {
     background-color: var(--color-terracotta-400);
   }
 
-  .meter[data-level='over'] span {
+  .meter[data-level="over"] span {
     background-color: var(--color-rust-400);
   }
 
@@ -244,7 +244,7 @@
   }
 
   /* Hidden until the first measurement, so no unscaled frame ever flashes. */
-  .stage[data-measured='false'] > .frame {
+  .stage[data-measured="false"] > .frame {
     visibility: hidden;
   }
 
@@ -266,11 +266,11 @@
    * The card's own shadow, in design px — the transform shrinks it with the
    * card. The stage's `--shadow-space` strip is what keeps it from clipping.
    */
-  .stage[data-shadow='light'] > .frame > .card {
+  .stage[data-shadow="light"] > .frame > .card {
     box-shadow: 0px 5px 20px #2f281fa6;
   }
 
-  .stage[data-shadow='dark'] > .frame > .card {
+  .stage[data-shadow="dark"] > .frame > .card {
     box-shadow: 0px 6px 22px #17130ee6;
   }
 
@@ -309,8 +309,8 @@
    * swapped by a media query, the same shape as `.edge[data-shape]` and
    * `.reveal[data-open]`.
    */
-  .edge[data-axis='y'],
-  .edge[data-axis='reply'] {
+  .edge[data-axis="y"],
+  .edge[data-axis="reply"] {
     --edge-mask: var(--edge-mask-y);
     --edge-tile: 40px 80px;
     --edge-repeat: repeat-y;
@@ -319,7 +319,7 @@
   }
 
   @media (width < 1000px) {
-    .edge[data-axis='reply'] {
+    .edge[data-axis="reply"] {
       --edge-mask: var(--edge-mask-x);
       --edge-tile: 60px 20px;
       --edge-repeat: repeat-x;
@@ -345,12 +345,12 @@
    * 5px (not 10px), radius recomputed from the sagitta formula for the new
    * half-chord: `r = (5² + 10²) / (2 × 5) = 12.5`.
    */
-  .edge[data-shape='wavy'] {
+  .edge[data-shape="wavy"] {
     --edge-mask-y: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='40'%20height='80'%3E%3Cpath%20d='M40%200%20H20%20A25%2025%200%200%200%2020%2040%20A25%2025%200%200%201%2020%2080%20H40%20Z'%20fill='white'/%3E%3C/svg%3E");
     --edge-mask-x: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='40'%20height='20'%3E%3Cpath%20d='M0%2020%20V10%20A12.5%2012.5%200%200%201%2020%2010%20A12.5%2012.5%200%200%200%2040%2010%20V20%20Z'%20fill='white'/%3E%3C/svg%3E");
   }
 
-  .edge[data-shape='scalloped'] {
+  .edge[data-shape="scalloped"] {
     --edge-mask-y: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='40'%20height='80'%3E%3Cpath%20d='M40%200%20H20%20a20%2020%200%200%200%200%2040%20a20%2020%200%200%200%200%2040%20H40%20Z'%20fill='white'/%3E%3C/svg%3E");
     --edge-mask-x: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='40'%20height='20'%3E%3Cpath%20d='M0%2020%20V10%20A12.5%2012.5%200%200%201%2020%2010%20A12.5%2012.5%200%200%201%2040%2010%20V20%20Z'%20fill='white'/%3E%3C/svg%3E");
   }
@@ -386,7 +386,7 @@
     transition: transform 800ms cubic-bezier(0.22, 1, 0.36, 1);
   }
 
-  .reply[data-open='true'] {
+  .reply[data-open="true"] {
     transform: translateY(0) translateZ(0);
   }
 
@@ -424,8 +424,8 @@
     transition: transform 620ms cubic-bezier(0.22, 1, 0.36, 1);
   }
 
-  .edit[data-open='true'],
-  .sheet-form[data-open='true'] {
+  .edit[data-open="true"],
+  .sheet-form[data-open="true"] {
     transform: translateX(0) translateZ(0);
   }
 
@@ -472,7 +472,7 @@
     transform: translateZ(0);
   }
 
-  .reveal[data-open='true'] {
+  .reveal[data-open="true"] {
     grid-template-rows: 1fr;
   }
 
@@ -512,7 +512,7 @@
       visibility 0s linear 620ms;
   }
 
-  .sheet-form[data-open='true'] {
+  .sheet-form[data-open="true"] {
     visibility: visible;
     transition:
       transform 620ms cubic-bezier(0.22, 1, 0.36, 1),
@@ -537,7 +537,7 @@
         visibility 0s linear 620ms;
     }
 
-    .sheet-form[data-open='true'] {
+    .sheet-form[data-open="true"] {
       transform: none;
       margin-inline-end: 0;
       transition:
@@ -613,11 +613,11 @@
     aspect-ratio: calc(var(--pages) / var(--ratio));
   }
 
-  .sheet-view[data-pages='1'] {
+  .sheet-view[data-pages="1"] {
     --pages: 1;
   }
 
-  .sheet-view[data-pages='2'] {
+  .sheet-view[data-pages="2"] {
     --pages: 2;
   }
 
@@ -650,19 +650,19 @@
    * from the template's own `print` block, so what the host prints matches the
    * invitation the guests are looking at.
    */
-  .leaf[data-tint='true'] {
+  .leaf[data-tint="true"] {
     background-color: var(--print-card);
     color: var(--print-ink);
   }
 
   /* Paper. Not a palette colour — it is the absence of one. */
-  .leaf[data-tint='false'] {
+  .leaf[data-tint="false"] {
     background-color: #ffffff;
     color: var(--print-ink);
   }
 
   /* The reverse of whichever face is hinged or turned. */
-  .leaf[data-face='back'] {
+  .leaf[data-face="back"] {
     transform: rotateY(180deg);
   }
 
@@ -674,7 +674,7 @@
     transition: transform 800ms cubic-bezier(0.22, 1, 0.36, 1);
   }
 
-  .flip[data-open='true'] {
+  .flip[data-open="true"] {
     transform: rotateY(180deg);
   }
 
@@ -693,7 +693,7 @@
     transition: transform 900ms cubic-bezier(0.22, 0.61, 0.36, 1);
   }
 
-  .fold[data-open='true'] {
+  .fold[data-open="true"] {
     transform: translateX(0);
   }
 
@@ -703,7 +703,7 @@
    * `.leaf` make the two directions differ. The page is uncovered early in
    * the swing and a shadow that arrived last read as the card settling twice.
    */
-  .fold[data-open='true'] .leaf {
+  .fold[data-open="true"] .leaf {
     transition: box-shadow 160ms ease 40ms;
   }
 
@@ -714,7 +714,7 @@
    * underneath takes its own shadow back on the way open, late enough that
    * the cover has already swung clear of it.
    */
-  .fold:not([data-open='true']) .fold-page:not(.fold-flap) .leaf {
+  .fold:not([data-open="true"]) .fold-page:not(.fold-flap) .leaf {
     box-shadow: none;
   }
 
@@ -731,7 +731,7 @@
     transition: transform 900ms cubic-bezier(0.22, 0.61, 0.36, 1);
   }
 
-  .fold-page.fold-flap[data-open='true'] {
+  .fold-page.fold-flap[data-open="true"] {
     transform: rotateY(-180deg);
   }
 

@@ -1,20 +1,20 @@
-'use client'
+"use client";
 
-import { useLocale, useTranslations } from 'next-intl'
+import { useLocale, useTranslations } from "next-intl";
 import type {
   InvitationTemplate,
   TemplateField,
   TemplateValues,
-} from '@/types/invitation'
+} from "@/types/invitation";
 import {
   dateFormatsFor,
   DEFAULT_DATE_FORMAT,
   EVENT_DATE,
   formatInvitationDate,
-} from '@/lib/invitation'
-import { localized, type Language } from '@/lib/language'
-import { PanelViewButton, SidePanel } from './SidePanel'
-import { HINT, INPUT, LABEL, SELECT, TEXTAREA, TITLE } from './styles'
+} from "@/lib/invitation";
+import { localized, type Language } from "@/lib/language";
+import { PanelViewButton, SidePanel } from "./SidePanel";
+import { HINT, INPUT, LABEL, SELECT, TEXTAREA, TITLE } from "./styles";
 
 /**
  * The two halves of the editor, in the order the host meets them: the card
@@ -22,19 +22,19 @@ import { HINT, INPUT, LABEL, SELECT, TEXTAREA, TITLE } from './styles'
  * a scope simply doesn't get that group.
  */
 const GROUPS = [
-  { scope: 'card', titleKey: 'groupCard' },
-  { scope: 'rsvp', titleKey: 'groupRsvp' },
-] as const
+  { scope: "card", titleKey: "groupCard" },
+  { scope: "rsvp", titleKey: "groupRsvp" },
+] as const;
 
 interface EditPanelProps {
-  template: InvitationTemplate
-  values: TemplateValues
+  template: InvitationTemplate;
+  values: TemplateValues;
   /** The invitation's language — the date options are previewed in it. */
-  language: Language
+  language: Language;
   /** Always mounted; this slides it in over the RSVP panel instead of replacing it. */
-  open: boolean
-  onChange: (id: string, value: string) => void
-  onClose: () => void
+  open: boolean;
+  onChange: (id: string, value: string) => void;
+  onClose: () => void;
 }
 
 /**
@@ -58,46 +58,47 @@ export function EditPanel({
   onChange,
   onClose,
 }: EditPanelProps) {
-  const t = useTranslations('HostEditor')
+  const t = useTranslations("HostEditor");
   const groups = GROUPS.map((group) => ({
     ...group,
     fields: template.fields.filter(
-      (field) => (field.scope ?? 'card') === group.scope,
+      (field) => (field.scope ?? "card") === group.scope,
     ),
-  })).filter((group) => group.fields.length > 0)
+  })).filter((group) => group.fields.length > 0);
 
-  const body = (
-    /*
-     * `w-full` is what makes it fill: the auto margins that centre it also
-     * turn off the column's stretch, so without it the form would only be as
-     * wide as its widest label.
-     */
-    <div className="flex flex-col w-full max-w-[500px] m-auto">
-      {groups.map((group) => (
-        // The last group butts up against View — its own fields already
-        // carry the gap, so it drops the one below it.
-        <section
-          key={group.scope}
-          className="flex flex-col mb-6 last-of-type:mb-0"
-        >
-          <p className={TITLE}>{t(group.titleKey)}</p>
+  const body =
+    (
+      /*
+       * `w-full` is what makes it fill: the auto margins that centre it also
+       * turn off the column's stretch, so without it the form would only be as
+       * wide as its widest label.
+       */
+      <div className="flex flex-col w-full max-w-[500px] m-auto">
+        {groups.map((group) => (
+          // The last group butts up against View — its own fields already
+          // carry the gap, so it drops the one below it.
+          <section
+            key={group.scope}
+            className="flex flex-col mb-6 last-of-type:mb-0"
+          >
+            <p className={TITLE}>{t(group.titleKey)}</p>
 
-          {group.fields.map((field) => (
-            <Field
-              key={field.id}
-              field={field}
-              value={values[field.id] ?? ''}
-              eventDate={values[EVENT_DATE] ?? ''}
-              language={language}
-              onChange={onChange}
-            />
-          ))}
-        </section>
-      ))}
+            {group.fields.map((field) => (
+              <Field
+                key={field.id}
+                field={field}
+                value={values[field.id] ?? ""}
+                eventDate={values[EVENT_DATE] ?? ""}
+                language={language}
+                onChange={onChange}
+              />
+            ))}
+          </section>
+        ))}
 
-      <PanelViewButton onClose={onClose} />
-    </div>
-  )
+        <PanelViewButton onClose={onClose} />
+      </div>
+    );
 
   return (
     <SidePanel
@@ -108,7 +109,7 @@ export function EditPanel({
     >
       {body}
     </SidePanel>
-  )
+  );
 }
 
 /** One slot from `template.fields`, with the control its type asks for. */
@@ -119,23 +120,23 @@ function Field({
   language,
   onChange,
 }: {
-  field: TemplateField
-  value: string
+  field: TemplateField;
+  value: string;
   /** The event's own date — what a `dateFormat` choice is previewed against. */
-  eventDate: string
+  eventDate: string;
   /** The language the previewed dates are written in. */
-  language: Language
-  onChange: (id: string, value: string) => void
+  language: Language;
+  onChange: (id: string, value: string) => void;
 }) {
-  const t = useTranslations('HostEditor')
-  const hostLocale = useLocale()
+  const t = useTranslations("HostEditor");
+  const hostLocale = useLocale();
 
   return (
     <div className="flex flex-col mb-6">
       <label htmlFor={`field-${field.id}`} className={LABEL}>
         {localized(field.label, hostLocale)}
       </label>
-      {field.type === 'dateFormat' ? (
+      {field.type === "dateFormat" ? (
         <>
           {/*
            * The date itself is set in the event details and is not editable
@@ -155,9 +156,9 @@ function Field({
               </option>
             ))}
           </select>
-          <p className={`${HINT} mt-1`}>{t('dateHint')}</p>
+          <p className={`${HINT} mt-1`}>{t("dateHint")}</p>
         </>
-      ) : field.type === 'longText' ? (
+      ) : field.type === "longText" ? (
         <textarea
           id={`field-${field.id}`}
           rows={3}
@@ -177,11 +178,11 @@ function Field({
         />
       )}
     </div>
-  )
+  );
 }
 
 const INPUT_TYPE: Record<string, string> = {
-  text: 'text',
-  date: 'date',
-  time: 'time',
-}
+  text: "text",
+  date: "date",
+  time: "time",
+};

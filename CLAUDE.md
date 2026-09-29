@@ -19,5 +19,6 @@ Read the following to get the full context of the project:
 - `npm run build` — production build
 - `npm run start` — run the production build
 - `npm run lint` — run ESLint
+- `npm run format` — format everything with Prettier (`format:check` to only check)
 
 There is no test setup in this project yet.

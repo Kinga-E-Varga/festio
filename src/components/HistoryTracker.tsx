@@ -1,8 +1,8 @@
-'use client'
+"use client";
 
-import { usePathname } from 'next/navigation'
-import { useEffect } from 'react'
-import { trackHistoryEntry } from '@/lib/history'
+import { usePathname } from "next/navigation";
+import { useEffect } from "react";
+import { trackHistoryEntry } from "@/lib/history";
 
 /**
  * Renders nothing; it only keeps the depth in `lib/history` honest. It sits in
@@ -14,11 +14,11 @@ import { trackHistoryEntry } from '@/lib/history'
  * still an entry this app created, so missing it can only undercount by one.
  */
 export function HistoryTracker() {
-  const pathname = usePathname()
+  const pathname = usePathname();
 
   useEffect(() => {
-    trackHistoryEntry()
-  }, [pathname])
+    trackHistoryEntry();
+  }, [pathname]);
 
-  return null
+  return null;
 }

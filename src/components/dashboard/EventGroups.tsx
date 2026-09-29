@@ -1,23 +1,23 @@
-import { useTranslations } from 'next-intl'
-import { EventRow } from '@/components/dashboard/EventRow'
-import { eventStatus, orderEvents } from '@/lib/event'
-import type { DashboardEvent, EventStatus } from '@/types/dashboard'
+import { useTranslations } from "next-intl";
+import { EventRow } from "@/components/dashboard/EventRow";
+import { eventStatus, orderEvents } from "@/lib/event";
+import type { DashboardEvent, EventStatus } from "@/types/dashboard";
 
 /**
  * Each pile says what being in it means, so the rows need no status badge.
  * The captions are keys into the `Events` namespace.
  */
 const GROUPS: { status: EventStatus; captionKey: string }[] = [
-  { status: 'active', captionKey: 'groupActive' },
-  { status: 'draft', captionKey: 'groupDraft' },
-  { status: 'past', captionKey: 'groupPast' },
-]
+  { status: "active", captionKey: "groupActive" },
+  { status: "draft", captionKey: "groupDraft" },
+  { status: "past", captionKey: "groupPast" },
+];
 
 interface EventGroupsProps {
-  events: DashboardEvent[]
+  events: DashboardEvent[];
   /** Which piles this tab shows; the rest are left out entirely. */
-  statuses: EventStatus[]
-  emptyMessage: string
+  statuses: EventStatus[];
+  emptyMessage: string;
 }
 
 export function EventGroups({
@@ -25,19 +25,19 @@ export function EventGroups({
   statuses,
   emptyMessage,
 }: EventGroupsProps) {
-  const t = useTranslations('Events')
+  const t = useTranslations("Events");
   const groups = GROUPS.filter(
     (group) =>
       statuses.includes(group.status) &&
       events.some((event) => eventStatus(event) === group.status),
-  )
+  );
 
   if (groups.length === 0) {
     return (
       <p className="border border-dashed border-mustard-300 bg-mustard-100 px-6 py-11 text-center text-neutral-700">
         {emptyMessage}
       </p>
-    )
+    );
   }
 
   return (
@@ -64,5 +64,5 @@ export function EventGroups({
         </section>
       ))}
     </div>
-  )
+  );
 }

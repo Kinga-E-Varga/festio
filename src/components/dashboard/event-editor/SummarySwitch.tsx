@@ -1,19 +1,19 @@
-import type { ReactNode } from 'react'
-import { GOLD_BTN, HINT } from '@/components/dashboard/event-editor/styles'
-import { Icon } from '@/components/icons'
-import type { IconName } from '@/types/dashboard'
+import type { ReactNode } from "react";
+import { GOLD_BTN, HINT } from "@/components/dashboard/event-editor/styles";
+import { Icon } from "@/components/icons";
+import type { IconName } from "@/types/dashboard";
 
 interface SummarySwitchProps {
-  icon: IconName
+  icon: IconName;
   /** The setting as one sentence; it always stays beside the icon. */
-  text: ReactNode
+  text: ReactNode;
   /** What follows the sentence when there's room: a picker, a link. */
-  children?: ReactNode
+  children?: ReactNode;
   /** Switches between the default and the host's own choice. */
-  action: string
-  onAction: () => void
-  disabled?: boolean
-  hint: ReactNode
+  action: string;
+  onAction: () => void;
+  disabled?: boolean;
+  hint: ReactNode;
 }
 
 /**
@@ -51,5 +51,5 @@ export function SummarySwitch({
       </div>
       <div className={`mt-1.5 ${HINT}`}>{hint}</div>
     </>
-  )
+  );
 }

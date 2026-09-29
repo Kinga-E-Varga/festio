@@ -1,7 +1,12 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { type FormEventHandler, type ReactNode, useEffect, useRef } from "react";
+import {
+  type FormEventHandler,
+  type ReactNode,
+  useEffect,
+  useRef,
+} from "react";
 import {
   ALERT,
   BTN_EDITOR,
@@ -24,7 +29,12 @@ interface FrameProps extends Pick<RowEditorProps, "onCancel" | "pending"> {
 }
 
 /** The editors' shared frame, at most 500px wide: the fields, then Cancel / Save, then the unsaved-changes prompt when it's raised. */
-export function RowEditor({ onSubmit, onCancel, pending, children }: FrameProps) {
+export function RowEditor({
+  onSubmit,
+  onCancel,
+  pending,
+  children,
+}: FrameProps) {
   const t = useTranslations("GuestList");
   const prompt = useRef<HTMLDivElement>(null);
   const prompting = pending !== null;
@@ -46,16 +56,36 @@ export function RowEditor({ onSubmit, onCancel, pending, children }: FrameProps)
 
       {/* Side by side, sharing the editor's full width. */}
       <div className="grid grid-cols-2 gap-2.5 border-t border-mustard-300 pt-4">
-        <button type="button" onClick={onCancel} className={BTN_EDITOR_OUTLINE}>{t("cancel")}</button>
-        <button type="submit" className={BTN_EDITOR}>{t("save")}</button>
+        <button type="button" onClick={onCancel} className={BTN_EDITOR_OUTLINE}>
+          {t("cancel")}
+        </button>
+        <button type="submit" className={BTN_EDITOR}>
+          {t("save")}
+        </button>
       </div>
 
       {pending ? (
-        <div ref={prompt} role="alert" className={`${ALERT} flex flex-wrap items-center gap-2.5`}>
+        <div
+          ref={prompt}
+          role="alert"
+          className={`${ALERT} flex flex-wrap items-center gap-2.5`}
+        >
           <span className="mr-auto">{t("unsaved")}</span>
           <div className="flex shrink-0 gap-2.5">
-            <button type="button" onClick={pending.onDiscard} className={SMALL_BTN_WARN}>{t("discard")}</button>
-            <button type="button" onClick={pending.onKeep} className={SMALL_BTN_WARN_SOLID}>{t("keepEditing")}</button>
+            <button
+              type="button"
+              onClick={pending.onDiscard}
+              className={SMALL_BTN_WARN}
+            >
+              {t("discard")}
+            </button>
+            <button
+              type="button"
+              onClick={pending.onKeep}
+              className={SMALL_BTN_WARN_SOLID}
+            >
+              {t("keepEditing")}
+            </button>
           </div>
         </div>
       ) : null}

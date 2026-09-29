@@ -9,7 +9,11 @@ export function useListDraft(list: ListName[]) {
   const [removed, setRemoved] = useState<ReadonlySet<string>>(new Set());
 
   function add(names: string[]) {
-    const batch = names.map((name) => ({ id: crypto.randomUUID(), name, sent: false }));
+    const batch = names.map((name) => ({
+      id: crypto.randomUUID(),
+      name,
+      sent: false,
+    }));
     setAdded((current) => [...current, ...batch]);
   }
 

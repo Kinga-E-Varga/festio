@@ -51,17 +51,17 @@ Ignore `02-pages/` entirely. This project is App Router only.
 
 ### Pinned guides
 
-| Topic | Path (under `node_modules/next/dist/docs/`) |
-| ----- | ------------------------------------------- |
-| Forms (with React Hook Form) | `01-app/02-guides/forms.md` |
-| Server Actions | `01-app/02-guides/server-actions.md` |
-| Fonts — `next/font/google` | `01-app/01-getting-started/13-fonts.md` |
-| Images — `next/image` | `01-app/01-getting-started/12-images.md` |
-| Route handlers (webhooks, uploads) | `01-app/01-getting-started/15-route-handlers.md` |
-| Metadata + `noindex` headers | `01-app/01-getting-started/14-metadata-and-og-images.md` |
-| Error handling | `01-app/01-getting-started/10-error-handling.md` |
-| Layouts and pages | `01-app/01-getting-started/03-layouts-and-pages.md` |
-| Dynamic routes (invitation slugs) | `01-app/03-api-reference/03-file-conventions/dynamic-routes.md` |
+| Topic                              | Path (under `node_modules/next/dist/docs/`)                     |
+| ---------------------------------- | --------------------------------------------------------------- |
+| Forms (with React Hook Form)       | `01-app/02-guides/forms.md`                                     |
+| Server Actions                     | `01-app/02-guides/server-actions.md`                            |
+| Fonts — `next/font/google`         | `01-app/01-getting-started/13-fonts.md`                         |
+| Images — `next/image`              | `01-app/01-getting-started/12-images.md`                        |
+| Route handlers (webhooks, uploads) | `01-app/01-getting-started/15-route-handlers.md`                |
+| Metadata + `noindex` headers       | `01-app/01-getting-started/14-metadata-and-og-images.md`        |
+| Error handling                     | `01-app/01-getting-started/10-error-handling.md`                |
+| Layouts and pages                  | `01-app/01-getting-started/03-layouts-and-pages.md`             |
+| Dynamic routes (invitation slugs)  | `01-app/03-api-reference/03-file-conventions/dynamic-routes.md` |
 
 ## Workflow
 

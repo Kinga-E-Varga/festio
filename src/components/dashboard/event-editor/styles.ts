@@ -21,7 +21,8 @@ export const HINT = "text-[11.5px] leading-[1.45] text-neutral-700";
 export const ERROR = "text-[11.5px] font-medium text-rust-600";
 
 /** The gold action's colours ("Stop using the list", "Different person", the list box's Save), at any size. Hovered, the fill takes the border's shade. */
-export const GOLD_BTN = "border-mustard-300 bg-mustard-200 text-mustard-600 hover:bg-mustard-300";
+export const GOLD_BTN =
+  "border-mustard-300 bg-mustard-200 text-mustard-600 hover:bg-mustard-300";
 
 /** The big buttons' shape, without colours: every variant below builds on it. */
 export const BUTTON =
@@ -46,5 +47,4 @@ export const MINI =
   "grid place-items-center text-neutral-700 transition-colors hover:text-forest-500";
 
 /** A panel that hangs off the control above it, sharing its edge. */
-export const SUBBOX =
-  "-mt-px border border-mustard-300 p-4";
+export const SUBBOX = "-mt-px border border-mustard-300 p-4";

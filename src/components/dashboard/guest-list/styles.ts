@@ -5,7 +5,8 @@ import { BUTTON, GOLD_BTN } from "@/components/dashboard/event-editor/styles";
 export const CHIP =
   "inline-flex shrink-0 cursor-pointer items-center border px-3 py-1.5 text-[12.5px] font-medium whitespace-nowrap transition-colors";
 /** "Preloaded list" and "New reply": at least 160px, so they read as a pair; on small screens they fill the line. */
-export const HEADER_BTN_WIDTH = "min-w-[160px] grow whitespace-nowrap @min-[560px]:grow-0";
+export const HEADER_BTN_WIDTH =
+  "min-w-[160px] grow whitespace-nowrap @min-[560px]:grow-0";
 export const CHIP_ON = "border-forest-500 bg-forest-500 text-neutral-50";
 export const CHIP_OFF =
   "border-mustard-300 bg-neutral-50 text-neutral-800 hover:border-forest-500 hover:bg-forest-200";
@@ -26,7 +27,8 @@ export const TAG =
 export const ATTENTION_TAG = `${TAG} border-rust-300 bg-rust-100 text-rust-600`;
 
 /** A row's one status: its reply, or where a waiting name's invitation stands. */
-const BADGE_TYPE = "inline-flex border text-[12px] font-medium whitespace-nowrap";
+const BADGE_TYPE =
+  "inline-flex border text-[12px] font-medium whitespace-nowrap";
 const BADGE_PAD = "px-2.5 py-[3px]";
 export const BADGE = `${BADGE_TYPE} items-center gap-1.5 ${BADGE_PAD}`;
 /** The same badge with a full-height box as its left side; its words go in `BADGE_TEXT`. */
@@ -34,7 +36,8 @@ export const BOX_BADGE = `${BADGE_TYPE} items-stretch`;
 export const BADGE_TEXT = BADGE_PAD;
 
 /** The quiet icon-only actions at the end of a row. */
-const ICON_BASE = "grid size-8 cursor-pointer place-items-center text-neutral-600 transition-colors";
+const ICON_BASE =
+  "grid size-8 cursor-pointer place-items-center text-neutral-600 transition-colors";
 export const ICON_BTN = `${ICON_BASE} hover:bg-mustard-200 hover:text-neutral-900`;
 /** Delete: the same button, turning rust on hover. */
 export const ICON_BTN_DANGER = `${ICON_BASE} hover:bg-rust-200 hover:text-rust-500`;
@@ -45,7 +48,8 @@ export const ICON_BTN_DANGER = `${ICON_BASE} hover:bg-rust-200 hover:text-rust-5
  */
 export const BTN_LIST = `${BUTTON} ${GOLD_BTN}`;
 /** The gold action's outline pair: a pale fill, and on hover the same fill as the gold action's hover. */
-const GOLD_OUTLINE = "border-mustard-300 bg-neutral-50 text-mustard-600 hover:bg-mustard-300";
+const GOLD_OUTLINE =
+  "border-mustard-300 bg-neutral-50 text-mustard-600 hover:bg-mustard-300";
 export const BTN_LIST_OUTLINE = `${BUTTON} ${GOLD_OUTLINE}`;
 
 /*
@@ -78,4 +82,5 @@ export const fold = (open: boolean) =>
   }`;
 
 /** The terracotta box that holds a prompt: the list box's and the row editor's. */
-export const ALERT = "border border-terracotta-400 bg-terracotta-200 px-4 py-3 text-[12.5px] text-terracotta-600";
+export const ALERT =
+  "border border-terracotta-400 bg-terracotta-200 px-4 py-3 text-[12.5px] text-terracotta-600";

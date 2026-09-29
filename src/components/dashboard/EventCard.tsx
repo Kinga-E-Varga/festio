@@ -1,9 +1,9 @@
-import { useLocale, useTranslations } from 'next-intl'
-import Image from 'next/image'
-import { Link } from '@/i18n/navigation'
-import { RULE } from '@/components/dashboard/EventRow'
-import { ShareFields } from '@/components/dashboard/ShareFields'
-import { Icon } from '@/components/icons'
+import { useLocale, useTranslations } from "next-intl";
+import Image from "next/image";
+import { Link } from "@/i18n/navigation";
+import { RULE } from "@/components/dashboard/EventRow";
+import { ShareFields } from "@/components/dashboard/ShareFields";
+import { Icon } from "@/components/icons";
 import {
   formatDay,
   formatDeadline,
@@ -16,15 +16,15 @@ import {
   repliesBarVars,
   repliesPaused,
   type ExpectedLevel,
-} from '@/lib/event'
-import type { DashboardEvent, IconName } from '@/types/dashboard'
+} from "@/lib/event";
+import type { DashboardEvent, IconName } from "@/types/dashboard";
 
 interface Warning {
-  icon: IconName
+  icon: IconName;
   /** A key in the `Event` namespace. */
-  key: string
+  key: string;
   /** Values the key takes, when it names a number. */
-  values?: Record<string, number>
+  values?: Record<string, number>;
 }
 
 /**
@@ -38,30 +38,30 @@ function warningsFor(
   percent: number,
   level: ExpectedLevel,
 ) {
-  const warnings: Warning[] = []
+  const warnings: Warning[] = [];
 
   if (!event.paid) {
-    warnings.push({ icon: 'alert', key: 'paymentPending' })
+    warnings.push({ icon: "alert", key: "paymentPending" });
   }
 
   if (event.locked) {
-    warnings.push({ icon: 'lock', key: 'editingClosed' })
+    warnings.push({ icon: "lock", key: "editingClosed" });
   } else if (event.isNextUp && event.locksIn) {
-    warnings.push({ icon: 'clock', key: 'editLocksSoon' })
+    warnings.push({ icon: "clock", key: "editLocksSoon" });
   }
 
   /* Replies well short of expected guests are not news. */
   if (event.rsvp.replied > event.expectedGuests) {
-    warnings.push({ icon: 'guests', key: 'overExpected' })
-  } else if (event.rsvp.replied > 0 && level !== 'ok') {
+    warnings.push({ icon: "guests", key: "overExpected" });
+  } else if (event.rsvp.replied > 0 && level !== "ok") {
     warnings.push({
-      icon: 'guests',
-      key: 'expectedAt',
+      icon: "guests",
+      key: "expectedAt",
       values: { percent },
-    })
+    });
   }
 
-  return warnings
+  return warnings;
 }
 
 function Tally({
@@ -69,10 +69,10 @@ function Tally({
   value,
   detail,
 }: {
-  label: string
-  value: number
+  label: string;
+  value: number;
   /** Denominator kept small so four tallies fit the column, e.g. "/124". */
-  detail?: string
+  detail?: string;
 }) {
   return (
     // Four in a row, value under label, whenever the replies are wide enough;
@@ -88,26 +88,26 @@ function Tally({
         ) : null}
       </dd>
     </div>
-  )
+  );
 }
 
 export function EventCard({ event }: { event: DashboardEvent }) {
   /* Past and past its retention date: the record is a stub, not a tool. */
-  const archived = isPast(event) && event.dataDeleted
-  const expected = event.expectedGuests
-  const replied = event.rsvp.replied
-  const percent = expectedPercent(replied, expected)
-  const level = expectedLevel(percent)
-  const barVars = repliesBarVars(event)
-  const paused = repliesPaused(event)
-  const t = useTranslations('Event')
-  const tNotes = useTranslations('EventNotes')
-  const tBanner = useTranslations('EventPage')
-  const warnings = warningsFor(event, percent, level)
-  const locale = useLocale()
-  const replyCloses = formatDeadline(replyClose(event), locale)
-  const replies = replyWindow(event)
-  const expectedValues = { replied, expected, percent }
+  const archived = isPast(event) && event.dataDeleted;
+  const expected = event.expectedGuests;
+  const replied = event.rsvp.replied;
+  const percent = expectedPercent(replied, expected);
+  const level = expectedLevel(percent);
+  const barVars = repliesBarVars(event);
+  const paused = repliesPaused(event);
+  const t = useTranslations("Event");
+  const tNotes = useTranslations("EventNotes");
+  const tBanner = useTranslations("EventPage");
+  const warnings = warningsFor(event, percent, level);
+  const locale = useLocale();
+  const replyCloses = formatDeadline(replyClose(event), locale);
+  const replies = replyWindow(event);
+  const expectedValues = { replied, expected, percent };
 
   return (
     /*
@@ -147,7 +147,7 @@ export function EventCard({ event }: { event: DashboardEvent }) {
               <div className="w-full max-w-[180px] border border-mustard-300 bg-neutral-50 @min-[522px]:w-[164px] @min-[904px]:w-full @min-[904px]:max-w-[220px]">
                 <Image
                   src={event.preview}
-                  alt={t('previewAlt', { title: event.title })}
+                  alt={t("previewAlt", { title: event.title })}
                   sizes="300px"
                   className="h-auto w-full"
                 />
@@ -168,10 +168,10 @@ export function EventCard({ event }: { event: DashboardEvent }) {
                   <span className="font-medium text-neutral-900">
                     {formatDay(event.date, locale)}
                   </span>
-                  <span aria-hidden="true">{' · '}</span>
+                  <span aria-hidden="true">{" · "}</span>
                   <span
                     className={
-                      event.isNextUp ? 'font-medium text-terracotta-600' : ''
+                      event.isNextUp ? "font-medium text-terracotta-600" : ""
                     }
                   >
                     {formatRelative(event.countdown, locale)}
@@ -205,23 +205,23 @@ export function EventCard({ event }: { event: DashboardEvent }) {
                   {/* Closing soon or closed reads in the countdown's own colour. */}
                   <p
                     className={`mb-[18px] flex items-center gap-1.5 text-[12.5px] ${
-                      replies === 'open'
-                        ? 'text-neutral-700'
-                        : 'font-medium text-terracotta-600'
+                      replies === "open"
+                        ? "text-neutral-700"
+                        : "font-medium text-terracotta-600"
                     }`}
                   >
                     <Icon
                       name="calendar"
                       className={`size-3.5 shrink-0 ${
-                        replies === 'open'
-                          ? 'text-forest-500'
-                          : 'text-terracotta-600'
+                        replies === "open"
+                          ? "text-forest-500"
+                          : "text-terracotta-600"
                       }`}
                     />
                     {t(
-                      replies === 'closed'
-                        ? 'repliesClosedOn'
-                        : 'replyFormClosesOn',
+                      replies === "closed"
+                        ? "repliesClosedOn"
+                        : "replyFormClosesOn",
                       { date: replyCloses },
                     )}
                   </p>
@@ -256,18 +256,18 @@ export function EventCard({ event }: { event: DashboardEvent }) {
                */}
               <dl className="mb-3 grid grid-cols-2 gap-x-5 gap-y-[9px] @min-[436px]:grid-cols-4 @min-[436px]:gap-x-3">
                 <Tally
-                  label={t('replied')}
+                  label={t("replied")}
                   value={event.rsvp.replied}
                   detail={`/${event.rsvp.invited}`}
                 />
-                <Tally label={t('attending')} value={event.rsvp.attending} />
-                <Tally label={t('declined')} value={event.rsvp.declined} />
-                <Tally label={t('pending')} value={event.rsvp.pending} />
+                <Tally label={t("attending")} value={event.rsvp.attending} />
+                <Tally label={t("declined")} value={event.rsvp.declined} />
+                <Tally label={t("pending")} value={event.rsvp.pending} />
               </dl>
 
               <div
                 role="img"
-                aria-label={t('barAria', {
+                aria-label={t("barAria", {
                   attending: event.rsvp.attending,
                   declined: event.rsvp.declined,
                   expected,
@@ -283,10 +283,10 @@ export function EventCard({ event }: { event: DashboardEvent }) {
               <p className="mt-[7px] text-[11.5px] text-neutral-700">
                 {/* Roomy only while the tallies have room for a single row. */}
                 <span className="hidden @min-[436px]:inline">
-                  {t('expectedLine', expectedValues)}
+                  {t("expectedLine", expectedValues)}
                 </span>
                 <span className="@min-[436px]:hidden">
-                  {t('expectedShort', expectedValues)}
+                  {t("expectedShort", expectedValues)}
                 </span>
               </p>
 
@@ -295,14 +295,14 @@ export function EventCard({ event }: { event: DashboardEvent }) {
                   <Icon name="alert" className="mt-px size-[15px] shrink-0" />
                   {/* The editor banner's own words, so every place reads alike. */}
                   <p>
-                    <b className="block">{tBanner('pausedTitle')}</b>
-                    {tBanner('pausedBody')}
+                    <b className="block">{tBanner("pausedTitle")}</b>
+                    {tBanner("pausedBody")}
                   </p>
                 </div>
               ) : null}
 
               {event.note ? (
-                event.note.tone === 'warning' ? (
+                event.note.tone === "warning" ? (
                   <div className="mt-[18px] flex gap-[9px] border border-rust-400 bg-rust-200 px-[13px] py-[11px] text-[12.5px] leading-[1.45] text-rust-600">
                     <Icon name="alert" className="mt-px size-[15px] shrink-0" />
                     <p>{tNotes(event.note.key, event.note.values)}</p>
@@ -347,7 +347,7 @@ export function EventCard({ event }: { event: DashboardEvent }) {
         href={`/dashboard/events?event=${event.id}#focus`}
         className="group/bar flex items-center justify-center gap-2 border-t border-mustard-300 px-4 py-3 text-[11px] font-semibold tracking-[0.16em] text-mustard-600 bg-mustard-200/70 uppercase transition-colors hover:bg-mustard-300/50"
       >
-        {t('manageEvent')}
+        {t("manageEvent")}
         <span className="sr-only">: {event.title}</span>
         <Icon
           name="arrowRight"
@@ -355,5 +355,5 @@ export function EventCard({ event }: { event: DashboardEvent }) {
         />
       </Link>
     </article>
-  )
+  );
 }

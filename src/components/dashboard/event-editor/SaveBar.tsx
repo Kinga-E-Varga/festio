@@ -12,7 +12,8 @@ const BUTTON =
  * Hands back the message key and its values; the bar translates it.
  */
 function stateLabel(form: EventForm): {
-  key: "stateLocked" | "stateSaved" | "stateClean" | "statePending" | "stateDirty";
+  key:
+    "stateLocked" | "stateSaved" | "stateClean" | "statePending" | "stateDirty";
   count?: number;
 } {
   if (form.locked) return { key: "stateLocked" };

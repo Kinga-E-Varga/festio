@@ -44,8 +44,16 @@ export function useGuestList(initial: EventGuests, preloaded: boolean) {
     query,
     useList,
     addOpen: useList && addOpen,
-    waiting: rows.flatMap((row) => (row.kind === "waiting" ? [row.listName] : [])),
-    set: { filter: setFilter, query: setQuery, useList: setUseList, addOpen: setAddOpen, keep: setKeep },
+    waiting: rows.flatMap((row) =>
+      row.kind === "waiting" ? [row.listName] : [],
+    ),
+    set: {
+      filter: setFilter,
+      query: setQuery,
+      useList: setUseList,
+      addOpen: setAddOpen,
+      keep: setKeep,
+    },
     openAddNames: () => {
       setUseList(true);
       setAddOpen(true);

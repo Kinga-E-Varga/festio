@@ -20,11 +20,7 @@ import {
   SLUG_MIN,
   slugSuggestions,
 } from "@/lib/slug";
-import type {
-  DashboardEvent,
-  EventKind,
-  Visibility,
-} from "@/types/dashboard";
+import type { DashboardEvent, EventKind, Visibility } from "@/types/dashboard";
 
 /**
  * A change a guest already holding the link would notice. Each one raises a
@@ -130,7 +126,9 @@ export function useEventForm(
   // An emptied or half-typed date must not turn every derived label into
   // "Invalid Date", so the deadlines hold their last good value until the
   // field parses again.
-  const effectiveDate = isRealDate(new Date(`${date}T00:00`)) ? date : event.date;
+  const effectiveDate = isRealDate(new Date(`${date}T00:00`))
+    ? date
+    : event.date;
   const freeze = contentFreeze(effectiveDate);
   const deletion = deletionDate(effectiveDate);
   const freezeLabel = formatDeadline(freeze, locale);
@@ -234,7 +232,8 @@ export function useEventForm(
       closeAt: edit("closeAt"),
       slug: (value: string) => {
         edit("slug")(value);
-        if (normalizeSlug(value) === original.slug) acknowledge("address", false);
+        if (normalizeSlug(value) === original.slug)
+          acknowledge("address", false);
       },
       visibility: edit("visibility"),
       password: (value: string) => {
@@ -251,7 +250,9 @@ export function useEventForm(
       /** The `max` a custom closing time cannot go past. */
       closeLimit: toDateTimeLocal(freeze),
       closeDefaultLabel: freezeLabel,
-      closeLabel: closesEarly ? formatDeadline(chosenClose, locale) : freezeLabel,
+      closeLabel: closesEarly
+        ? formatDeadline(chosenClose, locale)
+        : freezeLabel,
       closesEarly,
       /** Set while a chosen time sits past the cut-off, which cannot apply. */
       closeTooLate: chosenReal && chosenClose > freeze,

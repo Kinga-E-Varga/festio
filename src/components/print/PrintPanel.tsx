@@ -1,16 +1,16 @@
-'use client'
+"use client";
 
-import { useTranslations } from 'next-intl'
-import type { CSSProperties } from 'react'
-import { CheckIcon } from '@/components/invitation/icons'
-import { PanelViewButton, SidePanel } from '@/components/invitation/SidePanel'
+import { useTranslations } from "next-intl";
+import type { CSSProperties } from "react";
+import { CheckIcon } from "@/components/invitation/icons";
+import { PanelViewButton, SidePanel } from "@/components/invitation/SidePanel";
 import {
   LABEL,
   TEXTAREA,
   TOGGLE_OUTLINE,
   TOGGLE_SOLID,
-} from '@/components/invitation/styles'
-import type { PrintSettings, PrintShape } from '@/types/print'
+} from "@/components/invitation/styles";
+import type { PrintSettings, PrintShape } from "@/types/print";
 
 /*
  * Each shape's id is also its key into `PrintPanel` — its label, and under
@@ -19,17 +19,17 @@ import type { PrintSettings, PrintShape } from '@/types/print'
  * steps are rendered together because the box that shows them must not
  * resize when the host switches — see the note where it is rendered.
  */
-const SHAPES: PrintShape[] = ['flat', 'folded']
+const SHAPES: PrintShape[] = ["flat", "folded"];
 
 interface PrintPanelProps {
-  settings: PrintSettings
+  settings: PrintSettings;
   /** Whether the form is showing. Answered at every width. */
-  open: boolean
+  open: boolean;
   onChange: <Key extends keyof PrintSettings>(
     key: Key,
     value: PrintSettings[Key],
-  ) => void
-  onClose: () => void
+  ) => void;
+  onClose: () => void;
 }
 
 /**
@@ -47,7 +47,7 @@ export function PrintPanel({
   onChange,
   onClose,
 }: PrintPanelProps) {
-  const t = useTranslations('PrintPanel')
+  const t = useTranslations("PrintPanel");
 
   return (
     /*
@@ -69,8 +69,8 @@ export function PrintPanel({
       onClose={onClose}
       style={
         {
-          '--font-primary': 'var(--font-sans)',
-          '--font-secondary': 'var(--font-sans)',
+          "--font-primary": "var(--font-sans)",
+          "--font-secondary": "var(--font-sans)",
         } as CSSProperties
       }
     >
@@ -81,14 +81,14 @@ export function PrintPanel({
        */}
       <div className="flex flex-col w-full max-w-[500px] m-auto">
         <fieldset className="flex flex-col mb-6">
-          <legend className={`${LABEL} mb-2`}>{t('cardStyle')}</legend>
+          <legend className={`${LABEL} mb-2`}>{t("cardStyle")}</legend>
           <div className="flex gap-6">
             {SHAPES.map((shape) => (
               <button
                 key={shape}
                 type="button"
                 aria-pressed={settings.shape === shape}
-                onClick={() => onChange('shape', shape)}
+                onClick={() => onChange("shape", shape)}
                 className={`flex-1 ${
                   settings.shape === shape ? TOGGLE_SOLID : TOGGLE_OUTLINE
                 }`}
@@ -107,47 +107,47 @@ export function PrintPanel({
          * the tab order, and the box follows its state.
          */}
         <fieldset className="flex flex-col mb-6">
-          <legend className={`${LABEL} mb-2`}>{t('background')}</legend>
+          <legend className={`${LABEL} mb-2`}>{t("background")}</legend>
           <label className="flex cursor-pointer items-center gap-3">
             <input
               type="checkbox"
               checked={settings.tinted}
-              onChange={(control) => onChange('tinted', control.target.checked)}
+              onChange={(control) => onChange("tinted", control.target.checked)}
               className="sr-only"
             />
             <span
               aria-hidden="true"
               className={`grid size-[18px] shrink-0 place-items-center border-1 border-[var(--c3)] text-[color:var(--c1)] transition-colors ${
-                settings.tinted ? 'bg-[var(--c3)]' : ''
+                settings.tinted ? "bg-[var(--c3)]" : ""
               }`}
             >
               {settings.tinted ? <CheckIcon size={12} /> : null}
             </span>
             <span className="text-[16px] leading-[1.45] text-[color:var(--c3)]">
-              {t('tinted')}
+              {t("tinted")}
             </span>
           </label>
         </fieldset>
 
         <LineField
           id="print-headline"
-          label={t('message')}
-          placeholder={t('optional')}
+          label={t("message")}
+          placeholder={t("optional")}
           value={settings.headline}
-          onChange={(value) => onChange('headline', value)}
+          onChange={(value) => onChange("headline", value)}
         />
 
         <LineField
           id="print-note"
-          label={t('secondLine')}
-          placeholder={t('optional')}
+          label={t("secondLine")}
+          placeholder={t("optional")}
           value={settings.note}
-          onChange={(value) => onChange('note', value)}
+          onChange={(value) => onChange("note", value)}
         />
 
         <div className="flex flex-col bg-[var(--c5)] text-[var(--c1)] border-1 border-[var(--c2)] p-4 rounded-sm">
           <p className="text-[14px] text-center font-semibold tracking-[0.1em] border-b-1 pb-2 mb-3 uppercase">
-            {t('instructions')}
+            {t("instructions")}
           </p>
           {/*
            * Both sets of instructions are laid in the same cell, the one the
@@ -167,7 +167,7 @@ export function PrintPanel({
                 key={shape}
                 aria-hidden={settings.shape !== shape}
                 className={`[grid-area:1/1] space-y-2 text-[14px] leading-[1.45] font-[500] text-justify ${
-                  settings.shape === shape ? '' : 'invisible'
+                  settings.shape === shape ? "" : "invisible"
                 }`}
               >
                 {(t.raw(`steps.${shape}`) as string[]).map((line) => (
@@ -181,19 +181,25 @@ export function PrintPanel({
         <PanelViewButton onClose={onClose} className="mt-6" />
       </div>
     </SidePanel>
-  )
+  );
 }
 
 interface LineFieldProps {
-  id: string
-  label: string
-  placeholder: string
-  value: string
-  onChange: (value: string) => void
+  id: string;
+  label: string;
+  placeholder: string;
+  value: string;
+  onChange: (value: string) => void;
 }
 
 /** One of the two printed lines: a label over a short textarea. */
-function LineField({ id, label, placeholder, value, onChange }: LineFieldProps) {
+function LineField({
+  id,
+  label,
+  placeholder,
+  value,
+  onChange,
+}: LineFieldProps) {
   return (
     <div className="flex flex-col gap-2 mb-6">
       <label htmlFor={id} className={LABEL}>
@@ -209,5 +215,5 @@ function LineField({ id, label, placeholder, value, onChange }: LineFieldProps) 
         className={TEXTAREA}
       />
     </div>
-  )
+  );
 }

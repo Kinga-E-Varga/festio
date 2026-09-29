@@ -22,7 +22,10 @@ const reply = (
 });
 
 /* The reply-wide answers each party gave, copied onto every person in it. */
-const party = (room: boolean | null, song: string | null): Record<string, AnswerValue | null> => ({
+const party = (
+  room: boolean | null,
+  song: string | null,
+): Record<string, AnswerValue | null> => ({
   "q-room": room,
   "q-song": song,
 });
@@ -40,7 +43,11 @@ const GUESTS: Record<string, EventGuests> = {
       { id: "n-mihai", name: "Mihai Dumitru", sent: true },
       { id: "n-ioana", name: "Ioana Dumitru", sent: true },
       { id: "n-gheorghe", name: "Gheorghe Pop", sent: false },
-      { id: "n-radu", name: "Radu Constantin Alexandru Stan-Vlădescu Popovici", sent: true },
+      {
+        id: "n-radu",
+        name: "Radu Constantin Alexandru Stan-Vlădescu Popovici",
+        sent: true,
+      },
       { id: "n-irina", name: "Irina Stan", sent: true },
       { id: "n-sorin", name: "Sorin Marin", sent: true },
     ],
@@ -57,8 +64,18 @@ const GUESTS: Record<string, EventGuests> = {
           { id: "o-pasta", label: "Paste" },
         ],
       },
-      { id: "q-room", label: "Aveți nevoie de cazare?", scope: "reply", kind: "yesNo" },
-      { id: "q-song", label: "Ce melodie vreți să auziți?", scope: "reply", kind: "text" },
+      {
+        id: "q-room",
+        label: "Aveți nevoie de cazare?",
+        scope: "reply",
+        kind: "yesNo",
+      },
+      {
+        id: "q-song",
+        label: "Ce melodie vreți să auziți?",
+        scope: "reply",
+        kind: "text",
+      },
     ],
     replies: [
       reply("r-maria", "s1", "Maria Popescu", {
@@ -133,14 +150,19 @@ const GUESTS: Record<string, EventGuests> = {
         diet: ["vegetarian"],
         answers: { ...s6, "q-main": "o-pasta" },
       }),
-      reply("r-radu", "s6", "Radu Constantin Alexandru Stan-Vlădescu Popovici", {
-        note: "Ne vedem acolo!",
-        repliedAt: "2026-07-18T19:47",
-        ageGroup: "adult",
-        diet: ["other"],
-        dietOther: "Alergie la fructe de mare",
-        answers: { ...s6, "q-main": "o-beef" },
-      }),
+      reply(
+        "r-radu",
+        "s6",
+        "Radu Constantin Alexandru Stan-Vlădescu Popovici",
+        {
+          note: "Ne vedem acolo!",
+          repliedAt: "2026-07-18T19:47",
+          ageGroup: "adult",
+          diet: ["other"],
+          dietOther: "Alergie la fructe de mare",
+          answers: { ...s6, "q-main": "o-beef" },
+        },
+      ),
       /* A plain decline: on the list, one reply, nothing to sort out. */
       reply("r-sorin", "s7", "Sorin Marin", {
         status: "not_going",

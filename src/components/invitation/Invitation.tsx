@@ -1,21 +1,21 @@
-'use client'
+"use client";
 
-import type { ReactNode } from 'react'
-import { pageBackground, templateVars } from '@/lib/invitation'
+import type { ReactNode } from "react";
+import { pageBackground, templateVars } from "@/lib/invitation";
 import type {
   InvitationTemplate,
   RsvpPayload,
   TemplateValues,
-} from '@/types/invitation'
-import { RsvpPanel } from './RsvpPanel'
-import { ScaledStage } from './ScaledStage'
+} from "@/types/invitation";
+import { RsvpPanel } from "./RsvpPanel";
+import { ScaledStage } from "./ScaledStage";
 
 interface InvitationProps {
-  template: InvitationTemplate
+  template: InvitationTemplate;
   /** Host-entered content: the card's text, and the reply panel's standing line. */
-  values: TemplateValues
+  values: TemplateValues;
   /** The card — server-rendered for a guest, live for a host. */
-  children: ReactNode
+  children: ReactNode;
   /**
    * The host's own layer, drawn inside the invitation: the edit form and the
    * controls over the card. Must be rendered in here, not around it — the
@@ -23,18 +23,18 @@ interface InvitationProps {
    * `invite:absolute` to it, and the root's `overflow-hidden` is the only
    * thing keeping the closed form off the page.
    */
-  host?: ReactNode
+  host?: ReactNode;
   /**
    * The host's controls, in flow directly above the card. They take their
    * height out of the stage's slot rather than covering it, so the card is
    * never partly hidden behind them.
    */
-  hostBar?: ReactNode
+  hostBar?: ReactNode;
   /** Switches the reply panel inert — what the host's edit form asks for while it covers it. */
-  replyInert?: boolean
+  replyInert?: boolean;
   /** The hidden reply cap is reached; the panel says so instead of taking replies. */
-  repliesPaused?: boolean
-  onSubmit?: (payload: RsvpPayload) => void
+  repliesPaused?: boolean;
+  onSubmit?: (payload: RsvpPayload) => void;
 }
 
 /**
@@ -63,8 +63,8 @@ export function Invitation({
   repliesPaused,
   onSubmit,
 }: InvitationProps) {
-  const { width, height, minScale, maxScale, shadow } = template.design
-  const ground = pageBackground(template)
+  const { width, height, minScale, maxScale, shadow } = template.design;
+  const ground = pageBackground(template);
 
   return (
     <div
@@ -102,5 +102,5 @@ export function Invitation({
 
       {host}
     </div>
-  )
+  );
 }

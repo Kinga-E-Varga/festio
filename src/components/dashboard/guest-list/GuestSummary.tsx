@@ -2,7 +2,11 @@
 
 import { useTranslations } from "next-intl";
 import { useEffect, useRef, useState } from "react";
-import { CHIP, CHIP_OFF, CHIP_ON } from "@/components/dashboard/guest-list/styles";
+import {
+  CHIP,
+  CHIP_OFF,
+  CHIP_ON,
+} from "@/components/dashboard/guest-list/styles";
 import { Icon } from "@/components/icons";
 import type { GuestCounts, GuestFilter } from "@/types/guests";
 
@@ -20,7 +24,13 @@ interface Chip {
 }
 
 /** All, Coming and Not coming up front; every other count behind one Filter button. */
-export function GuestSummary({ counts, total, useList, filter, onFilter }: GuestSummaryProps) {
+export function GuestSummary({
+  counts,
+  total,
+  useList,
+  filter,
+  onFilter,
+}: GuestSummaryProps) {
   const t = useTranslations("GuestList");
   const chips: Chip[] = [
     { filter: "all", label: t("all", { count: total }) },
@@ -28,17 +38,32 @@ export function GuestSummary({ counts, total, useList, filter, onFilter }: Guest
     { filter: "not_going", label: t("notGoing", { count: counts.notGoing }) },
   ];
   const more: Chip[] = [];
-  if (useList) more.push({ filter: "waiting", label: t("waiting", { count: counts.waiting }) });
+  if (useList)
+    more.push({
+      filter: "waiting",
+      label: t("waiting", { count: counts.waiting }),
+    });
   if (useList && counts.notSent > 0) {
-    more.push({ filter: "notSent", label: t("notSent", { count: counts.notSent }) });
+    more.push({
+      filter: "notSent",
+      label: t("notSent", { count: counts.notSent }),
+    });
   }
   if (counts.attention > 0) {
-    more.push({ filter: "attention", label: t("attention", { count: counts.attention }) });
+    more.push({
+      filter: "attention",
+      label: t("attention", { count: counts.attention }),
+    });
   }
-  const pick = (chip: Chip) => onFilter(filter === chip.filter ? "all" : chip.filter);
+  const pick = (chip: Chip) =>
+    onFilter(filter === chip.filter ? "all" : chip.filter);
 
   return (
-    <div role="group" aria-label={t("summaryLabel")} className="flex min-w-0 flex-wrap items-center gap-2">
+    <div
+      role="group"
+      aria-label={t("summaryLabel")}
+      className="flex min-w-0 flex-wrap items-center gap-2"
+    >
       {chips.map((chip) => (
         <button
           key={chip.filter}
@@ -51,7 +76,11 @@ export function GuestSummary({ counts, total, useList, filter, onFilter }: Guest
         </button>
       ))}
       {more.length > 0 ? (
-        <FilterMenu options={more} active={more.find((chip) => chip.filter === filter)} onPick={pick} />
+        <FilterMenu
+          options={more}
+          active={more.find((chip) => chip.filter === filter)}
+          onPick={pick}
+        />
       ) : null}
     </div>
   );
@@ -96,7 +125,10 @@ function FilterMenu({ options, active, onPick }: FilterMenuProps) {
         className={`${CHIP} gap-1.5 ${active ? CHIP_ON : CHIP_OFF}`}
       >
         {active ? t("filterActive", { filter: active.label }) : t("filter")}
-        <Icon name="chevron" className={`size-3.5 transition-transform ${open ? "rotate-180" : ""}`} />
+        <Icon
+          name="chevron"
+          className={`size-3.5 transition-transform ${open ? "rotate-180" : ""}`}
+        />
       </button>
       {open ? (
         <div
@@ -116,7 +148,9 @@ function FilterMenu({ options, active, onPick }: FilterMenuProps) {
               className="flex w-full cursor-pointer items-center justify-between gap-3 px-3 py-2 text-left text-[13px] text-neutral-800 transition-colors hover:bg-mustard-100 aria-checked:font-semibold aria-checked:text-forest-600"
             >
               {chip.label}
-              {active?.filter === chip.filter ? <Icon name="check" className="size-3.5" /> : null}
+              {active?.filter === chip.filter ? (
+                <Icon name="check" className="size-3.5" />
+              ) : null}
             </button>
           ))}
         </div>

@@ -1,5 +1,5 @@
-import { Kapakana, Noto_Serif } from 'next/font/google'
-import type { TemplateFont } from '@/types/invitation'
+import { Kapakana, Noto_Serif } from "next/font/google";
+import type { TemplateFont } from "@/types/invitation";
 
 /**
  * Every invitation font is declared once, here, and reused by whichever
@@ -13,26 +13,26 @@ import type { TemplateFont } from '@/types/invitation'
  * file's.
  */
 const notoSerif = Noto_Serif({
-  variable: '--font-noto-serif',
-  subsets: ['latin', 'latin-ext'],
-  weight: ['100', '200', '300', '400', '500', '600'],
-  style: ['normal', 'italic'],
-})
+  variable: "--font-noto-serif",
+  subsets: ["latin", "latin-ext"],
+  weight: ["100", "200", "300", "400", "500", "600"],
+  style: ["normal", "italic"],
+});
 
 const kapakana = Kapakana({
-  variable: '--font-kapakana',
-  subsets: ['latin', 'latin-ext'],
-  weight: ['300', '400'],
-})
+  variable: "--font-kapakana",
+  subsets: ["latin", "latin-ext"],
+  weight: ["300", "400"],
+});
 
 function token(
   font: { className: string; variable: string },
   cssVar: string,
 ): TemplateFont {
-  return { className: font.variable, cssVar }
+  return { className: font.variable, cssVar };
 }
 
 export const fonts = {
-  notoSerif: token(notoSerif, '--font-noto-serif'),
-  kapakana: token(kapakana, '--font-kapakana'),
-}
+  notoSerif: token(notoSerif, "--font-noto-serif"),
+  kapakana: token(kapakana, "--font-kapakana"),
+};

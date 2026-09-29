@@ -1,4 +1,4 @@
-'use client'
+"use client";
 
 import { useTranslations } from "next-intl";
 import {
@@ -7,22 +7,22 @@ import {
   useState,
   type MouseEvent,
   type ReactNode,
-} from 'react'
-import { TopBar } from '@/components/dashboard/TopBar'
+} from "react";
+import { TopBar } from "@/components/dashboard/TopBar";
 
 interface DashboardShellProps {
   /** Server-rendered nav, shown as a column on wide screens and a drawer below. */
-  nav: ReactNode
+  nav: ReactNode;
   /** Server-rendered notifications rail, same treatment at its own breakpoint. */
-  notices: ReactNode
-  children: ReactNode
+  notices: ReactNode;
+  children: ReactNode;
 }
 
-type Drawer = 'nav' | 'notices'
+type Drawer = "nav" | "notices";
 
 /** Matches the `nav` and `rail` breakpoints where each column docks. */
-const NAV_DOCKED = '(min-width: 820px)'
-const RAIL_DOCKED = '(min-width: 1400px)'
+const NAV_DOCKED = "(min-width: 820px)";
+const RAIL_DOCKED = "(min-width: 1400px)";
 
 /*
  * Width is deliberately left out: each drawer sets its own to match the column
@@ -30,7 +30,7 @@ const RAIL_DOCKED = '(min-width: 1400px)'
  * stylesheet order rather than by the order they are written.
  */
 const PANEL =
-  'fixed top-topbar bottom-0 z-40 flex flex-col bg-mustard-100 shadow-[0_0_40px_rgba(47,40,31,0.2)] transition-transform duration-200 ease-out'
+  "fixed top-topbar bottom-0 z-40 flex flex-col bg-mustard-100 shadow-[0_0_40px_rgba(47,40,31,0.2)] transition-transform duration-200 ease-out";
 
 export function DashboardShell({
   nav,
@@ -38,20 +38,20 @@ export function DashboardShell({
   children,
 }: DashboardShellProps) {
   const t = useTranslations("TopBar");
-  const [open, setOpen] = useState<Drawer | null>(null)
-  const navPanelRef = useRef<HTMLDivElement>(null)
-  const noticesPanelRef = useRef<HTMLDivElement>(null)
+  const [open, setOpen] = useState<Drawer | null>(null);
+  const navPanelRef = useRef<HTMLDivElement>(null);
+  const noticesPanelRef = useRef<HTMLDivElement>(null);
 
-  const navOpen = open === 'nav'
-  const noticesOpen = open === 'notices'
-  const anyOpen = open !== null
+  const navOpen = open === "nav";
+  const noticesOpen = open === "notices";
+  const anyOpen = open !== null;
 
   function toggle(target: Drawer) {
-    setOpen((current) => (current === target ? null : target))
+    setOpen((current) => (current === target ? null : target));
   }
 
   function close() {
-    setOpen(null)
+    setOpen(null);
   }
 
   /*
@@ -62,51 +62,51 @@ export function DashboardShell({
    * menu the host had never asked for.
    */
   function closeOnLink(event: MouseEvent<HTMLElement>) {
-    if ((event.target as HTMLElement).closest('a')) close()
+    if ((event.target as HTMLElement).closest("a")) close();
   }
 
   useEffect(() => {
-    if (!anyOpen) return
+    if (!anyOpen) return;
     const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') setOpen(null)
-    }
-    window.addEventListener('keydown', onKeyDown)
-    return () => window.removeEventListener('keydown', onKeyDown)
-  }, [anyOpen])
+      if (event.key === "Escape") setOpen(null);
+    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [anyOpen]);
 
   // Each drawer has a static column above its breakpoint; close it on the way
   // up so the app never holds an open drawer nobody can see.
   useEffect(() => {
-    const navBreakpoint = window.matchMedia(NAV_DOCKED)
-    const noticesBreakpoint = window.matchMedia(RAIL_DOCKED)
+    const navBreakpoint = window.matchMedia(NAV_DOCKED);
+    const noticesBreakpoint = window.matchMedia(RAIL_DOCKED);
     const closeStale = () => {
       setOpen((current) => {
-        if (current === 'nav' && navBreakpoint.matches) return null
-        if (current === 'notices' && noticesBreakpoint.matches) return null
-        return current
-      })
-    }
+        if (current === "nav" && navBreakpoint.matches) return null;
+        if (current === "notices" && noticesBreakpoint.matches) return null;
+        return current;
+      });
+    };
 
-    navBreakpoint.addEventListener('change', closeStale)
-    noticesBreakpoint.addEventListener('change', closeStale)
+    navBreakpoint.addEventListener("change", closeStale);
+    noticesBreakpoint.addEventListener("change", closeStale);
     return () => {
-      navBreakpoint.removeEventListener('change', closeStale)
-      noticesBreakpoint.removeEventListener('change', closeStale)
-    }
-  }, [])
+      navBreakpoint.removeEventListener("change", closeStale);
+      noticesBreakpoint.removeEventListener("change", closeStale);
+    };
+  }, []);
 
   useEffect(() => {
-    if (open === 'nav') navPanelRef.current?.focus()
-    if (open === 'notices') noticesPanelRef.current?.focus()
-  }, [open])
+    if (open === "nav") navPanelRef.current?.focus();
+    if (open === "notices") noticesPanelRef.current?.focus();
+  }, [open]);
 
   return (
     <div className="flex flex-1 flex-col">
       <TopBar
         navOpen={navOpen}
         noticesOpen={noticesOpen}
-        onToggleNav={() => toggle('nav')}
-        onToggleNotices={() => toggle('notices')}
+        onToggleNav={() => toggle("nav")}
+        onToggleNotices={() => toggle("notices")}
       />
 
       <div className="flex flex-1 items-start">
@@ -131,7 +131,7 @@ export function DashboardShell({
         aria-hidden="true"
         onClick={close}
         className={`fixed inset-x-0 top-topbar bottom-0 z-30 bg-neutral-900/35 transition-opacity duration-200 ${
-          anyOpen ? 'opacity-100' : 'pointer-events-none opacity-0'
+          anyOpen ? "opacity-100" : "pointer-events-none opacity-0"
         }`}
       />
 
@@ -144,7 +144,7 @@ export function DashboardShell({
         inert={!navOpen}
         onClick={closeOnLink}
         className={`${PANEL} left-0 w-side max-w-[88vw] nav:hidden ${
-          navOpen ? 'translate-x-0' : '-translate-x-full'
+          navOpen ? "translate-x-0" : "-translate-x-full"
         }`}
       >
         {nav}
@@ -159,11 +159,11 @@ export function DashboardShell({
         inert={!noticesOpen}
         onClick={closeOnLink}
         className={`${PANEL} right-0 w-rail max-w-[88vw] overflow-y-auto px-[18px] py-5 rail:hidden ${
-          noticesOpen ? 'translate-x-0' : 'translate-x-full'
+          noticesOpen ? "translate-x-0" : "translate-x-full"
         }`}
       >
         {notices}
       </div>
     </div>
-  )
+  );
 }

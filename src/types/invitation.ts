@@ -1,8 +1,8 @@
-import type { LocalizedText } from '@/lib/language'
-import type { PackageId, EventKind } from '@/types/dashboard'
+import type { LocalizedText } from "@/lib/language";
+import type { PackageId, EventKind } from "@/types/dashboard";
 
 /** How deep the card's shadow is; `null` for none. */
-export type CardShadow = 'light' | 'dark' | null
+export type CardShadow = "light" | "dark" | null;
 
 /**
  * The five colours the RSVP chrome is styled from. Roles are positional and
@@ -12,29 +12,29 @@ export type CardShadow = 'light' | 'dark' | null
  */
 export interface Palette {
   /** RSVP panel bg*/
-  color1: string
+  color1: string;
   /** RSVP form accent text color */
-  color2: string
+  color2: string;
   /** RSVP form base text color */
-  color3: string
+  color3: string;
   /** RSVP form placeholder color */
-  color4: string
+  color4: string;
   /** RSVP form hover color */
-  color5: string
+  color5: string;
   /** RSVP form warning color */
-  color6: string | null
+  color6: string | null;
   /** OPTIONAL custom colors */
-  color7: string | null
-  color8: string | null
-  color9: string | null
-  color10: string | null
+  color7: string | null;
+  color8: string | null;
+  color9: string | null;
+  color10: string | null;
 }
 
 /**
  * Input types templates can ask for. Deliberately small — the full set is
  * still unsettled, so a template may only request what simple templates need.
  */
-export type FieldType = 'text' | 'longText' | 'date' | 'time' | 'dateFormat'
+export type FieldType = "text" | "longText" | "date" | "time" | "dateFormat";
 
 /**
  * Which surface a field's text is painted on, and so which group of the host's
@@ -42,30 +42,30 @@ export type FieldType = 'text' | 'longText' | 'date' | 'time' | 'dateFormat'
  * Absent means `card` — the common case, and what every field was before the
  * reply panel had any editable copy of its own.
  */
-export type FieldScope = 'card' | 'rsvp'
+export type FieldScope = "card" | "rsvp";
 
 /** One host-editable slot. The edit form is generated from these alone. */
 export interface TemplateField {
-  id: string
+  id: string;
   /**
    * What the host's edit form calls this slot. Editor chrome, so it is read
    * in the host's locale, never the invitation's.
    */
-  label: LocalizedText
-  type: FieldType
+  label: LocalizedText;
+  type: FieldType;
   /** Typed input only — a `dateFormat` choice has nothing to cap. */
-  maxLength?: number
+  maxLength?: number;
   /**
    * Seeds the field when the event carries nothing for it. Guests read this
    * until the host types over it, so anything that is a phrase is declared in
    * every language; a name, an address or a format id stays a plain string.
    */
-  fallback: LocalizedText
-  scope?: FieldScope
+  fallback: LocalizedText;
+  scope?: FieldScope;
 }
 
 /** The decorative strip where the RSVP surface meets the card. */
-export type EdgeShape = 'wavy' | 'scalloped' | 'plain'
+export type EdgeShape = "wavy" | "scalloped" | "plain";
 
 /**
  * What shows behind the card — page padding, the RSVP bar/panel ground, and
@@ -83,15 +83,15 @@ export type EdgeShape = 'wavy' | 'scalloped' | 'plain'
  *   template might want to reuse.
  */
 export type TemplateBackground =
-  | { kind: 'solid'; color: keyof Palette }
-  | { kind: 'image'; src: string; size?: string; under?: keyof Palette }
-  | { kind: 'pattern'; className: string }
+  | { kind: "solid"; color: keyof Palette }
+  | { kind: "image"; src: string; size?: string; under?: keyof Palette }
+  | { kind: "pattern"; className: string };
 
 /**
  * A colour a template hands to something outside the card: the name of one of
  * its own palette roles, so the two can never drift.
  */
-export type TemplateColor = keyof Palette
+export type TemplateColor = keyof Palette;
 
 /**
  * The printable's two colours. A printed card is paper, not a screen: it has
@@ -103,8 +103,8 @@ export type TemplateColor = keyof Palette
  * one; `ink` is the host's own lines printed on it.
  */
 export interface TemplatePrint {
-  background: TemplateColor
-  ink: TemplateColor
+  background: TemplateColor;
+  ink: TemplateColor;
 }
 
 /**
@@ -113,8 +113,8 @@ export interface TemplatePrint {
  * `cssVar` is what the card and shared RSVP chrome write into `font-family`.
  */
 export interface TemplateFont {
-  className: string
-  cssVar: string
+  className: string;
+  cssVar: string;
 }
 
 /**
@@ -123,8 +123,8 @@ export interface TemplateFont {
  * / `--font-secondary`; which font plays which role is the template's call.
  */
 export interface TemplateFonts {
-  primary: TemplateFont
-  secondary: TemplateFont
+  primary: TemplateFont;
+  secondary: TemplateFont;
 }
 
 /**
@@ -132,51 +132,51 @@ export interface TemplateFonts {
  * plus its card, and nothing outside that file needs editing to add it.
  */
 export interface InvitationTemplate {
-  id: string
-  name: string
+  id: string;
+  name: string;
   /**
    * The lowest package that can use this template. Simple templates are
    * `free` or `standard`; modular ones are `custom`. Custom unlocks them all.
    */
-  package: PackageId
+  package: PackageId;
   /** Event kinds this design suits — a recommendation, not a restriction. */
-  eventTypes: EventKind[]
+  eventTypes: EventKind[];
   design: {
-    width: number
-    height: number
+    width: number;
+    height: number;
     /** Readability floor: below this the stage scrolls instead of shrinking. */
-    minScale: number
-    maxScale: number
+    minScale: number;
+    maxScale: number;
     /**
      * The shadow around the card, on screen only. The stage leaves room for
      * it, so the card never pads itself to keep its own shadow from clipping.
      */
-    shadow: CardShadow
-  }
+    shadow: CardShadow;
+  };
   /** Shown beside the print preview, e.g. "A5 portrait — 148 × 210 mm". */
-  printSize: string
-  print: TemplatePrint
-  palette: Palette
-  fonts: TemplateFonts
-  edge: EdgeShape
-  background: TemplateBackground
-  fields: TemplateField[]
+  printSize: string;
+  print: TemplatePrint;
+  palette: Palette;
+  fonts: TemplateFonts;
+  edge: EdgeShape;
+  background: TemplateBackground;
+  fields: TemplateField[];
 }
 
 /** Host-entered content, keyed by `TemplateField.id`. */
-export type TemplateValues = Record<string, string>
+export type TemplateValues = Record<string, string>;
 
 /** A template file's public surface: the data, and the card that draws it. */
 export interface TemplateModule {
-  template: InvitationTemplate
-  Card: (props: { values: TemplateValues }) => React.ReactNode
+  template: InvitationTemplate;
+  Card: (props: { values: TemplateValues }) => React.ReactNode;
 }
 
-export type RsvpStatus = 'going' | 'not_going'
+export type RsvpStatus = "going" | "not_going";
 
 export interface RsvpAttendee {
-  name: string
-  status: RsvpStatus
+  name: string;
+  status: RsvpStatus;
 }
 
 /**
@@ -185,6 +185,6 @@ export interface RsvpAttendee {
  * shape here stays the way the guest filled it in.
  */
 export interface RsvpPayload {
-  attendees: RsvpAttendee[]
-  answers: { q_note_host: string | null }
+  attendees: RsvpAttendee[];
+  answers: { q_note_host: string | null };
 }

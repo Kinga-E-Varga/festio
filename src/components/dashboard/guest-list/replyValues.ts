@@ -26,16 +26,32 @@ function answerIn(value: AnswerValue | null | undefined): string {
   return value;
 }
 
-function answersIn(reply: GuestReply | null, questions: GuestQuestion[]): Record<string, string> {
-  return Object.fromEntries(questions.map((question) => [question.id, answerIn(reply?.answers?.[question.id])]));
+function answersIn(
+  reply: GuestReply | null,
+  questions: GuestQuestion[],
+): Record<string, string> {
+  return Object.fromEntries(
+    questions.map((question) => [
+      question.id,
+      answerIn(reply?.answers?.[question.id]),
+    ]),
+  );
 }
 
 /** Left empty, a question never asked stays never asked; one that was asked reads as skipped. */
-function unanswered<T>(before: T | null | undefined, asked: boolean): null | undefined {
+function unanswered<T>(
+  before: T | null | undefined,
+  asked: boolean,
+): null | undefined {
   return before === undefined && !asked ? undefined : null;
 }
 
-function answerOut(question: GuestQuestion, value: string, before: AnswerValue | null | undefined, asked: boolean) {
+function answerOut(
+  question: GuestQuestion,
+  value: string,
+  before: AnswerValue | null | undefined,
+  asked: boolean,
+) {
   const text = value.trim();
   if (text === "") return unanswered(before, asked);
   return question.kind === "yesNo" ? text === "yes" : text;
@@ -50,27 +66,45 @@ function answersOut(
 ): GuestReply["answers"] {
   const out: Record<string, AnswerValue | null> = { ...before };
   for (const question of questions) {
-    const next = answerOut(question, values[question.id] ?? "", before?.[question.id], asked);
+    const next = answerOut(
+      question,
+      values[question.id] ?? "",
+      before?.[question.id],
+      asked,
+    );
     if (next === undefined) delete out[question.id];
     else out[question.id] = next;
   }
-  return before === undefined && Object.keys(out).length === 0 ? undefined : out;
+  return before === undefined && Object.keys(out).length === 0
+    ? undefined
+    : out;
 }
 
-export function personValues(reply: GuestReply | null, questions: GuestQuestion[]): PersonValues {
+export function personValues(
+  reply: GuestReply | null,
+  questions: GuestQuestion[],
+): PersonValues {
   const diet = reply?.diet;
   return {
     name: reply?.name ?? "",
     ageGroup: reply?.ageGroup ?? "",
     /* No needs is stored as an empty list; the editor shows it as None. */
-    diet: diet === undefined || diet === null ? [] : diet.length === 0 ? ["none"] : diet,
+    diet:
+      diet === undefined || diet === null
+        ? []
+        : diet.length === 0
+          ? ["none"]
+          : diet,
     dietOther: reply?.dietOther ?? "",
     answers: answersIn(reply, personQuestions(questions)),
   };
 }
 
 /** One person's reply, as their row's editor opens it. */
-export function replyValues(reply: GuestReply, questions: GuestQuestion[]): ReplyValues {
+export function replyValues(
+  reply: GuestReply,
+  questions: GuestQuestion[],
+): ReplyValues {
   return {
     status: reply.status,
     people: [personValues(reply, questions)],
@@ -89,26 +123,62 @@ export function newReplyValues(questions: GuestQuestion[]): ReplyValues {
 }
 
 /** Not coming changes only the name and status: the answers stay stored, just not shown or counted. */
-function applyPerson(reply: GuestReply, person: PersonValues, status: GuestReply["status"], questions: GuestQuestion[], asked: boolean): GuestReply {
+function applyPerson(
+  reply: GuestReply,
+  person: PersonValues,
+  status: GuestReply["status"],
+  questions: GuestQuestion[],
+  asked: boolean,
+): GuestReply {
   const base = { ...reply, name: person.name.trim(), status };
   if (status !== "going") return base;
   const needs = person.diet.filter((pick): pick is DietNeed => pick !== "none");
   const other = person.dietOther.trim();
   return {
     ...base,
-    ageGroup: person.ageGroup === "" ? unanswered(reply.ageGroup, asked) : person.ageGroup,
-    diet: person.diet.includes("none") ? [] : needs.length > 0 ? needs : unanswered(reply.diet, asked),
+    ageGroup:
+      person.ageGroup === ""
+        ? unanswered(reply.ageGroup, asked)
+        : person.ageGroup,
+    diet: person.diet.includes("none")
+      ? []
+      : needs.length > 0
+        ? needs
+        : unanswered(reply.diet, asked),
     dietOther: needs.includes("other") && other !== "" ? other : undefined,
-    answers: answersOut(personQuestions(questions), person.answers, reply.answers, asked),
+    answers: answersOut(
+      personQuestions(questions),
+      person.answers,
+      reply.answers,
+      asked,
+    ),
   };
 }
 
-function applyShared(reply: GuestReply, shared: Record<string, string>, questions: GuestQuestion[], asked: boolean): GuestReply {
-  return { ...reply, answers: answersOut(sharedQuestions(questions), shared, reply.answers, asked) };
+function applyShared(
+  reply: GuestReply,
+  shared: Record<string, string>,
+  questions: GuestQuestion[],
+  asked: boolean,
+): GuestReply {
+  return {
+    ...reply,
+    answers: answersOut(
+      sharedQuestions(questions),
+      shared,
+      reply.answers,
+      asked,
+    ),
+  };
 }
 
 /** Everyone in a new reply, sharing its id; every question counts as asked. */
-export function newReplies(values: ReplyValues, questions: GuestQuestion[], ids: string[], repliedAt: string): GuestReply[] {
+export function newReplies(
+  values: ReplyValues,
+  questions: GuestQuestion[],
+  ids: string[],
+  repliedAt: string,
+): GuestReply[] {
   return values.people.map((person, at) => {
     const blank: GuestReply = {
       id: ids[at],
@@ -120,7 +190,9 @@ export function newReplies(values: ReplyValues, questions: GuestQuestion[], ids:
       differentPerson: false,
     };
     const filled = applyPerson(blank, person, values.status, questions, true);
-    return values.status === "going" ? applyShared(filled, values.shared, questions, true) : filled;
+    return values.status === "going"
+      ? applyShared(filled, values.shared, questions, true)
+      : filled;
   });
 }
 
@@ -145,11 +217,25 @@ export function editReply(
   const asked = target.status !== "going" && going;
   return replies.map((reply) => {
     if (reply.id === id) {
-      const edited = applyPerson(reply, values.people[0], values.status, questions, asked);
-      const moved = values.separate ? { ...edited, submissionId: ownId, note: null } : edited;
-      return going ? applyShared(moved, values.shared, questions, asked) : moved;
+      const edited = applyPerson(
+        reply,
+        values.people[0],
+        values.status,
+        questions,
+        asked,
+      );
+      const moved = values.separate
+        ? { ...edited, submissionId: ownId, note: null }
+        : edited;
+      return going
+        ? applyShared(moved, values.shared, questions, asked)
+        : moved;
     }
-    if (going && !values.separate && reply.submissionId === target.submissionId) {
+    if (
+      going &&
+      !values.separate &&
+      reply.submissionId === target.submissionId
+    ) {
       return applyShared(reply, values.shared, questions, false);
     }
     return reply;

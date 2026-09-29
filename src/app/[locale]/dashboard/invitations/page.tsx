@@ -1,52 +1,68 @@
-import type { Metadata } from 'next'
-import { getTranslations } from 'next-intl/server'
-import { CentreOnHash } from '@/components/dashboard/CentreOnHash'
-import { HostToday } from '@/components/dashboard/HostToday'
-import { EventTabs, type EventTab } from '@/components/dashboard/EventTabs'
-import { FocusView } from '@/components/dashboard/FocusView'
-import { InvitationCard } from '@/components/dashboard/InvitationCard'
-import { InvitationGroups } from '@/components/dashboard/InvitationGroups'
-import { eventStatus } from '@/lib/event'
-import { EVENTS, findEvent } from '@/mock/dashboard'
-import type { EventStatus } from '@/types/dashboard'
+import type { Metadata } from "next";
+import { getTranslations } from "next-intl/server";
+import { CentreOnHash } from "@/components/dashboard/CentreOnHash";
+import { HostToday } from "@/components/dashboard/HostToday";
+import { EventTabs, type EventTab } from "@/components/dashboard/EventTabs";
+import { FocusView } from "@/components/dashboard/FocusView";
+import { InvitationCard } from "@/components/dashboard/InvitationCard";
+import { InvitationGroups } from "@/components/dashboard/InvitationGroups";
+import { eventStatus } from "@/lib/event";
+import { EVENTS, findEvent } from "@/mock/dashboard";
+import type { EventStatus } from "@/types/dashboard";
 
 export async function generateMetadata(): Promise<Metadata> {
-  const t = await getTranslations('Meta')
-  return { title: t('invitations') }
+  const t = await getTranslations("Meta");
+  return { title: t("invitations") };
 }
 
 /** One tab per pile: which statuses it holds and the texts it shows. */
 const PILES = [
-  { id: 'all', statuses: ['active', 'draft', 'past'], label: 'tabAll', empty: 'emptyAll' },
-  { id: 'active', statuses: ['active'], label: 'tabActive', empty: 'emptyActive' },
-  { id: 'drafts', statuses: ['draft'], label: 'tabDrafts', empty: 'emptyDrafts' },
-  { id: 'past', statuses: ['past'], label: 'tabPast', empty: 'emptyPast' },
+  {
+    id: "all",
+    statuses: ["active", "draft", "past"],
+    label: "tabAll",
+    empty: "emptyAll",
+  },
+  {
+    id: "active",
+    statuses: ["active"],
+    label: "tabActive",
+    empty: "emptyActive",
+  },
+  {
+    id: "drafts",
+    statuses: ["draft"],
+    label: "tabDrafts",
+    empty: "emptyDrafts",
+  },
+  { id: "past", statuses: ["past"], label: "tabPast", empty: "emptyPast" },
 ] as const satisfies readonly {
-  id: string
-  statuses: readonly EventStatus[]
-  label: string
-  empty: string
-}[]
+  id: string;
+  statuses: readonly EventStatus[];
+  label: string;
+  empty: string;
+}[];
 
 export default async function InvitationsPage({
   searchParams,
-}: PageProps<'/[locale]/dashboard/invitations'>) {
+}: PageProps<"/[locale]/dashboard/invitations">) {
   /*
    * `?event=` is how another page hands one invitation over — the events list
    * does, from its own Edit invitation. An id that matches nothing is simply
    * the whole list, which is what the address without the query already is.
    */
-  const t = await getTranslations('Invitations')
-  const { event: requested } = await searchParams
+  const t = await getTranslations("Invitations");
+  const { event: requested } = await searchParams;
   const focused =
-    typeof requested === 'string' ? findEvent(requested) : undefined
+    typeof requested === "string" ? findEvent(requested) : undefined;
 
   const tabs: EventTab[] = PILES.map((pile) => {
-    const statuses: EventStatus[] = [...pile.statuses]
+    const statuses: EventStatus[] = [...pile.statuses];
     return {
       id: pile.id,
       label: t(pile.label),
-      count: EVENTS.filter((event) => statuses.includes(eventStatus(event))).length,
+      count: EVENTS.filter((event) => statuses.includes(eventStatus(event)))
+        .length,
       panel: (
         <InvitationGroups
           events={EVENTS}
@@ -54,8 +70,8 @@ export default async function InvitationsPage({
           emptyMessage={t(pile.empty)}
         />
       ),
-    }
-  })
+    };
+  });
 
   return (
     <div className="@container">
@@ -66,23 +82,23 @@ export default async function InvitationsPage({
       <header className="min-w-0">
         <HostToday />
         <h1 className="mt-1.5 font-serif text-[34px] leading-[1.05] text-neutral-900 @min-[720px]:text-[46px]">
-          {t('title')}
+          {t("title")}
         </h1>
       </header>
 
-      <p className="mt-3.5 mb-[26px] text-neutral-700">{t('lede')}</p>
+      <p className="mt-3.5 mb-[26px] text-neutral-700">{t("lede")}</p>
 
       <EventTabs
         tabs={tabs}
-        label={t('tabsLabel')}
+        label={t("tabsLabel")}
         // Arriving on one invitation, no pile is the one being looked at.
         initialId={focused ? null : undefined}
         fallback={
           focused ? (
             <FocusView
-              note={t('focusNote')}
+              note={t("focusNote")}
               href="/dashboard/invitations"
-              linkLabel={t('focusLink')}
+              linkLabel={t("focusLink")}
             >
               {/*
                * Held to the width it would have had in the grid: the artwork
@@ -97,5 +113,5 @@ export default async function InvitationsPage({
         }
       />
     </div>
-  )
+  );
 }

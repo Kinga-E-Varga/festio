@@ -41,7 +41,7 @@
 Example v4 configuration:
 
 ```css
-@import 'tailwindcss';
+@import "tailwindcss";
 
 @theme {
   --color-primary: oklch(50% 0.2 250);
@@ -94,6 +94,7 @@ Example v4 configuration:
 
 ## Code Quality
 
+- Formatting is Prettier's job (`.prettierrc.json`: double quotes, semicolons). Run `npm run format`; never hand-format against it
 - No commented-out code unless specified
 - No unused imports or variables
 - Keep functions under 50 lines when possible

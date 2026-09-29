@@ -114,17 +114,11 @@ export function NotificationsRail() {
                 <p className="mb-1.5 text-[12.5px] leading-[1.45] text-neutral-700">
                   {tBanner(`${notice.key}Body`, values)}
                 </p>
-                <button
-                  type="button"
-                  className={ACTION}
-                >
+                <button type="button" className={ACTION}>
                   {tNotices(`${notice.key}.action`, values)}
                 </button>
                 {notice.reportHref ? (
-                  <Link
-                    href={notice.reportHref}
-                    className={`ml-4 ${ACTION}`}
-                  >
+                  <Link href={notice.reportHref} className={`ml-4 ${ACTION}`}>
                     {tEvent("reportFlood")}
                   </Link>
                 ) : null}

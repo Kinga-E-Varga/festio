@@ -1,11 +1,11 @@
-import { useLocale, useTranslations } from 'next-intl'
-import Image from 'next/image'
-import { Link } from '@/i18n/navigation'
-import { DatesThatMatter } from '@/components/dashboard/DatesThatMatter'
-import { EventWhen } from '@/components/dashboard/EventWhen'
-import { ShareFields } from '@/components/dashboard/ShareFields'
-import { Icon } from '@/components/icons'
-import { GUEST_DATA_RETENTION_DAYS } from '@/lib/config'
+import { useLocale, useTranslations } from "next-intl";
+import Image from "next/image";
+import { Link } from "@/i18n/navigation";
+import { DatesThatMatter } from "@/components/dashboard/DatesThatMatter";
+import { EventWhen } from "@/components/dashboard/EventWhen";
+import { ShareFields } from "@/components/dashboard/ShareFields";
+import { Icon } from "@/components/icons";
+import { GUEST_DATA_RETENTION_DAYS } from "@/lib/config";
 import {
   deletionDate,
   eventStatus,
@@ -15,19 +15,19 @@ import {
   expectedLevel,
   expectedPercent,
   repliesBarVars,
-} from '@/lib/event'
-import type { DashboardEvent, EventStatus } from '@/types/dashboard'
+} from "@/lib/event";
+import type { DashboardEvent, EventStatus } from "@/types/dashboard";
 
 /** The card's left edge says which pile the event is in, as the dashboard's does. */
 const STATUS_EDGE: Record<EventStatus, string> = {
-  active: 'border-l-forest-500',
-  draft: 'border-l-terracotta-500',
-  past: 'border-l-neutral-600',
-}
+  active: "border-l-forest-500",
+  draft: "border-l-terracotta-500",
+  past: "border-l-neutral-600",
+};
 
 /** The quiet heading that names each section, as the event editor sets it. */
 const PANEL_LABEL =
-  'mb-3.5 text-[10px] font-semibold tracking-[0.18em] text-mustard-500 uppercase'
+  "mb-3.5 text-[10px] font-semibold tracking-[0.18em] text-mustard-500 uppercase";
 
 /**
  * The rule between two of the card's sections. A pseudo-element rather than a
@@ -42,24 +42,24 @@ const PANEL_LABEL =
  * taking back `top` and `h-px` inside the same breakpoint, where Tailwind's
  * property order — not the class string — settles which wins.
  */
-export const RULE = `relative before:pointer-events-none before:absolute before:inset-x-5 before:top-0 before:h-px before:bg-mustard-300 before:content-[''] after:pointer-events-none after:absolute after:inset-y-5 after:left-0 after:hidden after:w-px after:bg-mustard-300 after:content-['']`
+export const RULE = `relative before:pointer-events-none before:absolute before:inset-x-5 before:top-0 before:h-px before:bg-mustard-300 before:content-[''] after:pointer-events-none after:absolute after:inset-y-5 after:left-0 after:hidden after:w-px after:bg-mustard-300 after:content-['']`;
 
 /** Every section after the first hangs off a hairline of its own. */
-const PANEL = 'min-w-0 border-t border-mustard-300 pt-5'
+const PANEL = "min-w-0 border-t border-mustard-300 pt-5";
 
 /** The six actions share one size and fill the width of their column. */
 export const ACTION =
-  'inline-flex w-full min-w-[135px] items-center justify-center gap-2 rounded-md border border-forest-500 bg-mustard-50 px-2.5 py-[12px] text-center text-[13px] leading-[1.3] font-medium text-forest-500 transition-colors hover:border-forest-600 hover:bg-forest-200 hover:text-forest-600 disabled:cursor-not-allowed disabled:opacity-50'
+  "inline-flex w-full min-w-[135px] items-center justify-center gap-2 rounded-md border border-forest-500 bg-mustard-50 px-2.5 py-[12px] text-center text-[13px] leading-[1.3] font-medium text-forest-500 transition-colors hover:border-forest-600 hover:bg-forest-200 hover:text-forest-600 disabled:cursor-not-allowed disabled:opacity-50";
 
 function Tally({
   label,
   value,
   detail,
 }: {
-  label: string
-  value: number
+  label: string;
+  value: number;
   /** Denominator kept small so four tallies fit the row, e.g. "/124". */
-  detail?: string
+  detail?: string;
 }) {
   return (
     <div>
@@ -75,7 +75,7 @@ function Tally({
         ) : null}
       </dd>
     </div>
-  )
+  );
 }
 
 /**
@@ -85,17 +85,17 @@ function Tally({
  * somewhere else that repeats it, so the card takes no hover state.
  */
 export function EventRow({ event }: { event: DashboardEvent }) {
-  const t = useTranslations('Event')
-  const tPackages = useTranslations('Packages')
-  const locale = useLocale()
-  const deletion = formatEventDate(deletionDate(event.date), locale)
-  const expected = event.expectedGuests
-  const replied = event.rsvp.replied
-  const percent = expectedPercent(replied, expected)
-  const barVars = repliesBarVars(event)
+  const t = useTranslations("Event");
+  const tPackages = useTranslations("Packages");
+  const locale = useLocale();
+  const deletion = formatEventDate(deletionDate(event.date), locale);
+  const expected = event.expectedGuests;
+  const replied = event.rsvp.replied;
+  const percent = expectedPercent(replied, expected);
+  const barVars = repliesBarVars(event);
   /* Past and past its retention date: the record is a stub, not a tool. */
-  const archived = isPast(event) && event.dataDeleted
-  const past = isPast(event)
+  const archived = isPast(event) && event.dataDeleted;
+  const past = isPast(event);
 
   return (
     /*
@@ -123,7 +123,7 @@ export function EventRow({ event }: { event: DashboardEvent }) {
           <div className="flex w-full justify-center leading-none">
             <Image
               src={event.preview}
-              alt={t('previewAlt', { title: event.title })}
+              alt={t("previewAlt", { title: event.title })}
               sizes="500px"
               className="h-auto max-h-[500px] w-auto max-w-full border border-mustard-300"
             />
@@ -148,7 +148,7 @@ export function EventRow({ event }: { event: DashboardEvent }) {
                * the invitation rather than as what was bought, so it says so.
                */}
               <p className="mt-2.5 text-[13px] text-neutral-700">
-                {t('package', {
+                {t("package", {
                   name: tPackages(`${event.package}.name`),
                 })}
               </p>
@@ -157,7 +157,7 @@ export function EventRow({ event }: { event: DashboardEvent }) {
             {/* 2 — how a guest reaches it. */}
             {archived ? null : (
               <div className={PANEL}>
-                <h4 className={PANEL_LABEL}>{t('sharing')}</h4>
+                <h4 className={PANEL_LABEL}>{t("sharing")}</h4>
                 <ShareFields event={event} className="max-w-[340px]" />
               </div>
             )}
@@ -165,34 +165,34 @@ export function EventRow({ event }: { event: DashboardEvent }) {
             {/* 3 — how many have answered. */}
             {archived ? null : (
               <div className={PANEL}>
-                <h4 className={PANEL_LABEL}>{t('replies')}</h4>
+                <h4 className={PANEL_LABEL}>{t("replies")}</h4>
 
                 {event.rsvp.invited === 0 ? (
                   <p className="text-[12.5px] leading-[1.45] text-neutral-700">
-                    {t('nothingShared')}
+                    {t("nothingShared")}
                   </p>
                 ) : (
                   <>
                     <dl className="grid grid-cols-2 gap-x-4 gap-y-2.5 @min-[400px]:grid-cols-4">
                       <Tally
-                        label={t('replied')}
+                        label={t("replied")}
                         value={event.rsvp.replied}
                         detail={`/${event.rsvp.invited}`}
                       />
                       <Tally
-                        label={t('attending')}
+                        label={t("attending")}
                         value={event.rsvp.attending}
                       />
                       <Tally
-                        label={t('declined')}
+                        label={t("declined")}
                         value={event.rsvp.declined}
                       />
-                      <Tally label={t('pending')} value={event.rsvp.pending} />
+                      <Tally label={t("pending")} value={event.rsvp.pending} />
                     </dl>
 
                     <div
                       role="img"
-                      aria-label={t('barAria', {
+                      aria-label={t("barAria", {
                         attending: event.rsvp.attending,
                         declined: event.rsvp.declined,
                         expected,
@@ -207,13 +207,13 @@ export function EventRow({ event }: { event: DashboardEvent }) {
 
                     <p className="mt-[9px] flex items-center gap-2 text-[11.5px] text-neutral-700">
                       <span className="flex-1">
-                        {t('expectedLine', { replied, expected, percent })}
+                        {t("expectedLine", { replied, expected, percent })}
                       </span>
                       <button
                         type="button"
                         className="text-forest-500 underline underline-offset-2 transition-colors hover:text-forest-600"
                       >
-                        {t('raiseExpected')}
+                        {t("raiseExpected")}
                       </button>
                     </p>
                   </>
@@ -223,10 +223,10 @@ export function EventRow({ event }: { event: DashboardEvent }) {
 
             {/* 4 — the deadlines that govern it. */}
             <div className={PANEL}>
-              <h4 className={PANEL_LABEL}>{t('datesThatMatter')}</h4>
+              <h4 className={PANEL_LABEL}>{t("datesThatMatter")}</h4>
               {archived ? (
                 <p className="text-[12.5px] leading-[1.45] text-neutral-700">
-                  {t('dataDeletedOn', {
+                  {t("dataDeletedOn", {
                     date: deletion,
                     days: GUEST_DATA_RETENTION_DAYS,
                   })}
@@ -266,16 +266,16 @@ export function EventRow({ event }: { event: DashboardEvent }) {
                 <button
                   type="button"
                   disabled
-                  title={t('alreadyHappened')}
+                  title={t("alreadyHappened")}
                   className={ACTION}
                 >
                   <Icon name="pencil" className="size-[15px]" />
-                  {t('editEvent')}
+                  {t("editEvent")}
                 </button>
               ) : (
                 <Link href={`/dashboard/events/${event.id}`} className={ACTION}>
                   <Icon name="pencil" className="size-[15px]" />
-                  {t('editEvent')}
+                  {t("editEvent")}
                 </Link>
               )}
               <Link
@@ -283,18 +283,18 @@ export function EventRow({ event }: { event: DashboardEvent }) {
                 className={ACTION}
               >
                 <Icon name="guests" className="size-[15px]" />
-                {t('guestList')}
+                {t("guestList")}
               </Link>
               <button
                 type="button"
                 disabled={!event.seatingAvailable}
                 title={
-                  event.seatingAvailable ? undefined : t('seatingPaidOnly')
+                  event.seatingAvailable ? undefined : t("seatingPaidOnly")
                 }
                 className={ACTION}
               >
                 <Icon name="seating" className="size-[15px]" />
-                {t('seating')}
+                {t("seating")}
               </button>
 
               {/*
@@ -310,22 +310,22 @@ export function EventRow({ event }: { event: DashboardEvent }) {
                   className={ACTION}
                 >
                   <Icon name="eye" className="size-[15px]" />
-                  {t('viewAsGuest')}
+                  {t("viewAsGuest")}
                 </a>
               ) : (
                 <button
                   type="button"
                   disabled
-                  title={t('noDesign')}
+                  title={t("noDesign")}
                   className={ACTION}
                 >
                   <Icon name="eye" className="size-[15px]" />
-                  {t('viewAsGuest')}
+                  {t("viewAsGuest")}
                 </button>
               )}
               <button type="button" className={ACTION}>
                 <Icon name="printer" className="size-[15px]" />
-                {t('print')}
+                {t("print")}
               </button>
 
               {/*
@@ -338,11 +338,11 @@ export function EventRow({ event }: { event: DashboardEvent }) {
                 <button
                   type="button"
                   disabled
-                  title={t('alreadyHappened')}
+                  title={t("alreadyHappened")}
                   className={ACTION}
                 >
                   <Icon name="layers" className="size-[15px]" />
-                  {t('editInvitation')}
+                  {t("editInvitation")}
                 </button>
               ) : (
                 <Link
@@ -350,7 +350,7 @@ export function EventRow({ event }: { event: DashboardEvent }) {
                   className={ACTION}
                 >
                   <Icon name="layers" className="size-[15px]" />
-                  {t('editInvitation')}
+                  {t("editInvitation")}
                 </Link>
               )}
             </div>
@@ -358,5 +358,5 @@ export function EventRow({ event }: { event: DashboardEvent }) {
         )}
       </div>
     </article>
-  )
+  );
 }

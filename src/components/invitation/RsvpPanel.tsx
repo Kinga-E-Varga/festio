@@ -1,29 +1,29 @@
-'use client'
+"use client";
 
-import { useTranslations } from 'next-intl'
-import { type ReactNode, useState } from 'react'
+import { useTranslations } from "next-intl";
+import { type ReactNode, useState } from "react";
 import type {
   InvitationTemplate,
   RsvpPayload,
   TemplateValues,
-} from '@/types/invitation'
-import { XIcon } from './icons'
-import { RsvpForm } from './RsvpForm'
-import { PANEL } from './styles'
-import { useRsvpForm, type RsvpFormState } from './useRsvpForm'
+} from "@/types/invitation";
+import { XIcon } from "./icons";
+import { RsvpForm } from "./RsvpForm";
+import { PANEL } from "./styles";
+import { useRsvpForm, type RsvpFormState } from "./useRsvpForm";
 
 const TITLE =
-  'font-[family-name:var(--font-primary)] text-[24px] text-center text-balance leading-[1.5] text-[color:var(--c3)] mb-8 '
+  "font-[family-name:var(--font-primary)] text-[24px] text-center text-balance leading-[1.5] text-[color:var(--c3)] mb-8 ";
 
 interface RsvpPanelProps {
-  template: InvitationTemplate
+  template: InvitationTemplate;
   /** Host-entered content; only `rsvpMessage` concerns this panel. */
-  values: TemplateValues
-  onSubmit?: (payload: RsvpPayload) => void
+  values: TemplateValues;
+  onSubmit?: (payload: RsvpPayload) => void;
   /** True while the host's edit panel is covering this one, so it can't be tabbed into. */
-  inert?: boolean
+  inert?: boolean;
   /** Replies are closed for now; a neutral line stands in for the form. */
-  paused?: boolean
+  paused?: boolean;
 }
 
 /**
@@ -41,18 +41,18 @@ export function RsvpPanel({
   inert,
   paused,
 }: RsvpPanelProps) {
-  const t = useTranslations('Rsvp')
-  const form = useRsvpForm()
-  const [open, setOpen] = useState(false)
+  const t = useTranslations("Rsvp");
+  const form = useRsvpForm();
+  const [open, setOpen] = useState(false);
   /*
    * The standing line is host-editable, like the card's text: templates
    * declare it as the `rsvpMessage` field. Festio's own line stands in for a
    * template that doesn't, so the panel is never headed by a blank line — and
    * being Festio's, it is written in the invitation's language.
    */
-  const message = values.rsvpMessage?.trim() || t('defaultMessage')
-  const sent = form.derived.sent
-  const shown = open || sent
+  const message = values.rsvpMessage?.trim() || t("defaultMessage");
+  const sent = form.derived.sent;
+  const shown = open || sent;
 
   /*
    * Guests are told only that replies are closed — never why. The bar keeps
@@ -64,18 +64,18 @@ export function RsvpPanel({
         <div className="flex flex-1 flex-col justify-center bg-[var(--c1)] px-5 invite:p-8">
           <p className={`${TITLE} hidden invite:block`}>{message}</p>
           <p className="flex min-h-[50px] items-center justify-center text-center text-[14px] leading-[1.45] text-[color:var(--c3)] invite:min-h-0">
-            {t('paused')}
+            {t("paused")}
           </p>
         </div>
       </Shell>
-    )
+    );
   }
 
   function send() {
-    const payload = form.buildPayload()
-    if (!payload) return
-    onSubmit?.(payload)
-    form.markSent()
+    const payload = form.buildPayload();
+    if (!payload) return;
+    onSubmit?.(payload);
+    form.markSent();
   }
 
   return (
@@ -100,7 +100,7 @@ export function RsvpPanel({
           {open ? (
             <button
               type="button"
-              aria-label={t('close')}
+              aria-label={t("close")}
               onClick={() => setOpen(false)}
               className="absolute top-1/2 right-5 -translate-y-1/2 text-[color:var(--c3)] transition-opacity hover:opacity-60"
             >
@@ -113,7 +113,7 @@ export function RsvpPanel({
               className="absolute inset-0 flex items-center justify-center"
             >
               <span className="font-[family-name:var(--font-primary)] text-[16px] tracking-[0.06em] text-[color:var(--c3)]">
-                {t('respond')}
+                {t("respond")}
               </span>
             </button>
           )}
@@ -136,9 +136,9 @@ export function RsvpPanel({
               <button
                 type="button"
                 onClick={() => setOpen(true)}
-                className={`${open ? 'opacity-0' : 'font-[family-name:var(--font-primary)] text-[16px] tracking-[0.06em] text-[color:var(--c1)] bg-[var(--c2)] border-1 border-[var(--c2)] py-2.5 px-8 rounded-sm hover:bg-[var(--c3)] hover:border-[var(--c3)] transition-all'}`}
+                className={`${open ? "opacity-0" : "font-[family-name:var(--font-primary)] text-[16px] tracking-[0.06em] text-[color:var(--c1)] bg-[var(--c2)] border-1 border-[var(--c2)] py-2.5 px-8 rounded-sm hover:bg-[var(--c3)] hover:border-[var(--c3)] transition-all"}`}
               >
-                {t('respond')}
+                {t("respond")}
               </button>
             </div>
           </div>
@@ -158,7 +158,7 @@ export function RsvpPanel({
         </div>
       </div>
     </Shell>
-  )
+  );
 }
 
 /**
@@ -171,10 +171,10 @@ function Shell({
   inert,
   children,
 }: {
-  edge: InvitationTemplate['edge']
-  open: boolean
-  inert?: boolean
-  children: ReactNode
+  edge: InvitationTemplate["edge"];
+  open: boolean;
+  inert?: boolean;
+  children: ReactNode;
 }) {
   return (
     <>
@@ -191,22 +191,22 @@ function Shell({
         {children}
       </aside>
     </>
-  )
+  );
 }
 
 /** The form, or what stands in its place once the reply is in. */
 function Reply({ form, onSend }: { form: RsvpFormState; onSend: () => void }) {
-  const t = useTranslations('Rsvp')
+  const t = useTranslations("Rsvp");
 
   if (form.derived.sent) {
     return (
       <div className="flex flex-col gap-2">
-        <p className={TITLE}>{t('sentTitle')}</p>
+        <p className={TITLE}>{t("sentTitle")}</p>
         <p className="text-[12px] leading-[1.45] text-[color:var(--c3)] text-center">
-          {t('sentNote')}
+          {t("sentNote")}
         </p>
       </div>
-    )
+    );
   }
-  return <RsvpForm form={form} onSubmit={onSend} />
+  return <RsvpForm form={form} onSubmit={onSend} />;
 }

@@ -1,6 +1,6 @@
-# Current Feature: Card shadow, tab hover, Active = shared
+# Current Feature: Prettier formatting
 
-The invitation card's shadow set per template, a hover colour on the event tabs, and Active holding only Public/Protected events.
+One pinned code style, so editor format-on-save and Claude's edits never fight.
 
 ## Status
 
@@ -8,24 +8,21 @@ Completed
 
 ## Goals
 
-- A template sets `design.shadow: 'light' | 'dark' | null`; `ScaledStage` leaves a strip around the card (design px) so the shadow is never cut off, and it shrinks with the card. `null` = no strip, no shadow
-- Wolf-dance card loses its `p-7`; page padding moves to the wrapper around `ScaledStage` in `Invitation.tsx` (not on `.stage`) — `p-1`, on top of the shadow strip
-- Inactive event tabs get `hover:bg-forest-200` (#D6E2D2) and a `forest-500` bottom border on hover, the divider's colour; tab bottom border 3px (was 2px) — Events and Invitations tabs both
-- Status (past / active / draft) is worked out in one helper in `src/lib/event.ts` from the date, `paid` and visibility; the stored `status` goes. Active = paid and Public or Protected; draft = unpaid or Hidden
-- `Events.groupActive`, `groupDraft`, `emptyDrafts`, `emptyActive` updated in EN, RO and HU to match the new rule
+- `.prettierrc` in the repo: double quotes, semicolons (Prettier defaults, written out)
+- `.prettierignore` for build output and the archived `context/` folders
+- `prettier` as a dev dependency, plus `npm run format` and `npm run format:check`
+- Reformat the whole codebase once, in its own commit
+- Project Claude Code hook (`.claude/settings.json`): run Prettier on every file Claude writes or edits
 
 ## Notes
 
-- Spec: `context/fixes/card-shadow-active-status.md`
-- Accepted: a paid but Hidden event leaves the dashboard home and its warnings leave the notifications rail
-- Shadow is screen only — print doesn't go through `ScaledStage`
-- With `p-7` gone the wolf-dance content gets 28px more room per side — check it in the browser. The printable is unaffected: `/prints` draws its own card and never renders the template's `Card`
-- `Invitations` texts and `EventEditor.draftTitle` / `draftBody` stay as they are
+- No behaviour change — formatting only. `npm run build` and `npm run lint` must still pass
 
 ## History
 
 <!-- Keep this updated latest to earliest -->
 
+- Card shadow, tab hover, Active = shared — a template sets its card shadow (light / dark / none) and the stage leaves room for it, so the card no longer pads itself; lighter tab hover with a bottom border and a 3px tab border; Active holds only paid Public / Protected events, with the status worked out instead of stored and the Active / Draft texts fixed in EN, RO and HU
 - Simplify codebase — a quality-only cleanup of all of `src/`, one chunk at a time, with a plain-language review and a possible-bugs list in `context/reviews/2026-09-29.md`
 - Event package — one Free / Standard / Custom package in place of tier + invitation type, named package everywhere (HU csomag, RO pachet); Custom unlocks every template; package texts restored in the edit page; event row actions reordered with shorter HU/RO edit labels
 - Reply editor — edit a reply with every RSVP question (age, diet with None/Other, the host's questions, reply-wide answers with Separate from group); New reply with several people; unsaved-changes guards shared with the list box and a leave-page warning; custom answers and the message in the reply details; keyboard diet dropdown

@@ -15,7 +15,10 @@ import { ReplySummary } from "@/components/dashboard/guest-list/ReplySummary";
 import { FADE_IN } from "@/components/dashboard/guest-list/styles";
 import { useGuestActions } from "@/components/dashboard/guest-list/useGuestActions";
 import { useGuestList } from "@/components/dashboard/guest-list/useGuestList";
-import { NEW_ROW, useRowEditor } from "@/components/dashboard/guest-list/useRowEditor";
+import {
+  NEW_ROW,
+  useRowEditor,
+} from "@/components/dashboard/guest-list/useRowEditor";
 import { useLeaveWarning } from "@/lib/leave-warning";
 import type { DashboardEvent } from "@/types/dashboard";
 import type { EventGuests, ListName } from "@/types/guests";
@@ -35,7 +38,10 @@ export function GuestManager({ event, initial }: GuestManagerProps) {
   const tEditor = useTranslations("EventEditor");
   const toast = useToast();
   const list = useGuestList(initial, event.preloaded);
-  const actions = useGuestActions(list.edit, toast.show, { guests: list.guests, useList: list.useList });
+  const actions = useGuestActions(list.edit, toast.show, {
+    guests: list.guests,
+    useList: list.useList,
+  });
   const editor = useRowEditor(list.rows, startEditing, holdForBox);
   /* The list box's draft, as the page-leave warning needs it; gone with the box. */
   const [boxDirty, setBoxDirty] = useState(false);
@@ -57,7 +63,8 @@ export function GuestManager({ event, initial }: GuestManagerProps) {
   /* An action held back by the list box's unsaved changes; wrapped, like the row editor's. */
   const [boxPending, setBoxPending] = useState<(() => void) | null>(null);
   function closeBox() {
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) closeNow();
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches)
+      closeNow();
     else setLeaving(true);
   }
   /*
@@ -102,19 +109,31 @@ export function GuestManager({ event, initial }: GuestManagerProps) {
 
   /* Replied = on the list but no longer waiting: the table's own reading. */
   const waitingIds = new Set(list.waiting.map((entry) => entry.id));
-  const repliedIds = new Set(list.guests.list.flatMap((entry) => (waitingIds.has(entry.id) ? [] : [entry.id])));
+  const repliedIds = new Set(
+    list.guests.list.flatMap((entry) =>
+      waitingIds.has(entry.id) ? [] : [entry.id],
+    ),
+  );
 
   return (
     <>
       {/* Live from the rows, so it clears as the host sorts names out. */}
       {list.counts.attention > 0 ? (
-        <Banner tone="warn" icon="alert" title={tPage("attentionTitle", { count: list.counts.attention })}>
+        <Banner
+          tone="warn"
+          icon="alert"
+          title={tPage("attentionTitle", { count: list.counts.attention })}
+        >
           {tPage("attentionBody")}
         </Banner>
       ) : null}
 
       <EditorSection title={t("sectionSummary")} first>
-        <ReplySummary tally={list.tally} counts={list.counts} useList={list.useList} />
+        <ReplySummary
+          tally={list.tally}
+          counts={list.counts}
+          useList={list.useList}
+        />
       </EditorSection>
 
       <EditorSection title={t("sectionList")}>
@@ -175,7 +194,9 @@ export function GuestManager({ event, initial }: GuestManagerProps) {
             <div className="basis-full @min-[560px]:basis-auto">
               <GuestToolbar
                 useList={list.useList}
-                onAddNames={() => (list.addOpen ? openBox() : editor.guard(openBox))}
+                onAddNames={() =>
+                  list.addOpen ? openBox() : editor.guard(openBox)
+                }
                 onAddGuest={() => editor.open(NEW_ROW)}
               />
             </div>
@@ -183,7 +204,8 @@ export function GuestManager({ event, initial }: GuestManagerProps) {
             {list.addOpen ? (
               <div
                 onTransitionEnd={(event) => {
-                  if (leaving && event.target === event.currentTarget) closeNow();
+                  if (leaving && event.target === event.currentTarget)
+                    closeNow();
                 }}
                 className={`mb-5 basis-full ${FADE_IN} ${leaving ? BOX_LEAVING : ""}`}
               >
@@ -193,14 +215,26 @@ export function GuestManager({ event, initial }: GuestManagerProps) {
                   onSave={saveList}
                   onCancel={closeBox}
                   onDirty={setBoxDirty}
-                  ask={boxPending ? { onDiscard: discardBox, onKeep: () => setBoxPending(null) } : null}
+                  ask={
+                    boxPending
+                      ? {
+                          onDiscard: discardBox,
+                          onKeep: () => setBoxPending(null),
+                        }
+                      : null
+                  }
                 />
               </div>
             ) : null}
           </div>
         </div>
 
-        <GuestTable list={list} actions={actions} editor={editor} onStartList={() => editor.guard(openBox)} />
+        <GuestTable
+          list={list}
+          actions={actions}
+          editor={editor}
+          onStartList={() => editor.guard(openBox)}
+        />
       </EditorSection>
 
       <Toast message={toast.message} />

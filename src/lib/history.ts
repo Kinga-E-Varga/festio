@@ -15,34 +15,37 @@
  * it is not ours.
  */
 
-import { useRouter } from '@/i18n/navigation'
+import { useRouter } from "@/i18n/navigation";
 
-const KEY = 'festioDepth'
+const KEY = "festioDepth";
 
-let depth = 0
-let started = false
+let depth = 0;
+let started = false;
 
 /** Call on every navigation. Stamps the entry and reads where we now are. */
 export function trackHistoryEntry() {
-  if (typeof window === 'undefined') return
+  if (typeof window === "undefined") return;
 
-  const state = (window.history.state ?? null) as Record<string, unknown> | null
-  const stamped = state?.[KEY]
+  const state = (window.history.state ?? null) as Record<
+    string,
+    unknown
+  > | null;
+  const stamped = state?.[KEY];
 
-  if (typeof stamped === 'number') {
-    depth = stamped
-    started = true
-    return
+  if (typeof stamped === "number") {
+    depth = stamped;
+    started = true;
+    return;
   }
 
-  depth = started ? depth + 1 : 0
-  started = true
+  depth = started ? depth + 1 : 0;
+  started = true;
 
   /*
    * Spread rather than replace: `__NA` and the router's own tree live in
    * this object, and dropping them would strand the App Router on this entry.
    */
-  window.history.replaceState({ ...state, [KEY]: depth }, '')
+  window.history.replaceState({ ...state, [KEY]: depth }, "");
 }
 
 /**
@@ -53,7 +56,7 @@ export function trackHistoryEntry() {
  * document's first is ours by construction.
  */
 export function hasFestioHistory() {
-  return depth > 0
+  return depth > 0;
 }
 
 /**
@@ -64,9 +67,9 @@ export function hasFestioHistory() {
  * `fallback` stands in instead: the list it belongs to.
  */
 export function useLeaveFestio(fallback: string) {
-  const router = useRouter()
+  const router = useRouter();
   return () => {
-    if (hasFestioHistory()) router.back()
-    else router.push(fallback)
-  }
+    if (hasFestioHistory()) router.back();
+    else router.push(fallback);
+  };
 }

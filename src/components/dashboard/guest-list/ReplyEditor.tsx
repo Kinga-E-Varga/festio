@@ -4,8 +4,16 @@ import { useLocale, useTranslations } from "next-intl";
 import { type ReactNode, useEffect, useState } from "react";
 import { useFieldArray, useForm, useWatch } from "react-hook-form";
 import { HINT } from "@/components/dashboard/event-editor/styles";
-import { NameField, PersonFields, QuestionField, StatusField } from "@/components/dashboard/guest-list/ReplyFields";
-import { RowEditor, type RowEditorProps } from "@/components/dashboard/guest-list/RowEditor";
+import {
+  NameField,
+  PersonFields,
+  QuestionField,
+  StatusField,
+} from "@/components/dashboard/guest-list/ReplyFields";
+import {
+  RowEditor,
+  type RowEditorProps,
+} from "@/components/dashboard/guest-list/RowEditor";
 import {
   newReplyValues,
   personQuestions,
@@ -40,12 +48,23 @@ const QUESTIONS = "flex flex-col gap-4";
  * A reply as the RSVP form asks it, minus the message. An existing reply is
  * one person; a new one can hold several, with one status for them all.
  */
-export function ReplyEditor({ reply, questions, party, onSave, onCancel, onDirty, pending }: ReplyEditorProps) {
+export function ReplyEditor({
+  reply,
+  questions,
+  party,
+  onSave,
+  onCancel,
+  onDirty,
+  pending,
+}: ReplyEditorProps) {
   const t = useTranslations("GuestList");
   const locale = useLocale();
-  const { register, handleSubmit, setFocus, setValue, formState, control } = useForm<ReplyValues>({
-    defaultValues: reply ? replyValues(reply, questions) : newReplyValues(questions),
-  });
+  const { register, handleSubmit, setFocus, setValue, formState, control } =
+    useForm<ReplyValues>({
+      defaultValues: reply
+        ? replyValues(reply, questions)
+        : newReplyValues(questions),
+    });
   const { fields, append, remove } = useFieldArray({ control, name: "people" });
   const people = useWatch({ control, name: "people" });
   const status = useWatch({ control, name: "status" });
@@ -64,8 +83,12 @@ export function ReplyEditor({ reply, questions, party, onSave, onCancel, onDirty
    * is asked: a new reply, someone switched to Coming, or an answer already
    * there. A reply that was never asked them isn't held to them.
    */
-  const required = (field: "ageGroup" | "diet") => (next: ReplyValues["status"]) =>
-    next === "going" && (reply === null || reply.status !== "going" || (reply[field] !== undefined && reply[field] !== null));
+  const required =
+    (field: "ageGroup" | "diet") => (next: ReplyValues["status"]) =>
+      next === "going" &&
+      (reply === null ||
+        reply.status !== "going" ||
+        (reply[field] !== undefined && reply[field] !== null));
 
   /** One person: their name (and whatever goes under it), then their questions when coming — under a line when editing, set in a little under their name in a new reply. */
   function person(index: number, below?: ReactNode) {
@@ -83,7 +106,9 @@ export function ReplyEditor({ reply, questions, party, onSave, onCancel, onDirty
           {below}
         </div>
         {going ? (
-          <div className={`${QUESTIONS} ${reply ? "border-t border-mustard-300 pt-4" : "pl-4"}`}>
+          <div
+            className={`${QUESTIONS} ${reply ? "border-t border-mustard-300 pt-4" : "pl-4"}`}
+          >
             <PersonFields
               control={control}
               index={index}
@@ -114,7 +139,12 @@ export function ReplyEditor({ reply, questions, party, onSave, onCancel, onDirty
   const sharedFields = (
     <div className={QUESTIONS}>
       {shared.map((question) => (
-        <QuestionField key={question.id} control={control} name={`shared.${question.id}`} question={question} />
+        <QuestionField
+          key={question.id}
+          control={control}
+          name={`shared.${question.id}`}
+          question={question}
+        />
       ))}
     </div>
   );
@@ -128,7 +158,11 @@ export function ReplyEditor({ reply, questions, party, onSave, onCancel, onDirty
     grouped ? (
       <div className="flex flex-col gap-4 border-t border-mustard-300 pt-4">
         <div className="flex flex-col gap-3 border-b border-mustard-300 pb-4">
-          {separate ? null : <p className={`text-justify ${HINT}`}>{t("sharedFor", { names: partyList })}</p>}
+          {separate ? null : (
+            <p className={`text-justify ${HINT}`}>
+              {t("sharedFor", { names: partyList })}
+            </p>
+          )}
           {separateField}
         </div>
         {sharedFields}
@@ -160,10 +194,15 @@ export function ReplyEditor({ reply, questions, party, onSave, onCancel, onDirty
     <RowEditor onSubmit={submit} onCancel={onCancel} pending={pending}>
       <StatusField control={control} />
       {fields.map((field, index) => (
-        <div key={field.id} className="flex flex-col gap-3 border-t border-mustard-300 pt-4">
+        <div
+          key={field.id}
+          className="flex flex-col gap-3 border-t border-mustard-300 pt-4"
+        >
           {fields.length > 1 ? (
             <div className="flex items-start gap-2">
-              <div className="flex min-w-0 flex-1 flex-col gap-3">{person(index)}</div>
+              <div className="flex min-w-0 flex-1 flex-col gap-3">
+                {person(index)}
+              </div>
               <button
                 type="button"
                 onClick={() => remove(index)}
@@ -179,8 +218,14 @@ export function ReplyEditor({ reply, questions, party, onSave, onCancel, onDirty
         </div>
       ))}
       {/* Between lines: the one below is the buttons' own unless reply-wide questions come first. */}
-      <div className={`border-t border-mustard-300 pt-4 ${withShared ? "border-b pb-4" : ""}`}>
-        <button type="button" onClick={() => append(personValues(null, questions))} className={SMALL_BTN_EDITOR}>
+      <div
+        className={`border-t border-mustard-300 pt-4 ${withShared ? "border-b pb-4" : ""}`}
+      >
+        <button
+          type="button"
+          onClick={() => append(personValues(null, questions))}
+          className={SMALL_BTN_EDITOR}
+        >
           <Icon name="plus" className="size-3.5" />
           {t("addPerson")}
         </button>
@@ -199,20 +244,38 @@ interface SeparateFieldProps {
 }
 
 /** Asks first, since it can't be undone once saved; until Save, Cancel still keeps them together. */
-function SeparateField({ name, party, separate, onSeparate }: SeparateFieldProps) {
+function SeparateField({
+  name,
+  party,
+  separate,
+  onSeparate,
+}: SeparateFieldProps) {
   const t = useTranslations("GuestList");
   const [confirming, setConfirming] = useState(false);
 
   if (separate) return <p className={HINT}>{t("separatePending", { name })}</p>;
   if (confirming) {
     return (
-      <div role="alert" className={`${ALERT} flex flex-wrap items-center gap-2.5`}>
-        <span className="mr-auto">{t("separateConfirm", { name, names: party })}</span>
+      <div
+        role="alert"
+        className={`${ALERT} flex flex-wrap items-center gap-2.5`}
+      >
+        <span className="mr-auto">
+          {t("separateConfirm", { name, names: party })}
+        </span>
         <div className="flex shrink-0 gap-2.5">
-          <button type="button" onClick={() => setConfirming(false)} className={SMALL_BTN_WARN}>
+          <button
+            type="button"
+            onClick={() => setConfirming(false)}
+            className={SMALL_BTN_WARN}
+          >
             {t("keepTogether")}
           </button>
-          <button type="button" onClick={onSeparate} className={SMALL_BTN_WARN_SOLID}>
+          <button
+            type="button"
+            onClick={onSeparate}
+            className={SMALL_BTN_WARN_SOLID}
+          >
             {t("separateOk")}
           </button>
         </div>
@@ -220,7 +283,11 @@ function SeparateField({ name, party, separate, onSeparate }: SeparateFieldProps
     );
   }
   return (
-    <button type="button" onClick={() => setConfirming(true)} className={`self-start ${SMALL_BTN_EDITOR}`}>
+    <button
+      type="button"
+      onClick={() => setConfirming(true)}
+      className={`self-start ${SMALL_BTN_EDITOR}`}
+    >
       {t("separateButton")}
     </button>
   );

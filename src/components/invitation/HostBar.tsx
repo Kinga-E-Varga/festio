@@ -1,15 +1,15 @@
-import { useTranslations } from 'next-intl'
-import type { ReactNode } from 'react'
-import { ArrowLeftIcon, PencilIcon } from './icons'
-import { HOST_ACTION, HOST_BAR_TOP, HOST_TOGGLE } from './styles'
+import { useTranslations } from "next-intl";
+import type { ReactNode } from "react";
+import { ArrowLeftIcon, PencilIcon } from "./icons";
+import { HOST_ACTION, HOST_BAR_TOP, HOST_TOGGLE } from "./styles";
 
 interface HostBarProps {
-  onBack: () => void
+  onBack: () => void;
   /** Whether the edit form is open. Answered at every width. */
-  editing: boolean
-  onToggleEdit: () => void
+  editing: boolean;
+  onToggleEdit: () => void;
   /** The bar's third segment — Save on the invitation editor, Export on the print page. */
-  thirdAction: ReactNode
+  thirdAction: ReactNode;
 }
 
 /**
@@ -24,7 +24,7 @@ export function HostBar({
   onToggleEdit,
   thirdAction,
 }: HostBarProps) {
-  const t = useTranslations('HostEditor')
+  const t = useTranslations("HostEditor");
 
   return (
     <div className="flex justify-center">
@@ -36,7 +36,7 @@ export function HostBar({
       <div className={`${HOST_BAR_TOP} mb-2 invite:mt-6 invite:mb-2`}>
         <button type="button" onClick={onBack} className={HOST_ACTION}>
           <ArrowLeftIcon size={14} />
-          {t('back')}
+          {t("back")}
         </button>
         {/*
          * A toggle, not a way in: it holds the hover fill while the form is
@@ -46,15 +46,15 @@ export function HostBar({
         <button
           type="button"
           aria-pressed={editing}
-          data-active={editing ? 'true' : undefined}
+          data-active={editing ? "true" : undefined}
           onClick={onToggleEdit}
           className={HOST_TOGGLE}
         >
           <PencilIcon size={14} />
-          {t('edit')}
+          {t("edit")}
         </button>
         {thirdAction}
       </div>
     </div>
-  )
+  );
 }

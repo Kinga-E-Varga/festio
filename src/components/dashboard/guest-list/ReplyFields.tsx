@@ -1,14 +1,34 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { type Control, Controller, type UseFormRegisterReturn } from "react-hook-form";
-import { ERROR, INPUT, LABEL } from "@/components/dashboard/event-editor/styles";
+import {
+  type Control,
+  Controller,
+  type UseFormRegisterReturn,
+} from "react-hook-form";
+import {
+  ERROR,
+  INPUT,
+  LABEL,
+} from "@/components/dashboard/event-editor/styles";
 import { MultiSelect } from "@/components/dashboard/guest-list/MultiSelect";
-import { AGE_KEY, DIET_KEY, STATUS_KEY } from "@/components/dashboard/guest-list/labels";
+import {
+  AGE_KEY,
+  DIET_KEY,
+  STATUS_KEY,
+} from "@/components/dashboard/guest-list/labels";
 import { ANSWER_LIMIT } from "@/components/dashboard/guest-list/replyValues";
-import { CHOICE_OFF, CHOICE_ON } from "@/components/dashboard/guest-list/styles";
+import {
+  CHOICE_OFF,
+  CHOICE_ON,
+} from "@/components/dashboard/guest-list/styles";
 import { NAME_LIMIT } from "@/components/invitation/useRsvpForm";
-import type { AgeGroup, DietPick, GuestQuestion, ReplyValues } from "@/types/guests";
+import type {
+  AgeGroup,
+  DietPick,
+  GuestQuestion,
+  ReplyValues,
+} from "@/types/guests";
 
 interface NameFieldProps {
   registration: UseFormRegisterReturn;
@@ -35,7 +55,13 @@ interface ChoicesProps<T extends string> {
 }
 
 /** A row of pickable chips, as tall as an input; `onPick` decides which are picked. */
-export function Choices<T extends string>({ legend, options, picked, onPick, error }: ChoicesProps<T>) {
+export function Choices<T extends string>({
+  legend,
+  options,
+  picked,
+  onPick,
+  error,
+}: ChoicesProps<T>) {
   return (
     <fieldset className="min-w-0">
       <legend className={`mb-1.5 ${LABEL}`}>{legend}</legend>
@@ -66,7 +92,13 @@ interface SelectFieldProps {
 }
 
 /** One pick from a dropdown; its empty first option is unanswered. */
-function SelectField({ label, options, value, onChange, error }: SelectFieldProps) {
+function SelectField({
+  label,
+  options,
+  value,
+  onChange,
+  error,
+}: SelectFieldProps) {
   const t = useTranslations("GuestList");
   return (
     <label className="block min-w-0">
@@ -99,7 +131,10 @@ export function StatusField({ control }: { control: Control<ReplyValues> }) {
       render={({ field }) => (
         <Choices
           legend={t("status")}
-          options={STATUSES.map((status) => ({ value: status, label: t(STATUS_KEY[status]) }))}
+          options={STATUSES.map((status) => ({
+            value: status,
+            label: t(STATUS_KEY[status]),
+          }))}
           picked={(value) => field.value === value}
           onPick={field.onChange}
         />
@@ -111,7 +146,10 @@ export function StatusField({ control }: { control: Control<ReplyValues> }) {
 const AGES = Object.keys(AGE_KEY) as AgeGroup[];
 
 /** None first: the most common answer, and the one that clears the rest. */
-const DIETS = ["none", ...(Object.keys(DIET_KEY) as (keyof typeof DIET_KEY)[])] as const;
+const DIETS = [
+  "none",
+  ...(Object.keys(DIET_KEY) as (keyof typeof DIET_KEY)[]),
+] as const;
 
 /** None and the needs rule each other out; picking a picked one takes it back. */
 function pickDiet(current: DietPick[], pick: DietPick): DietPick[] {
@@ -133,18 +171,32 @@ interface PersonFieldsProps {
 }
 
 /** One person's questions: Festio's age and diet, then the host's own. */
-export function PersonFields({ control, index, questions, requireAge, requireDiet, dietOther, withOther }: PersonFieldsProps) {
+export function PersonFields({
+  control,
+  index,
+  questions,
+  requireAge,
+  requireDiet,
+  dietOther,
+  withOther,
+}: PersonFieldsProps) {
   const t = useTranslations("GuestList");
   return (
     <>
       <Controller
         control={control}
         name={`people.${index}.ageGroup`}
-        rules={{ validate: (value, all) => !requireAge(all.status) || value !== "" || t("ageRequired") }}
+        rules={{
+          validate: (value, all) =>
+            !requireAge(all.status) || value !== "" || t("ageRequired"),
+        }}
         render={({ field, fieldState }) => (
           <SelectField
             label={t("ageLabel")}
-            options={AGES.map((age) => ({ value: age, label: t(AGE_KEY[age]) }))}
+            options={AGES.map((age) => ({
+              value: age,
+              label: t(AGE_KEY[age]),
+            }))}
             value={field.value}
             onChange={field.onChange}
             error={fieldState.error?.message}
@@ -163,7 +215,10 @@ export function PersonFields({ control, index, questions, requireAge, requireDie
             <MultiSelect
               label={t("dietLabel")}
               placeholder={t("choose")}
-              options={DIETS.map((diet) => ({ value: diet, label: t(diet === "none" ? "dietNone" : DIET_KEY[diet]) }))}
+              options={DIETS.map((diet) => ({
+                value: diet,
+                label: t(diet === "none" ? "dietNone" : DIET_KEY[diet]),
+              }))}
               value={field.value}
               onPick={(value) => field.onChange(pickDiet(field.value, value))}
               error={fieldState.error?.message}
@@ -181,7 +236,12 @@ export function PersonFields({ control, index, questions, requireAge, requireDie
         ) : null}
       </div>
       {questions.map((question) => (
-        <QuestionField key={question.id} control={control} name={`people.${index}.answers.${question.id}`} question={question} />
+        <QuestionField
+          key={question.id}
+          control={control}
+          name={`people.${index}.answers.${question.id}`}
+          question={question}
+        />
       ))}
     </>
   );
@@ -222,7 +282,10 @@ export function QuestionField({ control, name, question }: QuestionFieldProps) {
           return (
             <SelectField
               label={question.label}
-              options={question.options.map((option) => ({ value: option.id, label: option.label }))}
+              options={question.options.map((option) => ({
+                value: option.id,
+                label: option.label,
+              }))}
               value={value}
               onChange={field.onChange}
             />

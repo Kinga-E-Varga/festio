@@ -205,12 +205,7 @@ export interface DashboardStat {
 }
 
 export type NoticeTone =
-  | "attention"
-  | "deadline"
-  | "expected"
-  | "overExpected"
-  | "paused"
-  | "billing";
+  "attention" | "deadline" | "expected" | "overExpected" | "paused" | "billing";
 
 /**
  * A notice's title and body are the event editor's banner texts,

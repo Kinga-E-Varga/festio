@@ -47,10 +47,7 @@ function PasswordBox({ form }: { form: EventForm }) {
         >
           <Icon name={revealed ? "eyeOff" : "eye"} className="size-[15px]" />
         </button>
-        <CopyButton
-          value={form.values.password}
-          label={t("copyPassword")}
-        />
+        <CopyButton value={form.values.password} label={t("copyPassword")} />
       </div>
       {form.derived.passwordError ? (
         <p className={`mt-[7px] ${ERROR}`}>{form.derived.passwordError}</p>

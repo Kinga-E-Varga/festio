@@ -65,7 +65,9 @@ export function useRowEditor(
     guard,
     reportDirty: setDirty,
     pendingPrompt:
-      pending === null ? null : { onDiscard: discard, onKeep: () => setPending(null) },
+      pending === null
+        ? null
+        : { onDiscard: discard, onKeep: () => setPending(null) },
   };
 }
 

@@ -11,28 +11,28 @@ one) — see the comments in `[locale]/layout.tsx` and `invite/[invite]/layout.t
 **Host app**, locale-routed via `next-intl` (EN unprefixed, RO/HU under
 `/ro`, `/hu`):
 
-| Path | Purpose |
-| ---- | ------- |
-| `[locale]/layout.tsx` | Root layout for the host app — fonts, `NextIntlClientProvider`, global chrome |
-| `[locale]/page.tsx` | Landing page |
-| `globals.css` | **All** Tailwind v4 theme config lives here (`@theme`). No JS config file. |
-| `[locale]/invitations/[id]/page.tsx` | Host-side invitation view/editor |
-| `[locale]/prints/[id]/page.tsx` | Host-side printable invitation |
-| `[locale]/templates/[id]/page.tsx` | Template preview |
-| `[locale]/dashboard/page.tsx` | Dashboard home |
-| `[locale]/dashboard/layout.tsx` | Dashboard shell wrapper |
-| `[locale]/dashboard/events/page.tsx` | Events list |
-| `[locale]/dashboard/events/[id]/page.tsx` | Event editor |
-| `[locale]/dashboard/events/[id]/guests/page.tsx` | Event guest list |
-| `[locale]/dashboard/events/[id]/report/page.tsx` | Draft: report a flood of unexpected replies |
-| `[locale]/dashboard/invitations/page.tsx` | Invitations grid |
+| Path                                             | Purpose                                                                       |
+| ------------------------------------------------ | ----------------------------------------------------------------------------- |
+| `[locale]/layout.tsx`                            | Root layout for the host app — fonts, `NextIntlClientProvider`, global chrome |
+| `[locale]/page.tsx`                              | Landing page                                                                  |
+| `globals.css`                                    | **All** Tailwind v4 theme config lives here (`@theme`). No JS config file.    |
+| `[locale]/invitations/[id]/page.tsx`             | Host-side invitation view/editor                                              |
+| `[locale]/prints/[id]/page.tsx`                  | Host-side printable invitation                                                |
+| `[locale]/templates/[id]/page.tsx`               | Template preview                                                              |
+| `[locale]/dashboard/page.tsx`                    | Dashboard home                                                                |
+| `[locale]/dashboard/layout.tsx`                  | Dashboard shell wrapper                                                       |
+| `[locale]/dashboard/events/page.tsx`             | Events list                                                                   |
+| `[locale]/dashboard/events/[id]/page.tsx`        | Event editor                                                                  |
+| `[locale]/dashboard/events/[id]/guests/page.tsx` | Event guest list                                                              |
+| `[locale]/dashboard/events/[id]/report/page.tsx` | Draft: report a flood of unexpected replies                                   |
+| `[locale]/dashboard/invitations/page.tsx`        | Invitations grid                                                              |
 
 **Guest invitation**, outside next-intl entirely, no language switch:
 
-| Path | Purpose |
-| ---- | ------- |
-| `invite/[invite]/layout.tsx` | Its own root layout — same fonts/chrome; `lang` and the message catalog come from the invitation's own `language` |
-| `invite/[invite]/page.tsx` | Public guest-facing invitation. URL is unprefixed (`/maria-birthday`) — `next.config.ts` rewrites it here invisibly |
+| Path                         | Purpose                                                                                                             |
+| ---------------------------- | ------------------------------------------------------------------------------------------------------------------- |
+| `invite/[invite]/layout.tsx` | Its own root layout — same fonts/chrome; `lang` and the message catalog come from the invitation's own `language`   |
+| `invite/[invite]/page.tsx`   | Public guest-facing invitation. URL is unprefixed (`/maria-birthday`) — `next.config.ts` rewrites it here invisibly |
 
 `fonts.ts` — the app-wide `next/font/google` declarations (Work Sans +
 Libre Baskerville), shared by both root layouts.
@@ -90,17 +90,17 @@ Event pages: `EventHeader.tsx` (BACK + title + date), `BackButton.tsx`, `Replies
 
 ## Lib — `src/lib/`
 
-| File | Holds |
-| ---- | ----- |
-| `config.ts` | `GUEST_DATA_RETENTION_DAYS` — the single GDPR retention parameter. Never inline it. Also the reply-cap margins, the expected-guests warning percent and the replies-closing-soon window. |
-| `event.ts` | `invitationLink`, `contentFreeze` (24h rule), `deletionDate`, date formatting, expected-guests and reply-cap helpers, `replyClose` / `replyWindow` |
-| `slug.ts` | `RESERVED_SLUGS` (the one list), slug limits, `normalizeSlug`, suggestions, the invite rewrite pattern. Relative imports only — `next.config.ts` reads it. |
-| `invitation.ts` | Template vars, `findByInvite`, seed/fallback values, `DATE_FORMATS` |
-| `fonts.ts` | Invitation fonts via `next/font/google` (per-template, not the app chrome — that's `src/app/fonts.ts`) |
-| `history.ts` | Local visit tracking; `useLeaveFestio(fallback)` — the one BACK, with each page's own fallback when no Festio page is behind it |
-| `guests.ts` | Guest rows from list + replies: matching, Unknown/Duplicate tags, grouping and splitting by category, counts, filters, repeat check. Type imports only. |
-| `leave-warning.ts` | `useLeaveWarning(active, message)` — while there are unsaved changes, asks before reload/close (the browser's prompt) and before in-app links or a `data-leaves` control (BACK) |
-| `language.ts` | `LANGUAGES` (the one list, read by both `i18n/routing.ts` and an invitation's `language`), `invitationLanguage`, `LocalizedText`/`localized`, locale tags and names |
+| File               | Holds                                                                                                                                                                                    |
+| ------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `config.ts`        | `GUEST_DATA_RETENTION_DAYS` — the single GDPR retention parameter. Never inline it. Also the reply-cap margins, the expected-guests warning percent and the replies-closing-soon window. |
+| `event.ts`         | `invitationLink`, `contentFreeze` (24h rule), `deletionDate`, date formatting, expected-guests and reply-cap helpers, `replyClose` / `replyWindow`                                       |
+| `slug.ts`          | `RESERVED_SLUGS` (the one list), slug limits, `normalizeSlug`, suggestions, the invite rewrite pattern. Relative imports only — `next.config.ts` reads it.                               |
+| `invitation.ts`    | Template vars, `findByInvite`, seed/fallback values, `DATE_FORMATS`                                                                                                                      |
+| `fonts.ts`         | Invitation fonts via `next/font/google` (per-template, not the app chrome — that's `src/app/fonts.ts`)                                                                                   |
+| `history.ts`       | Local visit tracking; `useLeaveFestio(fallback)` — the one BACK, with each page's own fallback when no Festio page is behind it                                                          |
+| `guests.ts`        | Guest rows from list + replies: matching, Unknown/Duplicate tags, grouping and splitting by category, counts, filters, repeat check. Type imports only.                                  |
+| `leave-warning.ts` | `useLeaveWarning(active, message)` — while there are unsaved changes, asks before reload/close (the browser's prompt) and before in-app links or a `data-leaves` control (BACK)          |
+| `language.ts`      | `LANGUAGES` (the one list, read by both `i18n/routing.ts` and an invitation's `language`), `invitationLanguage`, `LocalizedText`/`localized`, locale tags and names                      |
 
 ## Other
 

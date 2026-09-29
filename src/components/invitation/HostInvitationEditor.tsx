@@ -1,4 +1,4 @@
-'use client'
+"use client";
 
 import {
   type AbstractIntlMessages,
@@ -6,30 +6,30 @@ import {
   useLocale,
   useMessages,
   useTranslations,
-} from 'next-intl'
-import { type ReactNode, Suspense, useState } from 'react'
-import { Toast, useToast } from '@/components/dashboard/Toast'
-import { useLeaveFestio } from '@/lib/history'
-import { cardValues } from '@/lib/invitation'
-import type { Language } from '@/lib/language'
-import { TemplateCard } from '@/templates/TemplateCard'
-import type { InvitationTemplate, TemplateValues } from '@/types/invitation'
-import { EditPanel } from './EditPanel'
-import { CheckIcon } from './icons'
-import { HostBar } from './HostBar'
-import { Invitation } from './Invitation'
-import { HOST_ACTION } from './styles'
+} from "next-intl";
+import { type ReactNode, Suspense, useState } from "react";
+import { Toast, useToast } from "@/components/dashboard/Toast";
+import { useLeaveFestio } from "@/lib/history";
+import { cardValues } from "@/lib/invitation";
+import type { Language } from "@/lib/language";
+import { TemplateCard } from "@/templates/TemplateCard";
+import type { InvitationTemplate, TemplateValues } from "@/types/invitation";
+import { EditPanel } from "./EditPanel";
+import { CheckIcon } from "./icons";
+import { HostBar } from "./HostBar";
+import { Invitation } from "./Invitation";
+import { HOST_ACTION } from "./styles";
 
 interface HostInvitationEditorProps {
-  template: InvitationTemplate
-  initial: TemplateValues
+  template: InvitationTemplate;
+  initial: TemplateValues;
   /** The invitation's own language — what the card's date is written in. */
-  language: Language
+  language: Language;
   /**
    * The invitation's catalog, when its language is not the host's. The
    * guest page inside is drawn in it; absent, it shares the host's.
    */
-  guestMessages?: AbstractIntlMessages
+  guestMessages?: AbstractIntlMessages;
 }
 
 /**
@@ -43,20 +43,20 @@ export function HostInvitationEditor({
   language,
   guestMessages,
 }: HostInvitationEditorProps) {
-  const t = useTranslations('HostEditor')
-  const hostLocale = useLocale()
-  const hostMessages = useMessages()
-  const [values, setValues] = useState(initial)
-  const [editing, setEditing] = useState(true)
-  const toast = useToast()
-  const leave = useLeaveFestio('/dashboard/invitations')
+  const t = useTranslations("HostEditor");
+  const hostLocale = useLocale();
+  const hostMessages = useMessages();
+  const [values, setValues] = useState(initial);
+  const [editing, setEditing] = useState(true);
+  const toast = useToast();
+  const leave = useLeaveFestio("/dashboard/invitations");
 
   function change(id: string, value: string) {
-    setValues((current) => ({ ...current, [id]: value }))
+    setValues((current) => ({ ...current, [id]: value }));
   }
 
   function save() {
-    toast.show(t('saved'))
+    toast.show(t("saved"));
   }
 
   /*
@@ -68,7 +68,7 @@ export function HostInvitationEditor({
       <NextIntlClientProvider locale={hostLocale} messages={hostMessages}>
         {node}
       </NextIntlClientProvider>
-    )
+    );
   }
 
   const invitation = (
@@ -98,7 +98,7 @@ export function HostInvitationEditor({
           thirdAction={
             <button type="button" onClick={save} className={HOST_ACTION}>
               <CheckIcon size={14} />
-              {t('save')}
+              {t("save")}
             </button>
           }
         />,
@@ -106,13 +106,10 @@ export function HostInvitationEditor({
     >
       <Suspense fallback={null}>
         {/* The date is written out here, not in the template — see `cardValues`. */}
-        <TemplateCard
-          id={template.id}
-          values={cardValues(values, language)}
-        />
+        <TemplateCard id={template.id} values={cardValues(values, language)} />
       </Suspense>
     </Invitation>
-  )
+  );
 
   return (
     <>
@@ -125,5 +122,5 @@ export function HostInvitationEditor({
       )}
       <Toast message={toast.message} />
     </>
-  )
+  );
 }

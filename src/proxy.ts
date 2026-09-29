@@ -1,7 +1,7 @@
-import createMiddleware from 'next-intl/middleware'
-import { routing } from '@/i18n/routing'
+import createMiddleware from "next-intl/middleware";
+import { routing } from "@/i18n/routing";
 
-export const proxy = createMiddleware(routing)
+export const proxy = createMiddleware(routing);
 
 /**
  * Explicit allowlist, not a catch-all: guest invite links (any top-level
@@ -11,13 +11,13 @@ export const proxy = createMiddleware(routing)
  */
 export const config = {
   matcher: [
-    '/',
-    '/(ro|hu)',
-    '/(ro|hu)/:path*',
-    '/dashboard',
-    '/dashboard/:path*',
-    '/invitations/:path*',
-    '/templates/:path*',
-    '/prints/:path*',
+    "/",
+    "/(ro|hu)",
+    "/(ro|hu)/:path*",
+    "/dashboard",
+    "/dashboard/:path*",
+    "/invitations/:path*",
+    "/templates/:path*",
+    "/prints/:path*",
   ],
-}
+};

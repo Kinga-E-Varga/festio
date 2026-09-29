@@ -1,33 +1,33 @@
-import type { CSSProperties } from 'react'
-import { DATE_PARTS, isRealDate, pad } from '@/lib/event'
+import type { CSSProperties } from "react";
+import { DATE_PARTS, isRealDate, pad } from "@/lib/event";
 import {
   DEFAULT_LANGUAGE,
   LANGUAGE_LOCALE,
   invitationLanguage,
   localized,
   type Language,
-} from '@/lib/language'
-import type { DashboardEvent } from '@/types/dashboard'
+} from "@/lib/language";
+import type { DashboardEvent } from "@/types/dashboard";
 import type {
   Palette,
   InvitationTemplate,
   TemplateColor,
   TemplateValues,
-} from '@/types/invitation'
+} from "@/types/invitation";
 
 /** Each palette role's custom property, as the card and RSVP chrome read it. */
 const COLOR_VAR: Record<keyof Palette, string> = {
-  color1: '--c1',
-  color2: '--c2',
-  color3: '--c3',
-  color4: '--c4',
-  color5: '--c5',
-  color6: '--c6',
-  color7: '--c7',
-  color8: '--c8',
-  color9: '--c9',
-  color10: '--c10',
-}
+  color1: "--c1",
+  color2: "--c2",
+  color3: "--c3",
+  color4: "--c4",
+  color5: "--c5",
+  color6: "--c6",
+  color7: "--c7",
+  color8: "--c8",
+  color9: "--c9",
+  color10: "--c10",
+};
 
 /**
  * A template's palette and fonts reach the DOM as custom properties, so the
@@ -36,12 +36,14 @@ const COLOR_VAR: Record<keyof Palette, string> = {
  * values, never presentation.
  */
 export function templateVars(template: InvitationTemplate): CSSProperties {
-  const { palette } = template
-  const roles = Object.keys(COLOR_VAR) as (keyof Palette)[]
+  const { palette } = template;
+  const roles = Object.keys(COLOR_VAR) as (keyof Palette)[];
   return {
-    ...Object.fromEntries(roles.map((role) => [COLOR_VAR[role], palette[role]])),
+    ...Object.fromEntries(
+      roles.map((role) => [COLOR_VAR[role], palette[role]]),
+    ),
     ...templateFontVars(template),
-  } as CSSProperties
+  } as CSSProperties;
 }
 
 /**
@@ -51,11 +53,11 @@ export function templateVars(template: InvitationTemplate): CSSProperties {
  * the print one, ready for the first `var(--c7)` to pick up.
  */
 export function templateFontVars(template: InvitationTemplate): CSSProperties {
-  const { fonts } = template
+  const { fonts } = template;
   return {
-    '--font-primary': `var(${fonts.primary.cssVar})`,
-    '--font-secondary': `var(${fonts.secondary.cssVar})`,
-  } as CSSProperties
+    "--font-primary": `var(${fonts.primary.cssVar})`,
+    "--font-secondary": `var(${fonts.secondary.cssVar})`,
+  } as CSSProperties;
 }
 
 /**
@@ -69,7 +71,7 @@ function colorValue(
   template: InvitationTemplate,
   color: TemplateColor,
 ): string {
-  return template.palette[color] ?? 'transparent'
+  return template.palette[color] ?? "transparent";
 }
 
 /**
@@ -78,11 +80,11 @@ function colorValue(
  * palette it is otherwise painted from.
  */
 export function printVars(template: InvitationTemplate): CSSProperties {
-  const { print } = template
+  const { print } = template;
   return {
-    '--print-card': colorValue(template, print.background),
-    '--print-ink': colorValue(template, print.ink),
-  } as CSSProperties
+    "--print-card": colorValue(template, print.background),
+    "--print-ink": colorValue(template, print.ink),
+  } as CSSProperties;
 }
 
 /**
@@ -92,24 +94,24 @@ export function printVars(template: InvitationTemplate): CSSProperties {
  * own root if it wants the two to match.
  */
 export function pageBackground(template: InvitationTemplate): {
-  className: string
-  style?: CSSProperties
+  className: string;
+  style?: CSSProperties;
 } {
-  const { background } = template
+  const { background } = template;
 
   switch (background.kind) {
-    case 'solid':
-      return { className: `bg-[var(${COLOR_VAR[background.color]})]` }
-    case 'image':
+    case "solid":
+      return { className: `bg-[var(${COLOR_VAR[background.color]})]` };
+    case "image":
       return {
-        className: `bg-repeat bg-center ${background.under ? `bg-[var(${COLOR_VAR[background.under]})]` : ''}`,
+        className: `bg-repeat bg-center ${background.under ? `bg-[var(${COLOR_VAR[background.under]})]` : ""}`,
         style: {
           backgroundImage: `url(${background.src})`,
-          backgroundSize: background.size ?? 'auto',
+          backgroundSize: background.size ?? "auto",
         },
-      }
-    case 'pattern':
-      return { className: background.className }
+      };
+    case "pattern":
+      return { className: background.className };
   }
 }
 
@@ -118,7 +120,7 @@ export function findByInvite(
   events: DashboardEvent[],
   param: string,
 ): DashboardEvent | undefined {
-  return events.find((event) => event.slug === param)
+  return events.find((event) => event.slug === param);
 }
 
 /**
@@ -131,7 +133,7 @@ const FROM_EVENT: Record<string, (event: DashboardEvent) => string> = {
   time: (event) => event.time,
   venue: (event) => event.venue,
   address: (event) => event.address,
-}
+};
 
 /*
  * The language is taken from the event rather than passed in: a fallback is
@@ -143,15 +145,15 @@ export function seedValues(
   template: InvitationTemplate,
   event: DashboardEvent,
 ): TemplateValues {
-  const language = invitationLanguage(event)
-  const values: TemplateValues = { [EVENT_DATE]: event.date }
+  const language = invitationLanguage(event);
+  const values: TemplateValues = { [EVENT_DATE]: event.date };
   for (const field of template.fields) {
-    const fromEvent = FROM_EVENT[field.id]
+    const fromEvent = FROM_EVENT[field.id];
     values[field.id] = fromEvent
       ? fromEvent(event)
-      : localized(field.fallback, language)
+      : localized(field.fallback, language);
   }
-  return values
+  return values;
 }
 
 /**
@@ -163,11 +165,11 @@ export function fallbackValues(
   template: InvitationTemplate,
   language: Language = DEFAULT_LANGUAGE,
 ): TemplateValues {
-  const values: TemplateValues = { [EVENT_DATE]: MOCK_EVENT_DATE }
+  const values: TemplateValues = { [EVENT_DATE]: MOCK_EVENT_DATE };
   for (const field of template.fields) {
-    values[field.id] = localized(field.fallback, language)
+    values[field.id] = localized(field.fallback, language);
   }
-  return values
+  return values;
 }
 
 /**
@@ -176,10 +178,10 @@ export function fallbackValues(
  * read by the card. What the invitation editor *does* offer is the format it
  * is written in — `dateFormat`, an ordinary field like any other.
  */
-export const EVENT_DATE = 'date'
+export const EVENT_DATE = "date";
 
 /** Stands in until the event-details form exists to supply a real one. */
-export const MOCK_EVENT_DATE = '2024-08-24'
+export const MOCK_EVENT_DATE = "2024-08-24";
 
 /**
  * How the date may be written on a card. App-level, not per template: this is
@@ -188,30 +190,29 @@ export const MOCK_EVENT_DATE = '2024-08-24'
  * ids are permanent — rename one and existing invitations fall back.
  */
 export interface DateFormatOption {
-  id: string
+  id: string;
   /**
    * `locale` is the invitation's own language, not the host's app locale —
    * a date on a card is guest-facing copy like any other.
    */
-  render: (date: Date, locale: string) => string
+  render: (date: Date, locale: string) => string;
   /**
    * Languages that never write a date this way. The editor leaves the style
    * out of their list, and an invitation in one of them that has it saved
    * reads as the default instead.
    */
-  notIn?: Language[]
+  notIn?: Language[];
 }
 
 /** The month as the invitation's language writes it. */
 function monthName(date: Date, locale: string): string {
-  return new Intl.DateTimeFormat(locale, { month: 'long' }).format(date)
+  return new Intl.DateTimeFormat(locale, { month: "long" }).format(date);
 }
 
 export const DATE_FORMATS: DateFormatOption[] = [
   {
-    id: 'long',
-    render: (date, locale) =>
-      date.toLocaleDateString(locale, DATE_PARTS),
+    id: "long",
+    render: (date, locale) => date.toLocaleDateString(locale, DATE_PARTS),
   },
   {
     /*
@@ -220,42 +221,42 @@ export const DATE_FORMATS: DateFormatOption[] = [
      * prefers, which would collapse this option into `long` outside English.
      * Only the month name itself comes from the language.
      */
-    id: 'monthFirst',
+    id: "monthFirst",
     render: (date, locale) =>
       `${monthName(date, locale)} ${date.getDate()}, ${date.getFullYear()}`,
     /*
      * English order. Romanian writes the day before the month, and Hungarian
      * already puts the month before the day, after the year.
      */
-    notIn: ['ro', 'hu'],
+    notIn: ["ro", "hu"],
   },
   {
-    id: 'weekday',
+    id: "weekday",
     render: (date, locale) =>
-      date.toLocaleDateString(locale, { weekday: 'long', ...DATE_PARTS }),
+      date.toLocaleDateString(locale, { weekday: "long", ...DATE_PARTS }),
   },
   {
     /* Hungarian writes a numeric date year first: 2026. 09. 06. */
-    id: 'dotted',
+    id: "dotted",
     render: (date, locale) =>
       locale === LANGUAGE_LOCALE.hu
         ? `${date.getFullYear()}. ${pad(date.getMonth() + 1)}. ${pad(date.getDate())}.`
         : `${pad(date.getDate())}.${pad(date.getMonth() + 1)}.${date.getFullYear()}`,
   },
   {
-    id: 'slashed',
+    id: "slashed",
     render: (date) =>
       `${pad(date.getDate())}/${pad(date.getMonth() + 1)}/${date.getFullYear()}`,
-    notIn: ['hu'],
+    notIn: ["hu"],
   },
-]
+];
 
 /** What a template's `dateFormat` field falls back to. */
-export const DEFAULT_DATE_FORMAT = DATE_FORMATS[0].id
+export const DEFAULT_DATE_FORMAT = DATE_FORMATS[0].id;
 
 /** The styles an invitation in this language can be written in. */
 export function dateFormatsFor(language: Language): DateFormatOption[] {
-  return DATE_FORMATS.filter((option) => !option.notIn?.includes(language))
+  return DATE_FORMATS.filter((option) => !option.notIn?.includes(language));
 }
 
 /**
@@ -268,14 +269,14 @@ export function formatInvitationDate(
   formatId: string,
   language: Language = DEFAULT_LANGUAGE,
 ): string {
-  if (!iso) return ''
-  const date = new Date(`${iso}T00:00`)
-  if (!isRealDate(date)) return iso
+  if (!iso) return "";
+  const date = new Date(`${iso}T00:00`);
+  if (!isRealDate(date)) return iso;
 
   const format =
     dateFormatsFor(language).find((option) => option.id === formatId) ??
-    DATE_FORMATS[0]
-  return format.render(date, LANGUAGE_LOCALE[language])
+    DATE_FORMATS[0];
+  return format.render(date, LANGUAGE_LOCALE[language]);
 }
 
 /**
@@ -292,9 +293,9 @@ export function cardValues(
   return {
     ...values,
     [EVENT_DATE]: formatInvitationDate(
-      values[EVENT_DATE] ?? '',
+      values[EVENT_DATE] ?? "",
       values.dateFormat ?? DEFAULT_DATE_FORMAT,
       language,
     ),
-  }
+  };
 }

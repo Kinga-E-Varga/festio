@@ -1,46 +1,46 @@
-import Image from 'next/image'
-import { DEFAULT_DATE_FORMAT } from '@/lib/invitation'
-import { fonts } from '@/lib/fonts'
-import type { LocalizedText } from '@/lib/language'
-import type { InvitationTemplate, TemplateValues } from '@/types/invitation'
-import pattern from './pattern.svg'
-import animalCoupleDance from './animal-couple-dance.svg'
+import Image from "next/image";
+import { DEFAULT_DATE_FORMAT } from "@/lib/invitation";
+import { fonts } from "@/lib/fonts";
+import type { LocalizedText } from "@/lib/language";
+import type { InvitationTemplate, TemplateValues } from "@/types/invitation";
+import pattern from "./pattern.svg";
+import animalCoupleDance from "./animal-couple-dance.svg";
 
 /*
  * What the host's edit form calls each slot, in the host's language. Several
  * slots share a label, so each is declared once here.
  */
 const LABELS = {
-  message: { en: 'message', ro: 'mesaj', hu: 'üzenet' },
+  message: { en: "message", ro: "mesaj", hu: "üzenet" },
   openingLine: {
-    en: 'opening line',
-    ro: 'rândul de deschidere',
-    hu: 'nyitó sor',
+    en: "opening line",
+    ro: "rândul de deschidere",
+    hu: "nyitó sor",
   },
-  name: { en: 'name', ro: 'nume', hu: 'név' },
-  date: { en: 'date', ro: 'dată', hu: 'dátum' },
-  boldText: { en: 'bold text', ro: 'text îngroșat', hu: 'félkövér szöveg' },
-  text: { en: 'text', ro: 'text', hu: 'szöveg' },
-} satisfies Record<string, LocalizedText>
+  name: { en: "name", ro: "nume", hu: "név" },
+  date: { en: "date", ro: "dată", hu: "dátum" },
+  boldText: { en: "bold text", ro: "text îngroșat", hu: "félkövér szöveg" },
+  text: { en: "text", ro: "text", hu: "szöveg" },
+} satisfies Record<string, LocalizedText>;
 
 export const template: InvitationTemplate = {
-  id: 'wolf-dance',
-  name: 'Wolf Dance',
-  package: 'free',
-  eventTypes: ['wedding', 'other'],
+  id: "wolf-dance",
+  name: "Wolf Dance",
+  package: "free",
+  eventTypes: ["wedding", "other"],
   design: {
     width: 1080,
     height: 1532,
     minScale: 0.18,
     maxScale: 0.65,
-    shadow: 'light',
+    shadow: "light",
   },
-  printSize: 'A5 portrait — 148 × 210 mm at 300 dpi',
+  printSize: "A5 portrait — 148 × 210 mm at 300 dpi",
 
   /* The tinted face and the host's lines on it. See `TemplatePrint`. */
   print: {
-    background: 'color3',
-    ink: 'color1',
+    background: "color3",
+    ink: "color1",
   },
 
   /*
@@ -48,13 +48,13 @@ export const template: InvitationTemplate = {
    * line under an input. The guest form reads these by number.
    */
   palette: {
-    color1: '#473130',
-    color2: '#adbd8f',
-    color3: '#fefce5',
-    color4: '#fefce569',
-    color5: '#788a5c',
-    color6: '#d88e5f',
-    color7: '#9cb17d',
+    color1: "#473130",
+    color2: "#adbd8f",
+    color3: "#fefce5",
+    color4: "#fefce569",
+    color5: "#788a5c",
+    color6: "#d88e5f",
+    color7: "#9cb17d",
     color8: null,
     color9: null,
     color10: null,
@@ -65,13 +65,13 @@ export const template: InvitationTemplate = {
     secondary: fonts.kapakana,
   },
 
-  edge: 'wavy',
+  edge: "wavy",
 
   background: {
-    kind: 'image',
+    kind: "image",
     src: pattern.src,
-    size: '400px',
-    under: 'color3',
+    size: "400px",
+    under: "color3",
   },
 
   /*
@@ -83,97 +83,97 @@ export const template: InvitationTemplate = {
   fields: [
     /* Read by the RSVP panel, not by the card — the line above the reply. */
     {
-      id: 'rsvpMessage',
+      id: "rsvpMessage",
       label: LABELS.message,
-      type: 'longText',
+      type: "longText",
       maxLength: 120,
       fallback: {
-        en: 'We would love to know if you can join us.',
-        ro: 'Ne-ar face mare plăcere să știm dacă poți veni.',
-        hu: 'Nagyon örülnénk, ha tudnánk, hogy tudsz-e jönni.',
+        en: "We would love to know if you can join us.",
+        ro: "Ne-ar face mare plăcere să știm dacă poți veni.",
+        hu: "Nagyon örülnénk, ha tudnánk, hogy tudsz-e jönni.",
       },
-      scope: 'rsvp',
+      scope: "rsvp",
     },
     {
-      id: 'title1',
+      id: "title1",
       label: LABELS.openingLine,
-      type: 'text',
+      type: "text",
       maxLength: 40,
       fallback: {
-        en: 'We invite you to',
-        ro: 'Vă invităm să',
-        hu: 'Szeretettel meghívunk',
+        en: "We invite you to",
+        ro: "Vă invităm să",
+        hu: "Szeretettel meghívunk",
       },
     },
     {
-      id: 'title2',
+      id: "title2",
       label: LABELS.openingLine,
-      type: 'text',
+      type: "text",
       maxLength: 60,
       fallback: {
-        en: 'celebrate our wedding',
-        ro: 'sărbătoriți nunta noastră',
-        hu: 'esküvőnk megünneplésére',
+        en: "celebrate our wedding",
+        ro: "sărbătoriți nunta noastră",
+        hu: "esküvőnk megünneplésére",
       },
     },
     {
-      id: 'name1',
+      id: "name1",
       label: LABELS.name,
-      type: 'text',
+      type: "text",
       maxLength: 10,
-      fallback: 'Jacob',
+      fallback: "Jacob",
     },
     {
-      id: 'name2',
+      id: "name2",
       label: LABELS.name,
-      type: 'text',
+      type: "text",
       maxLength: 10,
-      fallback: 'Bella',
+      fallback: "Bella",
     },
     {
-      id: 'dateFormat',
+      id: "dateFormat",
       label: LABELS.date,
-      type: 'dateFormat',
+      type: "dateFormat",
       fallback: DEFAULT_DATE_FORMAT,
     },
     {
-      id: 'text1',
+      id: "text1",
       label: LABELS.boldText,
-      type: 'text',
+      type: "text",
       maxLength: 90,
       fallback: {
-        en: 'Ceremony | 1 PM',
-        ro: 'Cununia | 13:00',
-        hu: 'Szertartás | 13:00',
+        en: "Ceremony | 1 PM",
+        ro: "Cununia | 13:00",
+        hu: "Szertartás | 13:00",
       },
     },
     {
-      id: 'text2',
+      id: "text2",
       label: LABELS.text,
-      type: 'text',
+      type: "text",
       maxLength: 90,
-      fallback: 'Quileute Reservation, La Push, Washington',
+      fallback: "Quileute Reservation, La Push, Washington",
     },
     {
-      id: 'text3',
+      id: "text3",
       label: LABELS.boldText,
-      type: 'text',
+      type: "text",
       maxLength: 90,
       fallback: {
-        en: 'Reception | 4 PM',
-        ro: 'Petrecerea | 16:00',
-        hu: 'Fogadás | 16:00',
+        en: "Reception | 4 PM",
+        ro: "Petrecerea | 16:00",
+        hu: "Fogadás | 16:00",
       },
     },
     {
-      id: 'text4',
+      id: "text4",
       label: LABELS.text,
-      type: 'text',
+      type: "text",
       maxLength: 90,
-      fallback: 'La Bella Italia, Forks, Washington',
+      fallback: "La Bella Italia, Forks, Washington",
     },
   ],
-}
+};
 
 /*
  * Authored once at 1080 × 1532 and never reflowed — every length below is a
@@ -222,16 +222,16 @@ export function Card({ values }: { values: TemplateValues }) {
         </div>
       </div>
     </div>
-  )
+  );
 }
 
 /* A bold line over a plain one; the pair drops out when both are blank. */
 function TextPair({ bold, text }: { bold: string; text: string }) {
-  if (bold === '' && text === '') return null
+  if (bold === "" && text === "") return null;
   return (
     <div className="pt-8">
       <p className="font-semibold">{bold}</p>
       <p>{text}</p>
     </div>
-  )
+  );
 }

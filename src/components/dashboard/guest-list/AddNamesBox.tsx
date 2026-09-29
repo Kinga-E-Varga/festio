@@ -3,9 +3,19 @@
 import { useTranslations } from "next-intl";
 import { type ChangeEvent, useEffect, useRef, useState } from "react";
 import { useForm, useWatch } from "react-hook-form";
-import { HINT, INPUT, SUBBOX } from "@/components/dashboard/event-editor/styles";
+import {
+  HINT,
+  INPUT,
+  SUBBOX,
+} from "@/components/dashboard/event-editor/styles";
 import { DraftNameList } from "@/components/dashboard/guest-list/DraftNameList";
-import { ALERT, BTN_LIST, BTN_LIST_OUTLINE, SMALL_BTN_WARN, SMALL_BTN_WARN_SOLID } from "@/components/dashboard/guest-list/styles";
+import {
+  ALERT,
+  BTN_LIST,
+  BTN_LIST_OUTLINE,
+  SMALL_BTN_WARN,
+  SMALL_BTN_WARN_SOLID,
+} from "@/components/dashboard/guest-list/styles";
 import { useListDraft } from "@/components/dashboard/guest-list/useListDraft";
 import { findRepeats, parseNames } from "@/lib/guests";
 import type { ListName, NameRepeat } from "@/types/guests";
@@ -25,9 +35,18 @@ interface AddNamesBoxProps {
 type Notice = "unadded" | "discard";
 
 /** The whole preloaded list as a draft: paste names in, remove the unwanted, then save. */
-export function AddNamesBox({ list, repliedIds, onSave, onCancel, onDirty, ask }: AddNamesBoxProps) {
+export function AddNamesBox({
+  list,
+  repliedIds,
+  onSave,
+  onCancel,
+  onDirty,
+  ask,
+}: AddNamesBoxProps) {
   const t = useTranslations("GuestList");
-  const { register, control, handleSubmit, setFocus, reset } = useForm<{ text: string }>({
+  const { register, control, handleSubmit, setFocus, reset } = useForm<{
+    text: string;
+  }>({
     defaultValues: { text: "" },
   });
   const text = useWatch({ control, name: "text" });
@@ -100,19 +119,29 @@ export function AddNamesBox({ list, repliedIds, onSave, onCancel, onDirty, ask }
   return (
     <div ref={box} id="list" className={`scroll-mt-24 ${SUBBOX}`}>
       <div className="flex flex-wrap items-center gap-x-4 gap-y-3">
-        <h3 className="mr-auto font-serif text-[17px] tracking-[0.14em] text-neutral-900 uppercase">{t("listTitle")}</h3>
+        <h3 className="mr-auto font-serif text-[17px] tracking-[0.14em] text-neutral-900 uppercase">
+          {t("listTitle")}
+        </h3>
         <div className="flex gap-2.5">
           <button type="button" onClick={cancel} className={BTN_LIST_OUTLINE}>
             {t("cancel")}
           </button>
-          <button type="button" onClick={save} disabled={!draft.changed && names.length === 0} className={BTN_LIST}>
+          <button
+            type="button"
+            onClick={save}
+            disabled={!draft.changed && names.length === 0}
+            className={BTN_LIST}
+          >
             {t("save")}
           </button>
         </div>
       </div>
 
       {notice === "unadded" ? (
-        <div role="alert" className={`mt-3 ${ALERT} flex flex-wrap items-center gap-2.5`}>
+        <div
+          role="alert"
+          className={`mt-3 ${ALERT} flex flex-wrap items-center gap-2.5`}
+        >
           <span className="mr-auto">{t("unaddedTitle")}</span>
           <button type="button" onClick={add} className={SMALL_BTN_WARN_SOLID}>
             {t("addThem")}
@@ -120,10 +149,18 @@ export function AddNamesBox({ list, repliedIds, onSave, onCancel, onDirty, ask }
         </div>
       ) : null}
       {notice === "discard" || ask ? (
-        <div ref={discardPrompt} role="alert" className={`mt-3 ${ALERT} flex flex-wrap items-center gap-2.5`}>
+        <div
+          ref={discardPrompt}
+          role="alert"
+          className={`mt-3 ${ALERT} flex flex-wrap items-center gap-2.5`}
+        >
           <span className="mr-auto">{t("discardTitle")}</span>
           <div className="flex shrink-0 gap-2.5">
-            <button type="button" onClick={ask ? ask.onDiscard : onCancel} className={SMALL_BTN_WARN}>
+            <button
+              type="button"
+              onClick={ask ? ask.onDiscard : onCancel}
+              className={SMALL_BTN_WARN}
+            >
               {t("discard")}
             </button>
             <button
@@ -145,11 +182,17 @@ export function AddNamesBox({ list, repliedIds, onSave, onCancel, onDirty, ask }
           <b className="block">{t("repeatsTitle")}</b>
           <ul className="mt-1.5 list-disc pl-5">
             {repeats.map((repeat) => (
-              <li key={repeat.name}>{t("repeatsItem", { name: repeat.name, count: repeat.count })}</li>
+              <li key={repeat.name}>
+                {t("repeatsItem", { name: repeat.name, count: repeat.count })}
+              </li>
             ))}
           </ul>
           <div className="mt-3 flex gap-2.5">
-            <button type="button" onClick={keep} className={SMALL_BTN_WARN_SOLID}>
+            <button
+              type="button"
+              onClick={keep}
+              className={SMALL_BTN_WARN_SOLID}
+            >
               {t("keepThem")}
             </button>
             <button type="button" onClick={back} className={SMALL_BTN_WARN}>
@@ -167,17 +210,30 @@ export function AddNamesBox({ list, repliedIds, onSave, onCancel, onDirty, ask }
             className={`${INPUT} resize-y`}
           />
           <div className="mt-3 flex justify-end gap-2.5">
-            <button type="button" onClick={clearInput} disabled={text.length === 0} className={BTN_LIST_OUTLINE}>
+            <button
+              type="button"
+              onClick={clearInput}
+              disabled={text.length === 0}
+              className={BTN_LIST_OUTLINE}
+            >
               {t("clearInput")}
             </button>
-            <button type="submit" disabled={names.length === 0} className={BTN_LIST}>
+            <button
+              type="submit"
+              disabled={names.length === 0}
+              className={BTN_LIST}
+            >
               {t("addNamesSubmit", { count: names.length })}
             </button>
           </div>
         </form>
       )}
 
-      <DraftNameList names={draft.names} repliedIds={repliedIds} onRemove={draft.remove} />
+      <DraftNameList
+        names={draft.names}
+        repliedIds={repliedIds}
+        onRemove={draft.remove}
+      />
     </div>
   );
 }

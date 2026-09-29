@@ -42,7 +42,14 @@ export function rowName(row: GuestRow): string {
 }
 
 function replyRow(reply: GuestReply, unlisted: boolean): GuestRow {
-  return { kind: "reply", id: reply.id, reply, unlisted, identical: false, later: false };
+  return {
+    kind: "reply",
+    id: reply.id,
+    reply,
+    unlisted,
+    identical: false,
+    later: false,
+  };
 }
 
 /**
@@ -71,10 +78,12 @@ function markIdentical(rows: GuestRow[]): GuestRow[] {
  * order, so a later reply with the same name finds its name taken.
  */
 export function buildRows(guests: EventGuests, useList: boolean): GuestRow[] {
-  if (!useList) return markIdentical(guests.replies.map((reply) => replyRow(reply, false)));
+  if (!useList)
+    return markIdentical(guests.replies.map((reply) => replyRow(reply, false)));
 
   const ids = new Set(guests.list.map((name) => name.id));
-  const hostMatched = (reply: GuestReply) => reply.listNameId !== undefined && ids.has(reply.listNameId);
+  const hostMatched = (reply: GuestReply) =>
+    reply.listNameId !== undefined && ids.has(reply.listNameId);
   const claimed = new Set(
     guests.replies.flatMap((reply) =>
       hostMatched(reply) && reply.listNameId ? [reply.listNameId] : [],
@@ -94,7 +103,11 @@ export function buildRows(guests: EventGuests, useList: boolean): GuestRow[] {
 
   const waiting = guests.list
     .filter((name) => !claimed.has(name.id))
-    .map((listName): GuestRow => ({ kind: "waiting", id: listName.id, listName }));
+    .map((listName): GuestRow => ({
+      kind: "waiting",
+      id: listName.id,
+      listName,
+    }));
 
   return [...markIdentical(rows), ...waiting];
 }
@@ -109,7 +122,12 @@ export function showsUnknown(row: GuestRow): boolean {
   return row.kind === "reply" && row.unlisted && !row.identical;
 }
 
-export const CATEGORIES: GuestCategory[] = ["attention", "going", "notGoing", "waiting"];
+export const CATEGORIES: GuestCategory[] = [
+  "attention",
+  "going",
+  "notGoing",
+  "waiting",
+];
 
 function rowCategory(row: GuestRow): GuestCategory {
   if (row.kind === "waiting") return "waiting";
@@ -148,14 +166,19 @@ export function groupRows(
 ): GuestGroup[] {
   const groups = new Map<string, GuestGroup>();
   for (const row of rows) {
-    const id = row.kind === "reply" ? `reply:${row.reply.submissionId}` : `list:${row.id}`;
+    const id =
+      row.kind === "reply"
+        ? `reply:${row.reply.submissionId}`
+        : `list:${row.id}`;
     const group = groups.get(id);
     if (group) group.rows.push(row);
     else groups.set(id, { id, rows: [row], with: [] });
   }
   return [...groups.values()]
     .flatMap(splitByCategory)
-    .sort((first, second) => compare(rowName(first.rows[0]), rowName(second.rows[0])));
+    .sort((first, second) =>
+      compare(rowName(first.rows[0]), rowName(second.rows[0])),
+    );
 }
 
 /**
@@ -165,11 +188,19 @@ export function groupRows(
  */
 export function attentionItems(groups: GuestGroup[]): AttentionItem[] {
   const items: AttentionItem[] = [];
-  const byName = new Map<string, Extract<AttentionItem, { kind: "identical" }>>();
+  const byName = new Map<
+    string,
+    Extract<AttentionItem, { kind: "identical" }>
+  >();
   for (const group of groups) {
-    const rest = group.rows.filter((row) => row.kind !== "reply" || !row.identical);
+    const rest = group.rows.filter(
+      (row) => row.kind !== "reply" || !row.identical,
+    );
     if (rest.length > 0) {
-      const part = rest.length === group.rows.length ? group : { ...group, id: `${group.id}:unknown`, rows: rest };
+      const part =
+        rest.length === group.rows.length
+          ? group
+          : { ...group, id: `${group.id}:unknown`, rows: rest };
       items.push({ kind: "unknown", id: part.id, group: part });
     }
     for (const row of group.rows) {
@@ -178,16 +209,26 @@ export function attentionItems(groups: GuestGroup[]): AttentionItem[] {
       const item = byName.get(key);
       if (item) item.entries.push(row);
       else {
-        const created = { kind: "identical" as const, id: `same:${key}`, name: row.reply.name, entries: [row] };
+        const created = {
+          kind: "identical" as const,
+          id: `same:${key}`,
+          name: row.reply.name,
+          entries: [row],
+        };
         byName.set(key, created);
         items.push(created);
       }
     }
   }
   for (const item of byName.values()) {
-    item.entries.sort((first, second) => first.reply.repliedAt.localeCompare(second.reply.repliedAt));
+    item.entries.sort((first, second) =>
+      first.reply.repliedAt.localeCompare(second.reply.repliedAt),
+    );
   }
-  return [...items.filter((item) => item.kind === "identical"), ...items.filter((item) => item.kind === "unknown")];
+  return [
+    ...items.filter((item) => item.kind === "identical"),
+    ...items.filter((item) => item.kind === "unknown"),
+  ];
 }
 
 export function countRows(rows: GuestRow[]): GuestCounts {
@@ -212,7 +253,10 @@ export function countRows(rows: GuestRow[]): GuestCounts {
 }
 
 /** A choice counts by option id, a yes/no as `yes` / `no`, free text only as answered. */
-function tallyQuestion(question: GuestQuestion, replies: GuestReply[]): QuestionTally {
+function tallyQuestion(
+  question: GuestQuestion,
+  replies: GuestReply[],
+): QuestionTally {
   const tally: QuestionTally = { question, answers: {}, answered: 0 };
   for (const reply of replies) {
     /* Never asked or skipped: nothing to count. */
@@ -220,7 +264,8 @@ function tallyQuestion(question: GuestQuestion, replies: GuestReply[]): Question
     if (value === undefined || value === null || value === "") continue;
     tally.answered += 1;
     if (question.kind === "text") continue;
-    const key = question.kind === "yesNo" ? (value ? "yes" : "no") : String(value);
+    const key =
+      question.kind === "yesNo" ? (value ? "yes" : "no") : String(value);
     tally.answers[key] = (tally.answers[key] ?? 0) + 1;
   }
   return tally;
@@ -230,15 +275,28 @@ function tallyQuestion(question: GuestQuestion, replies: GuestReply[]): Question
  * The Summary section's numbers. Age, diet and custom answers come from the
  * people coming; a reply-wide question counts each reply once, as does a note.
  */
-export function tallyGuests(rows: GuestRow[], questions: GuestQuestion[]): GuestTally {
-  const replies = rows.flatMap((row) => (row.kind === "reply" ? [row.reply] : []));
+export function tallyGuests(
+  rows: GuestRow[],
+  questions: GuestQuestion[],
+): GuestTally {
+  const replies = rows.flatMap((row) =>
+    row.kind === "reply" ? [row.reply] : [],
+  );
   const coming = replies.filter((reply) => reply.status === "going");
-  const onePerReply = (list: GuestReply[]) =>
-    [...new Map(list.map((reply) => [reply.submissionId, reply])).values()];
+  const onePerReply = (list: GuestReply[]) => [
+    ...new Map(list.map((reply) => [reply.submissionId, reply])).values(),
+  ];
 
   const tally: GuestTally = {
     ages: { adult: 0, child: 0, baby: 0 },
-    diets: { vegetarian: 0, vegan: 0, glutenFree: 0, lactoseFree: 0, nutAllergy: 0, other: 0 },
+    diets: {
+      vegetarian: 0,
+      vegan: 0,
+      glutenFree: 0,
+      lactoseFree: 0,
+      nutAllergy: 0,
+      other: 0,
+    },
     questions: [],
     messages: onePerReply(replies.filter((reply) => reply.note?.trim())).length,
   };
@@ -253,7 +311,11 @@ export function tallyGuests(rows: GuestRow[], questions: GuestQuestion[]): Guest
   return tally;
 }
 
-export function rowMatches(row: GuestRow, filter: GuestFilter, query: string): boolean {
+export function rowMatches(
+  row: GuestRow,
+  filter: GuestFilter,
+  query: string,
+): boolean {
   const needle = normalizeName(query);
   if (needle && !normalizeName(rowName(row)).includes(needle)) return false;
   switch (filter) {
@@ -283,7 +345,9 @@ export function filterGroup(
   query: string,
   keep: string | null = null,
 ): GuestGroup | null {
-  const shown = group.rows.filter((row) => row.id === keep || rowMatches(row, filter, query));
+  const shown = group.rows.filter(
+    (row) => row.id === keep || rowMatches(row, filter, query),
+  );
   if (shown.length === 0) return null;
   if (shown.length === group.rows.length) return group;
   const left = group.rows.filter((row) => !shown.includes(row)).map(rowName);
@@ -349,7 +413,10 @@ export function addReplyToList(
 ): EventGuests {
   const reply = guests.replies.find((entry) => entry.id === replyId);
   if (!reply) return guests;
-  const added = { ...guests, list: [...guests.list, { id: newId, name: reply.name, sent: true }] };
+  const added = {
+    ...guests,
+    list: [...guests.list, { id: newId, name: reply.name, sent: true }],
+  };
   return updateReply(added, replyId, { listNameId: newId });
 }
 
@@ -368,11 +435,17 @@ export const NEW_ROW = "new";
  * The row still in edit mode, or null once it is no longer shown: a match
  * or the list toggle can take a Waiting row away mid-edit.
  */
-export function openRow(editing: string | null, rows: GuestRow[]): string | null {
+export function openRow(
+  editing: string | null,
+  rows: GuestRow[],
+): string | null {
   if (editing === null || editing === NEW_ROW) return editing;
   return rows.some((row) => row.id === editing) ? editing : null;
 }
 
-export function markDifferent(guests: EventGuests, replyId: string): EventGuests {
+export function markDifferent(
+  guests: EventGuests,
+  replyId: string,
+): EventGuests {
   return updateReply(guests, replyId, { differentPerson: true });
 }

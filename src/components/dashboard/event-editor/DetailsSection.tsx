@@ -1,27 +1,27 @@
-'use client'
+"use client";
 
-import { useTranslations } from 'next-intl'
-import { ChangeWarning } from '@/components/dashboard/event-editor/ChangeWarning'
-import { EditorSection } from '@/components/dashboard/event-editor/EditorSection'
-import { Field } from '@/components/dashboard/event-editor/Field'
+import { useTranslations } from "next-intl";
+import { ChangeWarning } from "@/components/dashboard/event-editor/ChangeWarning";
+import { EditorSection } from "@/components/dashboard/event-editor/EditorSection";
+import { Field } from "@/components/dashboard/event-editor/Field";
 import {
   ERROR,
   FIELD_GRID,
   INPUT,
   LABEL,
-} from '@/components/dashboard/event-editor/styles'
-import { SummarySwitch } from '@/components/dashboard/event-editor/SummarySwitch'
-import type { EventForm } from '@/components/dashboard/event-editor/useEventForm'
-import { GUEST_DATA_RETENTION_DAYS } from '@/lib/config'
-import { LANGUAGES, LANGUAGE_NAMES, type Language } from '@/lib/language'
-import { EVENT_KINDS } from '@/mock/dashboard'
-import type { DashboardEvent, EventKind } from '@/types/dashboard'
+} from "@/components/dashboard/event-editor/styles";
+import { SummarySwitch } from "@/components/dashboard/event-editor/SummarySwitch";
+import type { EventForm } from "@/components/dashboard/event-editor/useEventForm";
+import { GUEST_DATA_RETENTION_DAYS } from "@/lib/config";
+import { LANGUAGES, LANGUAGE_NAMES, type Language } from "@/lib/language";
+import { EVENT_KINDS } from "@/mock/dashboard";
+import type { DashboardEvent, EventKind } from "@/types/dashboard";
 
 /** Dates the platform works out; they are never typed in. */
 function Derived({
   items,
 }: {
-  items: { term: string; value: string; note: string }[]
+  items: { term: string; value: string; note: string }[];
 }) {
   return (
     <dl className="mt-[22px] grid grid-cols-1 gap-px border border-forest-500 border-l-[3px] bg-forest-500 @min-[820px]:grid-cols-3">
@@ -39,26 +39,26 @@ function Derived({
         </div>
       ))}
     </dl>
-  )
+  );
 }
 
 interface SectionProps {
-  event: DashboardEvent
-  form: EventForm
+  event: DashboardEvent;
+  form: EventForm;
 }
 
 export function DetailsSection({ event, form }: SectionProps) {
-  const t = useTranslations('EventEditor')
-  const tOccasions = useTranslations('Occasions')
-  const { values, set, derived, locked } = form
+  const t = useTranslations("EventEditor");
+  const tOccasions = useTranslations("Occasions");
+  const { values, set, derived, locked } = form;
 
   return (
-    <EditorSection title={t('details')} first>
+    <EditorSection title={t("details")} first>
       <div className={FIELD_GRID}>
         <Field
           htmlFor="event-name"
-          label={t('eventName')}
-          hint={t('eventNameHint')}
+          label={t("eventName")}
+          hint={t("eventNameHint")}
         >
           <input
             id="event-name"
@@ -73,8 +73,8 @@ export function DetailsSection({ event, form }: SectionProps) {
 
         <Field
           htmlFor="event-kind"
-          label={t('occasion')}
-          hint={t('occasionHint')}
+          label={t("occasion")}
+          hint={t("occasionHint")}
         >
           <select
             id="event-kind"
@@ -93,8 +93,8 @@ export function DetailsSection({ event, form }: SectionProps) {
 
         <Field
           htmlFor="event-language"
-          label={t('language')}
-          hint={t('languageHint')}
+          label={t("language")}
+          hint={t("languageHint")}
         >
           <select
             id="event-language"
@@ -113,7 +113,7 @@ export function DetailsSection({ event, form }: SectionProps) {
           </select>
         </Field>
 
-        <Field htmlFor="event-date" label={t('date')} hint={t('dateHint')}>
+        <Field htmlFor="event-date" label={t("date")} hint={t("dateHint")}>
           <input
             id="event-date"
             type="date"
@@ -126,33 +126,33 @@ export function DetailsSection({ event, form }: SectionProps) {
       </div>
 
       <ChangeWarning
-        title={t('languageWarningTitle')}
+        title={t("languageWarningTitle")}
         warning={form.warnings.language}
       >
-        {t('languageWarning')}
+        {t("languageWarning")}
       </ChangeWarning>
 
-      <ChangeWarning title={t('dateWarningTitle')} warning={form.warnings.date}>
-        {t.rich('dateWarning', {
+      <ChangeWarning title={t("dateWarningTitle")} warning={form.warnings.date}>
+        {t.rich("dateWarning", {
           count: event.rsvp.replied,
           b: (chunks) => <b className="font-semibold">{chunks}</b>,
         })}
       </ChangeWarning>
 
-      <p className={`mt-[22px] mb-1.5 ${LABEL}`}>{t('closeHeading')}</p>
+      <p className={`mt-[22px] mb-1.5 ${LABEL}`}>{t("closeHeading")}</p>
 
       <SummarySwitch
         icon="calendar"
-        action={t(values.closeEarly ? 'useDefault' : 'closeEarlier')}
+        action={t(values.closeEarly ? "useDefault" : "closeEarlier")}
         onAction={() => set.closeEarly(!values.closeEarly)}
         disabled={locked}
-        hint={t('closeDefaultHint')}
+        hint={t("closeDefaultHint")}
         text={
           values.closeEarly
-            ? t('replyUntil')
-            : t('replyUntilDate', {
+            ? t("replyUntil")
+            : t("replyUntilDate", {
                 /* Non-breaking spaces: the date moves to a new line whole. */
-                date: derived.closeDefaultLabel.replaceAll(' ', '\u00a0'),
+                date: derived.closeDefaultLabel.replaceAll(" ", "\u00a0"),
               })
         }
       >
@@ -160,7 +160,7 @@ export function DetailsSection({ event, form }: SectionProps) {
           <input
             id="event-close"
             type="datetime-local"
-            aria-label={t('closeAt')}
+            aria-label={t("closeAt")}
             max={derived.closeLimit}
             disabled={locked}
             value={values.closeAt}
@@ -170,30 +170,30 @@ export function DetailsSection({ event, form }: SectionProps) {
         ) : null}
       </SummarySwitch>
       {derived.closeTooLate ? (
-        <p className={`mt-1.5 ${ERROR}`}>{t('closeTooLate')}</p>
+        <p className={`mt-1.5 ${ERROR}`}>{t("closeTooLate")}</p>
       ) : null}
 
       <Derived
         items={[
           {
-            term: t('repliesClose'),
+            term: t("repliesClose"),
             value: derived.closeLabel,
             note: t(
-              derived.closesEarly ? 'closesEarlyNote' : 'closesDefaultNote',
+              derived.closesEarly ? "closesEarlyNote" : "closesDefaultNote",
             ),
           },
           {
-            term: t('editingFreezes'),
+            term: t("editingFreezes"),
             value: derived.freezeLabel,
-            note: t('freezeNote'),
+            note: t("freezeNote"),
           },
           {
-            term: t('dataDeleted'),
+            term: t("dataDeleted"),
             value: derived.deletionLabel,
-            note: `${event.dataDeleted ? `${t('alreadyDeleted')} ` : ''}${t('deletionNote', { days: GUEST_DATA_RETENTION_DAYS })}`,
+            note: `${event.dataDeleted ? `${t("alreadyDeleted")} ` : ""}${t("deletionNote", { days: GUEST_DATA_RETENTION_DAYS })}`,
           },
         ]}
       />
     </EditorSection>
-  )
+  );
 }

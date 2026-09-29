@@ -1,18 +1,18 @@
-'use client'
+"use client";
 
-import { useTranslations } from 'next-intl'
-import Image from 'next/image'
-import type { ReactNode } from 'react'
-import { useState } from 'react'
-import type { PrintSettings } from '@/types/print'
-import front from '@/mock/inv-img/Screenshot 2026-07-27 213629.png'
+import { useTranslations } from "next-intl";
+import Image from "next/image";
+import type { ReactNode } from "react";
+import { useState } from "react";
+import type { PrintSettings } from "@/types/print";
+import front from "@/mock/inv-img/Screenshot 2026-07-27 213629.png";
 
 interface PrintPreviewProps {
-  settings: PrintSettings
+  settings: PrintSettings;
   /** The guest-facing address, printed under the host's own two lines. */
-  link: string
+  link: string;
   /** Printed under the link on Protected invitations; absent otherwise. */
-  passwordLine?: string
+  passwordLine?: string;
 }
 
 /**
@@ -28,26 +28,26 @@ interface PrintPreviewProps {
 export function PrintPreview(props: PrintPreviewProps) {
   return (
     <div className="sheet">
-      {props.settings.shape === 'flat' ? (
+      {props.settings.shape === "flat" ? (
         <FlatCard {...props} />
       ) : (
         <FoldedCard {...props} />
       )}
     </div>
-  )
+  );
 }
 
 /** One sheet, printed both sides and turned over. */
 function FlatCard({ settings, ...written }: PrintPreviewProps) {
-  const t = useTranslations('PrintPanel')
-  const [open, setOpen] = useState(false)
+  const t = useTranslations("PrintPanel");
+  const [open, setOpen] = useState(false);
 
   return (
     <TurnStage
       open={open}
       onToggle={() => setOpen(!open)}
-      ariaLabel={t('turnOver')}
-      caption={open ? t('flipBack') : t('flip')}
+      ariaLabel={t("turnOver")}
+      caption={open ? t("flipBack") : t("flip")}
     >
       <span className="sheet-view" data-pages={1}>
         <span className="flip" data-open={open}>
@@ -64,7 +64,7 @@ function FlatCard({ settings, ...written }: PrintPreviewProps) {
         </span>
       </span>
     </TurnStage>
-  )
+  );
 }
 
 /**
@@ -73,15 +73,15 @@ function FlatCard({ settings, ...written }: PrintPreviewProps) {
  * reverse are the two faces of the half that swings.
  */
 function FoldedCard({ settings, ...written }: PrintPreviewProps) {
-  const t = useTranslations('PrintPanel')
-  const [open, setOpen] = useState(false)
+  const t = useTranslations("PrintPanel");
+  const [open, setOpen] = useState(false);
 
   return (
     <TurnStage
       open={open}
       onToggle={() => setOpen(!open)}
-      ariaLabel={t('openCard')}
-      caption={open ? t('clickClose') : t('clickOpen')}
+      ariaLabel={t("openCard")}
+      caption={open ? t("clickClose") : t("clickOpen")}
     >
       <span className="sheet-view" data-pages={2}>
         <span className="fold" data-open={open}>
@@ -106,7 +106,7 @@ function FoldedCard({ settings, ...written }: PrintPreviewProps) {
         </span>
       </span>
     </TurnStage>
-  )
+  );
 }
 
 /**
@@ -121,11 +121,11 @@ function TurnStage({
   caption,
   children,
 }: {
-  open: boolean
-  onToggle: () => void
-  ariaLabel: string
-  caption: string
-  children: ReactNode
+  open: boolean;
+  onToggle: () => void;
+  ariaLabel: string;
+  caption: string;
+  children: ReactNode;
 }) {
   return (
     <button
@@ -138,7 +138,7 @@ function TurnStage({
       {children}
       <Caption>{caption}</Caption>
     </button>
-  )
+  );
 }
 
 /**
@@ -150,7 +150,7 @@ function Caption({ children }: { children: string }) {
     <span className="block text-[14px] font-semibold tracking-[0.16em] text-[color:var(--c2)] uppercase">
       {children}
     </span>
-  )
+  );
 }
 
 /** The artwork, which is not edited here. */
@@ -164,7 +164,7 @@ function Front() {
       className="object-cover"
       priority
     />
-  )
+  );
 }
 
 /**
@@ -179,28 +179,28 @@ function Front() {
  * one pass.
  */
 const QR_ROWS = [
-  '#######.#.#.#.#######',
-  '#.....#..##...#.....#',
-  '#.###.#.#..#..#.###.#',
-  '#.###.#...##..#.###.#',
-  '#.###.#.#.#...#.###.#',
-  '#.....#..#..#.#.....#',
-  '#######.#.#.#.#######',
-  '........#.##.........',
-  '#.#..###..#.##..#.#.#',
-  '..##.#.#.##..#.##..#.',
-  '#.##..#..#.##.#..##.#',
-  '.#..##.##..#..##.#..#',
-  '##.#..#.#..##.#.##.#.',
-  '........#.##..#.#..##',
-  '#######..#..##.#.##.#',
-  '#.....#.##.#..#.#..#.',
-  '#.###.#..##..##.#.##.',
-  '#.###.#.#.#.##..#..#.',
-  '#.###.#..#..#.##.##.#',
-  '#.....#.##.##..#.#..#',
-  '#######..#.#.##..##.#',
-]
+  "#######.#.#.#.#######",
+  "#.....#..##...#.....#",
+  "#.###.#.#..#..#.###.#",
+  "#.###.#...##..#.###.#",
+  "#.###.#.#.#...#.###.#",
+  "#.....#..#..#.#.....#",
+  "#######.#.#.#.#######",
+  "........#.##.........",
+  "#.#..###..#.##..#.#.#",
+  "..##.#.#.##..#.##..#.",
+  "#.##..#..#.##.#..##.#",
+  ".#..##.##..#..##.#..#",
+  "##.#..#.#..##.#.##.#.",
+  "........#.##..#.#..##",
+  "#######..#..##.#.##.#",
+  "#.....#.##.#..#.#..#.",
+  "#.###.#..##..##.#.##.",
+  "#.###.#.#.#.##..#..#.",
+  "#.###.#..#..#.##.##.#",
+  "#.....#.##.##..#.#..#",
+  "#######..#.#.##..##.#",
+];
 
 /**
  * The pattern as one path — a square per inked module — worked out once at
@@ -208,10 +208,10 @@ const QR_ROWS = [
  */
 const QR_PATH = QR_ROWS.map((row, y) =>
   row
-    .split('')
-    .map((module, x) => (module === '#' ? `M${x} ${y}h1v1h-1z` : ''))
-    .join(''),
-).join('')
+    .split("")
+    .map((module, x) => (module === "#" ? `M${x} ${y}h1v1h-1z` : ""))
+    .join(""),
+).join("");
 
 /**
  * The face the host writes: their two lines above, and the way to the page —
@@ -256,5 +256,5 @@ function Written({ settings, link, passwordLine }: PrintPreviewProps) {
         </span>
       </span>
     </span>
-  )
+  );
 }

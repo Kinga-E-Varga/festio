@@ -17,7 +17,13 @@ export interface ListName {
 export type AgeGroup = "adult" | "child" | "baby";
 
 /** The dietary presets every form offers, for each person coming; `other` comes with the guest's own words. */
-export type DietNeed = "vegetarian" | "vegan" | "glutenFree" | "lactoseFree" | "nutAllergy" | "other";
+export type DietNeed =
+  | "vegetarian"
+  | "vegan"
+  | "glutenFree"
+  | "lactoseFree"
+  | "nutAllergy"
+  | "other";
 
 /** Asked of each person coming, or once for the whole reply. */
 export type QuestionScope = "person" | "reply";
@@ -32,7 +38,10 @@ interface QuestionBase {
 
 /** A host's custom question. Asked only of people coming. */
 export type GuestQuestion =
-  | (QuestionBase & { kind: "choice"; options: { id: string; label: string }[] })
+  | (QuestionBase & {
+      kind: "choice";
+      options: { id: string; label: string }[];
+    })
   | (QuestionBase & { kind: "yesNo" })
   | (QuestionBase & { kind: "text" });
 
@@ -113,12 +122,7 @@ export type AttentionItem =
     };
 
 export type GuestFilter =
-  | "all"
-  | "going"
-  | "not_going"
-  | "waiting"
-  | "notSent"
-  | "attention";
+  "all" | "going" | "not_going" | "waiting" | "notSent" | "attention";
 
 export interface GuestCounts {
   going: number;

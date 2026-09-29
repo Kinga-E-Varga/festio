@@ -1,53 +1,69 @@
-import type { Metadata } from 'next'
-import { getTranslations } from 'next-intl/server'
-import { CentreOnHash } from '@/components/dashboard/CentreOnHash'
-import { HostToday } from '@/components/dashboard/HostToday'
-import { EventGroups } from '@/components/dashboard/EventGroups'
-import { EventRow } from '@/components/dashboard/EventRow'
-import { EventTabs, type EventTab } from '@/components/dashboard/EventTabs'
-import { FocusView } from '@/components/dashboard/FocusView'
-import { Icon } from '@/components/icons'
-import { eventStatus } from '@/lib/event'
-import { EVENTS, findEvent } from '@/mock/dashboard'
-import type { EventStatus } from '@/types/dashboard'
+import type { Metadata } from "next";
+import { getTranslations } from "next-intl/server";
+import { CentreOnHash } from "@/components/dashboard/CentreOnHash";
+import { HostToday } from "@/components/dashboard/HostToday";
+import { EventGroups } from "@/components/dashboard/EventGroups";
+import { EventRow } from "@/components/dashboard/EventRow";
+import { EventTabs, type EventTab } from "@/components/dashboard/EventTabs";
+import { FocusView } from "@/components/dashboard/FocusView";
+import { Icon } from "@/components/icons";
+import { eventStatus } from "@/lib/event";
+import { EVENTS, findEvent } from "@/mock/dashboard";
+import type { EventStatus } from "@/types/dashboard";
 
 export async function generateMetadata(): Promise<Metadata> {
-  const t = await getTranslations('Meta')
-  return { title: t('events') }
+  const t = await getTranslations("Meta");
+  return { title: t("events") };
 }
 
 /** One tab per pile: which statuses it holds and the texts it shows. */
 const PILES = [
-  { id: 'all', statuses: ['active', 'draft', 'past'], label: 'tabAll', empty: 'emptyAll' },
-  { id: 'active', statuses: ['active'], label: 'tabActive', empty: 'emptyActive' },
-  { id: 'drafts', statuses: ['draft'], label: 'tabDrafts', empty: 'emptyDrafts' },
-  { id: 'past', statuses: ['past'], label: 'tabPast', empty: 'emptyPast' },
+  {
+    id: "all",
+    statuses: ["active", "draft", "past"],
+    label: "tabAll",
+    empty: "emptyAll",
+  },
+  {
+    id: "active",
+    statuses: ["active"],
+    label: "tabActive",
+    empty: "emptyActive",
+  },
+  {
+    id: "drafts",
+    statuses: ["draft"],
+    label: "tabDrafts",
+    empty: "emptyDrafts",
+  },
+  { id: "past", statuses: ["past"], label: "tabPast", empty: "emptyPast" },
 ] as const satisfies readonly {
-  id: string
-  statuses: readonly EventStatus[]
-  label: string
-  empty: string
-}[]
+  id: string;
+  statuses: readonly EventStatus[];
+  label: string;
+  empty: string;
+}[];
 
 export default async function EventsPage({
   searchParams,
-}: PageProps<'/[locale]/dashboard/events'>) {
+}: PageProps<"/[locale]/dashboard/events">) {
   /*
    * `?event=` is how another page hands one event over — the dashboard's own
    * cards do, from Manage this event. An id that matches nothing is simply
    * the whole list, which is what the address without the query already is.
    */
-  const t = await getTranslations('Events')
-  const { event: requested } = await searchParams
+  const t = await getTranslations("Events");
+  const { event: requested } = await searchParams;
   const focused =
-    typeof requested === 'string' ? findEvent(requested) : undefined
+    typeof requested === "string" ? findEvent(requested) : undefined;
 
   const tabs: EventTab[] = PILES.map((pile) => {
-    const statuses: EventStatus[] = [...pile.statuses]
+    const statuses: EventStatus[] = [...pile.statuses];
     return {
       id: pile.id,
       label: t(pile.label),
-      count: EVENTS.filter((event) => statuses.includes(eventStatus(event))).length,
+      count: EVENTS.filter((event) => statuses.includes(eventStatus(event)))
+        .length,
       panel: (
         <EventGroups
           events={EVENTS}
@@ -55,8 +71,8 @@ export default async function EventsPage({
           emptyMessage={t(pile.empty)}
         />
       ),
-    }
-  })
+    };
+  });
 
   return (
     <div className="@container">
@@ -68,34 +84,34 @@ export default async function EventsPage({
         <div className="min-w-0 flex-1">
           <HostToday />
           <h1 className="mt-1.5 font-serif text-[34px] leading-[1.05] text-neutral-900 @min-[720px]:text-[46px]">
-            {t('title')}
+            {t("title")}
           </h1>
         </div>
 
         {/* Below 560 the label goes and the plus stands on its own. */}
         <button
           type="button"
-          aria-label={t('newEvent')}
+          aria-label={t("newEvent")}
           className="flex shrink-0 items-center gap-2 rounded-md border border-forest-500 bg-forest-500 px-4 py-2.5 font-medium text-neutral-50 transition-colors hover:border-forest-600 hover:bg-forest-600 @max-[560px]:gap-0 @max-[560px]:p-[11px]"
         >
           <Icon name="plus" className="size-[18px]" strokeWidth={2} />
-          <span className="@max-[560px]:hidden">{t('newEvent')}</span>
+          <span className="@max-[560px]:hidden">{t("newEvent")}</span>
         </button>
       </header>
 
-      <p className="mt-3.5 mb-[26px] text-neutral-700">{t('lede')}</p>
+      <p className="mt-3.5 mb-[26px] text-neutral-700">{t("lede")}</p>
 
       <EventTabs
         tabs={tabs}
-        label={t('tabsLabel')}
+        label={t("tabsLabel")}
         // Arriving on one event, no pile is the one being looked at.
         initialId={focused ? null : undefined}
         fallback={
           focused ? (
             <FocusView
-              note={t('focusNote')}
+              note={t("focusNote")}
               href="/dashboard/events"
-              linkLabel={t('focusLink')}
+              linkLabel={t("focusLink")}
             >
               <EventRow event={focused} />
             </FocusView>
@@ -103,5 +119,5 @@ export default async function EventsPage({
         }
       />
     </div>
-  )
+  );
 }

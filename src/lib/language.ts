@@ -53,9 +53,9 @@ export const LANGUAGE_LOCALE: Record<Language, string> = {
  * cannot ship a language short: TypeScript refuses it before the card can
  * render a hole where a line should be.
  */
-export type LocalizedText = string | Record<Language, string>
+export type LocalizedText = string | Record<Language, string>;
 
 /** One piece of localized copy, in the language it is being read in. */
 export function localized(text: LocalizedText, language: Language): string {
-  return typeof text === "string" ? text : text[language]
+  return typeof text === "string" ? text : text[language];
 }

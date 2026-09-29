@@ -1,17 +1,17 @@
-'use client'
+"use client";
 
-import { useTranslations } from 'next-intl'
-import { type CSSProperties, useState } from 'react'
-import { Toast, useToast } from '@/components/dashboard/Toast'
-import { HostBar } from '@/components/invitation/HostBar'
-import { ExportIcon } from '@/components/invitation/icons'
-import { HOST_ACTION } from '@/components/invitation/styles'
-import { useLeaveFestio } from '@/lib/history'
-import { printVars, templateFontVars } from '@/lib/invitation'
-import type { InvitationTemplate } from '@/types/invitation'
-import type { PrintSettings } from '@/types/print'
-import { PrintPanel } from './PrintPanel'
-import { PrintPreview } from './PrintPreview'
+import { useTranslations } from "next-intl";
+import { type CSSProperties, useState } from "react";
+import { Toast, useToast } from "@/components/dashboard/Toast";
+import { HostBar } from "@/components/invitation/HostBar";
+import { ExportIcon } from "@/components/invitation/icons";
+import { HOST_ACTION } from "@/components/invitation/styles";
+import { useLeaveFestio } from "@/lib/history";
+import { printVars, templateFontVars } from "@/lib/invitation";
+import type { InvitationTemplate } from "@/types/invitation";
+import type { PrintSettings } from "@/types/print";
+import { PrintPanel } from "./PrintPanel";
+import { PrintPreview } from "./PrintPreview";
 
 /**
  * The print page's own palette. A printable is Festio's artifact, not the
@@ -25,33 +25,33 @@ import { PrintPreview } from './PrintPreview'
  * more of it.
  */
 const PRINT_PALETTE = {
-  '--c1': '#2F281F',
-  '--c2': '#8D7D6A',
-  '--c3': '#F8F2E0',
-  '--c4': '#8D7D6A',
-  '--c5': '#C6B379',
-  '--c6': '#7B2C30',
-  '--print-ground': '#F9F5EA',
-} as CSSProperties
+  "--c1": "#2F281F",
+  "--c2": "#8D7D6A",
+  "--c3": "#F8F2E0",
+  "--c4": "#8D7D6A",
+  "--c5": "#C6B379",
+  "--c6": "#7B2C30",
+  "--print-ground": "#F9F5EA",
+} as CSSProperties;
 
 interface PrintEditorProps {
-  template: InvitationTemplate
+  template: InvitationTemplate;
   /**
    * The invitation's own RSVP message — where the printable's larger line
    * starts. The two part company from the first keystroke; this is a default,
    * not a binding.
    */
-  rsvpMessage: string
+  rsvpMessage: string;
   /** The guest-facing address, printed on the card. */
-  link: string
+  link: string;
   /** Printed under the link on Protected invitations, in their language. */
-  passwordLine?: string
+  passwordLine?: string;
   /**
    * The line the second input opens on, until the host writes their own.
    * Festio's copy, and it is printed, so it arrives already written in the
    * invitation's language — never the locale the host reads Festio in.
    */
-  defaultNote: string
+  defaultNote: string;
 }
 
 /**
@@ -70,26 +70,26 @@ export function PrintEditor({
   defaultNote,
 }: PrintEditorProps) {
   const [settings, setSettings] = useState<PrintSettings>({
-    shape: 'flat',
+    shape: "flat",
     tinted: true,
     headline: rsvpMessage,
     note: defaultNote,
-  })
+  });
   /*
    * Answered at every width. Below the breakpoint the form covers the
    * paper; above it the form sits beside the paper and closing it hands the
    * width over — see `.sheet-form`.
    */
-  const [editing, setEditing] = useState(true)
-  const t = useTranslations('HostEditor')
-  const toast = useToast()
-  const leave = useLeaveFestio('/dashboard/invitations')
+  const [editing, setEditing] = useState(true);
+  const t = useTranslations("HostEditor");
+  const toast = useToast();
+  const leave = useLeaveFestio("/dashboard/invitations");
 
   function change<Key extends keyof PrintSettings>(
     key: Key,
     value: PrintSettings[Key],
   ) {
-    setSettings((current) => ({ ...current, [key]: value }))
+    setSettings((current) => ({ ...current, [key]: value }));
   }
 
   return (
@@ -120,11 +120,11 @@ export function PrintEditor({
             thirdAction={
               <button
                 type="button"
-                onClick={() => toast.show(t('exported'))}
+                onClick={() => toast.show(t("exported"))}
                 className={HOST_ACTION}
               >
                 <ExportIcon size={14} />
-                {t('export')}
+                {t("export")}
               </button>
             }
           />
@@ -147,5 +147,5 @@ export function PrintEditor({
       </div>
       <Toast message={toast.message} />
     </>
-  )
+  );
 }

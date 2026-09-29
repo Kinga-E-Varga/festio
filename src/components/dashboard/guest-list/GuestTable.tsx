@@ -3,16 +3,28 @@
 import { useLocale, useTranslations } from "next-intl";
 import { type ReactNode, useId, useState } from "react";
 import { STATUS_KEY } from "@/components/dashboard/guest-list/labels";
-import { ATTENTION_TAG, fold, SMALL_BTN } from "@/components/dashboard/guest-list/styles";
+import {
+  ATTENTION_TAG,
+  fold,
+  SMALL_BTN,
+} from "@/components/dashboard/guest-list/styles";
 import { NameEditor } from "@/components/dashboard/guest-list/NameEditor";
 import { ReplyEditor } from "@/components/dashboard/guest-list/ReplyEditor";
 import { RowView } from "@/components/dashboard/guest-list/RowView";
 import type { GuestActions } from "@/components/dashboard/guest-list/useGuestActions";
 import type { GuestListState } from "@/components/dashboard/guest-list/useGuestList";
-import { NEW_ROW, type RowEditorState } from "@/components/dashboard/guest-list/useRowEditor";
+import {
+  NEW_ROW,
+  type RowEditorState,
+} from "@/components/dashboard/guest-list/useRowEditor";
 import { Icon } from "@/components/icons";
 import { attentionItems, CATEGORIES, groupCategory } from "@/lib/guests";
-import type { AttentionItem, GuestCategory, GuestGroup, GuestRow } from "@/types/guests";
+import type {
+  AttentionItem,
+  GuestCategory,
+  GuestGroup,
+  GuestRow,
+} from "@/types/guests";
 
 const CATEGORY = {
   /*
@@ -82,14 +94,21 @@ interface GuestTableProps {
   onStartList: () => void;
 }
 
-export function GuestTable({ list, actions, editor, onStartList }: GuestTableProps) {
+export function GuestTable({
+  list,
+  actions,
+  editor,
+  onStartList,
+}: GuestTableProps) {
   const t = useTranslations("GuestList");
   const adding = editor.editing === NEW_ROW;
 
   if (list.rows.length === 0 && !adding) {
     return (
       <div className="border border-dashed border-mustard-400 px-6 py-10 text-center">
-        <p className="font-serif text-[17px] text-neutral-900">{t("emptyTitle")}</p>
+        <p className="font-serif text-[17px] text-neutral-900">
+          {t("emptyTitle")}
+        </p>
         {list.useList ? null : (
           <button
             type="button"
@@ -124,14 +143,18 @@ export function GuestTable({ list, actions, editor, onStartList }: GuestTablePro
       ) : null}
 
       {list.groups.length === 0 ? (
-        <p className="py-8 text-center text-[13px] text-neutral-700">{t("noResults")}</p>
+        <p className="py-8 text-center text-[13px] text-neutral-700">
+          {t("noResults")}
+        </p>
       ) : (
         <div className="flex flex-col gap-4">
           {CATEGORIES.map((category) => (
             <Category
               key={category}
               category={category}
-              groups={list.groups.filter((group) => groupCategory(group) === category)}
+              groups={list.groups.filter(
+                (group) => groupCategory(group) === category,
+              )}
               list={list}
               actions={actions}
               editor={editor}
@@ -181,22 +204,34 @@ function Category({ category, groups, list, actions, editor }: CategoryProps) {
           onClick={() => setOpen(!open)}
           className="absolute inset-0 flex cursor-pointer items-center justify-end pr-4"
         >
-          <Icon name="chevron" className={`size-5 transition-transform ${open ? "rotate-180" : ""}`} strokeWidth={2} />
+          <Icon
+            name="chevron"
+            className={`size-5 transition-transform ${open ? "rotate-180" : ""}`}
+            strokeWidth={2}
+          />
         </button>
       </div>
       {/* Grows from and shrinks to nothing; `inert` keeps a folded category out of reach. */}
-      <div
-        id={body}
-        inert={!open}
-        className={fold(open)}
-      >
+      <div id={body} inert={!open} className={fold(open)}>
         <div className="min-h-0 divide-y divide-mustard-300 overflow-hidden">
           {category === "attention"
             ? attentionItems(groups).map((item) => (
-                <AttentionCard key={item.id} item={item} list={list} actions={actions} editor={editor} />
+                <AttentionCard
+                  key={item.id}
+                  item={item}
+                  list={list}
+                  actions={actions}
+                  editor={editor}
+                />
               ))
             : groups.map((group) => (
-                <GroupView key={group.id} group={group} list={list} actions={actions} editor={editor} />
+                <GroupView
+                  key={group.id}
+                  group={group}
+                  list={list}
+                  actions={actions}
+                  editor={editor}
+                />
               ))}
         </div>
       </div>
@@ -215,7 +250,14 @@ interface AttentionCardProps {
 function AttentionCard({ item, list, actions, editor }: AttentionCardProps) {
   const t = useTranslations("GuestList");
   if (item.kind === "unknown") {
-    return <GroupView group={item.group} list={list} actions={actions} editor={editor} />;
+    return (
+      <GroupView
+        group={item.group}
+        list={list}
+        actions={actions}
+        editor={editor}
+      />
+    );
   }
 
   return (
@@ -229,7 +271,9 @@ function AttentionCard({ item, list, actions, editor }: AttentionCardProps) {
           aria-hidden
           className={`absolute top-1/2 -left-0.5 size-3 -translate-y-1/2 rounded-full border-2 ${CATEGORY.attention.ink} ${CATEGORY.attention.fill}`}
         />
-        <span className="min-w-0 truncate text-[14.5px] font-medium text-neutral-900">{item.name}</span>
+        <span className="min-w-0 truncate text-[14.5px] font-medium text-neutral-900">
+          {item.name}
+        </span>
         <span className={ATTENTION_TAG}>{t("duplicateTag")}</span>
       </div>
       {/* Under the name, like an unknown row's fix line. */}
@@ -238,7 +282,13 @@ function AttentionCard({ item, list, actions, editor }: AttentionCardProps) {
       </p>
       <div className="grid gap-3 @min-[720px]:grid-cols-2">
         {item.entries.map((row) => (
-          <SameNameReply key={row.id} row={row} list={list} actions={actions} editor={editor} />
+          <SameNameReply
+            key={row.id}
+            row={row}
+            list={list}
+            actions={actions}
+            editor={editor}
+          />
         ))}
       </div>
     </div>
@@ -258,7 +308,9 @@ function SameNameReply({ row, list, actions, editor }: SameNameReplyProps) {
   const locale = useLocale();
   /* The whole party, even the ones sitting in Confirmed or Declined, so the replies compare. */
   const party = list.rows.flatMap((other) =>
-    other.kind === "reply" && other.id !== row.id && other.reply.submissionId === row.reply.submissionId
+    other.kind === "reply" &&
+    other.id !== row.id &&
+    other.reply.submissionId === row.reply.submissionId
       ? [`${other.reply.name} (${t(STATUS_KEY[other.reply.status])})`]
       : [],
   );
@@ -269,7 +321,9 @@ function SameNameReply({ row, list, actions, editor }: SameNameReplyProps) {
 
   return (
     <div className="@container border border-mustard-300 bg-neutral-50 px-3 py-2">
-      <p className="text-[11.5px] text-neutral-700">{t("repliedOn", { date })}</p>
+      <p className="text-[11.5px] text-neutral-700">
+        {t("repliedOn", { date })}
+      </p>
       <RowItem row={row} list={list} actions={actions} editor={editor} inCard />
       {party.length > 0 ? (
         <p className="py-1 text-[12.5px] text-neutral-700">
@@ -277,7 +331,11 @@ function SameNameReply({ row, list, actions, editor }: SameNameReplyProps) {
         </p>
       ) : null}
       {row.later ? (
-        <button type="button" onClick={() => editor.guard(() => actions.different(row.reply.id))} className={`my-1.5 ${SMALL_BTN}`}>
+        <button
+          type="button"
+          onClick={() => editor.guard(() => actions.different(row.reply.id))}
+          className={`my-1.5 ${SMALL_BTN}`}
+        >
           {t("differentPerson")}
         </button>
       ) : null}
@@ -300,7 +358,8 @@ const DOT = "size-3 -translate-y-1/2 rounded-full border-2";
 /** Filled once there's something to show for it — a reply, or an invite sent; dashed while the invite isn't. */
 function statusDot(row: GuestRow, category: GuestCategory): string {
   const { ink, fill } = CATEGORY[category];
-  if (row.kind === "waiting" && !row.listName.sent) return `${DOT} border-dashed ${ink} bg-neutral-50`;
+  if (row.kind === "waiting" && !row.listName.sent)
+    return `${DOT} border-dashed ${ink} bg-neutral-50`;
   return `${DOT} ${ink} ${fill}`;
 }
 
@@ -324,7 +383,13 @@ function GroupView({ group, list, actions, editor }: GroupViewProps) {
   return (
     <div className="py-1.5 pr-3 pl-10 @min-[720px]:pr-5 @min-[720px]:pl-13">
       {group.rows.map((row, at) => (
-        <Strand key={row.id} {...place(at)} category={category} at="person" mark={<span className={statusDot(row, category)} />}>
+        <Strand
+          key={row.id}
+          {...place(at)}
+          category={category}
+          at="person"
+          mark={<span className={statusDot(row, category)} />}
+        >
           <RowItem row={row} list={list} actions={actions} editor={editor} />
         </Strand>
       ))}
@@ -382,7 +447,15 @@ interface StrandProps {
   children: ReactNode;
 }
 
-function Strand({ joined, first, last, category, at, mark, children }: StrandProps) {
+function Strand({
+  joined,
+  first,
+  last,
+  category,
+  at,
+  mark,
+  children,
+}: StrandProps) {
   const y = STRAND[at];
   const { line, dashed } = CATEGORY[category];
   /* The split-off names hang by a dashed thread: they're elsewhere in the table. */
@@ -390,8 +463,12 @@ function Strand({ joined, first, last, category, at, mark, children }: StrandPro
 
   return (
     <div className="relative">
-      {joined && !first ? <span aria-hidden className={`${LINE} top-0 ${y.above} ${above}`} /> : null}
-      {joined && !last ? <span aria-hidden className={`${LINE} bottom-0 ${y.below} ${line}`} /> : null}
+      {joined && !first ? (
+        <span aria-hidden className={`${LINE} top-0 ${y.above} ${above}`} />
+      ) : null}
+      {joined && !last ? (
+        <span aria-hidden className={`${LINE} bottom-0 ${y.below} ${line}`} />
+      ) : null}
       <span
         aria-hidden
         className={`absolute -left-[26px] flex @min-[720px]:-left-[34px] ${y.mark}`}
@@ -448,7 +525,9 @@ function RowItem({ row, list, actions, editor, inCard = false }: RowItemProps) {
 
   const { reply } = row;
   const party = list.guests.replies.flatMap((other) =>
-    other.id !== reply.id && other.submissionId === reply.submissionId ? [other.name] : [],
+    other.id !== reply.id && other.submissionId === reply.submissionId
+      ? [other.name]
+      : [],
   );
 
   return (

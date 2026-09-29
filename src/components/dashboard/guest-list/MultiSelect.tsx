@@ -1,7 +1,11 @@
 "use client";
 
 import { type KeyboardEvent, useEffect, useId, useRef, useState } from "react";
-import { ERROR, INPUT, LABEL } from "@/components/dashboard/event-editor/styles";
+import {
+  ERROR,
+  INPUT,
+  LABEL,
+} from "@/components/dashboard/event-editor/styles";
 import { Icon } from "@/components/icons";
 
 interface MultiSelectProps<T extends string> {
@@ -19,14 +23,23 @@ interface MultiSelectProps<T extends string> {
  * first option; ↑ ↓ Home End move between them, Space ticks, Escape closes
  * back to the dropdown, and a click or Tab outside closes it.
  */
-export function MultiSelect<T extends string>({ label, placeholder, options, value, onPick, error }: MultiSelectProps<T>) {
+export function MultiSelect<T extends string>({
+  label,
+  placeholder,
+  options,
+  value,
+  onPick,
+  error,
+}: MultiSelectProps<T>) {
   const [open, setOpen] = useState(false);
   const box = useRef<HTMLDivElement>(null);
   const toggle = useRef<HTMLButtonElement>(null);
   const panel = useRef<HTMLDivElement>(null);
   const list = useId();
   const title = useId();
-  const shown = options.filter((option) => value.includes(option.value)).map((option) => option.label);
+  const shown = options
+    .filter((option) => value.includes(option.value))
+    .map((option) => option.label);
 
   useEffect(() => {
     if (!open) return;
@@ -59,7 +72,9 @@ export function MultiSelect<T extends string>({ label, placeholder, options, val
 
   return (
     <div ref={box} className="relative min-w-0">
-      <span id={title} className={`mb-1.5 block ${LABEL}`}>{label}</span>
+      <span id={title} className={`mb-1.5 block ${LABEL}`}>
+        {label}
+      </span>
       <button
         ref={toggle}
         type="button"
@@ -74,10 +89,15 @@ export function MultiSelect<T extends string>({ label, placeholder, options, val
         onClick={() => setOpen(!open)}
         className={`${INPUT} flex cursor-pointer items-center justify-between gap-2 text-left`}
       >
-        <span className={`truncate ${shown.length > 0 ? "" : "text-neutral-600"}`}>
+        <span
+          className={`truncate ${shown.length > 0 ? "" : "text-neutral-600"}`}
+        >
           {shown.length > 0 ? shown.join(", ") : placeholder}
         </span>
-        <Icon name="chevron" className={`size-4 shrink-0 transition-transform ${open ? "rotate-180" : ""}`} />
+        <Icon
+          name="chevron"
+          className={`size-4 shrink-0 transition-transform ${open ? "rotate-180" : ""}`}
+        />
       </button>
       {open ? (
         <div

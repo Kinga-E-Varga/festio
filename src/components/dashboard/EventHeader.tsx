@@ -1,12 +1,12 @@
-import type { ReactNode } from 'react'
-import { BackButton } from '@/components/dashboard/BackButton'
-import { EventWhen } from '@/components/dashboard/EventWhen'
-import type { DashboardEvent } from '@/types/dashboard'
+import type { ReactNode } from "react";
+import { BackButton } from "@/components/dashboard/BackButton";
+import { EventWhen } from "@/components/dashboard/EventWhen";
+import type { DashboardEvent } from "@/types/dashboard";
 
 interface EventHeaderProps {
-  event: DashboardEvent
+  event: DashboardEvent;
   /** The page's one action, beside the title — it drops under it when there's no room. */
-  action?: ReactNode
+  action?: ReactNode;
 }
 
 /** The way back, the event's name and when it is — every event page opens so. */
@@ -29,5 +29,5 @@ export function EventHeader({ event, action }: EventHeaderProps) {
         {action}
       </div>
     </>
-  )
+  );
 }

@@ -2,7 +2,12 @@
 
 import { useTranslations } from "next-intl";
 import { useEffect, useId, useRef, useState } from "react";
-import { BTN_GHOST, BTN_PRIMARY, HINT, INPUT } from "@/components/dashboard/event-editor/styles";
+import {
+  BTN_GHOST,
+  BTN_PRIMARY,
+  HINT,
+  INPUT,
+} from "@/components/dashboard/event-editor/styles";
 import { normalizeName } from "@/lib/guests";
 import type { ListName } from "@/types/guests";
 
@@ -15,14 +20,21 @@ interface MatchPickerProps {
 }
 
 /** Pick the Waiting name an unknown reply really belongs to, in a modal dialog. */
-export function MatchPicker({ name, waiting, onPick, onClose }: MatchPickerProps) {
+export function MatchPicker({
+  name,
+  waiting,
+  onPick,
+  onClose,
+}: MatchPickerProps) {
   const t = useTranslations("GuestList");
   const [query, setQuery] = useState("");
   const [picked, setPicked] = useState<ListName | null>(null);
   const dialog = useRef<HTMLDialogElement>(null);
   const titleId = useId();
   const needle = normalizeName(query);
-  const options = waiting.filter((entry) => normalizeName(entry.name).includes(needle));
+  const options = waiting.filter((entry) =>
+    normalizeName(entry.name).includes(needle),
+  );
 
   useEffect(() => {
     dialog.current?.showModal();
@@ -73,7 +85,9 @@ export function MatchPicker({ name, waiting, onPick, onClose }: MatchPickerProps
                       onChange={() => setPicked(entry)}
                       className="accent-forest-500"
                     />
-                    <span className="min-w-0 flex-1 truncate">{entry.name}</span>
+                    <span className="min-w-0 flex-1 truncate">
+                      {entry.name}
+                    </span>
                     <small className="text-[11.5px] text-neutral-700">
                       {t(entry.sent ? "invitationSent" : "invitationNotSent")}
                     </small>
@@ -85,7 +99,11 @@ export function MatchPicker({ name, waiting, onPick, onClose }: MatchPickerProps
         )}
 
         <div className="mt-5 flex flex-wrap justify-end gap-2">
-          <button type="button" onClick={() => dialog.current?.close()} className={BTN_GHOST}>
+          <button
+            type="button"
+            onClick={() => dialog.current?.close()}
+            className={BTN_GHOST}
+          >
             {t("cancel")}
           </button>
           <button

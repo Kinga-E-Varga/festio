@@ -7,11 +7,7 @@ import {
   REPLY_CAP_MIN_EXTRA,
 } from "@/lib/config";
 import { LANGUAGE_LOCALE, type Language } from "@/lib/language";
-import type {
-  DashboardEvent,
-  EventStatus,
-  TimeSpan,
-} from "@/types/dashboard";
+import type { DashboardEvent, EventStatus, TimeSpan } from "@/types/dashboard";
 
 /**
  * A pile of events still ahead reads soonest first — the next one is the one
@@ -91,8 +87,13 @@ export function floodReportPath(event: { id: string }): string {
 }
 
 /** Replies received as a share of expected guests. May pass 100. */
-export function expectedPercent(replied: number, expectedGuests: number): number {
-  return expectedGuests > 0 ? Math.round((replied / expectedGuests) * 100) : 100;
+export function expectedPercent(
+  replied: number,
+  expectedGuests: number,
+): number {
+  return expectedGuests > 0
+    ? Math.round((replied / expectedGuests) * 100)
+    : 100;
 }
 
 export type ExpectedLevel = "ok" | "warn" | "over";

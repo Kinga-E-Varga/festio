@@ -1,13 +1,13 @@
-'use client'
+"use client";
 
-import { useState, type ReactNode } from 'react'
+import { useState, type ReactNode } from "react";
 
 export interface EventTab {
-  id: string
-  label: string
-  count: number
+  id: string;
+  label: string;
+  count: number;
   /** Server-rendered list for this tab. */
-  panel: ReactNode
+  panel: ReactNode;
 }
 
 export function EventTabs({
@@ -16,19 +16,19 @@ export function EventTabs({
   initialId = tabs[0]?.id ?? null,
   fallback,
 }: {
-  tabs: EventTab[]
+  tabs: EventTab[];
   /** What the tabs sort, for the tablist's own accessible name. */
-  label: string
+  label: string;
   /**
    * Which tab opens selected. `null` opens with none of them selected, for a
    * page that arrived showing one record picked out elsewhere.
    */
-  initialId?: string | null
+  initialId?: string | null;
   /** Shown in place of the panels while no tab is selected. */
-  fallback?: ReactNode
+  fallback?: ReactNode;
 }) {
-  const [activeId, setActiveId] = useState<string | null>(initialId)
-  const [arrivedOn, setArrivedOn] = useState<string | null>(initialId)
+  const [activeId, setActiveId] = useState<string | null>(initialId);
+  const [arrivedOn, setArrivedOn] = useState<string | null>(initialId);
 
   /*
    * Arriving at the page again — following its own way out of a narrowed
@@ -36,8 +36,8 @@ export function EventTabs({
    * by that navigation, so the tab it was left on has to give way here.
    */
   if (initialId !== arrivedOn) {
-    setArrivedOn(initialId)
-    setActiveId(initialId)
+    setArrivedOn(initialId);
+    setActiveId(initialId);
   }
 
   /*
@@ -49,15 +49,15 @@ export function EventTabs({
    */
   function select(id: string) {
     if (activeId === null && window.location.search) {
-      window.history.replaceState(null, '', window.location.pathname)
+      window.history.replaceState(null, "", window.location.pathname);
     }
-    setActiveId(id)
+    setActiveId(id);
   }
 
   function selectByOffset(index: number, offset: number) {
-    const next = tabs[(index + offset + tabs.length) % tabs.length]
-    select(next.id)
-    document.getElementById(`tab-${next.id}`)?.focus()
+    const next = tabs[(index + offset + tabs.length) % tabs.length];
+    select(next.id);
+    document.getElementById(`tab-${next.id}`)?.focus();
   }
 
   return (
@@ -69,7 +69,7 @@ export function EventTabs({
           className="flex flex-wrap items-center gap-0.5 sm:grid sm:w-max sm:grid-flow-col sm:auto-cols-fr sm:gap-1"
         >
           {tabs.map((tab, index) => {
-            const isActive = tab.id === activeId
+            const isActive = tab.id === activeId;
             return (
               <button
                 key={tab.id}
@@ -85,13 +85,13 @@ export function EventTabs({
                 }
                 onClick={() => select(tab.id)}
                 onKeyDown={(event) => {
-                  if (event.key === 'ArrowRight') {
-                    event.preventDefault()
-                    selectByOffset(index, 1)
+                  if (event.key === "ArrowRight") {
+                    event.preventDefault();
+                    selectByOffset(index, 1);
                   }
-                  if (event.key === 'ArrowLeft') {
-                    event.preventDefault()
-                    selectByOffset(index, -1)
+                  if (event.key === "ArrowLeft") {
+                    event.preventDefault();
+                    selectByOffset(index, -1);
                   }
                 }}
                 // The active tab hangs a pixel below the list so its own bottom
@@ -101,20 +101,20 @@ export function EventTabs({
                 // order, not by the order they are written.
                 className={`-mb-px flex items-center justify-center gap-1 rounded-t-xs border-b-3 px-3 pt-[9px] pb-[7px] text-[15px] whitespace-nowrap transition-colors sm:gap-1.5 sm:px-4 sm:text-base ${
                   isActive
-                    ? 'border-forest-500 bg-forest-500 font-semibold text-mustard-50'
-                    : 'border-transparent text-forest-600 hover:border-forest-500 hover:bg-forest-200'
+                    ? "border-forest-500 bg-forest-500 font-semibold text-mustard-50"
+                    : "border-transparent text-forest-600 hover:border-forest-500 hover:bg-forest-200"
                 }`}
               >
                 {tab.label}
                 <span
                   className={`text-xs tabular-nums ${
-                    isActive ? 'text-mustard-50' : 'text-forest-500'
+                    isActive ? "text-mustard-50" : "text-forest-500"
                   }`}
                 >
                   {tab.count}
                 </span>
               </button>
-            )
+            );
           })}
         </div>
       </div>
@@ -136,5 +136,5 @@ export function EventTabs({
         ))
       )}
     </div>
-  )
+  );
 }
