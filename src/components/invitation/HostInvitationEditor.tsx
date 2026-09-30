@@ -49,7 +49,7 @@ export function HostInvitationEditor({
   const [values, setValues] = useState(initial);
   const [editing, setEditing] = useState(true);
   const toast = useToast();
-  const leave = useLeaveFestio("/dashboard/invitations");
+  const leave = useLeaveFestio("/dashboard/events");
 
   function change(id: string, value: string) {
     setValues((current) => ({ ...current, [id]: value }));

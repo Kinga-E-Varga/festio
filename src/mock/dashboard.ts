@@ -43,23 +43,12 @@ export const NAV_SECTIONS: NavSection[] = [
     labelKey: "hosting",
     items: [
       { labelKey: "home", href: "/dashboard", icon: "home" },
+      { labelKey: "events", href: "/dashboard/events", icon: "calendar" },
       {
-        labelKey: "events",
-        href: "/dashboard/events",
-        icon: "calendar",
-        badge: "5",
+        labelKey: "downloads",
+        href: "/dashboard/downloads",
+        icon: "download",
       },
-      {
-        labelKey: "invitations",
-        href: "/dashboard/invitations",
-        icon: "envelope",
-      },
-    ],
-  },
-  {
-    labelKey: "studio",
-    items: [
-      { labelKey: "print", href: "/dashboard/print", icon: "printer" },
       {
         labelKey: "templates",
         href: "/dashboard/templates",

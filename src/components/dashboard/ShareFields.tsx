@@ -7,7 +7,7 @@ import type { DashboardEvent } from "@/types/dashboard";
 
 const FIELD_BASE =
   "flex items-center gap-[9px] border border-mustard-300 px-3 py-2 text-[13px] text-neutral-900";
-const FIELD = `${FIELD_BASE} bg-mustard-50`;
+const FIELD = `${FIELD_BASE} bg-mustard-50/60`;
 /** Stands in for the link row when there is nothing to share yet. */
 const FIELD_NOTE = `${FIELD_BASE} bg-terracotta-200`;
 
@@ -31,7 +31,7 @@ export function ShareFields({
   return (
     <div className={`flex flex-col [&>*+*]:border-t-0 ${className}`}>
       <span className={FIELD}>
-        <Icon name="link" className="size-3.5 shrink-0 text-forest-500" />
+        <Icon name="link" className="size-3.5 shrink-0 text-neutral-700" />
         <span className="flex-1 truncate">{link}</span>
         <CopyButton
           value={`https://${link}`}

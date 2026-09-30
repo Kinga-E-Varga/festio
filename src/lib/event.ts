@@ -134,6 +134,12 @@ export const DATE_PARTS: Intl.DateTimeFormatOptions = {
   year: "numeric",
 };
 
+/** "5 Sept 2026": the same date with its month cut short, where room is tight. */
+export const SHORT_DATE_PARTS: Intl.DateTimeFormatOptions = {
+  ...DATE_PARTS,
+  month: "short",
+};
+
 /**
  * Editing and the reply form both stop at midnight on the day before the
  * event — the project's 24h freeze, expressed as a wall-clock cut-off.
@@ -186,8 +192,12 @@ export function isRealDate(value: Date): boolean {
 }
 
 /** "6 September 2026", in the language it is read in. */
-export function formatEventDate(value: Date, language: Language): string {
-  return value.toLocaleDateString(LANGUAGE_LOCALE[language], DATE_PARTS);
+export function formatEventDate(
+  value: Date,
+  language: Language,
+  parts: Intl.DateTimeFormatOptions = DATE_PARTS,
+): string {
+  return value.toLocaleDateString(LANGUAGE_LOCALE[language], parts);
 }
 
 /** An ISO `YYYY-MM-DD` day as `formatEventDate` writes it. */
@@ -212,8 +222,12 @@ export function formatDuration(span: TimeSpan, language: Language): string {
 }
 
 /** "5 September 2026, 00:00" — the long form, behind `formatDeadline`. */
-function formatStamp(value: Date, language: Language): string {
-  return `${formatEventDate(value, language)}, ${pad(value.getHours())}:${pad(value.getMinutes())}`;
+function formatStamp(
+  value: Date,
+  language: Language,
+  parts: Intl.DateTimeFormatOptions,
+): string {
+  return `${formatEventDate(value, language, parts)}, ${pad(value.getHours())}:${pad(value.getMinutes())}`;
 }
 
 /**
@@ -222,11 +236,15 @@ function formatStamp(value: Date, language: Language): string {
  * Midnight is the shape a date with no time of day takes once it is parsed, so
  * stating "00:00" back would only ever be noise.
  */
-export function formatDeadline(value: Date, language: Language): string {
+export function formatDeadline(
+  value: Date,
+  language: Language,
+  parts: Intl.DateTimeFormatOptions = DATE_PARTS,
+): string {
   const midnight = value.getHours() === 0 && value.getMinutes() === 0;
   return midnight
-    ? formatEventDate(value, language)
-    : formatStamp(value, language);
+    ? formatEventDate(value, language, parts)
+    : formatStamp(value, language, parts);
 }
 
 /** The `YYYY-MM-DDTHH:MM` shape a `datetime-local` input expects. */

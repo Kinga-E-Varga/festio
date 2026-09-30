@@ -202,7 +202,7 @@ function Reply({ form, onSend }: { form: RsvpFormState; onSend: () => void }) {
     return (
       <div className="flex flex-col gap-2">
         <p className={TITLE}>{t("sentTitle")}</p>
-        <p className="text-[12px] leading-[1.45] text-[color:var(--c3)] text-center">
+        <p className="text-[12px] leading-[1.45] text-[color:var(--c3)] text-center text-balance">
           {t("sentNote")}
         </p>
       </div>

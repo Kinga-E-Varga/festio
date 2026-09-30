@@ -60,7 +60,7 @@ export function hasFestioHistory() {
 }
 
 /**
- * Back to wherever in Festio the host came from — the invitations list, the
+ * Back to wherever in Festio the host came from — the events list, the
  * event editor, the template gallery, or the print page — which only history
  * knows. When the entry behind this one is not ours (a fresh tab, a pasted
  * link), stepping into it would drop the host off the site, so the page's own

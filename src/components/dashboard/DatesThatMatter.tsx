@@ -7,6 +7,7 @@ import {
   formatEventDate,
   replyClose,
   replyWindow,
+  SHORT_DATE_PARTS,
 } from "@/lib/event";
 import type { DashboardEvent } from "@/types/dashboard";
 
@@ -70,8 +71,17 @@ export function DatesThatMatter({
 }: DatesThatMatterProps) {
   const t = useTranslations("Event");
   const locale = useLocale();
-  const freeze = formatDeadline(contentFreeze(event.date), locale);
-  const deletion = formatEventDate(deletionDate(event.date), locale);
+  /* Three dates share one row, so the months are cut short to keep them on it. */
+  const freeze = formatDeadline(
+    contentFreeze(event.date),
+    locale,
+    SHORT_DATE_PARTS,
+  );
+  const deletion = formatEventDate(
+    deletionDate(event.date),
+    locale,
+    SHORT_DATE_PARTS,
+  );
   const row = layout === "row";
 
   return (
@@ -91,7 +101,7 @@ export function DatesThatMatter({
         )}
         row={row}
       >
-        {formatDeadline(replyClose(event), locale)}
+        {formatDeadline(replyClose(event), locale, SHORT_DATE_PARTS)}
       </DateNote>
 
       <DateNote

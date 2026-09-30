@@ -42,3 +42,6 @@ next-env.d.ts
 
 # implementation plans — never committed
 /context/plans/
+
+# archived features — kept locally, never committed
+/archived/

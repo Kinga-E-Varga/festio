@@ -25,7 +25,6 @@ one) — see the comments in `[locale]/layout.tsx` and `invite/[invite]/layout.t
 | `[locale]/dashboard/events/[id]/page.tsx`        | Event editor                                                                  |
 | `[locale]/dashboard/events/[id]/guests/page.tsx` | Event guest list                                                              |
 | `[locale]/dashboard/events/[id]/report/page.tsx` | Draft: report a flood of unexpected replies                                   |
-| `[locale]/dashboard/invitations/page.tsx`        | Invitations grid                                                              |
 
 **Guest invitation**, outside next-intl entirely, no language switch:
 
@@ -76,9 +75,7 @@ Geometry (`.sheet`, `.sheet-view`, `.leaf`, `.flip`, `.fold`, `.sheet-form`) liv
 
 Shell: `DashboardShell.tsx`, `SideNav.tsx`, `TopBar.tsx`, `SiteFooter.tsx`, `NavLink.tsx`, `LanguageSwitcher.tsx`.
 
-Events: `EventCard.tsx`, `EventRow.tsx`, `EventList.tsx`, `EventGroups.tsx`, `EventTabs.tsx`, `EventMeta.tsx`, `EventWhen.tsx` (the day + how far off, shared by card, row and header), `ShareFields.tsx` (link, copy button and Protected password, shared by event and invitation cards).
-
-Invitations: `InvitationCard.tsx`, `InvitationGroups.tsx`.
+Events: `EventCard.tsx`, `EventRow.tsx`, `EventList.tsx`, `EventGroups.tsx`, `EventTabs.tsx`, `EventMeta.tsx`, `EventWhen.tsx` (the day + how far off, shared by card, row and header), `ShareFields.tsx` (link, copy button and Protected password).
 
 Widgets: `HostToday.tsx`, `StatStrip.tsx`, `RepliesMeter.tsx`, `DatesThatMatter.tsx`, `NotificationsRail.tsx`, `Toast.tsx`, `CopyButton.tsx`, `PasswordField.tsx`, `FocusView.tsx`, `CentreOnHash.tsx`.
 
@@ -111,3 +108,5 @@ Event pages: `EventHeader.tsx` (BACK + title + date), `BackButton.tsx`, `Replies
 - Config: `next.config.ts`, `tsconfig.json`, `eslint.config.mjs`, `postcss.config.mjs`
 
 No `firestore.rules` / `firestore.indexes.json` in the repo yet.
+
+`archived/` — git-ignored, removed features kept for restoring. Don't read it unless asked.

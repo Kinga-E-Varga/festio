@@ -10,3 +10,6 @@ context/features/
 context/fixes/
 context/plans/
 context/reviews/
+
+# archived features — left as they were
+archived/

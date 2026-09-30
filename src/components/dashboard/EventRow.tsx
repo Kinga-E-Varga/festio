@@ -16,7 +16,7 @@ import {
   expectedPercent,
   repliesBarVars,
 } from "@/lib/event";
-import type { DashboardEvent, EventStatus } from "@/types/dashboard";
+import type { DashboardEvent, EventStatus, IconName } from "@/types/dashboard";
 
 /** The card's left edge says which pile the event is in, as the dashboard's does. */
 const STATUS_EDGE: Record<EventStatus, string> = {
@@ -44,12 +44,90 @@ const PANEL_LABEL =
  */
 export const RULE = `relative before:pointer-events-none before:absolute before:inset-x-5 before:top-0 before:h-px before:bg-mustard-300 before:content-[''] after:pointer-events-none after:absolute after:inset-y-5 after:left-0 after:hidden after:w-px after:bg-mustard-300 after:content-['']`;
 
-/** Every section after the first hangs off a hairline of its own. */
-const PANEL = "min-w-0 border-t border-mustard-300 pt-5";
+/**
+ * Where the actions sit: a row of their own under the artwork and details
+ * while the card has two columns, the third column once it has three.
+ */
+const ACTIONS_PLACE =
+  "@min-[900px]:col-span-2 @min-[900px]:row-start-2 @min-[1200px]:col-span-1 @min-[1200px]:col-start-3 @min-[1200px]:row-start-1";
 
-/** The six actions share one size and fill the width of their column. */
-export const ACTION =
-  "inline-flex w-full min-w-[135px] items-center justify-center gap-2 rounded-md border border-forest-500 bg-mustard-50 px-2.5 py-[12px] text-center text-[13px] leading-[1.3] font-medium text-forest-500 transition-colors hover:border-forest-600 hover:bg-forest-200 hover:text-forest-600 disabled:cursor-not-allowed disabled:opacity-50";
+/** Every section after the first hangs off a hairline of its own. */
+const PANEL = "min-w-0 border-t border-mustard-300 pt-6";
+
+/**
+ * The actions, one set. Under the card they fill two columns top to bottom —
+ * the event's three, then the invitation's — a gap apart; within a column
+ * neighbours butt together and share their edges as the sharing fields do —
+ * each pulls back over the one before by its border, and the list gives that
+ * pixel back at its top and left. In their own column they spread down its
+ * height instead, evenly apart, each with its own full border — at most 460px
+ * from first to last, centred in a column taller than that.
+ */
+const ACTION_LIST =
+  "grid grid-cols-1 pt-px pl-px @min-[500px]:grid-flow-col @min-[500px]:grid-cols-2 @min-[500px]:grid-rows-3 @min-[500px]:gap-x-10 @min-[1200px]:flex @min-[1200px]:max-h-[400px] @min-[1200px]:flex-1 @min-[1200px]:flex-col @min-[1200px]:justify-around @min-[1200px]:p-0 @min-[1200px]:[&>*]:m-0";
+
+/**
+ * One action: icon, label, and where it leads on the far side. Set
+ * like the sharing fields — their fill, border, text and icon colours — so the
+ * row reads as part of the card; hover fills it with the border colour.
+ */
+const ACTION_ROW =
+  "-mt-px -ml-px flex w-full items-center gap-3 px-3.5 py-[13px] text-left text-[13px] leading-[1.3] font-[450] border border-mustard-300 bg-mustard-50 text-neutral-900 transition-colors not-disabled:hover:border-mustard-300 not-disabled:hover:bg-mustard-300 disabled:cursor-not-allowed disabled:opacity-50";
+
+/**
+ * One action. With no `href` it is a button — disabled, with the reason as
+ * its tooltip, when `disabledTitle` is given. An `external` one opens in a
+ * tab of its own and says so with its arrow.
+ */
+function ActionRow({
+  icon,
+  label,
+  href,
+  external = false,
+  disabledTitle,
+}: {
+  icon: IconName;
+  label: string;
+  href?: string;
+  external?: boolean;
+  disabledTitle?: string;
+}) {
+  const content = (
+    <>
+      <Icon name={icon} className="size-[15px] text-neutral-700" />
+      <span className="min-w-0 flex-1">{label}</span>
+      <Icon
+        name={external ? "arrowUpRight" : "chevron"}
+        className={`size-[13px] text-neutral-700 ${external ? "" : "-rotate-90"}`}
+      />
+    </>
+  );
+
+  if (!href || disabledTitle !== undefined) {
+    return (
+      <button
+        type="button"
+        disabled={disabledTitle !== undefined}
+        title={disabledTitle}
+        className={ACTION_ROW}
+      >
+        {content}
+      </button>
+    );
+  }
+  if (external) {
+    return (
+      <a href={href} target="_blank" rel="noreferrer" className={ACTION_ROW}>
+        {content}
+      </a>
+    );
+  }
+  return (
+    <Link href={href} className={ACTION_ROW}>
+      {content}
+    </Link>
+  );
+}
 
 function Tally({
   label,
@@ -79,9 +157,9 @@ function Tally({
 }
 
 /**
- * One event on the events page: the artwork on the far left, everything the
- * event says about itself stacked in the middle, and everything it can be
- * taken to in a column of its own on the right. Nothing here links to
+ * One event on the events page: the artwork on the far left; beside it the
+ * title with what the event says about itself under it; and everything it can
+ * be taken to in a column of its own on the right. Nothing here links to
  * somewhere else that repeats it, so the card takes no hover state.
  */
 export function EventRow({ event }: { event: DashboardEvent }) {
@@ -107,35 +185,56 @@ export function EventRow({ event }: { event: DashboardEvent }) {
       className={`@container scroll-mt-[88px] border border-mustard-300 border-l-4 bg-mustard-100 ${STATUS_EDGE[eventStatus(event)]}`}
     >
       {/*
-       * Three columns on a wide card, with the actions in the last of them.
-       * Narrower, the actions leave that column and run as a strip along the
-       * bottom of the whole card, breaking into fewer and fewer per row until
-       * they are a single stack.
+       * The artwork down the left; beside it the event — its title with the
+       * details under it, one column — and the actions in a column of their
+       * own on a wide card.
+       * Narrower, the actions drop to a row of their own across the whole
+       * card, and on a phone everything stacks. The artwork takes only the
+       * width it needs, the actions a quarter of the card up to 280px — so
+       * they narrow with it before they drop below — and the details fill
+       * whatever is left. Every section pads itself evenly, and that padding
+       * is all the room the card has above and below.
        */}
-      <div className="grid grid-cols-1 @min-[720px]:grid-cols-[minmax(0,1fr)_minmax(0,2fr)] @min-[1000px]:grid-cols-[minmax(0,1fr)_minmax(0,1.9fr)_minmax(175px,0.6fr)]">
+      <div className="grid grid-cols-1 @min-[900px]:grid-cols-[auto_minmax(0,1fr)] @min-[1200px]:grid-cols-[auto_minmax(0,1fr)_min(25cqw,280px)]">
         {/* The artwork is the point of a record, so it is shown whole. */}
-        <div className="flex items-center justify-center p-[18px] py-8 @min-[720px]:col-start-1 @min-[720px]:row-start-1 @min-[720px]:p-5 @min-[720px]:py-10">
+        <div className="flex items-center justify-center px-[18px] py-6 @min-[900px]:py-10 @min-[1000px]:py-12 @min-[900px]:col-start-1 @min-[900px]:row-start-1 @min-[900px]:px-5 @min-[1000px]:px-10">
           {/*
            * Invitations are portrait, so width alone would let a wide card
-           * make the card taller than anything beside it. The height is what
-           * is capped; the width follows the artwork's own proportions.
+           * make the card taller than anything beside it. Beside the details
+           * the height is set outright — 40% of the card's width, at most
+           * 500px — and the width follows the artwork's own proportions, so
+           * the artwork narrows along with the card rather than leaving the
+           * details to take all of it. Stacked, the width is set instead:
+           * the whole column, at most what a 500px-tall A4 card is wide.
+           * Either way the size is the card's to decide, never the file's —
+           * which file loads varies with the screen's pixel density.
            */}
           <div className="flex w-full justify-center leading-none">
             <Image
               src={event.preview}
               alt={t("previewAlt", { title: event.title })}
-              sizes="500px"
-              className="h-auto max-h-[500px] w-auto max-w-full border border-mustard-300"
+              sizes="360px"
+              className="h-auto w-full max-w-[352px] border border-mustard-300 @min-[900px]:h-[min(500px,40cqw)] @min-[900px]:w-auto @min-[900px]:max-w-none"
             />
           </div>
         </div>
 
-        {/* What the event says about itself, section by section. */}
+        {/*
+         * The event itself, one column: what it is and when at the top, and
+         * what it says about itself under that. One rule down its left, beside
+         * the artwork; centred against it when the artwork is taller. On a
+         * phone the column's own box steps aside, so the title can lead the
+         * whole card above the artwork and the details follow it.
+         */}
         <div
-          className={`flex min-w-0 flex-col justify-center p-[18px] py-8 @min-[720px]:col-start-2 @min-[720px]:row-start-1 @min-[720px]:p-5 @min-[720px]:py-10 ${RULE} @min-[720px]:before:hidden @min-[720px]:after:block`}
+          className={`contents min-w-0 flex-col justify-center @min-[900px]:col-start-2 @min-[900px]:row-start-1 @min-[900px]:flex @min-[900px]:px-5 @min-[900px]:py-10 @min-[1000px]:py-12 @min-[1000px]:px-10 ${RULE} before:hidden @min-[900px]:after:block`}
         >
-          <div className="mx-auto flex w-full max-w-[700px] flex-col gap-5">
-            {/* 1 — what it is and when. */}
+          {/*
+           * 1 — what it is and when. Its rule sits inside the padding, so it
+           * stops short of the card's edges like every other. First of all on
+           * a phone, where it holds its own margins.
+           */}
+          <div className="order-first mx-[18px] mt-8 min-w-0 border-b border-mustard-300 pb-8 @min-[900px]:order-none @min-[900px]:m-0 @min-[900px]:pb-6">
             <div className="min-w-0">
               <h3 className="font-serif text-[21px] leading-[1.2] text-neutral-900 @2xl:text-[23px]">
                 {event.title}
@@ -153,7 +252,16 @@ export function EventRow({ event }: { event: DashboardEvent }) {
                 })}
               </p>
             </div>
+          </div>
 
+          {/*
+           * 2–4 — what the event says about itself, section by section. The
+           * title's rule stands in for the first section's own; on a phone,
+           * where the artwork sits between them, it takes a rule of its own.
+           */}
+          <div
+            className={`flex w-full min-w-0 flex-col gap-6 px-[18px] py-8 @min-[900px]:p-0 @min-[900px]:pt-6 [&>:first-child]:border-t-0 [&>:first-child]:pt-0 ${RULE} @min-[900px]:before:hidden`}
+          >
             {/* 2 — how a guest reaches it. */}
             {archived ? null : (
               <div className={PANEL}>
@@ -239,120 +347,70 @@ export function EventRow({ event }: { event: DashboardEvent }) {
         </div>
 
         {/*
-         * Everything this event can be taken to: a column of its own on a wide
-         * card, and a strip across the foot of the card below that. A record
-         * whose guest data is gone has nothing left to act on, so it holds the
-         * column empty instead — same track, no rule, so a deleted record
-         * lines up with every other card rather than reflowing.
+         * Everything this event can be taken to: a column of its own on a
+         * wide card, a row across the whole card below that. A record whose guest
+         * data is gone has nothing left to act on, so it holds the column
+         * empty instead — same track, no rule, so a deleted record lines
+         * up with every other card rather than reflowing.
          */}
         {archived ? (
-          <div
-            aria-hidden="true"
-            className="@min-[720px]:col-span-2 @min-[720px]:row-start-2 @min-[1000px]:col-span-1 @min-[1000px]:col-start-3 @min-[1000px]:row-start-1"
-          />
+          <div aria-hidden="true" className={ACTIONS_PLACE} />
         ) : (
           <div
-            className={`block p-[18px] py-8 @min-[720px]:col-span-2 @min-[720px]:row-start-2 @min-[720px]:p-5 @min-[720px]:py-10 @min-[1000px]:col-span-1 @min-[1000px]:col-start-3 @min-[1000px]:row-start-1 @min-[1000px]:flex @min-[1000px]:items-center @min-[1000px]:justify-center ${RULE} @min-[1000px]:before:hidden @min-[1000px]:after:block`}
+            className={`block px-[18px] py-8 @min-[900px]:py-10 @min-[1000px]:py-12 @min-[900px]:px-5 ${ACTIONS_PLACE} @min-[1000px]:px-10 @min-[1200px]:flex @min-[1200px]:flex-col @min-[1200px]:justify-center ${RULE} @min-[1200px]:before:hidden @min-[1200px]:after:block`}
           >
             {/*
-             * Six buttons, so the strip only ever runs 1, 2, 3 or 6 to a row —
-             * every row stays full. Each step is the card width at which that
-             * many buttons still clear 135px apiece. In its own column it is a
-             * single stack, held to a readable button width.
+             * The event's own actions first, then the invitation's. Those are
+             * drawn by the template, so an event without one has nothing to
+             * edit, print or show yet; content freezes with the event, so a
+             * past one can't be edited either.
              */}
-            <div className="grid grid-cols-1 gap-3 @min-[340px]:grid-cols-2 @min-[500px]:grid-cols-3 @min-[920px]:grid-cols-6 @min-[1000px]:mx-auto @min-[1000px]:w-full @min-[1000px]:max-w-[190px] @min-[1000px]:grid-cols-1 @min-[1000px]:gap-6">
+            <div className={ACTION_LIST}>
               {/* Editing closes with the event, but the record stays readable. */}
-              {past ? (
-                <button
-                  type="button"
-                  disabled
-                  title={t("alreadyHappened")}
-                  className={ACTION}
-                >
-                  <Icon name="pencil" className="size-[15px]" />
-                  {t("editEvent")}
-                </button>
-              ) : (
-                <Link href={`/dashboard/events/${event.id}`} className={ACTION}>
-                  <Icon name="pencil" className="size-[15px]" />
-                  {t("editEvent")}
-                </Link>
-              )}
-              <Link
+              <ActionRow
+                icon="pencil"
+                label={t("editEvent")}
+                href={`/dashboard/events/${event.id}`}
+                disabledTitle={past ? t("alreadyHappened") : undefined}
+              />
+              <ActionRow
+                icon="guests"
+                label={t("guestList")}
                 href={`/dashboard/events/${event.id}/guests`}
-                className={ACTION}
-              >
-                <Icon name="guests" className="size-[15px]" />
-                {t("guestList")}
-              </Link>
-              <button
-                type="button"
-                disabled={!event.seatingAvailable}
-                title={
+              />
+              <ActionRow
+                icon="seating"
+                label={t("seating")}
+                disabledTitle={
                   event.seatingAvailable ? undefined : t("seatingPaidOnly")
                 }
-                className={ACTION}
-              >
-                <Icon name="seating" className="size-[15px]" />
-                {t("seating")}
-              </button>
-
-              {/*
-               * The guest page itself, in a tab of its own so the host keeps
-               * the dashboard behind it. It is drawn by the template, so an
-               * invitation without one has nothing to show yet.
-               */}
-              {event.templateId ? (
-                <a
-                  href={invitationPath(event)}
-                  target="_blank"
-                  rel="noreferrer"
-                  className={ACTION}
-                >
-                  <Icon name="eye" className="size-[15px]" />
-                  {t("viewAsGuest")}
-                </a>
-              ) : (
-                <button
-                  type="button"
-                  disabled
-                  title={t("noDesign")}
-                  className={ACTION}
-                >
-                  <Icon name="eye" className="size-[15px]" />
-                  {t("viewAsGuest")}
-                </button>
-              )}
-              <button type="button" className={ACTION}>
-                <Icon name="printer" className="size-[15px]" />
-                {t("print")}
-              </button>
-
-              {/*
-               * The invitation is managed on its own page, so this lands on
-               * that event's card there rather than jumping straight into an
-               * editor — what can be done to it is stated on the card. The
-               * page arrives narrowed to that one invitation.
-               */}
-              {past ? (
-                <button
-                  type="button"
-                  disabled
-                  title={t("alreadyHappened")}
-                  className={ACTION}
-                >
-                  <Icon name="layers" className="size-[15px]" />
-                  {t("editInvitation")}
-                </button>
-              ) : (
-                <Link
-                  href={`/dashboard/invitations?event=${event.id}#focus`}
-                  className={ACTION}
-                >
-                  <Icon name="layers" className="size-[15px]" />
-                  {t("editInvitation")}
-                </Link>
-              )}
+              />
+              <ActionRow
+                icon="layers"
+                label={t("editInvitation")}
+                href={`/invitations/${event.id}`}
+                disabledTitle={
+                  past
+                    ? t("alreadyHappened")
+                    : event.templateId
+                      ? undefined
+                      : t("noDesign")
+                }
+              />
+              <ActionRow
+                icon="printer"
+                label={t("print")}
+                href={`/prints/${event.id}`}
+                disabledTitle={event.templateId ? undefined : t("noDesign")}
+              />
+              {/* The guest page itself, in a tab of its own. */}
+              <ActionRow
+                icon="eye"
+                label={t("viewAsGuest")}
+                href={invitationPath(event)}
+                external
+                disabledTitle={event.templateId ? undefined : t("noDesign")}
+              />
             </div>
           </div>
         )}

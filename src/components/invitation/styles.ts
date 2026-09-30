@@ -76,8 +76,11 @@ const BUTTON = `${BUTTON_BASE} px-5 py-3`;
 
 export const SOLID = `${BUTTON} border-[var(--c2)] bg-[var(--c2)] text-[var(--c1)] hover:bg-[var(--c5)] hover:border-[var(--c5)]`;
 
-/** The button that closes a side panel back to the invitation, below the breakpoint. */
-export const VIEW = `${BUTTON} border-[var(--c3)] bg-[var(--c3)] text-[color:var(--c1)] hover:bg-[var(--c2)] hover:border-[var(--c2)]`;
+/**
+ * The button that closes a side panel back to the invitation, below the
+ * breakpoint. In `--c2`, with the palette's hover colour `--c5`, as `SOLID`.
+ */
+export const VIEW = `${BUTTON} border-[var(--c2)] bg-[var(--c2)] text-[color:var(--c1)] hover:bg-[var(--c5)] hover:border-[var(--c5)]`;
 
 /** The going / not-going choice — c3 instead of the submit button's c2. */
 export const TOGGLE_SOLID = `${BUTTON} border-[var(--c3)] bg-[var(--c3)] text-[color:var(--c1)]`;
@@ -187,5 +190,16 @@ export const QUIET =
  */
 export const PANEL = "invite:w-invite-panel invite:shrink-0";
 
-export const TITLE =
-  "font-[family-name:var(--font-primary)] text-[20px] text-center text-balance leading-[1.25] text-[color:var(--c3)] mb-6 ";
+/**
+ * The edit panel's header row — its tabs, then the X: the host bar's box and
+ * spacing — its padding, and the gap it opens above the breakpoint — without
+ * the bar's shadow. On phones — screens under 500px — its sides pull in to
+ * 8px so the tabs get the width.
+ */
+export const PANEL_TABS = `flex shrink-0 overflow-hidden rounded-sm px-2 py-3 min-[500px]:px-3 invite:gap-3 ${HOST_SKIN}`;
+
+/** One tab in that row: a host-bar segment, sharing the row evenly. The open tab takes its active fill. */
+export const PANEL_TAB = `${HOST_SEGMENT} flex-1 px-4 py-2`;
+
+/** The X at the end of that row: a segment only as wide as its icon. */
+export const PANEL_CLOSE = `${HOST_SEGMENT} shrink-0 px-4 py-2`;

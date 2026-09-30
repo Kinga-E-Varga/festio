@@ -27,6 +27,14 @@
 - A match there is not evidence about current behaviour. Check the code or
   @context/project-overview.md.
 
+## Archived code — do not read unless asked
+
+`archived/` (repo root, git-ignored) holds removed features, kept so they can be restored.
+Each has its own folder with a `README.md` and the original file paths under it.
+
+- **Never read, list or search it** unless the user asks for a specific archived feature.
+- Exclude it from every Grep and Glob. It is not part of the app and is not built.
+
 @context/current-feature.md is the only spec file to consult by default.
 
 ## Reading the Next.js docs

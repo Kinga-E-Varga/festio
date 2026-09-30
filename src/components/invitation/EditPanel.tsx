@@ -1,6 +1,7 @@
 "use client";
 
 import { useLocale, useTranslations } from "next-intl";
+import { useState } from "react";
 import type {
   InvitationTemplate,
   TemplateField,
@@ -14,17 +15,20 @@ import {
 } from "@/lib/invitation";
 import { localized, type Language } from "@/lib/language";
 import { PanelViewButton, SidePanel } from "./SidePanel";
-import { HINT, INPUT, LABEL, SELECT, TEXTAREA, TITLE } from "./styles";
+import { HINT, INPUT, LABEL, PANEL_TAB, SELECT, TEXTAREA } from "./styles";
 
 /**
- * The two halves of the editor, in the order the host meets them: the card
- * first, then the reply panel beside it. A template that declares nothing for
- * a scope simply doesn't get that group.
+ * The editor's tabs, in the order the host meets them: the card's text, then
+ * the reply panel's, then the design. Text and Response each show the fields
+ * of one scope; Design has nothing to edit yet.
  */
-const GROUPS = [
-  { scope: "card", titleKey: "groupCard" },
-  { scope: "rsvp", titleKey: "groupRsvp" },
+const TABS = [
+  { id: "text", labelKey: "tabText", scope: "card" },
+  { id: "response", labelKey: "tabResponse", scope: "rsvp" },
+  { id: "design", labelKey: "tabDesign", scope: null },
 ] as const;
+
+type TabId = (typeof TABS)[number]["id"];
 
 interface EditPanelProps {
   template: InvitationTemplate;
@@ -38,7 +42,7 @@ interface EditPanelProps {
 }
 
 /**
- * The host's text editor, generated from `template.fields` alone — a
+ * The host's editor, its fields generated from `template.fields` alone — a
  * different template yields a different form with no change here.
  *
  * Its own copy and the field labels are host chrome, so they read the host's
@@ -59,55 +63,69 @@ export function EditPanel({
   onClose,
 }: EditPanelProps) {
   const t = useTranslations("HostEditor");
-  const groups = GROUPS.map((group) => ({
-    ...group,
-    fields: template.fields.filter(
-      (field) => (field.scope ?? "card") === group.scope,
-    ),
-  })).filter((group) => group.fields.length > 0);
+  const [tab, setTab] = useState<TabId>("text");
+  const scope = TABS.find((each) => each.id === tab)?.scope;
+  const fields = scope
+    ? template.fields.filter((field) => (field.scope ?? "card") === scope)
+    : [];
 
-  const body =
-    (
-      /*
-       * `w-full` is what makes it fill: the auto margins that centre it also
-       * turn off the column's stretch, so without it the form would only be as
-       * wide as its widest label.
-       */
-      <div className="flex flex-col w-full max-w-[500px] m-auto">
-        {groups.map((group) => (
-          // The last group butts up against View — its own fields already
-          // carry the gap, so it drops the one below it.
-          <section
-            key={group.scope}
-            className="flex flex-col mb-6 last-of-type:mb-0"
-          >
-            <p className={TITLE}>{t(group.titleKey)}</p>
-
-            {group.fields.map((field) => (
-              <Field
-                key={field.id}
-                field={field}
-                value={values[field.id] ?? ""}
-                eventDate={values[EVENT_DATE] ?? ""}
-                language={language}
-                onChange={onChange}
-              />
-            ))}
-          </section>
-        ))}
-
-        <PanelViewButton onClose={onClose} />
-      </div>
-    );
+  const tabs = (
+    // `contents`, so the tabs are segments of the header's own row, next to its X.
+    <div role="tablist" className="contents">
+      {TABS.map((each) => (
+        <button
+          key={each.id}
+          type="button"
+          role="tab"
+          id={`edit-tab-${each.id}`}
+          aria-selected={tab === each.id}
+          data-active={tab === each.id ? "true" : undefined}
+          aria-controls="edit-tabpanel"
+          onClick={() => setTab(each.id)}
+          className={PANEL_TAB}
+        >
+          {t(each.labelKey)}
+        </button>
+      ))}
+    </div>
+  );
 
   return (
     <SidePanel
       panelClassName="edit"
       open={open}
       inert={!open}
+      tabs={tabs}
       onClose={onClose}
     >
-      {body}
+      {/*
+       * `w-full` is what makes it fill: the auto margins that centre it also
+       * turn off the column's stretch, so without it the form would only be as
+       * wide as its widest label.
+       */}
+      <div
+        role="tabpanel"
+        id="edit-tabpanel"
+        aria-labelledby={`edit-tab-${tab}`}
+        className="flex flex-col w-full max-w-[640px] mx-auto"
+      >
+        {scope ? (
+          fields.map((field) => (
+            <Field
+              key={field.id}
+              field={field}
+              value={values[field.id] ?? ""}
+              eventDate={values[EVENT_DATE] ?? ""}
+              language={language}
+              onChange={onChange}
+            />
+          ))
+        ) : (
+          <p className={`${HINT} mb-6`}>{t("designSoon")}</p>
+        )}
+
+        <PanelViewButton onClose={onClose} />
+      </div>
     </SidePanel>
   );
 }
@@ -177,6 +195,13 @@ function Field({
           className={INPUT}
         />
       )}
+      {/*
+       * The reply panel shows this line only above the breakpoint — on a
+       * phone the guest sees just the Respond bar — so the host is told.
+       */}
+      {field.id === "rsvpMessage" ? (
+        <p className={`${HINT} mt-1`}>{t("rsvpMessageHint")}</p>
+      ) : null}
     </div>
   );
 }
