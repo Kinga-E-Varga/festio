@@ -26,7 +26,7 @@ import { PrintPreview } from "./PrintPreview";
  */
 const PRINT_PALETTE = {
   "--c1": "#2F281F",
-  "--c2": "#8D7D6A",
+  "--c2": "#9b8c79",
   "--c3": "#F8F2E0",
   "--c4": "#8D7D6A",
   "--c5": "#C6B379",
@@ -145,7 +145,7 @@ export function PrintEditor({
           onClose={() => setEditing(false)}
         />
       </div>
-      <Toast message={toast.message} />
+      <Toast message={toast.message} tone={toast.tone} />
     </>
   );
 }

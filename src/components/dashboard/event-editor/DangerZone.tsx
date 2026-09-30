@@ -2,6 +2,7 @@
 
 import { useTranslations } from "next-intl";
 import { BTN_DANGER } from "@/components/dashboard/event-editor/styles";
+import type { ToastTone } from "@/components/dashboard/Toast";
 import { Icon } from "@/components/icons";
 import { GUEST_DATA_RETENTION_DAYS } from "@/lib/config";
 import { isPast } from "@/lib/event";
@@ -9,7 +10,7 @@ import type { DashboardEvent } from "@/types/dashboard";
 
 interface DangerZoneProps {
   event: DashboardEvent;
-  onAction: (message: string) => void;
+  onAction: (message: string, tone: ToastTone) => void;
 }
 
 export function DangerZone({ event, onAction }: DangerZoneProps) {
@@ -45,7 +46,7 @@ export function DangerZone({ event, onAction }: DangerZoneProps) {
           <button
             type="button"
             className={BTN_DANGER}
-            onClick={() => onAction(t("cancelled"))}
+            onClick={() => onAction(t("cancelled"), "neutral")}
           >
             <Icon name="ban" className="size-[15px]" />
             {t("cancelButton")}
@@ -66,7 +67,7 @@ export function DangerZone({ event, onAction }: DangerZoneProps) {
           <button
             type="button"
             className={BTN_DANGER}
-            onClick={() => onAction(t("draftDeleted"))}
+            onClick={() => onAction(t("draftDeleted"), "neutral")}
           >
             <Icon name="trash" className="size-[15px]" />
             {t("deleteDraft")}

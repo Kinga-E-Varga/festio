@@ -46,7 +46,7 @@ export function EventEditor({ event, takenSlugs }: EventEditorProps) {
       />
       <DangerZone event={event} onAction={toast.show} />
       <SaveBar form={form} onSave={save} />
-      <Toast message={toast.message} />
+      <Toast message={toast.message} tone={toast.tone} />
     </>
   );
 }

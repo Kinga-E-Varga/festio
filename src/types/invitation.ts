@@ -1,5 +1,6 @@
 import type { LocalizedText } from "@/lib/language";
 import type { PackageId, EventKind } from "@/types/dashboard";
+import type { AgeGroup, DietNeed } from "@/types/guests";
 
 /** How deep the card's shadow is; `null` for none. */
 export type CardShadow = "light" | "dark" | null;
@@ -174,9 +175,18 @@ export interface TemplateModule {
 
 export type RsvpStatus = "going" | "not_going";
 
+/**
+ * Age and diet are asked only of people coming — left out otherwise, as
+ * never asked. Shaped like the guest list's `GuestReply`.
+ */
 export interface RsvpAttendee {
   name: string;
   status: RsvpStatus;
+  ageGroup?: AgeGroup;
+  /** Empty = no needs (None). */
+  diet?: DietNeed[];
+  /** What the guest wrote for `other`. */
+  dietOther?: string;
 }
 
 /**

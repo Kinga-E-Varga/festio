@@ -237,7 +237,7 @@ export function GuestManager({ event, initial }: GuestManagerProps) {
         />
       </EditorSection>
 
-      <Toast message={toast.message} />
+      <Toast message={toast.message} tone={toast.tone} />
     </>
   );
 }

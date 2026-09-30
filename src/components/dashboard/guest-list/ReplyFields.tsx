@@ -14,7 +14,10 @@ import {
 import { MultiSelect } from "@/components/dashboard/guest-list/MultiSelect";
 import {
   AGE_KEY,
+  AGES,
   DIET_KEY,
+  DIETS,
+  pickDiet,
   STATUS_KEY,
 } from "@/components/dashboard/guest-list/labels";
 import { ANSWER_LIMIT } from "@/components/dashboard/guest-list/replyValues";
@@ -23,12 +26,7 @@ import {
   CHOICE_ON,
 } from "@/components/dashboard/guest-list/styles";
 import { NAME_LIMIT } from "@/components/invitation/useRsvpForm";
-import type {
-  AgeGroup,
-  DietPick,
-  GuestQuestion,
-  ReplyValues,
-} from "@/types/guests";
+import type { GuestQuestion, ReplyValues } from "@/types/guests";
 
 interface NameFieldProps {
   registration: UseFormRegisterReturn;
@@ -143,21 +141,6 @@ export function StatusField({ control }: { control: Control<ReplyValues> }) {
   );
 }
 
-const AGES = Object.keys(AGE_KEY) as AgeGroup[];
-
-/** None first: the most common answer, and the one that clears the rest. */
-const DIETS = [
-  "none",
-  ...(Object.keys(DIET_KEY) as (keyof typeof DIET_KEY)[]),
-] as const;
-
-/** None and the needs rule each other out; picking a picked one takes it back. */
-function pickDiet(current: DietPick[], pick: DietPick): DietPick[] {
-  if (current.includes(pick)) return current.filter((entry) => entry !== pick);
-  if (pick === "none") return ["none"];
-  return [...current.filter((entry) => entry !== "none"), pick];
-}
-
 interface PersonFieldsProps {
   control: Control<ReplyValues>;
   index: number;
@@ -166,6 +149,7 @@ interface PersonFieldsProps {
   requireAge: (status: ReplyValues["status"]) => boolean;
   requireDiet: (status: ReplyValues["status"]) => boolean;
   dietOther: UseFormRegisterReturn;
+  dietOtherError?: string;
   /** Other is picked, so its words are asked for. */
   withOther: boolean;
 }
@@ -178,6 +162,7 @@ export function PersonFields({
   requireAge,
   requireDiet,
   dietOther,
+  dietOtherError,
   withOther,
 }: PersonFieldsProps) {
   const t = useTranslations("GuestList");
@@ -233,6 +218,9 @@ export function PersonFields({
             placeholder={t("dietOtherInput")}
             className={`mt-2 ${INPUT}`}
           />
+        ) : null}
+        {withOther && dietOtherError ? (
+          <p className={`mt-1 ${ERROR}`}>{dietOtherError}</p>
         ) : null}
       </div>
       {questions.map((question) => (

@@ -115,7 +115,15 @@ export function ReplyEditor({
               questions={own}
               requireAge={required("ageGroup")}
               requireDiet={required("diet")}
-              dietOther={register(`people.${index}.dietOther`)}
+              dietOther={register(`people.${index}.dietOther`, {
+                /* Other alone tells nothing: picked, its words are required. */
+                validate: (value, all) =>
+                  all.status !== "going" ||
+                  !all.people[index]?.diet.includes("other") ||
+                  value.trim() !== "" ||
+                  t("dietOtherRequired"),
+              })}
+              dietOtherError={errors.people?.[index]?.dietOther?.message}
               withOther={values?.diet.includes("other") ?? false}
             />
           </div>

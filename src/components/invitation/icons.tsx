@@ -17,6 +17,23 @@ export function XIcon({ size = 12 }: { size?: number }) {
   );
 }
 
+export function PlusIcon({ size = 12 }: { size?: number }) {
+  return (
+    <svg
+      viewBox="0 0 16 16"
+      width={size}
+      height={size}
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      aria-hidden="true"
+    >
+      <path d="M8 2v12M2 8h12" />
+    </svg>
+  );
+}
+
 export function ArrowLeftIcon({ size = 12 }: { size?: number }) {
   return (
     <svg

@@ -76,6 +76,11 @@ export function HostInvitationEditor({
       template={template}
       values={values}
       replyInert={editing}
+      /*
+       * The host can try the form out, every check included, but the editor
+       * never saves a reply — only the guest page will.
+       */
+      onSubmit={() => toast.show(t("testReply"), "warning")}
       host={asHost(
         <EditPanel
           template={template}
@@ -120,7 +125,7 @@ export function HostInvitationEditor({
       ) : (
         invitation
       )}
-      <Toast message={toast.message} />
+      <Toast message={toast.message} tone={toast.tone} />
     </>
   );
 }

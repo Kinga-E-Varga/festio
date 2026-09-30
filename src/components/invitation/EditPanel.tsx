@@ -166,7 +166,7 @@ function Field({
             id={`field-${field.id}`}
             value={value || DEFAULT_DATE_FORMAT}
             onChange={(control) => onChange(field.id, control.target.value)}
-            className={SELECT}
+            className={`${SELECT} font-light`}
           >
             {dateFormatsFor(language).map((option) => (
               <option key={option.id} value={option.id}>
@@ -183,7 +183,7 @@ function Field({
           value={value}
           maxLength={field.maxLength}
           onChange={(control) => onChange(field.id, control.target.value)}
-          className={`${TEXTAREA} mt-2`}
+          className={`${TEXTAREA} mt-2 font-light`}
         />
       ) : (
         <input
@@ -192,7 +192,7 @@ function Field({
           value={value}
           maxLength={field.maxLength}
           onChange={(control) => onChange(field.id, control.target.value)}
-          className={INPUT}
+          className={`${INPUT} font-light`}
         />
       )}
       {/*
