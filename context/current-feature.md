@@ -1,6 +1,6 @@
-# Current Feature: Invitation editor rework
+# Current Feature: Text uniformity
 
-The invitation, modular and print editors get one shared top bar in place of the host bar over the card, and their side panels move to Festio's own palette and the event editor's fields instead of the invitation's.
+Fewer text sizes, letter spacings and weights across the host app, so the same role always looks the same. Invitations are left alone.
 
 ## Status
 
@@ -8,32 +8,23 @@ Completed
 
 ## Goals
 
-- New `EditorTopBar` shared by the simple editor, the modular editor and the print page: BACK (dark tone), the event's or template's title, Visibility and reply-count tags (event editor only), the save status ("unsaved" / "no changes" / "saved just now"), one Edit / View toggle and Save — or Export on the print page
-- Save is off until something changed; the simple editor tracks saved values to know
-- `HostBar` deleted, with its `HOST_*` styles, `ArrowLeftIcon` and the `HostEditor.back` message; one `EditorFrame` (top bar, page, toasts) shared by the three editors; `Invitation` takes `fill` instead of `hostBar`, `ModularInvitation` always fills its parent
-- The event editor's save bar shares its buttons (`BAR_OUTLINE`, `BAR_SOLID`, `BAR_DISABLED`) and status dot (`stateDot`) with the top bar
-- Side panel in Festio's chrome, never the invitation's palette: `mustard-100` fill, `mustard-300` left edge, Work Sans, a softer `elevation-panel` shadow
-- Panel header: tabs (or, on the print page, a "Print settings" title) on one `neutral-700` line, a divider at 25% and the X; X hover `neutral-300`
-- Tabs: Text / Replies / Design (was Response); text `neutral-800`; open tab `neutral-800` fill with light text; hover `neutral-300` fill and `neutral-800` edge
-- Panel fields use the event editor's `LABEL` / `HINT` and a new `PANEL_INPUT`: `mustard-50` fill, `neutral-400` border, `neutral-700` on hover, `neutral-600` on focus
-- Panel View button (small screens) in Save's colours (`BAR_SOLID`)
-- Print panel: Flat / Folded as `PANEL_CHOICE_ON` / `OFF` — `neutral-400` border, picked `neutral-300`, both `neutral-400` on hover; the Background checkbox with a `neutral-800` border and tick, `neutral-300` when ticked; form up to 640px wide
-- Unused invitation styles removed (`TEXTAREA`, `SELECT`, `VIEW`, `TOGGLE_*`, `PANEL_TABS`, `PANEL_TAB`, `PANEL_CLOSE`); `BTN_DARK_SOFT` removed
-- Small app-wide colour fixes: mustard-500 → mustard-400 for the top bar edge, save bar and focus outlines; SideNav quit button; footer search focus; top bar logo as a mask in `mustard-50`, icon hover `neutral-800`
-- New messages in EN / RO / HU: `HostEditor.replyCount`, `HostEditor.tabReplies`, `PrintPanel.title`
+- One sans scale: 10 (uppercase label), 11 (uppercase eyebrow), 11.5 (hint), 12.5 (small), 13.5 (field), 14 (body); 9.5, 12, 13, 14.5 and the 15/16px tabs gone
+- Field-like boxes and option lists at 13.5; banners, inline links and small notes at 12.5; badges, small buttons and counts at 12.5; hints and meta at 11.5
+- Guest names and the toast at 14; event tabs at 14; the list-setting button at 14; event row actions 13.5 medium
+- Stat labels on card and row use `LABEL`; dashboard stat labels 0.14em; the rail tag uses `TAG`; the print instructions title like a banner title
+- Serif: dashboard section heading 17px; event name 20 → 24 on card and row; match dialog title 17px; card stat number 22px; page titles grow at the same breakpoint
+- Inline links semibold; notice boxes 12.5 with line height 1.5; line heights 1.4 / 1.55 gone
+- The card's date line at 14, like `EventWhen`
 
 ## Notes
 
-- Save on the simple editor still only shows a toast; no Firestore
-- The modular editor has nothing to edit yet, so its Save is always off
-- `BAR_DISABLED` was made for the `neutral-900` bar — its `neutral-800` border would vanish on a lighter bar
-- Repo map: add `EditorTopBar.tsx` (`EditorTopBar` + `EditorFrame`) under Invitation
-- Testing: build + lint; `/invitations/<id>`, `/templates/wolf-dance`, `/templates/garden`, `/prints/<id>` at desktop and mobile in EN / RO / HU; Save on/off and status; View / Edit toggle; panel tabs, fields, choice buttons and checkbox
+<!-- Any extra notes -->
 
 ## History
 
 <!-- Keep this updated latest to earliest -->
 
+- Invitation editor rework — one shared top bar and page frame for the simple, modular and print editors (BACK, title and tags, save status, Edit / View, Save or Export, Save off until something changed), `HostBar` removed; side panels in Festio's own chrome with neutral Text / Replies / Design tabs, a Print settings title, the event editor's fields and grey inputs, choice buttons and checkbox; app icons in the top bar; shared bar buttons and banner tones in `event-editor/styles.ts`
 - Modular invitations phase 1 — a shared library in `src/modular/`: 15 sections with one variant each, Terracotta and Midnight palettes (15 colours as `--m1`…`--m15`), Classic and Script font pairs, all found by id; Garden and Garden Midnight templates at `/templates/<id>` with a sticky top bar, mobile drawer, Open in Maps links and the simple RSVP form; the host bar and an empty three-tab panel via a shared `PanelTabs`; simple-only loading for the guest, print and invitation pages
 - RSVP form fixes — Coming / Not coming above the names; age and dietary needs per name when coming, with the reply editor's options; one warning slot above Send; custom radios and checkboxes in the invitation palette; reply fields in the invitation's primary font, buttons in Work Sans uppercase; the editor tries the form without saving; toast tones (success, neutral, warning, error), bigger and longer-lasting toasts
 - Invitation editor tabs — the dashboard Invitations page archived to `archived/invitations-page/`; Edit invitation and Print straight from the events list, BACK falling back to it; a new event row layout with shared action blocks and short month names; no Studio in the nav, Downloads in Hosting; the editor panel's Text / Response / Design tabs with the X as a segment, sticky at the top, with a hint on where the reply message shows and the View button in `--c2`

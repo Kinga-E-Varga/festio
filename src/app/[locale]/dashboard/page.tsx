@@ -29,7 +29,7 @@ export default async function DashboardPage() {
       <header className="flex flex-wrap items-start gap-x-6 gap-y-4 @min-[520px]:items-center">
         <div className="min-w-0 flex-1 @max-[520px]:basis-full">
           <HostToday />
-          <h1 className="mt-1.5 font-serif text-[34px] leading-[1.05] text-neutral-900 nav:text-[46px]">
+          <h1 className="mt-1.5 font-serif text-[34px] leading-[1.05] text-neutral-900 @min-[720px]:text-[46px]">
             {t("greeting", { name: HOST.name })}
           </h1>
         </div>
@@ -48,7 +48,7 @@ export default async function DashboardPage() {
       </div>
 
       <section>
-        <h2 className="mt-[34px] mb-[18px] flex items-center gap-[18px] font-serif text-xl tracking-[0.14em] text-neutral-900 uppercase">
+        <h2 className="mt-[34px] mb-[18px] flex items-center gap-[18px] font-serif text-[17px] tracking-[0.14em] text-neutral-900 uppercase">
           {t("activeEvents")}
           <span aria-hidden="true" className="h-px flex-1 bg-neutral-900" />
         </h2>

@@ -145,7 +145,7 @@ function FilterMenu({ options, active, onPick }: FilterMenuProps) {
                 onPick(chip);
                 setOpen(false);
               }}
-              className="flex w-full cursor-pointer items-center justify-between gap-3 px-3 py-2 text-left text-[13px] text-neutral-800 transition-colors hover:bg-mustard-100 aria-checked:font-semibold aria-checked:text-forest-600"
+              className="flex w-full cursor-pointer items-center justify-between gap-3 px-3 py-2 text-left text-[13.5px] text-neutral-800 transition-colors hover:bg-mustard-100 aria-checked:font-semibold aria-checked:text-forest-600"
             >
               {chip.label}
               {active?.filter === chip.filter ? (

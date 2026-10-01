@@ -78,13 +78,15 @@ function Tally({
     // Four in a row, value under label, whenever the replies are wide enough;
     // narrower, label-left / value-right rows instead.
     <div className="flex items-baseline justify-between gap-2.5 @min-[436px]:block">
-      <dt className="text-[10px] tracking-[0.1em] text-neutral-700 uppercase">
+      <dt className="text-[10px] font-semibold tracking-[0.14em] text-neutral-700 uppercase">
         {label}
       </dt>
-      <dd className="font-serif text-[25px] leading-none text-neutral-900 tabular-nums @min-[436px]:mt-1">
+      <dd className="font-serif text-[22px] leading-none text-neutral-900 tabular-nums @min-[436px]:mt-1">
         {value}
         {detail ? (
-          <span className="font-sans text-xs text-neutral-700">{detail}</span>
+          <span className="font-sans text-[11.5px] text-neutral-700">
+            {detail}
+          </span>
         ) : null}
       </dd>
     </div>
@@ -164,7 +166,7 @@ export function EventCard({ event }: { event: DashboardEvent }) {
               className={`contents ${RULE} before:hidden @min-[522px]:block @min-[522px]:min-w-0 @min-[522px]:flex-1 @min-[522px]:p-[18px] @min-[522px]:py-8 @min-[522px]:after:block @min-[904px]:col-start-2 @min-[904px]:row-start-1 @min-[904px]:flex @min-[904px]:flex-col @min-[904px]:justify-center @min-[904px]:p-5 @min-[904px]:py-10`}
             >
               <div className="row-start-1 px-[18px] py-8 @min-[522px]:p-0">
-                <p className="mb-4 text-[12.5px] leading-none text-neutral-700">
+                <p className="mb-4 text-[14px] leading-none text-neutral-700">
                   <span className="font-medium text-neutral-900">
                     {formatDay(event.date, locale)}
                   </span>
@@ -193,7 +195,7 @@ export function EventCard({ event }: { event: DashboardEvent }) {
                       {warnings.map((warning) => (
                         <span
                           key={warning.key}
-                          className="flex items-center gap-1.5 border border-terracotta-400 bg-terracotta-200 px-2.5 py-1 text-xs font-semibold text-terracotta-600"
+                          className="flex items-center gap-1.5 border border-terracotta-400 bg-terracotta-200 px-2.5 py-1 text-[12.5px] font-semibold text-terracotta-600"
                         >
                           <Icon name={warning.icon} className="size-3.5" />
                           {t(warning.key, warning.values)}

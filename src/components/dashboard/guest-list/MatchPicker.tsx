@@ -51,7 +51,7 @@ export function MatchPicker({
       className="m-auto w-[min(480px,calc(100vw-32px))] border border-mustard-300 bg-neutral-50 p-0 text-neutral-900 backdrop:bg-neutral-950/40"
     >
       <div className="p-5">
-        <h3 id={titleId} className="font-serif text-[19px] text-neutral-900">
+        <h3 id={titleId} className="font-serif text-[17px] text-neutral-900">
           {t("matchTitle", { name })}
         </h3>
         <p className={`mt-1.5 ${HINT}`}>{t("matchHint")}</p>

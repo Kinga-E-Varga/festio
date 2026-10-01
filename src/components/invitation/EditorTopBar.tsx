@@ -42,7 +42,7 @@ interface EditorTopBarProps {
 
 /** The visibility and reply-count tags beside the title. */
 const TAG =
-  "px-2 py-[3px] text-[12px] font-medium bg-neutral-300 text-neutral-950";
+  "px-2 py-[3px] text-[12.5px] font-medium bg-neutral-300 text-neutral-950";
 
 const FOCUS =
   "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-mustard-400";

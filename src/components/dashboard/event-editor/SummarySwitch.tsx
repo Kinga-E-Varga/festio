@@ -44,7 +44,7 @@ export function SummarySwitch({
           type="button"
           onClick={onAction}
           disabled={disabled}
-          className={`w-full shrink-0 cursor-pointer @min-[460px]:w-auto @min-[460px]:min-w-[145px] rounded-sm border px-2.5 py-[12px] text-center text-[13px] leading-[1.3] font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-50 ${GOLD_BTN}`}
+          className={`w-full shrink-0 cursor-pointer @min-[460px]:w-auto @min-[460px]:min-w-[145px] rounded-sm border px-2.5 py-[12px] text-center text-sm leading-[1.3] font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-50 ${GOLD_BTN}`}
         >
           {action}
         </button>

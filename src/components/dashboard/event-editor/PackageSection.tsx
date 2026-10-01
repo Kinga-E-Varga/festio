@@ -27,7 +27,7 @@ function Tile({
       </span>
       <span className="min-w-0">
         <b className="mb-[3px] block font-semibold text-mustard-600">{title}</b>
-        <span className="block text-xs leading-[1.45] text-mustard-600">
+        <span className="block text-[12.5px] leading-[1.5] text-mustard-600">
           {children}
         </span>
       </span>
@@ -57,7 +57,7 @@ export function PackageSection({ event }: { event: DashboardEvent }) {
                 price: price(pkg.price),
               })}
             </b>
-            <span className="block text-xs leading-[1.45] text-forest-600">
+            <span className="block text-[12.5px] leading-[1.5] text-forest-600">
               {tPackages(`${event.package}.blurb`)}
             </span>
           </span>

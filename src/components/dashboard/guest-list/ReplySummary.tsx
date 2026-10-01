@@ -146,7 +146,7 @@ export function ReplySummary({ tally, counts, useList }: ReplySummaryProps) {
         type="button"
         aria-expanded={open}
         onClick={() => setOpen(!open)}
-        className="mt-6 inline-flex cursor-pointer items-center gap-1.5 text-[13px] font-semibold text-forest-500 underline underline-offset-[3px] transition-colors hover:text-forest-600"
+        className="mt-6 inline-flex cursor-pointer items-center gap-1.5 text-[12.5px] font-semibold text-forest-500 underline underline-offset-[3px] transition-colors hover:text-forest-600"
       >
         {t(open ? "summaryLess" : "summaryMore")}
         <Icon
@@ -192,7 +192,7 @@ function Block({ title, lines, folded }: BlockProps) {
           {shown.map((line) => (
             <div
               key={line.key}
-              className="flex items-baseline justify-between gap-4 border-b border-mustard-200 px-3 py-2 text-[13px] text-neutral-800"
+              className="flex items-baseline justify-between gap-4 border-b border-mustard-200 px-3 py-2 text-[13.5px] text-neutral-800"
             >
               <dt className="min-w-0">{line.label}</dt>
               {line.count !== undefined ? (
@@ -204,7 +204,7 @@ function Block({ title, lines, folded }: BlockProps) {
           ))}
         </dl>
       ) : (
-        <p className="border-b border-mustard-200 px-3 py-2 text-[13px] text-neutral-600">
+        <p className="border-b border-mustard-200 px-3 py-2 text-[13.5px] text-neutral-600">
           {t("summaryEmpty")}
         </p>
       )}

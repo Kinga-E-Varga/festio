@@ -72,7 +72,7 @@ const ACTION_LIST =
  * row reads as part of the card; hover fills it with the border colour.
  */
 const ACTION_ROW =
-  "-mt-px -ml-px flex w-full items-center gap-3 px-3.5 py-[13px] text-left text-[13px] leading-[1.3] font-[450] border border-mustard-300 bg-mustard-50 text-neutral-900 transition-colors not-disabled:hover:border-mustard-300 not-disabled:hover:bg-mustard-300 disabled:cursor-not-allowed disabled:opacity-50";
+  "-mt-px -ml-px flex w-full items-center gap-3 px-3.5 py-[13px] text-left text-[13.5px] leading-[1.3] font-[450] border border-mustard-300 bg-mustard-50 text-neutral-900 transition-colors not-disabled:hover:border-mustard-300 not-disabled:hover:bg-mustard-300 disabled:cursor-not-allowed disabled:opacity-50";
 
 /**
  * One action. With no `href` it is a button — disabled, with the reason as
@@ -94,7 +94,7 @@ function ActionRow({
 }) {
   const content = (
     <>
-      <Icon name={icon} className="size-[15px] text-neutral-700" />
+      <Icon name={icon} className="size-[17px] text-neutral-700" />
       <span className="min-w-0 flex-1">{label}</span>
       <Icon
         name={external ? "arrowUpRight" : "chevron"}
@@ -236,7 +236,7 @@ export function EventRow({ event }: { event: DashboardEvent }) {
            */}
           <div className="order-first mx-[18px] mt-8 min-w-0 border-b border-mustard-300 pb-8 @min-[900px]:order-none @min-[900px]:m-0 @min-[900px]:pb-6">
             <div className="min-w-0">
-              <h3 className="font-serif text-[21px] leading-[1.2] text-neutral-900 @2xl:text-[23px]">
+              <h3 className="font-serif text-[20px] leading-[1.2] text-neutral-900 @2xl:text-2xl">
                 {event.title}
               </h3>
 
@@ -246,7 +246,7 @@ export function EventRow({ event }: { event: DashboardEvent }) {
                * The package alone. "Custom" on its own reads as a property of
                * the invitation rather than as what was bought, so it says so.
                */}
-              <p className="mt-2.5 text-[13px] text-neutral-700">
+              <p className="mt-2.5 text-[14px] text-neutral-700">
                 {t("package", {
                   name: tPackages(`${event.package}.name`),
                 })}

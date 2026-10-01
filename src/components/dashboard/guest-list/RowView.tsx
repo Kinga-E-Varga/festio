@@ -140,7 +140,7 @@ export function RowView({
         >
           {/* The name and its arrow never part: a long name is cut short instead. */}
           <span className="flex min-h-8 max-w-full min-w-0 items-center gap-1">
-            <span className="min-w-0 truncate text-[14.5px] font-medium text-neutral-900">
+            <span className="min-w-0 truncate text-[14px] font-medium text-neutral-900">
               {name}
             </span>
             {hasDetails ? (

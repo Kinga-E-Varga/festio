@@ -4,11 +4,11 @@ import { useTranslations } from "next-intl";
 
 /*
  * The editor's tabs in warm neutral: each hangs a pixel below the row so its
- * 3px edge sits on the row's line rather than doubling it. The open tab is
- * filled with light text; the others take a pale fill and the edge on hover.
+ * 3px edge sits on the row's line rather than doubling it. The open tab
+ * shows only that edge; the others take a pale fill and the edge on hover.
  */
 const TAB =
-  "-mb-px h-10 flex-1 rounded-t-xs border-b-3 border-transparent text-[14px] font-medium text-neutral-800 transition-colors not-aria-selected:hover:border-neutral-800 not-aria-selected:hover:bg-neutral-300 aria-selected:border-neutral-800 aria-selected:bg-neutral-800 aria-selected:font-semibold aria-selected:text-neutral-50 focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-steel-500";
+  "-mb-px h-10 flex-1 rounded-t-xs border-b-3 border-transparent text-[14px] font-[500] text-neutral-900 transition-colors not-aria-selected:hover:border-neutral-800 not-aria-selected:hover:bg-mustard-200 aria-selected:text-mustard-100 aria-selected:bg-neutral-900 aria-selected:border-neutral-900 aria-selected:font-[500] focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-steel-500";
 
 /**
  * The editor's tabs, in the order the host meets them: the invitation's

@@ -29,14 +29,14 @@ export function DangerZone({ event, onAction }: DangerZoneProps) {
         <div className="flex items-center gap-5 px-5 py-[18px]">
           <div className="flex-1 text-rust-500">
             <b className="mb-1 block font-semibold">{t("pastTitle")}</b>
-            <p className="text-[13.5px] leading-[1.5]">{t("pastBody")}</p>
+            <p className="text-[12.5px] leading-[1.5]">{t("pastBody")}</p>
           </div>
         </div>
       ) : event.paid ? (
         <div className="flex flex-col gap-3 px-5 py-[18px] @min-[640px]:flex-row @min-[640px]:items-center @min-[640px]:gap-5">
           <div className="flex-1 text-rust-500">
             <b className="mb-1 block font-semibold">{t("cancelTitle")}</b>
-            <p className="text-[13.5px] leading-[1.5]">
+            <p className="text-[12.5px] leading-[1.5]">
               {t("cancelBody", {
                 count: replied,
                 days: GUEST_DATA_RETENTION_DAYS,
@@ -62,7 +62,7 @@ export function DangerZone({ event, onAction }: DangerZoneProps) {
         >
           <div className="flex-1 text-rust-500">
             <b className="mb-1 block font-semibold">{t("draftTitle")}</b>
-            <p className="text-[13.5px] leading-[1.5]">{t("draftBody")}</p>
+            <p className="text-[12.5px] leading-[1.5]">{t("draftBody")}</p>
           </div>
           <button
             type="button"

@@ -20,7 +20,7 @@ export function SiteFooter() {
                 <li key={key}>
                   <a
                     href="#"
-                    className="text-[13px] text-neutral-300 transition-colors hover:text-mustard-500"
+                    className="text-[12.5px] text-neutral-300 transition-colors hover:text-mustard-500"
                   >
                     {t(key)}
                   </a>
@@ -51,14 +51,14 @@ export function SiteFooter() {
                 id="footer-search"
                 type="search"
                 placeholder={t("search")}
-                className="w-full bg-transparent text-xs placeholder:text-neutral-300/55 focus:outline-none"
+                className="w-full bg-transparent text-[11.5px] placeholder:text-neutral-300/55 focus:outline-none"
               />
             </div>
           </form>
         </div>
       </div>
 
-      <div className="flex flex-wrap items-center justify-center gap-3 border-t border-neutral-300/15 px-[18px] py-4 text-xs text-neutral-300/60 nav:flex-nowrap nav:px-8">
+      <div className="flex flex-wrap items-center justify-center gap-3 border-t border-neutral-300/15 px-[18px] py-4 text-[11.5px] text-neutral-300/60 nav:flex-nowrap nav:px-8">
         <p className="order-3 flex-1 basis-full text-center nav:order-none nav:basis-auto">
           {t("copyright", { year: "2026" })}
         </p>

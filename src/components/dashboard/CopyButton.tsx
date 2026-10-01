@@ -41,7 +41,7 @@ export function CopyButton({ value, label }: CopyButtonProps) {
       </button>
       <span
         role="status"
-        className={`pointer-events-none absolute -top-7 right-0 bg-forest-600 px-2.5 py-1 text-[10px] whitespace-nowrap text-neutral-50 transition-opacity ${
+        className={`pointer-events-none absolute -top-7 right-0 bg-forest-600 px-2.5 py-1 text-[11.5px] whitespace-nowrap text-neutral-50 transition-opacity ${
           copied ? "opacity-100" : "opacity-0"
         }`}
       >

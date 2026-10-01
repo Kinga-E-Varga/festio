@@ -20,7 +20,7 @@ export function RepliesMeter({ replied, expected }: RepliesMeterProps) {
   return (
     <div className="min-w-0">
       {/* Rich text: the count is emphasised where the sentence puts it. */}
-      <p className="mb-[5px] text-[12.5px] leading-[1.4] text-neutral-700">
+      <p className="mb-[5px] text-[12.5px] leading-[1.45] text-neutral-700">
         {t.rich("meter", {
           replied,
           expected,

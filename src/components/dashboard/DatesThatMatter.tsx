@@ -45,7 +45,7 @@ function DateNote({
       <p
         className={
           row
-            ? "text-[14px] leading-[1.4] text-neutral-700"
+            ? "text-[14px] leading-[1.45] text-neutral-700"
             : "text-[12.5px] leading-[1.45] text-neutral-700"
         }
       >

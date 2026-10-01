@@ -13,7 +13,7 @@ export const CHIP_OFF =
 
 /** The small gold action the editor's "Edit list" uses. */
 const SMALL_BTN_SHAPE =
-  "inline-flex cursor-pointer items-center gap-1.5 rounded-sm border px-3 py-1.5 text-xs font-medium whitespace-nowrap transition-colors";
+  "inline-flex cursor-pointer items-center gap-1.5 rounded-sm border px-3 py-1.5 text-[12.5px] font-medium whitespace-nowrap transition-colors";
 export const SMALL_BTN = `${SMALL_BTN_SHAPE} ${GOLD_BTN}`;
 /** The same small action in terracotta, for the prompts on a terracotta alert. */
 export const SMALL_BTN_WARN = `${SMALL_BTN_SHAPE} border-terracotta-600 bg-mustard-50 text-terracotta-600 hover:border-terracotta-500 hover:text-terracotta-500`;
@@ -28,7 +28,7 @@ export const ATTENTION_TAG = `${TAG} border-rust-300 bg-rust-100 text-rust-600`;
 
 /** A row's one status: its reply, or where a waiting name's invitation stands. */
 const BADGE_TYPE =
-  "inline-flex border text-[12px] font-medium whitespace-nowrap";
+  "inline-flex border text-[12.5px] font-medium whitespace-nowrap";
 const BADGE_PAD = "px-2.5 py-[3px]";
 export const BADGE = `${BADGE_TYPE} items-center gap-1.5 ${BADGE_PAD}`;
 /** The same badge with a full-height box as its left side; its words go in `BADGE_TEXT`. */

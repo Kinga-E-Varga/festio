@@ -10,7 +10,7 @@ export function PasswordField({ password }: { password: string }) {
   const [revealed, setRevealed] = useState(false);
 
   return (
-    <div className="flex items-center gap-[9px] border border-mustard-300 bg-mustard-50/60 px-3 py-2 text-[13px] text-neutral-900">
+    <div className="flex items-center gap-[9px] border border-mustard-300 bg-mustard-50/60 px-3 py-2 text-[13.5px] text-neutral-900">
       <Icon name="lock" className="size-3.5 shrink-0 text-neutral-700" />
       <span className="flex-1 truncate font-mono tracking-wider">
         {revealed ? password : "•".repeat(password.length)}

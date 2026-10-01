@@ -16,7 +16,7 @@ function Row({ title, children }: { title: string; children: ReactNode }) {
   return (
     <div className="px-[18px] py-[15px]">
       <h4 className="mb-1 text-sm font-semibold">{title}</h4>
-      <p className="text-[13.5px] leading-[1.55]">{children}</p>
+      <p className="text-[12.5px] leading-[1.5]">{children}</p>
     </div>
   );
 }

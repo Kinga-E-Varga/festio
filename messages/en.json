@@ -389,7 +389,6 @@
     "testReply": "Nothing saved — this is a test"
   },
   "PrintPanel": {
-    "title": "Print settings",
     "cardStyle": "card style",
     "flat": "Flat card",
     "folded": "Folded card",

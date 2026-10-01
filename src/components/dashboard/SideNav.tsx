@@ -31,7 +31,7 @@ export function SideNav() {
 
       <Link
         href="/"
-        className="mx-4 flex items-center justify-center gap-3 rounded-sm bg-mustard-400 px-4 py-[13px] font-semibold text-neutral-950 transition-colors hover:bg-mustard-500"
+        className="mx-4 flex items-center justify-center gap-3 rounded-sm bg-mustard-400 px-4 py-[13px] font-semibold text-neutral-900 transition-colors hover:bg-mustard-500"
       >
         <Icon name="arrowUpRight" className="size-[17px] shrink-0" />
         <span>{t("quit")}</span>

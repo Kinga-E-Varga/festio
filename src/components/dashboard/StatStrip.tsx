@@ -10,7 +10,7 @@ export function StatStrip() {
     <dl className="grid grid-cols-1 gap-px border border-forest-500 bg-forest-500 min-[521px]:grid-cols-2 min-[1001px]:grid-cols-4">
       {STATS.map((stat) => (
         <div key={stat.labelKey} className="bg-forest-100 px-[22px] py-4">
-          <dt className="text-[10px] font-semibold tracking-[0.16em] text-forest-500 uppercase">
+          <dt className="text-[10px] font-semibold tracking-[0.14em] text-forest-500 uppercase">
             {t(stat.labelKey)}
           </dt>
           <dd className="mt-1.5 flex items-baseline gap-1.5">
@@ -18,7 +18,7 @@ export function StatStrip() {
               {stat.value}
             </span>
             {stat.detailKey ? (
-              <span className="text-xs font-medium text-forest-600">
+              <span className="text-[12.5px] font-medium text-forest-600">
                 {t(stat.detailKey, { count: stat.detailValue ?? 0 })}
               </span>
             ) : null}

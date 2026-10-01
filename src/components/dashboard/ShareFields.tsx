@@ -6,7 +6,7 @@ import { invitationLink } from "@/lib/event";
 import type { DashboardEvent } from "@/types/dashboard";
 
 const FIELD_BASE =
-  "flex items-center gap-[9px] border border-mustard-300 px-3 py-2 text-[13px] text-neutral-900";
+  "flex items-center gap-[9px] border border-mustard-300 px-3 py-2 text-[13.5px] text-neutral-900";
 const FIELD = `${FIELD_BASE} bg-mustard-50/60`;
 /** Stands in for the link row when there is nothing to share yet. */
 const FIELD_NOTE = `${FIELD_BASE} bg-terracotta-200`;

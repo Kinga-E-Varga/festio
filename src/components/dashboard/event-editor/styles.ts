@@ -7,8 +7,9 @@
 export const FIELD_GRID =
   "grid grid-cols-1 gap-4 gap-x-5 @min-[820px]:grid-cols-2";
 
+/** One fixed height for every single-line field (dates and selects otherwise size themselves); textareas keep growing. */
 const FIELD =
-  "w-full border px-3 py-[9px] text-[13.5px] text-neutral-900 transition-colors focus:outline-2 focus:-outline-offset-1 disabled:cursor-not-allowed disabled:bg-neutral-300 disabled:text-neutral-800";
+  "w-full border px-3 [&:not(textarea)]:h-10 py-[9px] text-[13.5px] text-neutral-900 transition-colors focus:outline-2 focus:-outline-offset-1 disabled:cursor-not-allowed disabled:bg-neutral-300 disabled:text-neutral-800";
 export const INPUT = `${FIELD} border-mustard-300 bg-neutral-50 outline-mustard-400 hover:border-mustard-500 focus:border-mustard-400 disabled:border-mustard-300`;
 /** The same field on the palest gold with a warm grey edge, for the editors' side panels. */
 export const PANEL_INPUT = `${FIELD} border-neutral-400 bg-mustard-50 outline-neutral-600 hover:border-neutral-700 focus:border-neutral-600 disabled:border-neutral-400`;
@@ -42,7 +43,7 @@ export const BTN_DANGER = `${BUTTON} border-rust-500 bg-rust-100 text-rust-500 h
 
 /** A borderless input inside a framed box that carries the border (the link address, the password). */
 export const INSET_INPUT =
-  "min-w-0 flex-1 border-0 bg-transparent px-3 py-[9px] text-[13.5px] text-neutral-900 focus:outline-2 focus:-outline-offset-2 focus:outline-mustard-400 disabled:cursor-not-allowed";
+  "min-w-0 flex-1 self-stretch border-0 bg-transparent px-3 text-[13.5px] text-neutral-900 focus:outline-2 focus:-outline-offset-2 focus:outline-mustard-400 disabled:cursor-not-allowed";
 
 /** The small icon-only control that sits inside a field. */
 export const MINI =
@@ -67,7 +68,7 @@ const BAR_BUTTON =
 
 /** The save bar's buttons, also worn by the invitation editors' top bar. */
 export const BAR_OUTLINE = `${BAR_BUTTON} border-mustard-400 bg-transparent text-mustard-400 hover:bg-mustard-50/10`;
-export const BAR_SOLID = `${BAR_BUTTON} border-mustard-400 bg-mustard-400 font-semibold text-neutral-950 hover:border-mustard-300 hover:bg-mustard-300`;
+export const BAR_SOLID = `${BAR_BUTTON} border-mustard-400 bg-mustard-400 font-semibold text-neutral-900 hover:border-mustard-300 hover:bg-mustard-300`;
 export const BAR_DISABLED = `${BAR_BUTTON} cursor-not-allowed border-neutral-800 bg-transparent text-neutral-700`;
 
 /** The status dot: terracotta while there is something to save, green once there isn't. */

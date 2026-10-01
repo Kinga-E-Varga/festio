@@ -389,7 +389,6 @@
     "testReply": "Semmi nincs mentve — ez csak próba"
   },
   "PrintPanel": {
-    "title": "Nyomtatási beállítások",
     "cardStyle": "kártya stílusa",
     "flat": "Sima kártya",
     "folded": "Hajtott kártya",

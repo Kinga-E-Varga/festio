@@ -30,7 +30,7 @@ export function NavLink({ item }: { item: NavItem }) {
       <span className="truncate">{t(item.labelKey)}</span>
       {item.badge ? (
         <span
-          className={`ml-auto text-xs tabular-nums ${
+          className={`ml-auto text-[12.5px] tabular-nums ${
             isCurrent ? "text-forest-200" : "text-neutral-700"
           }`}
         >

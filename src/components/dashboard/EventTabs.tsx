@@ -99,15 +99,15 @@ export function EventTabs({
                 // Colour lives in both branches rather than on the base: two
                 // text-colour utilities on one element resolve by stylesheet
                 // order, not by the order they are written.
-                className={`-mb-px flex items-center justify-center gap-1 rounded-t-xs border-b-3 px-3 pt-[9px] pb-[7px] text-[15px] whitespace-nowrap transition-colors sm:gap-1.5 sm:px-4 sm:text-base ${
+                className={`-mb-px flex items-center justify-center gap-1 rounded-t-xs border-b-3 px-3 pt-[9px] pb-[7px] text-[14px] whitespace-nowrap transition-colors sm:gap-1.5 sm:px-4 ${
                   isActive
-                    ? "border-forest-500 bg-forest-500 font-semibold text-mustard-50"
+                    ? "border-forest-500 bg-forest-500 font-[500] text-mustard-50"
                     : "border-transparent text-forest-600 hover:border-forest-500 hover:bg-forest-200"
                 }`}
               >
                 {tab.label}
                 <span
-                  className={`text-xs tabular-nums ${
+                  className={`text-[12.5px] tabular-nums ${
                     isActive ? "text-mustard-50" : "text-forest-500"
                   }`}
                 >

@@ -58,12 +58,7 @@ export function PrintPanel({
   const t = useTranslations("PrintPanel");
 
   return (
-    <SidePanel
-      panelClassName="sheet-form"
-      open={open}
-      title={t("title")}
-      onClose={onClose}
-    >
+    <SidePanel panelClassName="sheet-form" open={open} onClose={onClose}>
       {/*
        * `w-full` is what makes it fill: the auto margins that centre it
        * also turn off the column's stretch, so without it the form would
@@ -128,7 +123,7 @@ export function PrintPanel({
 
         {/* The event editor's teal info banner. */}
         <div className={`flex flex-col border p-4 ${BANNER_TONE.info}`}>
-          <p className="mb-3 border-b border-steel-400 pb-2 text-center text-[12px] font-semibold tracking-[0.14em] uppercase">
+          <p className="mb-3 border-b border-steel-400 pb-2 text-center text-[12.5px] font-semibold">
             {t("instructions")}
           </p>
           {/*
@@ -148,7 +143,7 @@ export function PrintPanel({
               <ul
                 key={shape}
                 aria-hidden={settings.shape !== shape}
-                className={`[grid-area:1/1] space-y-2 text-[13px] leading-[1.5] text-justify ${
+                className={`[grid-area:1/1] space-y-2 text-[12.5px] leading-[1.5] text-justify ${
                   settings.shape === shape ? "" : "invisible"
                 }`}
               >

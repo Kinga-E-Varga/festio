@@ -30,7 +30,7 @@ const DASHBOARD_SKIN: MultiSelectSkin = {
   panel:
     "absolute inset-x-0 top-full z-10 mt-1 border border-mustard-300 bg-neutral-50 py-1 shadow-sm",
   option:
-    "flex cursor-pointer items-center gap-2.5 px-3 py-1.5 text-[13px] text-neutral-900 transition-colors hover:bg-mustard-100",
+    "flex cursor-pointer items-center gap-2.5 px-3 py-1.5 text-[13.5px] text-neutral-900 transition-colors hover:bg-mustard-100",
   tick: "size-4 accent-mustard-600",
 };
 

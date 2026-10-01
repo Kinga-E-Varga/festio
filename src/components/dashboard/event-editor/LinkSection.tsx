@@ -11,6 +11,7 @@ import { Field } from "@/components/dashboard/event-editor/Field";
 import {
   ERROR,
   FIELD_GRID,
+  HINT,
   INSET_INPUT,
   LABEL,
   MINI,
@@ -28,7 +29,7 @@ function PasswordBox({ form }: { form: EventForm }) {
   return (
     <div className="px-3.5 pb-3.5">
       {/* One field with its two actions sitting inside it, as the link box has. */}
-      <div className="flex min-h-[38px] items-center gap-1.5 border border-mustard-400 bg-neutral-50 pr-[9px] transition-colors hover:border-mustard-500 has-[:focus]:border-mustard-400">
+      <div className="flex h-10 items-center gap-1.5 border border-mustard-400 bg-neutral-50 pr-[9px] transition-colors hover:border-mustard-500 has-[:focus]:border-mustard-400">
         <input
           type={revealed ? "text" : "password"}
           maxLength={24}
@@ -77,7 +78,7 @@ export function LinkSection({ event, form }: SectionProps) {
           error={derived.slugError}
           hint={t("addressHint")}
         >
-          <div className="flex items-stretch border border-mustard-300 bg-neutral-50 transition-colors hover:border-mustard-500 has-[:focus]:border-mustard-400">
+          <div className="flex h-10 items-stretch border border-mustard-300 bg-neutral-50 transition-colors hover:border-mustard-500 has-[:focus]:border-mustard-400">
             <span className="grid place-items-center bg-mustard-200 px-3 text-[13.5px] whitespace-nowrap text-neutral-800">
               festio.eu/
             </span>
@@ -109,7 +110,7 @@ export function LinkSection({ event, form }: SectionProps) {
         </Field>
 
         <Field label={t("guestLink")}>
-          <span className="flex min-h-[38px] items-center gap-[9px] border border-mustard-300 bg-neutral-50 px-3 py-[9px] text-[13.5px] text-neutral-900">
+          <span className="flex h-10 items-center gap-[9px] border border-mustard-300 bg-neutral-50 px-3 text-[13.5px] text-neutral-900">
             <Icon name="link" className="size-3.5 shrink-0 text-forest-500" />
             <span className="flex-1 truncate">{derived.link}</span>
             <CopyButton
@@ -169,9 +170,7 @@ export function LinkSection({ event, form }: SectionProps) {
                   onChange={() => set.visibility(id)}
                   className="sr-only"
                 />
-                <span className="text-xs leading-[1.45] text-neutral-700">
-                  {tEvent(option.blurbKey)}
-                </span>
+                <span className={HINT}>{tEvent(option.blurbKey)}</span>
               </label>
 
               {/* The password belongs to the card it unlocks. */}

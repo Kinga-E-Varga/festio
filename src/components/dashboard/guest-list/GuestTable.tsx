@@ -113,7 +113,7 @@ export function GuestTable({
           <button
             type="button"
             onClick={onStartList}
-            className="mx-auto mt-3 block cursor-pointer text-[13px] font-semibold text-forest-500 underline underline-offset-[3px] transition-colors hover:text-forest-600"
+            className="mx-auto mt-3 block cursor-pointer text-[12.5px] font-semibold text-forest-500 underline underline-offset-[3px] transition-colors hover:text-forest-600"
           >
             {t("emptyList")}
           </button>
@@ -143,7 +143,7 @@ export function GuestTable({
       ) : null}
 
       {list.groups.length === 0 ? (
-        <p className="py-8 text-center text-[13px] text-neutral-700">
+        <p className="py-8 text-center text-[12.5px] text-neutral-700">
           {t("noResults")}
         </p>
       ) : (
@@ -271,7 +271,7 @@ function AttentionCard({ item, list, actions, editor }: AttentionCardProps) {
           aria-hidden
           className={`absolute top-1/2 -left-0.5 size-3 -translate-y-1/2 rounded-full border-2 ${CATEGORY.attention.ink} ${CATEGORY.attention.fill}`}
         />
-        <span className="min-w-0 truncate text-[14.5px] font-medium text-neutral-900">
+        <span className="min-w-0 truncate text-[14px] font-medium text-neutral-900">
           {item.name}
         </span>
         <span className={ATTENTION_TAG}>{t("duplicateTag")}</span>

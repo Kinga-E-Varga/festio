@@ -12,15 +12,14 @@ interface SidePanelProps {
   inert?: boolean;
   /** Tabs across the header, beside the X. The print page has none. */
   tabs?: ReactNode;
-  /** In place of tabs, a heading in their row (the print page's). */
-  title?: string;
   onClose: () => void;
   children: ReactNode;
 }
 
 /**
  * The host's slide-in form: an aside sized and animated by `panelClassName`,
- * the header's close `X`, and the caller's own fields. Shared by the
+ * the header's close `X` while it covers the viewport, and the caller's own
+ * fields. Shared by the
  * invitation editors and the print page, which take the same shell and differ
  * only in which fields fill it.
  *
@@ -34,7 +33,6 @@ export function SidePanel({
   open,
   inert,
   tabs,
-  title,
   onClose,
   children,
 }: SidePanelProps) {
@@ -47,11 +45,14 @@ export function SidePanel({
       {/*
        * The header runs edge to edge and sticks to the top as the fields
        * scroll under it, on the panel's own surface so they don't show
-       * through.
+       * through. With no tabs (the print page) it holds only the X, so it
+       * shows only while the panel covers the viewport.
        */}
       <div className="flex flex-1 flex-col overflow-y-auto">
-        <div className="sticky top-0 z-10 bg-mustard-100">
-          <Header tabs={tabs} title={title} onClose={onClose} />
+        <div
+          className={`sticky top-0 z-10 bg-mustard-100 ${tabs ? "" : "invite:hidden"}`}
+        >
+          <Header tabs={tabs} onClose={onClose} />
         </div>
         <div className="flex flex-1 flex-col p-5 pt-8 invite:p-8">
           {children}
@@ -62,42 +63,36 @@ export function SidePanel({
 }
 
 /**
- * The panel's top exit — the same X the guest's mobile drawer closes with.
- * The X ends the row of tabs, or of the title in their place, in the tabs'
- * own colours.
+ * The row of tabs, ended by the X — or the X alone on the print page. The X is
+ * there only below the breakpoint, where the panel covers the viewport;
+ * beside the card or paper the top bar's View closes it.
  */
-function Header({
-  tabs,
-  title,
-  onClose,
-}: {
-  tabs?: ReactNode;
-  title?: string;
-  onClose: () => void;
-}) {
+function Header({ tabs, onClose }: { tabs?: ReactNode; onClose: () => void }) {
   const t = useTranslations("HostEditor");
 
   return (
     /*
-     * One line under the tabs (or the title) and the X alike, and a divider
-     * between the two: the X closes the panel, it is not a fourth tab. The
-     * title is as tall as a tab, so the row keeps its height either way.
+     * A divider between the tabs and the X: the X closes the panel, it is
+     * not a fourth tab. Without tabs a tab-tall space keeps the row's height
+     * and pushes the X to the end.
      */
     <header className="mx-3 flex shrink-0 items-center border-b border-neutral-700 pt-3 font-sans">
-      {tabs ?? (
-        <h2 className="flex h-10 flex-1 items-center px-2 text-[14px] font-semibold text-neutral-800">
-          {title}
-        </h2>
+      {tabs ? (
+        <>
+          {tabs}
+          <span
+            aria-hidden="true"
+            className="mx-1.5 h-6 w-px shrink-0 bg-neutral-700/100 invite:hidden"
+          />
+        </>
+      ) : (
+        <span className="h-10 flex-1" />
       )}
-      <span
-        aria-hidden="true"
-        className="mx-1.5 h-6 w-px shrink-0 bg-neutral-900/25"
-      />
       <button
         type="button"
         aria-label={t("close")}
         onClick={onClose}
-        className="grid size-8 shrink-0 place-items-center rounded-xs text-neutral-800 transition-colors hover:bg-neutral-300 focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-steel-500"
+        className="grid size-8 shrink-0 place-items-center rounded-xs text-neutral-900 transition-colors hover:bg-mustard-200 focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-steel-500 invite:hidden"
       >
         <XIcon size={14} />
       </button>
@@ -106,9 +101,8 @@ function Header({
 }
 
 /**
- * View is the same exit as the header's X. Only below the breakpoint: above
- * it the panel sits beside the card or paper and the top bar's View (or the
- * X) is the way out.
+ * View at the foot of the form: the same exit as the header's X and the top
+ * bar's View, at every width.
  */
 export function PanelViewButton({
   onClose,
@@ -120,7 +114,7 @@ export function PanelViewButton({
   const t = useTranslations("HostEditor");
 
   return (
-    <div className="flex gap-3 invite:hidden">
+    <div className="flex gap-3">
       <button
         type="button"
         onClick={onClose}

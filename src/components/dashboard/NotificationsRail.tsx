@@ -9,6 +9,7 @@ import {
   formatDuration,
   formatRelative,
 } from "@/lib/event";
+import { TAG } from "@/components/dashboard/guest-list/styles";
 import { ATTENTION_NOTICES, PACKAGES, RECENT_RSVPS } from "@/mock/dashboard";
 import type { NoticeTone } from "@/types/dashboard";
 
@@ -160,7 +161,9 @@ export function NotificationsRail() {
                   {entry.tag ? (
                     <>
                       {" "}
-                      <span className="inline-block border border-terracotta-400 bg-terracotta-200 px-1.5 py-px align-[1px] text-[9.5px] font-semibold tracking-[0.1em] text-terracotta-600 uppercase">
+                      <span
+                        className={`${TAG} inline-block border-terracotta-400 bg-terracotta-200 align-[1px] text-terracotta-600`}
+                      >
                         {t("unknownTag")}
                       </span>
                     </>

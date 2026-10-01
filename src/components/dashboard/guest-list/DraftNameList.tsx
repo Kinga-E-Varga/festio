@@ -10,7 +10,7 @@ import type { ListName } from "@/types/guests";
 
 /* Each row draws both lines and pulls up 1px, so a column's first row carries its top line. */
 const ROW_BASE =
-  "-mt-px flex min-h-9 items-center gap-2 border-mustard-300 pl-2 text-[13px] text-neutral-900";
+  "-mt-px flex min-h-9 items-center gap-2 border-mustard-300 pl-2 text-[13.5px] text-neutral-900";
 const ROW = `${ROW_BASE} border-y`;
 /** A row's size with the inputs' fill and full edge; pinned while the list scrolls, over the rows below it. */
 const SEARCH_ROW = `${ROW_BASE} sticky top-0 z-10 border bg-neutral-50 transition-colors hover:border-mustard-500 focus-within:border-mustard-400`;

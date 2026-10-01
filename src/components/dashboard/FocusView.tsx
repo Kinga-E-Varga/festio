@@ -23,11 +23,11 @@ export function FocusView({ note, href, linkLabel, children }: FocusViewProps) {
        * The tabs above are all unselected, which on its own says nothing.
        * This says it, and is the way back to the full list.
        */}
-      <p className="mb-[26px] flex flex-wrap items-center gap-x-2 gap-y-1 border border-mustard-300 bg-mustard-100 px-4 py-3 text-[13px] text-neutral-700">
+      <p className="mb-[26px] flex flex-wrap items-center gap-x-2 gap-y-1 border border-mustard-300 bg-mustard-100 px-4 py-3 text-[12.5px] text-neutral-700">
         <span>{note}</span>
         <Link
           href={href}
-          className="font-medium text-forest-500 underline underline-offset-2 transition-colors hover:text-forest-600"
+          className="font-semibold text-forest-500 underline underline-offset-2 transition-colors hover:text-forest-600"
         >
           {linkLabel}
         </Link>

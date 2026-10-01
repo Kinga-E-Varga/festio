@@ -42,7 +42,7 @@ export function Toast({ message, tone }: ToastProps) {
     <div
       role="status"
       aria-live="polite"
-      className={`pointer-events-none fixed bottom-7 left-1/2 z-50 w-max max-w-[80vw] -translate-x-1/2 px-8 py-[18px] text-center text-[14.5px] font-medium text-balance transition-opacity duration-200 ${TONE_CLASSES[tone]} ${
+      className={`pointer-events-none fixed bottom-7 left-1/2 z-50 w-max max-w-[80vw] -translate-x-1/2 px-8 py-[18px] text-center text-[14px] font-medium text-balance transition-opacity duration-200 ${TONE_CLASSES[tone]} ${
         message ? "opacity-100" : "opacity-0"
       }`}
     >
