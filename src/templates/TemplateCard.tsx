@@ -1,19 +1,19 @@
 "use client";
 
 import { use } from "react";
-import type { TemplateModule, TemplateValues } from "@/types/invitation";
+import type { SimpleTemplateModule, TemplateValues } from "@/types/invitation";
 
 /*
  * One promise per template, kept so `use` is handed the same one on every
  * render — a fresh import would suspend forever.
  */
-const loads = new Map<string, Promise<TemplateModule>>();
+const loads = new Map<string, Promise<SimpleTemplateModule>>();
 
-function moduleFor(id: string): Promise<TemplateModule> {
+function moduleFor(id: string): Promise<SimpleTemplateModule> {
   const existing = loads.get(id);
   if (existing) return existing;
 
-  const load = import(`./${id}`) as Promise<TemplateModule>;
+  const load = import(`./${id}`) as Promise<SimpleTemplateModule>;
   loads.set(id, load);
   return load;
 }

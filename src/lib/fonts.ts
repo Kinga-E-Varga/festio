@@ -1,4 +1,9 @@
-import { Kapakana, Noto_Serif } from "next/font/google";
+import {
+  Kantumruy_Pro,
+  Kapakana,
+  Libre_Baskerville,
+  Noto_Serif,
+} from "next/font/google";
 import type { TemplateFont } from "@/types/invitation";
 
 /**
@@ -25,6 +30,23 @@ const kapakana = Kapakana({
   weight: ["300", "400"],
 });
 
+/*
+ * Not the app chrome's `--font-libre-baskerville` (`src/app/fonts.ts`): an
+ * invitation's fonts are its own, and the two must never share a variable.
+ */
+const libreBaskerville = Libre_Baskerville({
+  variable: "--font-invite-libre-baskerville",
+  subsets: ["latin", "latin-ext"],
+  weight: ["400", "700"],
+  style: ["normal", "italic"],
+});
+
+const kantumruyPro = Kantumruy_Pro({
+  variable: "--font-kantumruy-pro",
+  subsets: ["latin", "latin-ext"],
+  weight: ["300", "400", "500", "600", "700"],
+});
+
 function token(
   font: { className: string; variable: string },
   cssVar: string,
@@ -35,4 +57,6 @@ function token(
 export const fonts = {
   notoSerif: token(notoSerif, "--font-noto-serif"),
   kapakana: token(kapakana, "--font-kapakana"),
+  libreBaskerville: token(libreBaskerville, "--font-invite-libre-baskerville"),
+  kantumruyPro: token(kantumruyPro, "--font-kantumruy-pro"),
 };

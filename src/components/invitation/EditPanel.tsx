@@ -3,6 +3,7 @@
 import { useLocale, useTranslations } from "next-intl";
 import { useState } from "react";
 import type {
+  FieldScope,
   InvitationTemplate,
   TemplateField,
   TemplateValues,
@@ -14,21 +15,21 @@ import {
   formatInvitationDate,
 } from "@/lib/invitation";
 import { localized, type Language } from "@/lib/language";
+import {
+  PanelTabs,
+  TABPANEL_ID,
+  tabElementId,
+  type PanelTabId,
+} from "./PanelTabs";
 import { PanelViewButton, SidePanel } from "./SidePanel";
-import { HINT, INPUT, LABEL, PANEL_TAB, SELECT, TEXTAREA } from "./styles";
+import { HINT, INPUT, LABEL, SELECT, TEXTAREA } from "./styles";
 
-/**
- * The editor's tabs, in the order the host meets them: the card's text, then
- * the reply panel's, then the design. Text and Response each show the fields
- * of one scope; Design has nothing to edit yet.
- */
-const TABS = [
-  { id: "text", labelKey: "tabText", scope: "card" },
-  { id: "response", labelKey: "tabResponse", scope: "rsvp" },
-  { id: "design", labelKey: "tabDesign", scope: null },
-] as const;
-
-type TabId = (typeof TABS)[number]["id"];
+/** Text and Response each show the fields of one scope; Design has nothing to edit yet. */
+const SCOPE: Record<PanelTabId, FieldScope | null> = {
+  text: "card",
+  response: "rsvp",
+  design: null,
+};
 
 interface EditPanelProps {
   template: InvitationTemplate;
@@ -63,39 +64,18 @@ export function EditPanel({
   onClose,
 }: EditPanelProps) {
   const t = useTranslations("HostEditor");
-  const [tab, setTab] = useState<TabId>("text");
-  const scope = TABS.find((each) => each.id === tab)?.scope;
+  const [tab, setTab] = useState<PanelTabId>("text");
+  const scope = SCOPE[tab];
   const fields = scope
     ? template.fields.filter((field) => (field.scope ?? "card") === scope)
     : [];
-
-  const tabs = (
-    // `contents`, so the tabs are segments of the header's own row, next to its X.
-    <div role="tablist" className="contents">
-      {TABS.map((each) => (
-        <button
-          key={each.id}
-          type="button"
-          role="tab"
-          id={`edit-tab-${each.id}`}
-          aria-selected={tab === each.id}
-          data-active={tab === each.id ? "true" : undefined}
-          aria-controls="edit-tabpanel"
-          onClick={() => setTab(each.id)}
-          className={PANEL_TAB}
-        >
-          {t(each.labelKey)}
-        </button>
-      ))}
-    </div>
-  );
 
   return (
     <SidePanel
       panelClassName="edit"
       open={open}
       inert={!open}
-      tabs={tabs}
+      tabs={<PanelTabs tab={tab} onSelect={setTab} />}
       onClose={onClose}
     >
       {/*
@@ -105,8 +85,8 @@ export function EditPanel({
        */}
       <div
         role="tabpanel"
-        id="edit-tabpanel"
-        aria-labelledby={`edit-tab-${tab}`}
+        id={TABPANEL_ID}
+        aria-labelledby={tabElementId(tab)}
         className="flex flex-col w-full max-w-[640px] mx-auto"
       >
         {scope ? (

@@ -5,7 +5,7 @@ import { repliesPaused } from "@/lib/event";
 import { cardValues, findByInvite, seedValues } from "@/lib/invitation";
 import { invitationLanguage } from "@/lib/language";
 import { EVENTS } from "@/mock/dashboard";
-import { loadTemplate } from "@/templates";
+import { loadSimpleTemplate } from "@/templates";
 
 /**
  * An invitation is reachable only by its unguessable link and must never be
@@ -23,7 +23,7 @@ export default async function InvitationPage({
   const event = findByInvite(EVENTS, invite);
   if (!event?.templateId) notFound();
 
-  const loaded = await loadTemplate(event.templateId);
+  const loaded = await loadSimpleTemplate(event.templateId);
   if (!loaded) notFound();
 
   const { template, Card } = loaded;

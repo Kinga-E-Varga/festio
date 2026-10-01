@@ -30,7 +30,9 @@ Each event has one package. It only ever goes up (Free → Standard → Custom);
 
 - Base sections, always present: hero/cover, title, date & time, location.
 - Optional sections: map, countdown, dress code, gift preferences, playlist, FAQ, schedule, menu, accommodation, transportation.
-- **Sections are defined per template, not shared globally.** Each template file declares which sections it supports, which are on by default, and which the host may add. Two templates may support different section sets.
+- **Sections, palettes and font pairs are shared libraries** in `src/modular/`. Each section has one or more variants; a palette is 15 fixed colour roles; a font pair is body + headings. Hosts pick a whole palette or pair, never single colours or fonts.
+- **A modular template is a preset over them:** a palette, a font pair and the sections with a variant each, in the fixed order. It is a starting point the host can change later.
+- Events store section, variant, palette and font-pair ids, so those ids are permanent. Template ids are not stored and may change.
 
 ## Host flow
 
@@ -104,7 +106,7 @@ Standard and Custom only. Full spec in `context/features/seating-chart.md`. Not 
 Structure is fixed by invitation type; design varies per template.
 
 1. **One file per template.** Adding a template = adding a single file. No registration step, no edits elsewhere. It then appears in the app automatically.
-2. **All dynamic data lives in that file:** identity and display name, the package it needs (simple templates: Free or Standard; modular: Custom), recommended event types, palette, fonts, background, recommended print size, the editable fields (labels, input types, defaults, limits), for modular templates the supported/default/addable sections, and the design itself.
+2. **All dynamic data lives in that file:** identity and display name, the package it needs (simple templates: Free or Standard; modular: Custom), recommended event types, palette, fonts, background, recommended print size, the editable fields (labels, input types, defaults, limits), for modular templates the palette, font pair and sections they start from (the sections themselves live in the shared library), and the design itself.
 3. **Single-place edits.** Changing a colour, font, default, or field must never mean editing the same value in two places.
 4. **Never break existing events.** A template edit must not destroy content hosts already entered. Changes that can't be applied safely must not be applied to events already using the template.
 

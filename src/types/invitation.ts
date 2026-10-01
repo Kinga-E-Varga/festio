@@ -1,6 +1,7 @@
 import type { LocalizedText } from "@/lib/language";
 import type { PackageId, EventKind } from "@/types/dashboard";
 import type { AgeGroup, DietNeed } from "@/types/guests";
+import type { ModularTemplateModule } from "@/types/modular";
 
 /** How deep the card's shadow is; `null` for none. */
 export type CardShadow = "light" | "dark" | null;
@@ -133,6 +134,8 @@ export interface TemplateFonts {
  * plus its card, and nothing outside that file needs editing to add it.
  */
 export interface InvitationTemplate {
+  /** A fixed card the host edits text on. Modular templates are `ModularTemplate`. */
+  kind: "simple";
   id: string;
   name: string;
   /**
@@ -167,11 +170,14 @@ export interface InvitationTemplate {
 /** Host-entered content, keyed by `TemplateField.id`. */
 export type TemplateValues = Record<string, string>;
 
-/** A template file's public surface: the data, and the card that draws it. */
-export interface TemplateModule {
+/** A simple template file's public surface: the data, and the card that draws it. */
+export interface SimpleTemplateModule {
   template: InvitationTemplate;
   Card: (props: { values: TemplateValues }) => React.ReactNode;
 }
+
+/** Any template file. `template.kind` says which. */
+export type TemplateModule = SimpleTemplateModule | ModularTemplateModule;
 
 export type RsvpStatus = "going" | "not_going";
 

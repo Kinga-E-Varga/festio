@@ -6,7 +6,7 @@ import { invitationLink } from "@/lib/event";
 import { seedValues } from "@/lib/invitation";
 import { invitationLanguage } from "@/lib/language";
 import { findEvent } from "@/mock/dashboard";
-import { loadTemplate } from "@/templates";
+import { loadSimpleTemplate } from "@/templates";
 
 type Props = PageProps<"/[locale]/prints/[id]">;
 
@@ -33,7 +33,7 @@ export default async function PrintPage({ params }: Props) {
   const event = findEvent(id);
   if (!event?.templateId) notFound();
 
-  const loaded = await loadTemplate(event.templateId);
+  const loaded = await loadSimpleTemplate(event.templateId);
   if (!loaded) notFound();
 
   const { template } = loaded;

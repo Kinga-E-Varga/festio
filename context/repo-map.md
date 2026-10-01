@@ -46,7 +46,7 @@ Lives in `app/` because `beforeInteractive` scripts belong to a root layout.
 - `src/i18n/request.ts` — per-request message loading, for the host app's own locale.
 - `src/i18n/messages.ts` — `loadMessages(language)`, the only place the path to `messages/` is written. Guest pages call it directly: an invitation's language is its own, not the request's.
 - `src/proxy.ts` — the locale-routing proxy (Next.js 16 renamed `middleware.ts`). Explicit route allowlist — must never match invite-link paths.
-- `messages/{en,ro,hu}.json` — message catalogs. `Rsvp` and `Print` are guest-facing and follow the invitation's `language`; `Nav`, `TopBar`, `Footer`, `Dashboard`, `Stats` and `Rail` follow the host's locale. Nav, footer and stat wording lives here, not in `src/mock/dashboard.ts` — that file carries only the keys.
+- `messages/{en,ro,hu}.json` — message catalogs. `Rsvp`, `Print` and `Sections` are guest-facing and follow the invitation's `language`; `Nav`, `TopBar`, `Footer`, `Dashboard`, `Stats` and `Rail` follow the host's locale. Nav, footer and stat wording lives here, not in `src/mock/dashboard.ts` — that file carries only the keys.
 
 ## Templates — `src/templates/`
 
@@ -54,7 +54,22 @@ One file per template, **auto-discovered — no registration step.**
 
 - `index.ts` — `loadTemplate(id)`, a dynamic `import('./' + id)`. Adding a template never touches this file.
 - `<id>/index.tsx` — the template itself (e.g. `wolf-dance/`). Holds identity, package, palette, fonts, editable fields, sections, design. A field's `fallback` is `LocalizedText`: all three languages when it is a phrase, a plain string when it is sample content.
+- `<id>/index.ts` for a modular template (e.g. `garden/`) — a preset only: `kind: "modular"`, palette id, font-pair id, `{ section, variant }` list. `loadSimpleTemplate(id)` is what the guest, print and invitation pages use; a modular template is not found there.
 - `TemplateCard.tsx` — template picker card.
+
+## Modular library — `src/modular/`
+
+Shared by every modular template, found by id with a dynamic import — nothing registers.
+
+- `sections/<id>/index.ts` — the section: permanent id, name, required, `order`, optional menu label, fields with sample content. `sections/<id>/<variant>.tsx` — one file per variant, exporting `Variant`.
+- `palettes/<id>.ts` (`c1`–`c15`), `font-pairs/<id>.ts` (`primary` body, `secondary` headings).
+- `index.ts` — `loadSection`, `loadPalette`, `loadFontPair`, `loadDesign` (server). `variants.ts` — `loadVariant` (browser only; kept apart so variants never enter the server graph).
+- `vars.ts` — `--m1`…`--m15` and the one mapping onto the shared `--c1`–`--c6`. `content.ts` — values, basics and date helpers, `safeLink`. `sample.ts` — `SAMPLE_BASICS`. `styles.ts`, `labels.ts`, `MapsLink.tsx`.
+
+## Modular page — `src/components/modular/`
+
+- `ModularInvitation.tsx` — the guest page: sticky `ModularTopBar`, `SectionsDrawer`, sections via `SectionView` (loads a variant with `use`), `ModularFooter`.
+- `ModularEditor.tsx` + `ModularEditPanel.tsx` — the `/templates/<id>` editor for modular templates.
 
 ## Invitation — `src/components/invitation/`
 
@@ -62,6 +77,7 @@ One file per template, **auto-discovered — no registration step.**
 - `HostInvitationEditor.tsx` — host editing wrapper; `EditPanel.tsx` — the edit surface.
 - `RsvpPanel.tsx` / `RsvpForm.tsx` / `useRsvpForm.ts` — guest RSVP.
 - `ScaledStage.tsx` — scales the invitation to its container.
+- `PanelTabs.tsx` — the Text / Response / Design tabs, shared by both edit panels.
 - `styles.ts`, `icons.tsx` — local to invitations.
 
 ## Print — `src/components/print/`
@@ -87,21 +103,21 @@ Event pages: `EventHeader.tsx` (BACK + title + date), `BackButton.tsx`, `Replies
 
 ## Lib — `src/lib/`
 
-| File               | Holds                                                                                                                                                                                    |
-| ------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `config.ts`        | `GUEST_DATA_RETENTION_DAYS` — the single GDPR retention parameter. Never inline it. Also the reply-cap margins, the expected-guests warning percent and the replies-closing-soon window. |
-| `event.ts`         | `invitationLink`, `contentFreeze` (24h rule), `deletionDate`, date formatting, expected-guests and reply-cap helpers, `replyClose` / `replyWindow`                                       |
-| `slug.ts`          | `RESERVED_SLUGS` (the one list), slug limits, `normalizeSlug`, suggestions, the invite rewrite pattern. Relative imports only — `next.config.ts` reads it.                               |
-| `invitation.ts`    | Template vars, `findByInvite`, seed/fallback values, `DATE_FORMATS`                                                                                                                      |
-| `fonts.ts`         | Invitation fonts via `next/font/google` (per-template, not the app chrome — that's `src/app/fonts.ts`)                                                                                   |
-| `history.ts`       | Local visit tracking; `useLeaveFestio(fallback)` — the one BACK, with each page's own fallback when no Festio page is behind it                                                          |
-| `guests.ts`        | Guest rows from list + replies: matching, Unknown/Duplicate tags, grouping and splitting by category, counts, filters, repeat check. Type imports only.                                  |
-| `leave-warning.ts` | `useLeaveWarning(active, message)` — while there are unsaved changes, asks before reload/close (the browser's prompt) and before in-app links or a `data-leaves` control (BACK)          |
-| `language.ts`      | `LANGUAGES` (the one list, read by both `i18n/routing.ts` and an invitation's `language`), `invitationLanguage`, `LocalizedText`/`localized`, locale tags and names                      |
+| File               | Holds                                                                                                                                                                                              |
+| ------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `config.ts`        | `GUEST_DATA_RETENTION_DAYS` — the single GDPR retention parameter. Never inline it. Also the reply-cap margins, the expected-guests warning percent and the replies-closing-soon window.           |
+| `event.ts`         | `invitationLink`, `contentFreeze` (24h rule), `deletionDate`, date formatting, expected-guests and reply-cap helpers, `replyClose` / `replyWindow`                                                 |
+| `slug.ts`          | `RESERVED_SLUGS` (the one list), slug limits, `normalizeSlug`, suggestions, the invite rewrite pattern. Relative imports only — `next.config.ts` reads it.                                         |
+| `invitation.ts`    | Template vars, `findByInvite`, seed/fallback values, `DATE_FORMATS`                                                                                                                                |
+| `fonts.ts`         | Invitation fonts via `next/font/google` (per-template, not the app chrome — that's `src/app/fonts.ts`). Also Libre Baskerville (own variable, not the app's) and Kantumruy Pro for the font pairs. |
+| `history.ts`       | Local visit tracking; `useLeaveFestio(fallback)` — the one BACK, with each page's own fallback when no Festio page is behind it                                                                    |
+| `guests.ts`        | Guest rows from list + replies: matching, Unknown/Duplicate tags, grouping and splitting by category, counts, filters, repeat check. Type imports only.                                            |
+| `leave-warning.ts` | `useLeaveWarning(active, message)` — while there are unsaved changes, asks before reload/close (the browser's prompt) and before in-app links or a `data-leaves` control (BACK)                    |
+| `language.ts`      | `LANGUAGES` (the one list, read by both `i18n/routing.ts` and an invitation's `language`), `invitationLanguage`, `LocalizedText`/`localized`, locale tags and names                                |
 
 ## Other
 
-- `src/types/` — `invitation.ts` (incl. `TemplateModule`), `dashboard.ts`, `print.ts`, `guests.ts` (mock-only)
+- `src/types/` — `invitation.ts` (incl. `TemplateModule`, a union of simple and modular), `modular.ts` (sections, palettes, pairs, modular templates), `dashboard.ts`, `print.ts`, `guests.ts` (mock-only)
 - `src/mock/dashboard.ts` — mock data; **no Firestore wiring yet**
 - `src/mock/guests.ts` — `findGuests(eventId)`, mock guest lists
 - `src/components/icons.tsx` — app-wide icons

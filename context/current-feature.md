@@ -1,4 +1,6 @@
-# Current Feature: RSVP form fixes
+# Current Feature: Modular invitations — Phase 1 (sections and the template page)
+
+A shared library of sections (with variants), palettes and font pairs, and one modular template shown at `/templates/<id>` with the host bar and an empty edit panel. Not linked to events. No Firestore.
 
 ## Status
 
@@ -6,24 +8,36 @@ Completed
 
 ## Goals
 
-- Coming / Not coming buttons move to the top of the form, above the names.
-- One warning slot above Send, only after a Send attempt, first problem only, top to bottom: no choice picked → empty name → missing age → missing dietary needs → Other picked with no words. Live once attempted.
-- When Coming is picked, each name gets two required questions: **Age** (radios: Adult / Child / Baby) and **Dietary needs** (checkboxes: None, Vegetarian, Vegan, Gluten-free, Lactose-free, Nut allergy, Other; None and needs clear each other; Other opens a text box the guest must fill in). Not coming → neither asked.
-- Same options and rules as the host's reply editor; reuse its types and option lists.
-- Custom radios and checkboxes — no browser default look, every colour from the invitation palette (`--c` vars); focus ring in `--c3`.
-- In the invitation editor the form works fully; a passing reply shows the toast "Nothing saved — this is a test" (host's language), then the thank-you. The editor never saves.
-- New texts in EN / RO / HU — guest-facing in `Rsvp`, the toast in `HostEditor`.
+- `src/modular/` with `sections/<id>/` (`index.ts` + one `.tsx` per variant), `palettes/<id>.ts`, `font-pairs/<id>.ts`, and `index.ts` loaders by id (dynamic import, no registration)
+- Section definition: permanent `id`, EN/RO/HU name, required/optional, `order` number, optional menu label, fields with sample content (`text`, `longText`, `time`, new `list`)
+- 15 sections, one variant each, no photos: cover/full-bleed, title/editorial, date-time/moments, countdown/big-number, location/details, map/legend, schedule/timeline, dress-code/guidance, menu/card, gifts/bank-card, playlist/record, accommodation/list, transportation/ways, faq/accordion, rsvp/simple
+- No map embeds: "Open in Maps" links only. No save-to-calendar buttons
+- Palettes `terracotta` and `midnight` (`c1`–`c15`, board hex values) as `--m1`…`--m15`, with one mapping in `src/modular/` that fills `--c1`–`--c6`
+- Font pairs `classic` (Libre Baskerville + Kantumruy Pro) and `script` (Kapakana + Noto Serif) in `src/lib/fonts.ts`; `primary` = body, `secondary` = headings
+- One set of sample invitation basics (hosts, date, venue) in `src/modular/`
+- Fixed guest words in a new `Sections` message group (EN/RO/HU)
+- Modular templates `garden` (Terracotta + Classic) and `garden-midnight` (Midnight + Script) in `src/templates/<id>/index.ts`; `kind: "simple" | "modular"`, `TemplateModule` a union
+- `ModularInvitation`: sticky top bar (initials, menu links, replies close, RSVP), mobile drawer, full-width sections with anchors, privacy footer from `GUEST_DATA_RETENTION_DAYS`
+- `ModularEditor` on `/templates/[id]` for modular: same host bar, `SidePanel` with Text / Response / Design tabs all empty; tab row extracted into a shared `PanelTabs`; RSVP sends show the "test reply" toast; loading skeleton; `noindex` kept
+- Guest invite, print and invitation pages show not found for a modular template
+- Update `context/project-overview.md`: sections, palettes and font pairs are shared libraries; modular templates are presets
 
 ## Notes
 
-- Spec: `context/fixes/rsvp-form.md`.
-- Payload: `RsvpAttendee` gets `ageGroup`, `diet` (empty = None), `dietOther`, shaped like `GuestReply`. Not coming = keys left out. No storage.
-- Radios/checkboxes may change to chips or a dropdown after seeing it.
+- Spec: `context/features/modular-1-sections.md`. Visual reference: design canvas "Type 2 Invitation" (https://claude.ai/artifact/4cHNDX7cGjTuVQzEE399WL), pages **Guest page** and **Section options — 15 colours** only
+- Section, variant, palette and font-pair ids are permanent; template ids may change
+- Variants never declare their own fields; they may show fewer of the section's fields
+- Variants render client-side (like `TemplateCard`) so phase 2 can re-render live
+- Page speaks the host's locale
+- Out of scope: forms, pickers, events, Firestore, images, second variants, rearranging, custom section, modular RSVP questions, section-driven RSVP questions, click-to-load maps, modular print
+- Plan: `context/plans/modular-invitations-phase-1-sections-and-the-template-page.md`
+- Testing: build + lint; `/templates/garden` and `/templates/garden-midnight` at desktop/mobile in EN/RO/HU; sticky bar, anchors, drawer; panel tabs; RSVP toast; `/templates/wolf-dance` and the guest page unchanged
 
 ## History
 
 <!-- Keep this updated latest to earliest -->
 
+- RSVP form fixes — Coming / Not coming above the names; age and dietary needs per name when coming, with the reply editor's options; one warning slot above Send; custom radios and checkboxes in the invitation palette; reply fields in the invitation's primary font, buttons in Work Sans uppercase; the editor tries the form without saving; toast tones (success, neutral, warning, error), bigger and longer-lasting toasts
 - Invitation editor tabs — the dashboard Invitations page archived to `archived/invitations-page/`; Edit invitation and Print straight from the events list, BACK falling back to it; a new event row layout with shared action blocks and short month names; no Studio in the nav, Downloads in Hosting; the editor panel's Text / Response / Design tabs with the X as a segment, sticky at the top, with a hint on where the reply message shows and the View button in `--c2`
 - Prettier formatting — one pinned style (double quotes, semicolons) in `.prettierrc.json`, `npm run format` / `format:check`, VS Code format-on-save with Prettier, a Claude Code hook that formats every file Claude edits, and a one-time reformat of the codebase
 - Card shadow, tab hover, Active = shared — a template sets its card shadow (light / dark / none) and the stage leaves room for it, so the card no longer pads itself; lighter tab hover with a bottom border and a 3px tab border; Active holds only paid Public / Protected events, with the status worked out instead of stored and the Active / Draft texts fixed in EN, RO and HU

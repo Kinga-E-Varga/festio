@@ -24,6 +24,7 @@ const LABELS = {
 } satisfies Record<string, LocalizedText>;
 
 export const template: InvitationTemplate = {
+  kind: "simple",
   id: "wolf-dance",
   name: "Wolf Dance",
   package: "free",
@@ -51,7 +52,7 @@ export const template: InvitationTemplate = {
     color1: "#473130",
     color2: "#adbd8f",
     color3: "#fefce5",
-    color4: "#a5a483",
+    color4: "#b5a58e",
     color5: "#788a5c",
     color6: "#d88e5f",
     color7: "#9cb17d",

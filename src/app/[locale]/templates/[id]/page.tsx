@@ -2,7 +2,10 @@ import type { Metadata } from "next";
 import { getLocale, getTranslations } from "next-intl/server";
 import { notFound } from "next/navigation";
 import { HostInvitationEditor } from "@/components/invitation/HostInvitationEditor";
+import { ModularEditor } from "@/components/modular/ModularEditor";
 import { fallbackValues } from "@/lib/invitation";
+import { loadDesign } from "@/modular";
+import { SAMPLE_BASICS } from "@/modular/sample";
 import { loadTemplate } from "@/templates";
 
 type Props = PageProps<"/[locale]/templates/[id]">;
@@ -23,6 +26,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
  * A template on its own, before any host has picked it or an event exists —
  * the same editor a host gets on a real event, just seeded from the
  * template's own fallback copy instead of `seedValues(template, event)`.
+ * A modular template gets the modular editor, seeded from `SAMPLE_BASICS`.
  */
 export default async function TemplatePreviewPage({ params }: Props) {
   const { id } = await params;
@@ -39,6 +43,18 @@ export default async function TemplatePreviewPage({ params }: Props) {
    * matched against that same list before anything renders.
    */
   const language = await getLocale();
+
+  if (template.kind === "modular") {
+    const design = await loadDesign(template);
+    if (!design) notFound();
+    return (
+      <ModularEditor
+        design={design}
+        basics={SAMPLE_BASICS}
+        language={language}
+      />
+    );
+  }
 
   return (
     <HostInvitationEditor
