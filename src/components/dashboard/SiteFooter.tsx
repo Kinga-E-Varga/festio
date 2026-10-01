@@ -42,7 +42,7 @@ export function SiteFooter() {
             <label htmlFor="footer-search" className="sr-only">
               {t("search")}
             </label>
-            <div className="flex items-center gap-2 border border-neutral-300/25 bg-neutral-50/5 px-2.5 py-[7px] transition-colors focus-within:border-neutral-300/60">
+            <div className="flex items-center gap-2 border border-neutral-300/25 bg-neutral-50/5 px-2.5 py-[7px] transition-colors focus-within:border-mustard-400">
               <Icon
                 name="search"
                 className="size-4 shrink-0 text-neutral-300/55"

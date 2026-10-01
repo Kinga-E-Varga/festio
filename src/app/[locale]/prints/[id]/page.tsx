@@ -61,6 +61,7 @@ export default async function PrintPage({ params }: Props) {
           : undefined
       }
       defaultNote={t("defaultNote")}
+      title={event.title}
     />
   );
 }

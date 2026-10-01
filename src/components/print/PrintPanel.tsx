@@ -1,16 +1,25 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import type { CSSProperties } from "react";
-import { CheckIcon } from "@/components/invitation/icons";
-import { PanelViewButton, SidePanel } from "@/components/invitation/SidePanel";
 import {
+  BANNER_TONE,
   LABEL,
-  TEXTAREA,
-  TOGGLE_OUTLINE,
-  TOGGLE_SOLID,
-} from "@/components/invitation/styles";
+  PANEL_INPUT,
+} from "@/components/dashboard/event-editor/styles";
+import { Icon } from "@/components/icons";
+import { PanelViewButton, SidePanel } from "@/components/invitation/SidePanel";
 import type { PrintSettings, PrintShape } from "@/types/print";
+
+/**
+ * Flat / Folded: ink in the panel's text colour either way, with a text
+ * field's edge. Picked, a warm grey fill; otherwise the palest gold. Either
+ * one fills with the edge's own grey on hover. As tall as a text field beside
+ * them — its 9px padding, its 13.5px type and its 1px border.
+ */
+const CHOICE =
+  "inline-flex cursor-pointer items-center justify-center border border-neutral-400 px-4 py-[9px] text-[13.5px] font-medium text-neutral-800 transition-colors hover:bg-neutral-400";
+const CHOICE_ON = `${CHOICE} bg-neutral-300`;
+const CHOICE_OFF = `${CHOICE} bg-mustard-50`;
 
 /*
  * Each shape's id is also its key into `PrintPanel` — its label, and under
@@ -34,12 +43,11 @@ interface PrintPanelProps {
 
 /**
  * The printable's settings. The same surface as the invitation's edit panel,
- * and styled from the same palette — but this form is fixed rather than
- * generated from `template.fields`, because what a printable needs settling
- * is the paper, not the template's copy.
+ * in Festio's own palette and the event editor's fields — but this form is
+ * fixed rather than generated from `template.fields`, because what a
+ * printable needs settling is the paper, not the template's copy.
  *
- * It has no save of its own: the host action bar's Save is this form's save,
- * so nothing in here submits.
+ * Nothing in here submits: the top bar's Export is what the form is for.
  */
 export function PrintPanel({
   settings,
@@ -50,48 +58,28 @@ export function PrintPanel({
   const t = useTranslations("PrintPanel");
 
   return (
-    /*
-     * Festio's own faces, not the template's. The form is the app talking to
-     * the host about paper — the template's fonts belong to the card, and
-     * the card is the only thing on this page still wearing them.
-     *
-     * Only the two role vars, because they are the only way a template's
-     * face ever reaches anything: `body` sets Work Sans for the whole app
-     * and a template's font classes are `next/font` variable classes, which
-     * declare `--font-noto-serif` and the like without applying a family.
-     * So everything here is already Work Sans, and both roles point at it
-     * too, so a control that names one — `TEXTAREA` — lands on the same face
-     * as the rest of the form.
-     */
     <SidePanel
       panelClassName="sheet-form"
       open={open}
+      title={t("title")}
       onClose={onClose}
-      style={
-        {
-          "--font-primary": "var(--font-sans)",
-          "--font-secondary": "var(--font-sans)",
-        } as CSSProperties
-      }
     >
       {/*
        * `w-full` is what makes it fill: the auto margins that centre it
        * also turn off the column's stretch, so without it the form would
        * only be as wide as its widest label.
        */}
-      <div className="flex flex-col w-full max-w-[500px] m-auto">
+      <div className="flex flex-col w-full max-w-[640px] mx-auto">
         <fieldset className="flex flex-col mb-6">
           <legend className={`${LABEL} mb-2`}>{t("cardStyle")}</legend>
-          <div className="flex gap-6">
+          <div className="flex gap-1.5">
             {SHAPES.map((shape) => (
               <button
                 key={shape}
                 type="button"
                 aria-pressed={settings.shape === shape}
                 onClick={() => onChange("shape", shape)}
-                className={`flex-1 ${
-                  settings.shape === shape ? TOGGLE_SOLID : TOGGLE_OUTLINE
-                }`}
+                className={settings.shape === shape ? CHOICE_ON : CHOICE_OFF}
               >
                 {t(shape)}
               </button>
@@ -99,33 +87,26 @@ export function PrintPanel({
           </div>
         </fieldset>
 
-        {/*
-         * The box is drawn beside the input rather than by it: an
-         * `appearance-none` checkbox cannot be given a mark of its own in
-         * every browser, and a pseudo-element on an input is not something
-         * to rely on. The real control stays, out of sight but not out of
-         * the tab order, and the box follows its state.
-         */}
         <fieldset className="flex flex-col mb-6">
           <legend className={`${LABEL} mb-2`}>{t("background")}</legend>
-          <label className="flex cursor-pointer items-center gap-3">
-            <input
-              type="checkbox"
-              checked={settings.tinted}
-              onChange={(control) => onChange("tinted", control.target.checked)}
-              className="sr-only"
-            />
-            <span
-              aria-hidden="true"
-              className={`grid size-[18px] shrink-0 place-items-center border-1 border-[var(--c3)] text-[color:var(--c1)] transition-colors ${
-                settings.tinted ? "bg-[var(--c3)]" : ""
-              }`}
-            >
-              {settings.tinted ? <CheckIcon size={12} /> : null}
+          {/* The event editor's checkbox in the choice buttons' colours: the real input, drawn on, its tick laid over it. */}
+          <label className="flex cursor-pointer items-start gap-[9px] text-[13.5px] leading-[1.45] text-neutral-800">
+            <span className="relative mt-px grid size-4 shrink-0 place-items-center">
+              <input
+                type="checkbox"
+                checked={settings.tinted}
+                onChange={(control) =>
+                  onChange("tinted", control.target.checked)
+                }
+                className="peer size-4 cursor-pointer appearance-none border-[1.5px] border-neutral-800 bg-mustard-50 transition-colors checked:bg-neutral-300 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-mustard-400"
+              />
+              <Icon
+                name="check"
+                strokeWidth={3}
+                className="pointer-events-none absolute size-3 text-neutral-800 opacity-0 peer-checked:opacity-100"
+              />
             </span>
-            <span className="text-[16px] leading-[1.45] text-[color:var(--c3)]">
-              {t("tinted")}
-            </span>
+            {t("tinted")}
           </label>
         </fieldset>
 
@@ -145,8 +126,9 @@ export function PrintPanel({
           onChange={(value) => onChange("note", value)}
         />
 
-        <div className="flex flex-col bg-[var(--c5)] text-[var(--c1)] border-1 border-[var(--c2)] p-4 rounded-sm">
-          <p className="text-[14px] text-center font-semibold tracking-[0.1em] border-b-1 pb-2 mb-3 uppercase">
+        {/* The event editor's teal info banner. */}
+        <div className={`flex flex-col border p-4 ${BANNER_TONE.info}`}>
+          <p className="mb-3 border-b border-steel-400 pb-2 text-center text-[12px] font-semibold tracking-[0.14em] uppercase">
             {t("instructions")}
           </p>
           {/*
@@ -166,7 +148,7 @@ export function PrintPanel({
               <ul
                 key={shape}
                 aria-hidden={settings.shape !== shape}
-                className={`[grid-area:1/1] space-y-2 text-[14px] leading-[1.45] font-[500] text-justify ${
+                className={`[grid-area:1/1] space-y-2 text-[13px] leading-[1.5] text-justify ${
                   settings.shape === shape ? "" : "invisible"
                 }`}
               >
@@ -201,7 +183,7 @@ function LineField({
   onChange,
 }: LineFieldProps) {
   return (
-    <div className="flex flex-col gap-2 mb-6">
+    <div className="mb-6 flex flex-col gap-1.5">
       <label htmlFor={id} className={LABEL}>
         {label}
       </label>
@@ -212,7 +194,7 @@ function LineField({
         placeholder={placeholder}
         value={value}
         onChange={(control) => onChange(control.target.value)}
-        className={TEXTAREA}
+        className={`${PANEL_INPUT} resize-none`}
       />
     </div>
   );

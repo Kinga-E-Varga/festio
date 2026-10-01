@@ -21,13 +21,17 @@ import {
   tabElementId,
   type PanelTabId,
 } from "./PanelTabs";
+import {
+  HINT,
+  LABEL,
+  PANEL_INPUT,
+} from "@/components/dashboard/event-editor/styles";
 import { PanelViewButton, SidePanel } from "./SidePanel";
-import { HINT, INPUT, LABEL, SELECT, TEXTAREA } from "./styles";
 
-/** Text and Response each show the fields of one scope; Design has nothing to edit yet. */
+/** Text and Replies each show the fields of one scope; Design has nothing to edit yet. */
 const SCOPE: Record<PanelTabId, FieldScope | null> = {
   text: "card",
-  response: "rsvp",
+  replies: "rsvp",
   design: null,
 };
 
@@ -130,7 +134,8 @@ function Field({
   const hostLocale = useLocale();
 
   return (
-    <div className="flex flex-col mb-6">
+    // Festio's own form, the event editor's fields — never the invitation's palette.
+    <div className="mb-6 flex flex-col gap-1.5">
       <label htmlFor={`field-${field.id}`} className={LABEL}>
         {localized(field.label, hostLocale)}
       </label>
@@ -146,7 +151,7 @@ function Field({
             id={`field-${field.id}`}
             value={value || DEFAULT_DATE_FORMAT}
             onChange={(control) => onChange(field.id, control.target.value)}
-            className={`${SELECT} font-light`}
+            className={PANEL_INPUT}
           >
             {dateFormatsFor(language).map((option) => (
               <option key={option.id} value={option.id}>
@@ -154,7 +159,7 @@ function Field({
               </option>
             ))}
           </select>
-          <p className={`${HINT} mt-1`}>{t("dateHint")}</p>
+          <p className={HINT}>{t("dateHint")}</p>
         </>
       ) : field.type === "longText" ? (
         <textarea
@@ -163,7 +168,7 @@ function Field({
           value={value}
           maxLength={field.maxLength}
           onChange={(control) => onChange(field.id, control.target.value)}
-          className={`${TEXTAREA} mt-2 font-light`}
+          className={`${PANEL_INPUT} resize-none`}
         />
       ) : (
         <input
@@ -172,7 +177,7 @@ function Field({
           value={value}
           maxLength={field.maxLength}
           onChange={(control) => onChange(field.id, control.target.value)}
-          className={`${INPUT} font-light`}
+          className={PANEL_INPUT}
         />
       )}
       {/*
@@ -180,7 +185,7 @@ function Field({
        * phone the guest sees just the Respond bar — so the host is told.
        */}
       {field.id === "rsvpMessage" ? (
-        <p className={`${HINT} mt-1`}>{t("rsvpMessageHint")}</p>
+        <p className={HINT}>{t("rsvpMessageHint")}</p>
       ) : null}
     </div>
   );

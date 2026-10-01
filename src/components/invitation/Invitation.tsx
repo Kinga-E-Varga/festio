@@ -25,11 +25,10 @@ interface InvitationProps {
    */
   host?: ReactNode;
   /**
-   * The host's controls, in flow directly above the card. They take their
-   * height out of the stage's slot rather than covering it, so the card is
-   * never partly hidden behind them.
+   * Fill the parent instead of the viewport — the editors put their top bar
+   * above the invitation and hand it what is left.
    */
-  hostBar?: ReactNode;
+  fill?: boolean;
   /** Switches the reply panel inert — what the host's edit form asks for while it covers it. */
   replyInert?: boolean;
   /** The hidden reply cap is reached; the panel says so instead of taking replies. */
@@ -58,7 +57,7 @@ export function Invitation({
   values,
   children,
   host,
-  hostBar,
+  fill,
   replyInert,
   repliesPaused,
   onSubmit,
@@ -69,7 +68,7 @@ export function Invitation({
   return (
     <div
       style={{ ...templateVars(template), ...ground.style }}
-      className={`invite relative overflow-hidden ${template.fonts.primary.className} ${template.fonts.secondary.className} ${ground.className} flex h-dvh flex-col invite:flex-row`}
+      className={`invite relative overflow-hidden ${template.fonts.primary.className} ${template.fonts.secondary.className} ${ground.className} flex ${fill ? "h-full" : "h-dvh"} flex-col invite:flex-row`}
     >
       {/*
        * The padding lives here rather than on the stage: `clientWidth`
@@ -77,8 +76,6 @@ export function Invitation({
        * have and paint the card slightly too large.
        */}
       <div className="relative flex min-h-0 min-w-0 flex-1 flex-col">
-        {hostBar}
-
         <div className="relative flex min-h-0 min-w-0 flex-1 p-1">
           <ScaledStage
             width={width}

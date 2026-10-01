@@ -16,8 +16,6 @@ interface ModularInvitationProps {
   design: ModularDesign;
   basics: InvitationBasics;
   language: Language;
-  /** The host's controls, in flow above the page. */
-  hostBar?: ReactNode;
   /** The host's edit panel. Drawn in here: it reads the palette vars on the root. */
   host?: ReactNode;
   /** Whether the edit panel is open — above the breakpoint the page makes room for it. */
@@ -34,7 +32,6 @@ export function ModularInvitation({
   design,
   basics,
   language,
-  hostBar,
   host,
   panelOpen,
   onRsvp,
@@ -55,13 +52,13 @@ export function ModularInvitation({
   return (
     <div
       style={modularVars(design.palette, design.fontPair)}
-      className={`invite relative flex h-dvh flex-col overflow-hidden bg-[var(--m1)] font-[family-name:var(--font-primary)] text-[color:var(--m8)] ${fontClasses(design.fontPair)}`}
+      className={`invite relative flex h-full flex-col overflow-hidden bg-[var(--m1)] font-[family-name:var(--font-primary)] text-[color:var(--m8)] ${fontClasses(design.fontPair)}`}
     >
       {/*
-       * The host bar and the page share one column. With the panel open
-       * above the breakpoint, the column gives up the panel's width, so the
-       * panel opens beside the bar and the page rather than over them —
-       * same duration and easing as the panel. While the drawer covers the
+       * The page has a column of its own. With the panel open above the
+       * breakpoint, the column gives up the panel's width, so the panel
+       * opens beside the page rather than over it — same duration and
+       * easing as the panel. While the drawer covers the
        * screen, everything under it is out of the tab order.
        */}
       <div
@@ -69,9 +66,7 @@ export function ModularInvitation({
         inert={menuOpen}
         className="flex min-h-0 flex-1 flex-col transition-[margin] duration-[620ms] ease-[cubic-bezier(0.22,1,0.36,1)] invite:data-[panel=true]:mr-invite-panel"
       >
-        {hostBar}
-
-        {/* The page scrolls in here, not the window, so the host bar stays put. */}
+        {/* The page scrolls in here, not the window, so the top bar stays put. */}
         <div className="min-h-0 flex-1 overflow-y-auto scroll-smooth">
           <div className="@container">
             <ModularTopBar

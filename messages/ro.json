@@ -372,7 +372,7 @@
     "listNow": "{count, plural, one {Lista ta are acum # nume.} few {Lista ta are acum # nume.} other {Lista ta are acum # de nume.}} O poți modifica pe pagina listei de invitați."
   },
   "HostEditor": {
-    "back": "Înapoi",
+    "replyCount": "{count, plural, one {# răspuns} few {# răspunsuri} other {# de răspunsuri}}",
     "edit": "Editere",
     "save": "Salvere",
     "saved": "Salvat",
@@ -381,7 +381,7 @@
     "close": "Închide",
     "view": "Vezi",
     "tabText": "Text",
-    "tabResponse": "Răspuns",
+    "tabReplies": "Răspunsuri",
     "tabDesign": "Design",
     "designSoon": "Opțiunile de design vin în curând.",
     "dateHint": "Setat în detaliile evenimentului — schimbă-o acolo ca să modifici data..",
@@ -389,6 +389,7 @@
     "testReply": "Nimic salvat — acesta este un test"
   },
   "PrintPanel": {
+    "title": "Setări de tipărire",
     "cardStyle": "stil invitațe",
     "flat": "Simplu",
     "folded": "Pliat",

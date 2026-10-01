@@ -372,7 +372,7 @@
     "listNow": "{count, plural, one {A listádon most # név szerepel.} other {A listádon most # név szerepel.}} A vendéglista oldalon módosíthatod."
   },
   "HostEditor": {
-    "back": "Vissza",
+    "replyCount": "{count, plural, other {# válasz}}",
     "edit": "Módosít",
     "save": "Ment",
     "saved": "Meghívó mentve — a vendégeidet nem értesítettük",
@@ -381,7 +381,7 @@
     "close": "Zárás",
     "view": "Nézd meg",
     "tabText": "Szöveg",
-    "tabResponse": "Válasz",
+    "tabReplies": "Válaszok",
     "tabDesign": "Dizájn",
     "designSoon": "A dizájn beállításai hamarosan érkeznek.",
     "dateHint": "Az esemény részleteinél állítható — ott módosítsd, ha magát a dátumot akarod megváltoztatni.",
@@ -389,6 +389,7 @@
     "testReply": "Semmi nincs mentve — ez csak próba"
   },
   "PrintPanel": {
+    "title": "Nyomtatási beállítások",
     "cardStyle": "kártya stílusa",
     "flat": "Sima kártya",
     "folded": "Hajtott kártya",

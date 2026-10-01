@@ -1,5 +1,4 @@
 import { useTranslations } from "next-intl";
-import Image from "next/image";
 import { Link } from "@/i18n/navigation";
 import { Icon } from "@/components/icons";
 import { ATTENTION_NOTICES, EVENTS, HOST } from "@/mock/dashboard";
@@ -12,7 +11,7 @@ interface TopBarProps {
 }
 
 const ICON_BUTTON =
-  "relative grid size-[38px] place-items-center rounded-full text-mustard-50 transition-colors hover:bg-mustard-50/15";
+  "relative grid size-[38px] place-items-center rounded-full text-mustard-50 transition-colors hover:bg-neutral-800";
 
 /** Count bubbles on the bell and the cart share everything but their colour. */
 const BADGE =
@@ -30,7 +29,7 @@ export function TopBar({
   const awaitingPayment = EVENTS.filter((event) => !event.paid).length;
 
   return (
-    <header className="sticky top-0 z-40 flex h-topbar shrink-0 items-center gap-3.5 border-b border-mustard-500 bg-neutral-900 px-6">
+    <header className="sticky top-0 z-40 flex h-topbar shrink-0 items-center gap-3.5 border-b border-mustard-400 bg-neutral-900 px-6">
       {/*
        * Pulled out by the 8px the glyph is inset inside its 38px hit area, so
        * the menu mark sits the same 24px off the edge as the avatar circle
@@ -47,18 +46,19 @@ export function TopBar({
       </button>
 
       {/* The menu mark takes the corner once the nav collapses into it. */}
-      <Link href="/dashboard" className="hidden items-center nav:flex">
+      <Link
+        href="/dashboard"
+        aria-label="Festio"
+        className="hidden items-center nav:flex"
+      >
         {/*
-         * One-colour artwork, so inverting it is cheaper than shipping a
-         * second file that would drift from the original.
+         * One-colour artwork, used as a mask and filled with the icons'
+         * `mustard-50` — a second, recoloured file would drift from the
+         * original.
          */}
-        <Image
-          src="/festio-lockup.svg"
-          alt="Festio"
-          width={148}
-          height={32}
-          priority
-          className="h-7 w-auto brightness-0 invert"
+        <span
+          aria-hidden="true"
+          className="block aspect-[148/32] h-7 bg-mustard-50 mask-[url(/festio-lockup.svg)] mask-contain mask-center mask-no-repeat"
         />
       </Link>
 

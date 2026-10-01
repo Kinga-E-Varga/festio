@@ -2,11 +2,8 @@
 
 import { useTranslations } from "next-intl";
 import { type CSSProperties, useState } from "react";
-import { Toast, useToast } from "@/components/dashboard/Toast";
-import { HostBar } from "@/components/invitation/HostBar";
-import { ExportIcon } from "@/components/invitation/icons";
-import { HOST_ACTION } from "@/components/invitation/styles";
-import { useLeaveFestio } from "@/lib/history";
+import { useToast } from "@/components/dashboard/Toast";
+import { EditorFrame } from "@/components/invitation/EditorTopBar";
 import { printVars, templateFontVars } from "@/lib/invitation";
 import type { InvitationTemplate } from "@/types/invitation";
 import type { PrintSettings } from "@/types/print";
@@ -16,13 +13,12 @@ import { PrintPreview } from "./PrintPreview";
 /**
  * The print page's own palette. A printable is Festio's artifact, not the
  * invitation's — the template's colours stop at the card's artwork, and the
- * page around it, its form and its chrome are all painted from here.
+ * page around it is painted from here. The top bar and the form are the
+ * editors' own, in the app's palette.
  *
- * Same var names as a template's palette, so every shared control
- * (`styles.ts`, the leaf faces) reads this without knowing it is on the
- * print page. `--print-ground` is the page behind the paper: a shade off
- * `--c1`, so the form reads as a surface laid on the page rather than as
- * more of it.
+ * Same var names as a template's palette, so the leaf faces read this
+ * without knowing they are on the print page. `--print-ground` is the page
+ * behind the paper.
  */
 const PRINT_PALETTE = {
   "--c1": "#2F281F",
@@ -52,11 +48,13 @@ interface PrintEditorProps {
    * invitation's language — never the locale the host reads Festio in.
    */
   defaultNote: string;
+  /** The top bar's title — the event's. No tags: they are the invitation's, not the printable's. */
+  title: string;
 }
 
 /**
  * The print page. It is laid out like the invitation editor and takes the
- * same controls, but what fills the middle is a sheet of paper being turned
+ * same top bar and panel, but what fills the middle is a sheet of paper being turned
  * rather than the invitation itself, and the panel beside it settles the
  * paper rather than the copy.
  *
@@ -68,6 +66,7 @@ export function PrintEditor({
   link,
   passwordLine,
   defaultNote,
+  title,
 }: PrintEditorProps) {
   const [settings, setSettings] = useState<PrintSettings>({
     shape: "flat",
@@ -83,7 +82,6 @@ export function PrintEditor({
   const [editing, setEditing] = useState(true);
   const t = useTranslations("HostEditor");
   const toast = useToast();
-  const leave = useLeaveFestio("/dashboard/events");
 
   function change<Key extends keyof PrintSettings>(
     key: Key,
@@ -93,49 +91,31 @@ export function PrintEditor({
   }
 
   return (
-    <>
+    <EditorFrame
+      title={title}
+      editing={editing}
+      onToggleEdit={() => setEditing(!editing)}
+      action={{ kind: "export", onExport: () => toast.show(t("exported")) }}
+      toast={toast}
+    >
       <div
         style={{
           ...templateFontVars(template),
           ...printVars(template),
           ...PRINT_PALETTE,
         }}
-        className={`invite relative overflow-hidden ${template.fonts.primary.className} ${template.fonts.secondary.className} bg-[var(--print-ground)] flex h-dvh flex-col invite:flex-row`}
+        className={`invite relative overflow-hidden ${template.fonts.primary.className} ${template.fonts.secondary.className} bg-[var(--print-ground)] flex h-full flex-col invite:flex-row`}
       >
         {/*
-         * Bar then sheet, the invitation editor's column exactly: the bar is
-         * a row of its own above the paper rather than a layer over it, so
-         * the sheet sizes itself against what is left and is never partly
-         * behind the controls.
+         * The sheet sizes itself against what is left beside the panel, and
+         * the top bar above both — never partly behind either.
          */}
-        <div className="relative flex min-h-0 min-w-0 flex-1 flex-col">
-          {/*
-           * The bar does not answer to `editing` — Back and Export stay
-           * within reach while the form is open.
-           */}
-          <HostBar
-            onBack={leave}
-            editing={editing}
-            onToggleEdit={() => setEditing(!editing)}
-            thirdAction={
-              <button
-                type="button"
-                onClick={() => toast.show(t("exported"))}
-                className={HOST_ACTION}
-              >
-                <ExportIcon size={14} />
-                {t("export")}
-              </button>
-            }
+        <div className="relative flex min-h-0 min-w-0 flex-1">
+          <PrintPreview
+            settings={settings}
+            link={link}
+            passwordLine={passwordLine}
           />
-
-          <div className="relative flex min-h-0 min-w-0 flex-1">
-            <PrintPreview
-              settings={settings}
-              link={link}
-              passwordLine={passwordLine}
-            />
-          </div>
         </div>
 
         <PrintPanel
@@ -145,7 +125,6 @@ export function PrintEditor({
           onClose={() => setEditing(false)}
         />
       </div>
-      <Toast message={toast.message} tone={toast.tone} />
-    </>
+    </EditorFrame>
   );
 }

@@ -8,17 +8,14 @@ import {
   useTranslations,
 } from "next-intl";
 import { type ReactNode, Suspense, useState } from "react";
-import { Toast, useToast } from "@/components/dashboard/Toast";
-import { useLeaveFestio } from "@/lib/history";
+import { useToast } from "@/components/dashboard/Toast";
 import { cardValues } from "@/lib/invitation";
 import type { Language } from "@/lib/language";
 import { TemplateCard } from "@/templates/TemplateCard";
 import type { InvitationTemplate, TemplateValues } from "@/types/invitation";
 import { EditPanel } from "./EditPanel";
-import { CheckIcon } from "./icons";
-import { HostBar } from "./HostBar";
+import { EditorFrame, type EditorStatus } from "./EditorTopBar";
 import { Invitation } from "./Invitation";
-import { HOST_ACTION } from "./styles";
 
 interface HostInvitationEditorProps {
   template: InvitationTemplate;
@@ -30,6 +27,9 @@ interface HostInvitationEditorProps {
    * guest page inside is drawn in it; absent, it shares the host's.
    */
   guestMessages?: AbstractIntlMessages;
+  /** The top bar's title — the event's, or the template's on a preview. */
+  title: string;
+  status?: EditorStatus;
 }
 
 /**
@@ -42,26 +42,34 @@ export function HostInvitationEditor({
   initial,
   language,
   guestMessages,
+  title,
+  status,
 }: HostInvitationEditorProps) {
   const t = useTranslations("HostEditor");
   const hostLocale = useLocale();
   const hostMessages = useMessages();
   const [values, setValues] = useState(initial);
+  const [saved, setSaved] = useState(initial);
+  const [justSaved, setJustSaved] = useState(false);
   const [editing, setEditing] = useState(true);
   const toast = useToast();
-  const leave = useLeaveFestio("/dashboard/events");
 
   function change(id: string, value: string) {
     setValues((current) => ({ ...current, [id]: value }));
+    setJustSaved(false);
   }
 
   function save() {
+    setSaved(values);
+    setJustSaved(true);
     toast.show(t("saved"));
   }
 
+  const dirty = Object.keys(values).some((id) => values[id] !== saved[id]);
+
   /*
-   * The edit panel and the bar are drawn inside the invitation, so under
-   * its language. They are the host's, so they get the host's catalog back.
+   * The edit panel is drawn inside the invitation, so under its language.
+   * It is the host's, so it gets the host's catalog back.
    */
   function asHost(node: ReactNode) {
     return (
@@ -75,6 +83,7 @@ export function HostInvitationEditor({
     <Invitation
       template={template}
       values={values}
+      fill
       replyInert={editing}
       /*
        * The host can try the form out, every check included, but the editor
@@ -91,23 +100,6 @@ export function HostInvitationEditor({
           onClose={() => setEditing(false)}
         />,
       )}
-      /*
-       * A row of its own above the card, not a layer over it: the stage
-       * measures what is left and paints the card to fit.
-       */
-      hostBar={asHost(
-        <HostBar
-          onBack={leave}
-          editing={editing}
-          onToggleEdit={() => setEditing(!editing)}
-          thirdAction={
-            <button type="button" onClick={save} className={HOST_ACTION}>
-              <CheckIcon size={14} />
-              {t("save")}
-            </button>
-          }
-        />,
-      )}
     >
       <Suspense fallback={null}>
         {/* The date is written out here, not in the template — see `cardValues`. */}
@@ -117,7 +109,14 @@ export function HostInvitationEditor({
   );
 
   return (
-    <>
+    <EditorFrame
+      title={title}
+      status={status}
+      editing={editing}
+      onToggleEdit={() => setEditing(!editing)}
+      action={{ kind: "save", dirty, justSaved, onSave: save }}
+      toast={toast}
+    >
       {guestMessages ? (
         <NextIntlClientProvider locale={language} messages={guestMessages}>
           {invitation}
@@ -125,7 +124,6 @@ export function HostInvitationEditor({
       ) : (
         invitation
       )}
-      <Toast message={toast.message} tone={toast.tone} />
-    </>
+    </EditorFrame>
   );
 }

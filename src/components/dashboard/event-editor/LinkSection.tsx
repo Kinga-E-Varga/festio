@@ -28,7 +28,7 @@ function PasswordBox({ form }: { form: EventForm }) {
   return (
     <div className="px-3.5 pb-3.5">
       {/* One field with its two actions sitting inside it, as the link box has. */}
-      <div className="flex min-h-[38px] items-center gap-1.5 border border-mustard-400 bg-neutral-50 pr-[9px] transition-colors hover:border-mustard-500 has-[:focus]:border-mustard-500">
+      <div className="flex min-h-[38px] items-center gap-1.5 border border-mustard-400 bg-neutral-50 pr-[9px] transition-colors hover:border-mustard-500 has-[:focus]:border-mustard-400">
         <input
           type={revealed ? "text" : "password"}
           maxLength={24}
@@ -77,7 +77,7 @@ export function LinkSection({ event, form }: SectionProps) {
           error={derived.slugError}
           hint={t("addressHint")}
         >
-          <div className="flex items-stretch border border-mustard-300 bg-neutral-50 transition-colors hover:border-mustard-500 has-[:focus]:border-mustard-500">
+          <div className="flex items-stretch border border-mustard-300 bg-neutral-50 transition-colors hover:border-mustard-500 has-[:focus]:border-mustard-400">
             <span className="grid place-items-center bg-mustard-200 px-3 text-[13.5px] whitespace-nowrap text-neutral-800">
               festio.eu/
             </span>

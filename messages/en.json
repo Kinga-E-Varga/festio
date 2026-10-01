@@ -372,7 +372,7 @@
     "listNow": "{count, plural, one {Your list has # name right now.} other {Your list has # names right now.}} You can change it on the guest list page."
   },
   "HostEditor": {
-    "back": "Back",
+    "replyCount": "{count, plural, one {# reply} other {# replies}}",
     "edit": "Edit",
     "save": "Save",
     "saved": "Invitation saved — your guests were not notified",
@@ -381,7 +381,7 @@
     "close": "Close",
     "view": "View",
     "tabText": "Text",
-    "tabResponse": "Response",
+    "tabReplies": "Replies",
     "tabDesign": "Design",
     "designSoon": "Design options are coming soon.",
     "dateHint": "Set with your event details — edit it there to change the date itself.",
@@ -389,6 +389,7 @@
     "testReply": "Nothing saved — this is a test"
   },
   "PrintPanel": {
+    "title": "Print settings",
     "cardStyle": "card style",
     "flat": "Flat card",
     "folded": "Folded card",

@@ -75,9 +75,10 @@ Shared by every modular template, found by id with a dynamic import — nothing 
 
 - `Invitation.tsx` — owns both the card and the reply panel (one tree per panel).
 - `HostInvitationEditor.tsx` — host editing wrapper; `EditPanel.tsx` — the edit surface.
+- `EditorTopBar.tsx` — the editors' top bar (BACK, title and tags, save status, Edit / View, Save or Export) and `EditorFrame`, the page around it; shared by the simple and modular editors and the print page.
 - `RsvpPanel.tsx` / `RsvpForm.tsx` / `useRsvpForm.ts` — guest RSVP.
 - `ScaledStage.tsx` — scales the invitation to its container.
-- `PanelTabs.tsx` — the Text / Response / Design tabs, shared by both edit panels.
+- `PanelTabs.tsx` — the Text / Replies / Design tabs, shared by both edit panels.
 - `styles.ts`, `icons.tsx` — local to invitations.
 
 ## Print — `src/components/print/`
