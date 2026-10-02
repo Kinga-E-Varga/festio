@@ -2,6 +2,7 @@ import type {
   FontPair,
   ModularDesign,
   ModularPalette,
+  ModularPattern,
   ModularTemplate,
   SectionDefinition,
   SectionModule,
@@ -9,7 +10,8 @@ import type {
 
 /*
  * Everything modular is found by id, the way `loadTemplate` finds a
- * template: a new section is a new folder, a new palette or pair a new file,
+ * template: a new section is a new folder, a new palette, pair or pattern a
+ * new file,
  * and nothing registers it. Variants load in the browser — `./variants`.
  */
 
@@ -41,21 +43,35 @@ export async function loadFontPair(id: string): Promise<FontPair | null> {
   }
 }
 
-/** A template's palette, pair and sections; null when any id names nothing. */
+export async function loadPattern(id: string): Promise<ModularPattern | null> {
+  try {
+    return ((await import(`./patterns/${id}`)) as { pattern: ModularPattern })
+      .pattern;
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * A template's palette, pair, pattern and sections; null when any id names
+ * nothing.
+ */
 export async function loadDesign(
   template: ModularTemplate,
 ): Promise<ModularDesign | null> {
-  const [palette, fontPair, definitions] = await Promise.all([
+  const [palette, fontPair, pattern, definitions] = await Promise.all([
     loadPalette(template.palette),
     loadFontPair(template.fontPair),
+    template.pattern ? loadPattern(template.pattern) : null,
     Promise.all(template.sections.map((choice) => loadSection(choice.section))),
   ]);
   if (!palette || !fontPair) return null;
+  if (template.pattern && !pattern) return null;
 
   const sections: ModularDesign["sections"] = [];
   for (const [index, definition] of definitions.entries()) {
     if (!definition) return null;
     sections.push({ definition, variant: template.sections[index].variant });
   }
-  return { palette, fontPair, sections };
+  return { palette, fontPair, pattern, sections };
 }

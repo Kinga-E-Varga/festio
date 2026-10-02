@@ -1,39 +1,22 @@
-"use client";
-
 import { useTranslations } from "next-intl";
+import { formatDeadline, replyClose } from "@/lib/event";
+import { hostInitials, text } from "@/modular/content";
+import { SECTIONS_TRIGGER_ID } from "@/modular/nav";
 import { HEADING } from "@/modular/styles";
-
-/** ☰'s id: the drawer hands focus back to it on close. */
-export const SECTIONS_TRIGGER_ID = "sections-trigger";
-
-export interface MenuLink {
-  id: string;
-  label: string;
-}
-
-interface ModularTopBarProps {
-  initials: string;
-  links: MenuLink[];
-  /** "11 June 2027" — when the reply form closes. */
-  closes: string;
-  menuOpen: boolean;
-  onOpenMenu: () => void;
-}
+import type { VariantProps } from "@/types/modular";
 
 /**
- * Sticky over the page: the hosts' initials, the sections that have a menu
- * label, when replies close, and RSVP. On a narrow page the links move
- * behind ☰; RSVP stays in the bar at every width. Widths are the page's
- * own (container queries), so an open edit panel narrows it too.
+ * Sticky over the page: the host's mark (their initials unless they wrote
+ * one), the sections that have a menu label, when replies close, and RSVP.
+ * On a narrow page the links move behind ☰; RSVP stays in the bar at every
+ * width. Widths are the page's own (container queries), so an open edit
+ * panel narrows it too.
  */
-export function ModularTopBar({
-  initials,
-  links,
-  closes,
-  menuOpen,
-  onOpenMenu,
-}: ModularTopBarProps) {
+export function Variant({ values, basics, language, nav }: VariantProps) {
   const t = useTranslations("Sections");
+  const mark = text(values, "mark") || hostInitials(basics);
+  const closes = formatDeadline(replyClose({ date: basics.date }), language);
+  const links = nav?.links ?? [];
 
   return (
     <header className="sticky top-0 z-20 flex h-14 items-center gap-3 border-b-1 border-[var(--m5)] bg-[var(--m1)] px-4 text-[color:var(--m8)] @5xl:h-16 @5xl:gap-8 @5xl:px-14">
@@ -42,8 +25,8 @@ export function ModularTopBar({
           type="button"
           aria-label={t("openSections")}
           id={SECTIONS_TRIGGER_ID}
-          aria-expanded={menuOpen}
-          onClick={onOpenMenu}
+          aria-expanded={nav?.menuOpen ?? false}
+          onClick={nav?.onOpenMenu}
           className="flex size-11 shrink-0 items-center justify-center @5xl:hidden"
         >
           <svg
@@ -63,7 +46,7 @@ export function ModularTopBar({
       <span
         className={`${HEADING} flex-1 text-[15px] @5xl:flex-none @5xl:text-[16px]`}
       >
-        {initials}
+        {mark}
       </span>
       <span
         aria-hidden="true"

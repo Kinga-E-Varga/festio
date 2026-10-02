@@ -6,36 +6,47 @@ Completed
 
 ## Goals
 
-Custom invitation editor UI — in the modular (Custom) editor, the invitation sits in its own framed box on the editor's ground, so it is clear what is the invitation and what is the editor. Modular invitations get a scrollbar in their own palette.
+**Modular invitations — templates split, max width, RSVP jump fix**
 
-**Framed invitation — modular editor only (`/templates/<id>` for a modular template)**
-
-- The area under the editor top bar is painted with the print editor's ground, `mustard-50` (`bg-mustard-50`). `PrintEditor.tsx` currently writes it as raw hex (`--print-ground: #F9F5EA`); point that at `var(--color-mustard-50)` so both editors read the one token.
-- The invitation sits in a box inside that area: 12px padding on mobile, 18px on tablets (`md`, 768px+), 24px on desktop (`invite`, 1000px+), 40px on wide screens (`rail`, 1400px+). Small rounded corners, a thin `mustard-300` border and a soft shadow, smaller on mobile.
-- The invitation scrolls inside its box. Its sticky top bar stays at the top of the box, not the top of the screen.
-- The mobile sections drawer opens inside the box and covers only the invitation, not the editor.
-- The simple editor and the print page layouts do not change.
-
-**Edit panel**
-
-- Moves out of `ModularInvitation` and becomes part of the editor (`ModularEditor`).
-- Desktop (above the `invite` breakpoint): the framed box shrinks to make room for the open panel, same duration and easing as today. Mobile: the panel covers the screen, as today.
-- The panel is in Festio's own colours. Check nothing in it still reads the invitation's `--c*` / `--m*` vars once it is outside the invitation root.
-
-**Palette scrollbar — every modular invitation, guest page included**
-
-- On the invitation's own scroll area: thin, thumb `c7` (`--m7`), track `c2` (`--m2`).
-- Standard `scrollbar-color` / `scrollbar-width` for Chrome and Firefox, plus `::-webkit-scrollbar` styles so Safari looks the same.
-- Colours read the palette vars only, so a new palette needs no extra work.
+1. **Split `src/templates/` in two.**
+   - `src/templates/simple/<id>/` — simple (basic) templates: `wolf-dance`.
+   - `src/templates/modular/<id>/` — modular (custom) templates: `garden`, `garden-midnight`.
+   - `loadSimpleTemplate(id)` looks only in `simple/`. `loadTemplate(id)` (the `/templates/<id>` page) tries both.
+   - Template ids stay unique across both folders. Adding a template is still adding one folder, no registration.
+   - `TemplateCard.tsx` stays at the root of `src/templates/`; it only draws simple templates, so it imports from `simple/`.
+2. **Cap the modular invitation at 1280px wide.**
+   - The top bar, sections and footer stop at 1280px, centred, on a plain `--m4` ground (a step darker than the page), with a soft shadow in the palette's `--m8` (`elevation-band`). No border.
+   - On the guest page: only visible when the invitation is wider than 1280px.
+   - In the editor: the viewing area keeps its padding (none at the bottom) but takes the invitation's `--m4` as its ground; the rounded frame (border, corners, `elevation-page`) goes. The invitation itself is the 1280px column with its own shadow, so its scrollbar sits at the column's edge (`ModularInvitation`'s `framed`).
+3. **Ground patterns.**
+   - A new shared library, `src/modular/patterns/<id>.ts`, found by id like palettes (`loadPattern`). A pattern is its Tailwind classes, in palette roles only. Ids are permanent.
+   - A modular template names one in its preset (`pattern: "dots"`); none means a plain ground. Not host-switchable yet.
+   - `dots`: small `--m5` polka dots (1.5px), each row offset half a step (28px tile, second layer at 14px 14px), over the `--m4` ground.
+   - Garden uses dots; Garden Midnight stays plain.
+   - Shown wherever the ground shows: around the column on a wide guest screen and in the editor's viewing area. Never on sections. `groundClasses` in `src/modular/styles.ts` is the one place the ground is written.
+4. **The top bar becomes a section.**
+   - `src/modular/sections/top-bar/`: required, first (`order: 0`), no menu label. Today's bar is its `classic` variant (moved from `components/modular/ModularTopBar.tsx`).
+   - `ModularInvitation` draws it straight in the column, not in a `<section>`, so it stays sticky; a bar-height placeholder while it loads.
+   - Its variants get `nav` (links, drawer open, open the drawer) in `VariantProps`, like RSVP's `onRsvp`. Every variant keeps the bar's height (`h-14 @5xl:h-16`).
+   - A `mark` field (max 24): empty means the hosts' initials. Host editing comes in phase 2.
+   - Garden lists it first; Garden Midnight inherits it. The footer and the drawer stay part of the page.
+5. **No shadow on the editors' side panel** (simple, modular and print): `elevation-panel` removed; the panel's edge line stays.
+6. **Fix: jumping to RSVP shifts the whole editor page up.**
+   - Clicking RSVP in the top bar or the cover's RSVP button cuts off the top of the editor; only a refresh brings it back.
+   - Cause: anchor jumps scroll every scrollable ancestor, and `overflow: hidden` boxes can still be scrolled by the browser, just with no scrollbar.
+   - Fix: those wrapping boxes use `overflow: clip` instead, so only the invitation's own scroll area moves. Covers the sections drawer's jumps too.
+   - Check the guest page for the same issue.
 
 ## Notes
 
-- Testing: both Garden templates (Terracotta, Midnight) on desktop and mobile; panel open and closed; the sections drawer; scrolling in Chrome and Firefox; the scrollbar on the guest page; the print page still looks the same. Then `npm run build`.
+- Not in scope: editing sections, palette / font switching, RSVP questions.
+- Update `context/repo-map.md` (Templates section) in the same commit.
 
 ## History
 
 <!-- Keep this updated latest to earliest -->
 
+- Custom invitation editor UI — the modular editor frames the invitation on the print ground (mustard-50) with padding per breakpoint, rounded corners, a thin border and a soft shadow; the edit panel moved out of the invitation into the editor, the sections drawer stays inside the box; modular invitations get a thin palette scrollbar (`--m7` on `--m2`); `elevation-btn` renamed `elevation-print`
 - Text uniformity — one sans scale (10 / 11 / 11.5 / 12.5 / 13.5 / 14) and fewer spacings and weights across the host app, serif headings resized; every single-line field 40px tall; the editor side panel's tabs underlined in neutral with an edge-only open tab, the X only while the panel covers the viewport, View at every width and no title row on the print panel
 - Invitation editor rework — one shared top bar and page frame for the simple, modular and print editors (BACK, title and tags, save status, Edit / View, Save or Export, Save off until something changed), `HostBar` removed; side panels in Festio's own chrome with neutral Text / Replies / Design tabs, a Print settings title, the event editor's fields and grey inputs, choice buttons and checkbox; app icons in the top bar; shared bar buttons and banner tones in `event-editor/styles.ts`
 - Modular invitations phase 1 — a shared library in `src/modular/`: 15 sections with one variant each, Terracotta and Midnight palettes (15 colours as `--m1`…`--m15`), Classic and Script font pairs, all found by id; Garden and Garden Midnight templates at `/templates/<id>` with a sticky top bar, mobile drawer, Open in Maps links and the simple RSVP form; the host bar and an empty three-tab panel via a shared `PanelTabs`; simple-only loading for the guest, print and invitation pages

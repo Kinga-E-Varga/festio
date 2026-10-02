@@ -24,9 +24,8 @@ interface SidePanelProps {
  * only in which fields fill it.
  *
  * Festio's own chrome, never the invitation's palette: the dashboard's
- * Activity rail — its fill and its edge — in the app's face and ink, with the
- * panels' one shadow, `elevation-panel`, so the edge doesn't cut hard
- * against the page.
+ * Activity rail — its fill and its edge — in the app's face and ink. No
+ * shadow: the edge line alone sets it apart from the page.
  */
 export function SidePanel({
   panelClassName,
@@ -38,7 +37,7 @@ export function SidePanel({
 }: SidePanelProps) {
   return (
     <aside
-      className={`${panelClassName} ${PANEL} elevation-panel border-l border-mustard-300 bg-mustard-100 font-sans text-neutral-900`}
+      className={`${panelClassName} ${PANEL} border-l border-mustard-300 bg-mustard-100 font-sans text-neutral-900`}
       data-open={open}
       inert={inert}
     >

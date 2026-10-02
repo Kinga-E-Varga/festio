@@ -741,19 +741,13 @@
     box-shadow: 0px 2px 10px #2f281fc1;
   }
 
-  .elevation-panel {
-    box-shadow: 0px 0px 14px #2f281f49;
-  }
-
-  /* The modular invitation's box in its editor — softer on the narrow page. */
-  .elevation-page {
-    box-shadow: 0px 2px 10px #2f281f6e;
-  }
-
-  @media (width >= 1000px) {
-    .elevation-page {
-      box-shadow: 0px 2px 20px #2f281f49;
-    }
+  /*
+   * The modular invitation's 1280px column on its ground, in the palette's
+   * own ink (`--m8`). On the guest page, narrower than that the column fills
+   * the scroller, which clips the shadow away.
+   */
+  .elevation-band {
+    box-shadow: 0px 0px 14px color-mix(in srgb, var(--m7) 60%, transparent);
   }
 
   /*

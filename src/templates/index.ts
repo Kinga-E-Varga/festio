@@ -1,16 +1,13 @@
 import type { SimpleTemplateModule, TemplateModule } from "@/types/invitation";
 
 /**
- * Templates are found by folder name: `src/templates/<id>/index`. Adding a
- * template is adding that one folder — nothing in here changes, and nothing
- * registers it.
+ * Templates are found by folder name: `src/templates/simple/<id>/index` or
+ * `src/templates/modular/<id>/index`. Adding a template is adding that one
+ * folder — nothing in here changes, and nothing registers it. An id is
+ * unique across both folders.
  */
 export async function loadTemplate(id: string): Promise<TemplateModule | null> {
-  try {
-    return (await import(`./${id}`)) as TemplateModule;
-  } catch {
-    return null;
-  }
+  return (await loadSimpleTemplate(id)) ?? (await loadModularTemplate(id));
 }
 
 /**
@@ -21,8 +18,17 @@ export async function loadTemplate(id: string): Promise<TemplateModule | null> {
 export async function loadSimpleTemplate(
   id: string,
 ): Promise<SimpleTemplateModule | null> {
-  const loaded = await loadTemplate(id);
-  return loaded?.template.kind === "simple"
-    ? (loaded as SimpleTemplateModule)
-    : null;
+  try {
+    return (await import(`./simple/${id}`)) as SimpleTemplateModule;
+  } catch {
+    return null;
+  }
+}
+
+async function loadModularTemplate(id: string): Promise<TemplateModule | null> {
+  try {
+    return (await import(`./modular/${id}`)) as TemplateModule;
+  } catch {
+    return null;
+  }
 }

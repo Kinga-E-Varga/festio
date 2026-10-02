@@ -52,23 +52,25 @@ Lives in `app/` because `beforeInteractive` scripts belong to a root layout.
 
 One file per template, **auto-discovered — no registration step.**
 
-- `index.ts` — `loadTemplate(id)`, a dynamic `import('./' + id)`. Adding a template never touches this file.
-- `<id>/index.tsx` — the template itself (e.g. `wolf-dance/`). Holds identity, package, palette, fonts, editable fields, sections, design. A field's `fallback` is `LocalizedText`: all three languages when it is a phrase, a plain string when it is sample content.
-- `<id>/index.ts` for a modular template (e.g. `garden/`) — a preset only: `kind: "modular"`, palette id, font-pair id, `{ section, variant }` list. `loadSimpleTemplate(id)` is what the guest, print and invitation pages use; a modular template is not found there.
-- `TemplateCard.tsx` — template picker card.
+Two folders: `simple/` (basic invitations) and `modular/` (custom invitations). An id is unique across both.
+
+- `index.ts` — `loadSimpleTemplate(id)` imports `./simple/<id>` only; it is what the guest, print and invitation pages use, so a modular template is not found there. `loadTemplate(id)` (the `/templates/<id>` page) tries `simple/`, then `modular/`. Adding a template never touches this file.
+- `simple/<id>/index.tsx` — a simple template (e.g. `simple/wolf-dance/`). Holds identity, package, palette, fonts, editable fields, sections, design. A field's `fallback` is `LocalizedText`: all three languages when it is a phrase, a plain string when it is sample content.
+- `modular/<id>/index.ts` — a modular template (e.g. `modular/garden/`), a preset only: `kind: "modular"`, palette id, font-pair id, `{ section, variant }` list.
+- `TemplateCard.tsx` — a simple template's card, loaded in the browser from `simple/`.
 
 ## Modular library — `src/modular/`
 
 Shared by every modular template, found by id with a dynamic import — nothing registers.
 
-- `sections/<id>/index.ts` — the section: permanent id, name, required, `order`, optional menu label, fields with sample content. `sections/<id>/<variant>.tsx` — one file per variant, exporting `Variant`.
-- `palettes/<id>.ts` (`c1`–`c15`), `font-pairs/<id>.ts` (`primary` body, `secondary` headings).
-- `index.ts` — `loadSection`, `loadPalette`, `loadFontPair`, `loadDesign` (server). `variants.ts` — `loadVariant` (browser only; kept apart so variants never enter the server graph).
-- `vars.ts` — `--m1`…`--m15` and the one mapping onto the shared `--c1`–`--c6`. `content.ts` — values, basics and date helpers, `safeLink`. `sample.ts` — `SAMPLE_BASICS`. `styles.ts`, `labels.ts`, `MapsLink.tsx`.
+- `sections/<id>/index.ts` — the section: permanent id, name, required, `order`, optional menu label, fields with sample content. `sections/<id>/<variant>.tsx` — one file per variant, exporting `Variant`. `top-bar` is a section too (required, first, variant `classic`), drawn apart from the others so it stays sticky.
+- `palettes/<id>.ts` (`c1`–`c15`), `font-pairs/<id>.ts` (`primary` body, `secondary` headings), `patterns/<id>.ts` (the ground's pattern as Tailwind classes, e.g. `dots`).
+- `index.ts` — `loadSection`, `loadPalette`, `loadFontPair`, `loadPattern`, `loadDesign` (server). `variants.ts` — `loadVariant` (browser only; kept apart so variants never enter the server graph).
+- `vars.ts` — `--m1`…`--m15` and the one mapping onto the shared `--c1`–`--c6`. `content.ts` — values, basics and date helpers, `safeLink`. `sample.ts` — `SAMPLE_BASICS`. `nav.ts` — `TOP_BAR_ID`, `SECTIONS_TRIGGER_ID`. `styles.ts` (shared classes, incl. `groundClasses`), `labels.ts`, `MapsLink.tsx`.
 
 ## Modular page — `src/components/modular/`
 
-- `ModularInvitation.tsx` — the guest page: sticky `ModularTopBar`, `SectionsDrawer`, sections via `SectionView` (loads a variant with `use`), `ModularFooter`.
+- `ModularInvitation.tsx` — the guest page: the `top-bar` section straight in the column, `SectionsDrawer`, the other sections via `SectionView` (loads a variant with `use`), `ModularFooter`. `framed` for the editor.
 - `ModularEditor.tsx` + `ModularEditPanel.tsx` — the `/templates/<id>` editor for modular templates.
 
 ## Invitation — `src/components/invitation/`

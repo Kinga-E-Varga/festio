@@ -2,7 +2,8 @@
 
 import { useTranslations } from "next-intl";
 import { type MouseEvent, useEffect, useEffectEvent, useRef } from "react";
-import { SECTIONS_TRIGGER_ID, type MenuLink } from "./ModularTopBar";
+import { SECTIONS_TRIGGER_ID } from "@/modular/nav";
+import type { MenuLink } from "@/types/modular";
 
 interface SectionsDrawerProps {
   open: boolean;

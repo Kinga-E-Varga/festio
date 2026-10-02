@@ -33,6 +33,16 @@ export interface ModularPalette {
 }
 
 /**
+ * A pattern drawn on the invitation's ground (`--m4`), in palette roles
+ * only. `className` holds the Tailwind classes that draw it.
+ */
+export interface ModularPattern {
+  id: string;
+  name: string;
+  className: string;
+}
+
+/**
  * A premade font pair, the same shape simple templates use. For modular
  * invitations `primary` is the body text (the RSVP form already reads it)
  * and `secondary` the headings.
@@ -85,9 +95,9 @@ export interface SectionDefinition {
   id: string;
   /** What the host's editor calls the section. */
   name: LocalizedText;
-  /** Cover, title, date & time, location and RSVP are always on. */
+  /** Top bar, cover, title, date & time, location and RSVP are always on. */
   required: boolean;
-  /** The section's place in the fixed order: cover 10, title 20… */
+  /** The section's place in the fixed order: top bar 0, cover 10, title 20… */
   order: number;
   /** Shown as a link in the top bar and the mobile drawer when present. */
   menuLabel?: LocalizedText;
@@ -117,6 +127,19 @@ export interface InvitationBasics {
   address: string;
 }
 
+/** A section with a menu label, as the top bar and the drawer link it. */
+export interface MenuLink {
+  id: string;
+  label: string;
+}
+
+/** What the top bar needs from the page around it. */
+export interface BarNav {
+  links: MenuLink[];
+  menuOpen: boolean;
+  onOpenMenu: () => void;
+}
+
 export interface VariantProps {
   values: SectionValues;
   basics: InvitationBasics;
@@ -124,6 +147,8 @@ export interface VariantProps {
   language: Language;
   /** The RSVP variant hands the guest's reply up; every other one ignores it. */
   onRsvp?: (payload: RsvpPayload) => void;
+  /** Only the top bar's variants read it. */
+  nav?: BarNav;
 }
 
 /** A variant file: `sections/<section>/<variant>.tsx`. */
@@ -137,8 +162,9 @@ export interface SectionChoice {
 }
 
 /**
- * A modular template is only a preset: a palette, a font pair and the
- * sections with a variant for each, in the fixed order, RSVP last.
+ * A modular template is only a preset: a palette, a font pair, an optional
+ * ground pattern and the sections with a variant for each, in the fixed
+ * order, RSVP last.
  */
 export interface ModularTemplate {
   kind: "modular";
@@ -148,6 +174,8 @@ export interface ModularTemplate {
   eventTypes: EventKind[];
   palette: string;
   fontPair: string;
+  /** No pattern: a plain ground. */
+  pattern?: string;
   sections: SectionChoice[];
 }
 
@@ -159,5 +187,6 @@ export interface ModularTemplateModule {
 export interface ModularDesign {
   palette: ModularPalette;
   fontPair: FontPair;
+  pattern: ModularPattern | null;
   sections: { definition: SectionDefinition; variant: string }[];
 }

@@ -1,6 +1,6 @@
 import type { ModularTemplate } from "@/types/modular";
 
-/** Terracotta and Classic, every phase-1 section on, in the fixed order. */
+/** Terracotta and Classic on dots, every phase-1 section on, in the fixed order. */
 export const template: ModularTemplate = {
   kind: "modular",
   id: "garden",
@@ -9,7 +9,9 @@ export const template: ModularTemplate = {
   eventTypes: ["wedding"],
   palette: "terracotta",
   fontPair: "classic",
+  pattern: "dots",
   sections: [
+    { section: "top-bar", variant: "classic" },
     { section: "cover", variant: "full-bleed" },
     { section: "title", variant: "editorial" },
     { section: "date-time", variant: "moments" },

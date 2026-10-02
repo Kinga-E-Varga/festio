@@ -12,4 +12,6 @@ export const template: ModularTemplate = {
   name: "Garden Midnight",
   palette: "midnight",
   fontPair: "script",
+  // Garden's dots off: a plain ground.
+  pattern: undefined,
 };

@@ -13,7 +13,7 @@ function moduleFor(id: string): Promise<SimpleTemplateModule> {
   const existing = loads.get(id);
   if (existing) return existing;
 
-  const load = import(`./${id}`) as Promise<SimpleTemplateModule>;
+  const load = import(`./simple/${id}`) as Promise<SimpleTemplateModule>;
   loads.set(id, load);
   return load;
 }
