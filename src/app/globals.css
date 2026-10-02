@@ -267,11 +267,11 @@
    * card. The stage's `--shadow-space` strip is what keeps it from clipping.
    */
   .stage[data-shadow="light"] > .frame > .card {
-    box-shadow: 0px 5px 20px #2f281fa6;
+    box-shadow: 0px 5px 20px #2f281fad;
   }
 
   .stage[data-shadow="dark"] > .frame > .card {
-    box-shadow: 0px 6px 22px #17130ee6;
+    box-shadow: 0px 6px 22px #2f281fe0;
   }
 
   /* The drawer's backdrop, mixed from the template's ink so no app colour shows. */
@@ -431,8 +431,9 @@
 
   /*
    * At and above the breakpoint the edit form is taken out of flow against
-   * the invitation root, so it never adds a second panel's width and covers
-   * the reply exactly — same width, same edge, no dimming.
+   * the invitation root (the modular editor: its ground), so it never adds
+   * a second panel's width and covers the reply exactly — same width, same
+   * edge, no dimming.
    */
   @media (width >= 1000px) {
     .edit {
@@ -735,12 +736,48 @@
     transform: rotateY(-180deg);
   }
 
-  .elevation-btn {
+  /* The printed card's faces (`.leaf`) on the print page. */
+  .elevation-print {
     box-shadow: 0px 2px 10px #2f281fc1;
   }
 
   .elevation-panel {
-    box-shadow: -3px 0px 16px #2f281f4d;
+    box-shadow: 0px 0px 14px #2f281f49;
+  }
+
+  /* The modular invitation's box in its editor — softer on the narrow page. */
+  .elevation-page {
+    box-shadow: 0px 2px 10px #2f281f6e;
+  }
+
+  @media (width >= 1000px) {
+    .elevation-page {
+      box-shadow: 0px 2px 20px #2f281f49;
+    }
+  }
+
+  /*
+   * A modular invitation's own scrollbar, in its palette: thin, a mid-tone
+   * thumb on the page ground. `scrollbar-color` for Chrome and Firefox; the
+   * `::-webkit-scrollbar` rules for Safari, which Chrome ignores once
+   * `scrollbar-color` is set.
+   */
+  .invite-scroll {
+    scrollbar-width: thin;
+    scrollbar-color: var(--m7) var(--m2);
+  }
+
+  .invite-scroll::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  .invite-scroll::-webkit-scrollbar-track {
+    background: var(--m2);
+  }
+
+  .invite-scroll::-webkit-scrollbar-thumb {
+    background: var(--m7);
+    border-radius: 4px;
   }
 }
 

@@ -11,9 +11,10 @@ interface SectionsDrawerProps {
 }
 
 /**
- * The narrow page's section links. Rendered outside the page's `@container`
- * on purpose: a container is the containing block of anything `fixed`
- * inside it, which would pin the drawer to the page instead of the screen.
+ * The narrow page's section links. Covers the invitation's root, not the
+ * screen: on the guest page that is the screen, in the editor only the
+ * framed box. Rendered outside the scrolling `@container` on purpose, so it
+ * stays put however far the page is scrolled.
  */
 export function SectionsDrawer({ open, links, onClose }: SectionsDrawerProps) {
   const t = useTranslations("Sections");
@@ -61,7 +62,7 @@ export function SectionsDrawer({ open, links, onClose }: SectionsDrawerProps) {
       role="dialog"
       aria-modal="true"
       aria-label={t("sections")}
-      className="fixed inset-0 z-40 flex flex-col bg-[var(--m2)] px-6 py-4 text-[color:var(--m8)]"
+      className="absolute inset-0 z-40 flex flex-col bg-[var(--m2)] px-6 py-4 text-[color:var(--m8)]"
     >
       <div className="flex items-center justify-between border-b-1 border-[var(--m5)] pb-2.5">
         <span className="text-[13px] tracking-[0.16em] uppercase text-[color:var(--m10)]">

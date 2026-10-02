@@ -1,6 +1,6 @@
 "use client";
 
-import { type ReactNode, Suspense, useState } from "react";
+import { Suspense, useState } from "react";
 import { formatDeadline, replyClose } from "@/lib/event";
 import { localized, type Language } from "@/lib/language";
 import { hostInitials, hostNames, sectionValues } from "@/modular/content";
@@ -16,24 +16,19 @@ interface ModularInvitationProps {
   design: ModularDesign;
   basics: InvitationBasics;
   language: Language;
-  /** The host's edit panel. Drawn in here: it reads the palette vars on the root. */
-  host?: ReactNode;
-  /** Whether the edit panel is open — above the breakpoint the page makes room for it. */
-  panelOpen?: boolean;
   onRsvp?: (payload: RsvpPayload) => void;
 }
 
 /**
  * A modular invitation: a sticky bar, the sections stacked full width, each
  * at its own anchor, and the privacy footer. Laid out responsively, not
- * scaled like the simple card.
+ * scaled like the simple card. Fills its parent: the screen on the guest
+ * page, the framed box in the editor.
  */
 export function ModularInvitation({
   design,
   basics,
   language,
-  host,
-  panelOpen,
   onRsvp,
 }: ModularInvitationProps) {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -54,20 +49,10 @@ export function ModularInvitation({
       style={modularVars(design.palette, design.fontPair)}
       className={`invite relative flex h-full flex-col overflow-hidden bg-[var(--m1)] font-[family-name:var(--font-primary)] text-[color:var(--m8)] ${fontClasses(design.fontPair)}`}
     >
-      {/*
-       * The page has a column of its own. With the panel open above the
-       * breakpoint, the column gives up the panel's width, so the panel
-       * opens beside the page rather than over it — same duration and
-       * easing as the panel. While the drawer covers the
-       * screen, everything under it is out of the tab order.
-       */}
-      <div
-        data-panel={panelOpen ? "true" : undefined}
-        inert={menuOpen}
-        className="flex min-h-0 flex-1 flex-col transition-[margin] duration-[620ms] ease-[cubic-bezier(0.22,1,0.36,1)] invite:data-[panel=true]:mr-invite-panel"
-      >
+      {/* While the drawer covers the page, everything under it is out of the tab order. */}
+      <div inert={menuOpen} className="flex min-h-0 flex-1 flex-col">
         {/* The page scrolls in here, not the window, so the top bar stays put. */}
-        <div className="min-h-0 flex-1 overflow-y-auto scroll-smooth">
+        <div className="invite-scroll min-h-0 flex-1 overflow-y-auto scroll-smooth">
           <div className="@container">
             <ModularTopBar
               initials={hostInitials(basics)}
@@ -104,8 +89,6 @@ export function ModularInvitation({
         links={links}
         onClose={() => setMenuOpen(false)}
       />
-
-      {host}
     </div>
   );
 }

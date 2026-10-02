@@ -27,7 +27,7 @@ const PRINT_PALETTE = {
   "--c4": "#8D7D6A",
   "--c5": "#C6B379",
   "--c6": "#7B2C30",
-  "--print-ground": "#F9F5EA",
+  "--print-ground": "var(--color-mustard-50)",
 } as CSSProperties;
 
 interface PrintEditorProps {

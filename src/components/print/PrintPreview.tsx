@@ -51,11 +51,11 @@ function FlatCard({ settings, ...written }: PrintPreviewProps) {
     >
       <span className="sheet-view" data-pages={1}>
         <span className="flip" data-open={open}>
-          <span className="leaf elevation-btn">
+          <span className="leaf elevation-print">
             <Front />
           </span>
           <span
-            className="leaf elevation-btn"
+            className="leaf elevation-print"
             data-face="back"
             data-tint={settings.tinted}
           >
@@ -87,18 +87,18 @@ function FoldedCard({ settings, ...written }: PrintPreviewProps) {
         <span className="fold" data-open={open}>
           {/* The half that stays put — what the cover swings away from. */}
           <span className="fold-page">
-            <span className="leaf elevation-btn" data-tint={settings.tinted}>
+            <span className="leaf elevation-print" data-tint={settings.tinted}>
               <Written settings={settings} {...written} />
             </span>
           </span>
 
           <span className="fold-page fold-flap" data-open={open}>
-            <span className="leaf elevation-btn">
+            <span className="leaf elevation-print">
               <Front />
             </span>
             {/* The back of the cover — bare paper, or the template's colour. */}
             <span
-              className="leaf elevation-btn"
+              className="leaf elevation-print"
               data-face="back"
               data-tint={settings.tinted}
             />

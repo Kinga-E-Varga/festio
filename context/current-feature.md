@@ -1,6 +1,4 @@
-# Current Feature: Text uniformity
-
-Fewer text sizes, letter spacings and weights across the host app, so the same role always looks the same. Invitations are left alone.
+# Current Feature
 
 ## Status
 
@@ -8,22 +6,37 @@ Completed
 
 ## Goals
 
-- One sans scale: 10 (uppercase label), 11 (uppercase eyebrow), 11.5 (hint), 12.5 (small), 13.5 (field), 14 (body); 9.5, 12, 13, 14.5 and the 15/16px tabs gone
-- Field-like boxes and option lists at 13.5; banners, inline links and small notes at 12.5; badges, small buttons and counts at 12.5; hints and meta at 11.5
-- Guest names and the toast at 14; event tabs at 14; the list-setting button at 14; event row actions 13.5 medium
-- Stat labels on card and row use `LABEL`; dashboard stat labels 0.14em; the rail tag uses `TAG`; the print instructions title like a banner title
-- Serif: dashboard section heading 17px; event name 20 → 24 on card and row; match dialog title 17px; card stat number 22px; page titles grow at the same breakpoint
-- Inline links semibold; notice boxes 12.5 with line height 1.5; line heights 1.4 / 1.55 gone
-- The card's date line at 14, like `EventWhen`
+Custom invitation editor UI — in the modular (Custom) editor, the invitation sits in its own framed box on the editor's ground, so it is clear what is the invitation and what is the editor. Modular invitations get a scrollbar in their own palette.
+
+**Framed invitation — modular editor only (`/templates/<id>` for a modular template)**
+
+- The area under the editor top bar is painted with the print editor's ground, `mustard-50` (`bg-mustard-50`). `PrintEditor.tsx` currently writes it as raw hex (`--print-ground: #F9F5EA`); point that at `var(--color-mustard-50)` so both editors read the one token.
+- The invitation sits in a box inside that area: 12px padding on mobile, 18px on tablets (`md`, 768px+), 24px on desktop (`invite`, 1000px+), 40px on wide screens (`rail`, 1400px+). Small rounded corners, a thin `mustard-300` border and a soft shadow, smaller on mobile.
+- The invitation scrolls inside its box. Its sticky top bar stays at the top of the box, not the top of the screen.
+- The mobile sections drawer opens inside the box and covers only the invitation, not the editor.
+- The simple editor and the print page layouts do not change.
+
+**Edit panel**
+
+- Moves out of `ModularInvitation` and becomes part of the editor (`ModularEditor`).
+- Desktop (above the `invite` breakpoint): the framed box shrinks to make room for the open panel, same duration and easing as today. Mobile: the panel covers the screen, as today.
+- The panel is in Festio's own colours. Check nothing in it still reads the invitation's `--c*` / `--m*` vars once it is outside the invitation root.
+
+**Palette scrollbar — every modular invitation, guest page included**
+
+- On the invitation's own scroll area: thin, thumb `c7` (`--m7`), track `c2` (`--m2`).
+- Standard `scrollbar-color` / `scrollbar-width` for Chrome and Firefox, plus `::-webkit-scrollbar` styles so Safari looks the same.
+- Colours read the palette vars only, so a new palette needs no extra work.
 
 ## Notes
 
-<!-- Any extra notes -->
+- Testing: both Garden templates (Terracotta, Midnight) on desktop and mobile; panel open and closed; the sections drawer; scrolling in Chrome and Firefox; the scrollbar on the guest page; the print page still looks the same. Then `npm run build`.
 
 ## History
 
 <!-- Keep this updated latest to earliest -->
 
+- Text uniformity — one sans scale (10 / 11 / 11.5 / 12.5 / 13.5 / 14) and fewer spacings and weights across the host app, serif headings resized; every single-line field 40px tall; the editor side panel's tabs underlined in neutral with an edge-only open tab, the X only while the panel covers the viewport, View at every width and no title row on the print panel
 - Invitation editor rework — one shared top bar and page frame for the simple, modular and print editors (BACK, title and tags, save status, Edit / View, Save or Export, Save off until something changed), `HostBar` removed; side panels in Festio's own chrome with neutral Text / Replies / Design tabs, a Print settings title, the event editor's fields and grey inputs, choice buttons and checkbox; app icons in the top bar; shared bar buttons and banner tones in `event-editor/styles.ts`
 - Modular invitations phase 1 — a shared library in `src/modular/`: 15 sections with one variant each, Terracotta and Midnight palettes (15 colours as `--m1`…`--m15`), Classic and Script font pairs, all found by id; Garden and Garden Midnight templates at `/templates/<id>` with a sticky top bar, mobile drawer, Open in Maps links and the simple RSVP form; the host bar and an empty three-tab panel via a shared `PanelTabs`; simple-only loading for the guest, print and invitation pages
 - RSVP form fixes — Coming / Not coming above the names; age and dietary needs per name when coming, with the reply editor's options; one warning slot above Send; custom radios and checkboxes in the invitation palette; reply fields in the invitation's primary font, buttons in Work Sans uppercase; the editor tries the form without saving; toast tones (success, neutral, warning, error), bigger and longer-lasting toasts
