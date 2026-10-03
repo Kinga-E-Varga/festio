@@ -1,3 +1,4 @@
+import { headingFields } from "@/modular/heading";
 import { LABELS } from "@/modular/labels";
 import type { SectionDefinition } from "@/types/modular";
 
@@ -5,19 +6,21 @@ export const section: SectionDefinition = {
   id: "transportation",
   name: { en: "Transportation", ro: "Transport", hu: "Közlekedés" },
   required: false,
-  order: 130,
+  order: 72,
+  menuLabel: { en: "Getting there", ro: "Cum ajungi", hu: "Odajutás" },
   fields: [
-    {
-      id: "heading",
-      label: LABELS.heading,
-      type: "text",
-      maxLength: 60,
-      fallback: {
-        en: "Getting there and back",
-        ro: "Cum ajungi și cum te întorci",
-        hu: "Oda és vissza",
+    ...headingFields({
+      eyebrow: {
+        en: "Getting here, together",
+        ro: "Cum ajungem, împreună",
+        hu: "Együtt odajutni",
       },
-    },
+      heading: {
+        en: "The journey is part of it",
+        ro: "Drumul face parte din poveste",
+        hu: "Az út is a része",
+      },
+    }),
     {
       id: "ways",
       label: {
@@ -28,55 +31,48 @@ export const section: SectionDefinition = {
       type: "list",
       maxItems: 4,
       item: [
-        /* One of `shuttle`, `car`, `taxi`, `plane`; anything else draws a pin. */
-        {
-          id: "icon",
-          label: { en: "icon", ro: "pictogramă", hu: "ikon" },
-          type: "text",
-          maxLength: 10,
-        },
+        { id: "label", label: LABELS.eyebrow, type: "text", maxLength: 30 },
         { id: "title", label: LABELS.title, type: "text", maxLength: 40 },
-        { id: "text", label: LABELS.text, type: "longText", maxLength: 160 },
+        { id: "text", label: LABELS.text, type: "longText", maxLength: 240 },
       ],
       fallback: [
         {
-          icon: "shuttle",
-          title: { en: "Shuttle", ro: "Transfer", hu: "Transzferbusz" },
-          text: {
-            en: "Out 15:00 from Piața Unirii. Back 00:30 and 02:00.",
-            ro: "Plecare la 15:00 din Piața Unirii. Întoarcere la 00:30 și 02:00.",
-            hu: "Indulás 15:00-kor a Piața Uniriiről. Vissza 00:30-kor és 02:00-kor.",
-          },
-        },
-        {
-          icon: "car",
-          title: { en: "By car", ro: "Cu mașina", hu: "Autóval" },
-          text: {
-            en: "Free parking on site. Cars may stay overnight.",
-            ro: "Parcare gratuită la fața locului. Mașinile pot rămâne peste noapte.",
-            hu: "Ingyenes parkolás a helyszínen. Az autók éjszakára is maradhatnak.",
-          },
-        },
-        {
-          icon: "taxi",
-          title: { en: "Taxi", ro: "Taxi", hu: "Taxi" },
-          text: {
-            en: "Book ahead after midnight.",
-            ro: "După miezul nopții, rezervă din timp.",
-            hu: "Éjfél után érdemes előre foglalni.",
-          },
-        },
-        {
-          icon: "plane",
+          label: { en: "By train", ro: "Cu trenul", hu: "Vonattal" },
           title: {
-            en: "From the airport",
-            ro: "De la aeroport",
-            hu: "A repülőtérről",
+            en: "Come via Pontedera",
+            ro: "Prin Pontedera",
+            hu: "Pontederán keresztül",
           },
           text: {
-            en: "Otopeni is 25 minutes away by taxi.",
-            ro: "Aeroportul Otopeni e la 25 de minute cu taxiul.",
-            hu: "Az otopeni repülőtér taxival 25 percre van.",
+            en: "Take the train to Pontedera–Casciana Terme. From there, the villa is about a 30-minute drive.",
+            ro: "Luați trenul până la Pontedera–Casciana Terme. De acolo, vila e la circa 30 de minute cu mașina.",
+            hu: "Vonattal Pontedera–Casciana Terméig. Onnan a villa nagyjából 30 perc autóval.",
+          },
+        },
+        {
+          label: { en: "A little lift", ro: "Te ducem noi", hu: "Elviszünk" },
+          title: {
+            en: "We’ll arrange a shuttle",
+            ro: "Organizăm un transfer",
+            hu: "Transzfert szervezünk",
+          },
+          text: {
+            en: "Shared rides will run between Pontedera station, the villa, and nearby stays. Add your arrival details to your reply.",
+            ro: "Vor fi curse comune între gara Pontedera, vilă și cazările din apropiere. Scrie-ne în răspuns când ajungi.",
+            hu: "Közös járatok lesznek a pontederai állomás, a villa és a közeli szállások között. A válaszban írd meg, mikor érkezel.",
+          },
+        },
+        {
+          label: { en: "By car", ro: "Cu mașina", hu: "Autóval" },
+          title: {
+            en: "Room to park",
+            ro: "Loc de parcare",
+            hu: "Van hely parkolni",
+          },
+          text: {
+            en: "There’s free parking on the estate. We’ll share the final directions and shuttle times closer to the weekend.",
+            ro: "Parcarea pe domeniu e gratuită. Vă trimitem indicațiile și orele transferului mai aproape de weekend.",
+            hu: "A birtokon ingyenes a parkolás. A pontos útvonalat és a transzfer idejét a hétvége előtt küldjük.",
           },
         },
       ],

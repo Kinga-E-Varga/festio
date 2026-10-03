@@ -28,9 +28,9 @@ Each event has one package. It only ever goes up (Free → Standard → Custom);
 
 **Modular:** host adds/removes/edits sections; RSVP form is modular the same way. Also gets template customization (palette, fonts, images). Custom only.
 
-- Base sections, always present: hero/cover, title, date & time, location.
-- Optional sections: map, countdown, dress code, gift preferences, playlist, FAQ, schedule, menu, accommodation, transportation.
-- **Sections, palettes and font pairs are shared libraries** in `src/modular/`. Each section has one or more variants; a palette is 15 fixed colour roles; a font pair is body + headings. Hosts pick a whole palette or pair, never single colours or fonts.
+- Base sections, always present: top bar, hero/cover, title, date & time, location, RSVP, footer.
+- Optional sections: countdown, helpful notes, dress code, gift preferences, playlist, FAQ, schedule, menu, accommodation, transportation.
+- **Sections, palettes and font pairs are shared libraries** in `src/modular/`. Each section has one or more variants; a palette is 15 colour roles, the rest mixed from them; more may be added; a font pair is body + headings. Hosts pick a whole palette or pair, never single colours or fonts.
 - **A modular template is a preset over them:** a palette, a font pair and the sections with a variant each, in the fixed order. It is a starting point the host can change later.
 - Events store section, variant, palette and font-pair ids, so those ids are permanent. Template ids are not stored and may change.
 

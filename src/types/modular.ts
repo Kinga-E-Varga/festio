@@ -4,26 +4,37 @@ import type { EventKind } from "@/types/dashboard";
 import type { RsvpPayload, TemplateFonts } from "@/types/invitation";
 
 /**
- * The 15 positional colour roles every palette fills: c1–c7 light grounds
- * and lines, c8–c10 ink, c11–c12 dark grounds, c13 the main accent, c14–c15
- * the secondary accents. On the page each is `--m1`…`--m15`.
+ * The colours a palette sets, by name. On the page each is `--m-<role>`.
+ * `canvas` is the ground around the invitation's column, `surface` the
+ * page itself, `ink` its text; each accent has an `-ink` to write on it.
+ * `surface-alt`, `ink-muted`, `line` and the two `-soft` tints are set too:
+ * no mix matched the hand-picked colours, and they show everywhere.
+ * `error` is the form's warnings, kept apart from the decorative accents so
+ * a warning never reads as one more ornament.
+ * More roles may come when a variant needs a colour no mix gives.
  */
 export type ColorRole =
-  | "c1"
-  | "c2"
-  | "c3"
-  | "c4"
-  | "c5"
-  | "c6"
-  | "c7"
-  | "c8"
-  | "c9"
-  | "c10"
-  | "c11"
-  | "c12"
-  | "c13"
-  | "c14"
-  | "c15";
+  | "canvas"
+  | "surface"
+  | "surface-alt"
+  | "ink"
+  | "ink-muted"
+  | "line"
+  | "accent"
+  | "accent-ink"
+  | "accent-soft"
+  | "secondary"
+  | "secondary-ink"
+  | "secondary-soft"
+  | "tertiary"
+  | "tertiary-ink"
+  | "error";
+
+/**
+ * Colours mixed from the roles in `vars.ts`, never set by a palette. Read
+ * the same way: `--m-<name>`.
+ */
+export type MixedColor = "shadow" | "inverse" | "inverse-ink";
 
 /** A premade palette. Hosts pick a whole one, never a single colour. */
 export interface ModularPalette {
@@ -33,7 +44,7 @@ export interface ModularPalette {
 }
 
 /**
- * A pattern drawn on the invitation's ground (`--m4`), in palette roles
+ * A pattern drawn on the invitation's ground (`--m-canvas`), in palette roles
  * only. `className` holds the Tailwind classes that draw it.
  */
 export interface ModularPattern {
@@ -53,7 +64,11 @@ export interface FontPair {
   fonts: TemplateFonts;
 }
 
-export type ScalarFieldType = "text" | "longText" | "time";
+/**
+ * `image` holds a path to a photo (no uploads yet — the sample photo is the
+ * value); `icon` holds an id from `ICONS` in `src/modular/icons.tsx`.
+ */
+export type ScalarFieldType = "text" | "longText" | "time" | "image" | "icon";
 
 /** One field inside a list item — what a repeated group is made of. */
 export interface ItemField {
@@ -83,7 +98,35 @@ export interface ListField {
   fallback: Record<string, LocalizedText>[];
 }
 
-export type SectionField = ScalarField | ListField;
+/**
+ * A list of groups, each with its own fields and a list inside it — a
+ * schedule's days, each with its events.
+ */
+export interface GroupListField {
+  id: string;
+  label: LocalizedText;
+  type: "groups";
+  maxGroups: number;
+  /** The group's own fields: a day's label. */
+  group: ItemField[];
+  /** The list inside each group: a day's events. */
+  items: { label: LocalizedText; maxItems: number; item: ItemField[] };
+  fallback: {
+    values: Record<string, LocalizedText>;
+    items: Record<string, LocalizedText>[];
+  }[];
+}
+
+/** An on/off switch: show a part of the section or leave it out. */
+export interface ToggleField {
+  id: string;
+  label: LocalizedText;
+  type: "toggle";
+  fallback: boolean;
+}
+
+export type SectionField =
+  ScalarField | ToggleField | ListField | GroupListField;
 
 /**
  * One section, shared by every modular template. Its fields belong to it,
@@ -99,10 +142,30 @@ export interface SectionDefinition {
   required: boolean;
   /** The section's place in the fixed order: top bar 0, cover 10, title 20… */
   order: number;
-  /** Shown as a link in the top bar and the mobile drawer when present. */
+  /**
+   * Shown as a link in the top bar and the mobile drawer when present.
+   * Sections given the very same label object share one link, to the first
+   * of them on the page (`GOOD_TO_KNOW`).
+   */
   menuLabel?: LocalizedText;
+  /**
+   * Other sections whose values this one shows, by id — so content entered
+   * once is read in both places (the footer's mark is the top bar's).
+   * Loaded with the design whether or not those sections are on the page.
+   */
+  reads?: string[];
+  /**
+   * How the page picks the section's ground. Left out, it takes the next of
+   * the two surfaces in turn. `own`: it draws its own colour (a photo, an
+   * accent band) and the turns carry on past it. `joined`: the same ground
+   * as the section before, so the two read as one band.
+   */
+  ground?: "own" | "joined";
   fields: SectionField[];
 }
+
+/** The two surfaces sections and cards take turns on. */
+export type Ground = "surface" | "surface-alt";
 
 /** A section folder's `index.ts`. */
 export interface SectionModule {
@@ -112,8 +175,17 @@ export interface SectionModule {
 /** One list item's values, keyed by `ItemField.id`. */
 export type ListItem = Record<string, string>;
 
+/** One group of a `groups` field: its own values and its items. */
+export interface Group {
+  values: ListItem;
+  items: ListItem[];
+}
+
 /** A section's content, already in the language it is read in. */
-export type SectionValues = Record<string, string | ListItem[]>;
+export type SectionValues = Record<
+  string,
+  string | boolean | ListItem[] | Group[]
+>;
 
 /**
  * Facts several sections show, entered once: the hosts' names, the date,
@@ -145,6 +217,10 @@ export interface VariantProps {
   basics: InvitationBasics;
   /** The invitation's language — dates are written in it. */
   language: Language;
+  /** The values of the sections this one `reads`, by id. */
+  related: Partial<Record<string, SectionValues>>;
+  /** The surface the page gave this section; its cards take the other one. */
+  ground: Ground;
   /** The RSVP variant hands the guest's reply up; every other one ignores it. */
   onRsvp?: (payload: RsvpPayload) => void;
   /** Only the top bar's variants read it. */
@@ -163,8 +239,8 @@ export interface SectionChoice {
 
 /**
  * A modular template is only a preset: a palette, a font pair, an optional
- * ground pattern and the sections with a variant for each, in the fixed
- * order, RSVP last.
+ * ground pattern and the sections with a variant for each. The page puts
+ * them in each section's own `order`, not the order they are listed in.
  */
 export interface ModularTemplate {
   kind: "modular";
@@ -189,4 +265,6 @@ export interface ModularDesign {
   fontPair: FontPair;
   pattern: ModularPattern | null;
   sections: { definition: SectionDefinition; variant: string }[];
+  /** Every section some section `reads`, by id. */
+  related: Record<string, SectionDefinition>;
 }

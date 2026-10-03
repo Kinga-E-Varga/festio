@@ -1,4 +1,5 @@
 import { useTranslations } from "next-intl";
+import type { ReactNode } from "react";
 
 /**
  * "Open in Maps" as a plain link. No map is embedded, so nothing reaches
@@ -7,9 +8,12 @@ import { useTranslations } from "next-intl";
 export function MapsLink({
   query,
   className,
+  children,
 }: {
   query: string;
   className: string;
+  /** Drawn after the words — an arrow, say. */
+  children?: ReactNode;
 }) {
   const t = useTranslations("Sections");
   return (
@@ -20,6 +24,7 @@ export function MapsLink({
       className={className}
     >
       {t("openInMaps")}
+      {children}
     </a>
   );
 }

@@ -56,21 +56,22 @@ Two folders: `simple/` (basic invitations) and `modular/` (custom invitations). 
 
 - `index.ts` — `loadSimpleTemplate(id)` imports `./simple/<id>` only; it is what the guest, print and invitation pages use, so a modular template is not found there. `loadTemplate(id)` (the `/templates/<id>` page) tries `simple/`, then `modular/`. Adding a template never touches this file.
 - `simple/<id>/index.tsx` — a simple template (e.g. `simple/wolf-dance/`). Holds identity, package, palette, fonts, editable fields, sections, design. A field's `fallback` is `LocalizedText`: all three languages when it is a phrase, a plain string when it is sample content.
-- `modular/<id>/index.ts` — a modular template (e.g. `modular/garden/`), a preset only: `kind: "modular"`, palette id, font-pair id, `{ section, variant }` list.
+- `modular/<id>/index.ts` — a modular template (e.g. `modular/olive-garden/`), a preset only: `kind: "modular"`, palette id, font-pair id, `{ section, variant }` list.
 - `TemplateCard.tsx` — a simple template's card, loaded in the browser from `simple/`.
 
 ## Modular library — `src/modular/`
 
 Shared by every modular template, found by id with a dynamic import — nothing registers.
 
-- `sections/<id>/index.ts` — the section: permanent id, name, required, `order`, optional menu label, fields with sample content. `sections/<id>/<variant>.tsx` — one file per variant, exporting `Variant`. `top-bar` is a section too (required, first, variant `classic`), drawn apart from the others so it stays sticky.
-- `palettes/<id>.ts` (`c1`–`c15`), `font-pairs/<id>.ts` (`primary` body, `secondary` headings), `patterns/<id>.ts` (the ground's pattern as Tailwind classes, e.g. `dots`).
+- `sections/<id>/index.ts` — the section: permanent id, name, required, `order`, optional menu label, fields with sample content. `sections/<id>/<variant>.tsx` — one file per variant, exporting `Variant`. `top-bar` is a section too (required, first), drawn apart from the others so it stays sticky; `footer` is required and last. A section may list `reads` — other sections whose values it shows (notes ← dress-code, gifts; footer ← top-bar; countdown ← date-time).
+- `palettes/<id>.ts` (15 named roles — `canvas`, `surface`(-alt), `ink`(-muted), `line`, `accent`(-ink, -soft), `secondary`(-ink, -soft), `tertiary`(-ink), `error`), `font-pairs/<id>.ts` (`primary` body, `secondary` headings), `patterns/<id>.ts` (the ground's pattern as Tailwind classes, e.g. `dots`).
 - `index.ts` — `loadSection`, `loadPalette`, `loadFontPair`, `loadPattern`, `loadDesign` (server). `variants.ts` — `loadVariant` (browser only; kept apart so variants never enter the server graph).
-- `vars.ts` — `--m1`…`--m15` and the one mapping onto the shared `--c1`–`--c6`. `content.ts` — values, basics and date helpers, `safeLink`. `sample.ts` — `SAMPLE_BASICS`. `nav.ts` — `TOP_BAR_ID`, `SECTIONS_TRIGGER_ID`. `styles.ts` (shared classes, incl. `groundClasses`), `labels.ts`, `MapsLink.tsx`.
+- `vars.ts` — the roles as `--m-<role>`, the `shadow` (the ground darkened, one oklab `color-mix`) and the `inverse`/`inverse-ink` pair, and the one mapping onto the shared `--c1`–`--c6`. `INVITE_COLUMN` — the column's widest (1440px), as `--invite-column` and in photos' `sizes`. `content.ts` — values (`text`, `list`, `groups`), basics, date and countdown helpers, `imageSrc`, `safeLink`. `sample.ts` — `SAMPLE_BASICS`, `SAMPLE_PHOTO`. `nav.ts` — `TOP_BAR_ID`, `SECTIONS_TRIGGER_ID`. `ground.ts` — `sectionGrounds` (each section's surface, taking turns; `own` sections skipped, `joined` ones match the one before) and `otherGround` (a card's). `styles.ts` (the type scale and shared classes, incl. `groundClasses`), `labels.ts`, `MapsLink.tsx`.
+- `icons.tsx` — the hand-drawn icon library (`ICONS`, one entry per icon a host can pick) and `Icon`. `heading.ts` + `SectionHeading.tsx` — every section heading's four optional fields and how they draw. `AmpersandText.tsx`, `clock.ts` (`useNow`), `notes.ts` (`noteItems`). `cards/` — `NoteCard` and the Dress code / Gifts cards, shared by those sections and Helpful notes.
 
 ## Modular page — `src/components/modular/`
 
-- `ModularInvitation.tsx` — the guest page: the `top-bar` section straight in the column, `SectionsDrawer`, the other sections via `SectionView` (loads a variant with `use`), `ModularFooter`. `framed` for the editor.
+- `ModularInvitation.tsx` — the guest page: the `top-bar` section straight in the column, `SectionsDrawer`, the other sections via `SectionView` (loads a variant with `use`). `framed` for the editor.
 - `ModularEditor.tsx` + `ModularEditPanel.tsx` — the `/templates/<id>` editor for modular templates.
 
 ## Invitation — `src/components/invitation/`
@@ -106,17 +107,17 @@ Event pages: `EventHeader.tsx` (BACK + title + date), `BackButton.tsx`, `Replies
 
 ## Lib — `src/lib/`
 
-| File               | Holds                                                                                                                                                                                              |
-| ------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `config.ts`        | `GUEST_DATA_RETENTION_DAYS` — the single GDPR retention parameter. Never inline it. Also the reply-cap margins, the expected-guests warning percent and the replies-closing-soon window.           |
-| `event.ts`         | `invitationLink`, `contentFreeze` (24h rule), `deletionDate`, date formatting, expected-guests and reply-cap helpers, `replyClose` / `replyWindow`                                                 |
-| `slug.ts`          | `RESERVED_SLUGS` (the one list), slug limits, `normalizeSlug`, suggestions, the invite rewrite pattern. Relative imports only — `next.config.ts` reads it.                                         |
-| `invitation.ts`    | Template vars, `findByInvite`, seed/fallback values, `DATE_FORMATS`                                                                                                                                |
-| `fonts.ts`         | Invitation fonts via `next/font/google` (per-template, not the app chrome — that's `src/app/fonts.ts`). Also Libre Baskerville (own variable, not the app's) and Kantumruy Pro for the font pairs. |
-| `history.ts`       | Local visit tracking; `useLeaveFestio(fallback)` — the one BACK, with each page's own fallback when no Festio page is behind it                                                                    |
-| `guests.ts`        | Guest rows from list + replies: matching, Unknown/Duplicate tags, grouping and splitting by category, counts, filters, repeat check. Type imports only.                                            |
-| `leave-warning.ts` | `useLeaveWarning(active, message)` — while there are unsaved changes, asks before reload/close (the browser's prompt) and before in-app links or a `data-leaves` control (BACK)                    |
-| `language.ts`      | `LANGUAGES` (the one list, read by both `i18n/routing.ts` and an invitation's `language`), `invitationLanguage`, `LocalizedText`/`localized`, locale tags and names                                |
+| File               | Holds                                                                                                                                                                                    |
+| ------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `config.ts`        | `GUEST_DATA_RETENTION_DAYS` — the single GDPR retention parameter. Never inline it. Also the reply-cap margins, the expected-guests warning percent and the replies-closing-soon window. |
+| `event.ts`         | `invitationLink`, `contentFreeze` (24h rule), `deletionDate`, date formatting, expected-guests and reply-cap helpers, `replyClose` / `replyWindow`                                       |
+| `slug.ts`          | `RESERVED_SLUGS` (the one list), slug limits, `normalizeSlug`, suggestions, the invite rewrite pattern. Relative imports only — `next.config.ts` reads it.                               |
+| `invitation.ts`    | Template vars, `findByInvite`, seed/fallback values, `DATE_FORMATS`                                                                                                                      |
+| `fonts.ts`         | Invitation fonts via `next/font/google` (per-template, not the app chrome — that's `src/app/fonts.ts`). Also Gelasio and Arimo for the font pair.                                        |
+| `history.ts`       | Local visit tracking; `useLeaveFestio(fallback)` — the one BACK, with each page's own fallback when no Festio page is behind it                                                          |
+| `guests.ts`        | Guest rows from list + replies: matching, Unknown/Duplicate tags, grouping and splitting by category, counts, filters, repeat check. Type imports only.                                  |
+| `leave-warning.ts` | `useLeaveWarning(active, message)` — while there are unsaved changes, asks before reload/close (the browser's prompt) and before in-app links or a `data-leaves` control (BACK)          |
+| `language.ts`      | `LANGUAGES` (the one list, read by both `i18n/routing.ts` and an invitation's `language`), `invitationLanguage`, `LocalizedText`/`localized`, locale tags and names                      |
 
 ## Other
 

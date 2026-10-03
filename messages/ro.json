@@ -32,11 +32,10 @@
     "dietOtherInput": "Spune-ne mai multe",
     "noteLabel": "Notă pentru gazdă",
     "notePlaceholder": "Opțional",
-    "charactersLeft": "{count, plural, one {# caracter rămas} few {# caractere rămase} other {# caractere rămase}}",
     "going": "Vin",
     "notGoing": "Nu vin",
     "statusWarning": "Te rugăm să ne spui dacă vii.",
-    "nameWarning": "Te rugăm să completezi un nume pentru fiecare persoană pentru care confirmi.",
+    "nameWarning": "Te rugăm să completezi un nume pentru fiecare persoană pentru care răspunzi.",
     "ageWarning": "Te rugăm să alegi o categorie de vârstă pentru fiecare persoană care vine.",
     "dietWarning": "Te rugăm să alegi restricțiile alimentare pentru fiecare persoană care vine — sau Niciuna.",
     "dietOtherWarning": "Te rugăm să ne spui care este cealaltă restricție alimentară.",
@@ -55,28 +54,19 @@
     "openSections": "Deschide secțiunile",
     "closeSections": "Închide secțiunile",
     "rsvp": "Răspunde",
-    "repliesClose": "Răspunsurile se închid pe {date}",
-    "rsvpBy": "Răspunde până pe {date}",
     "days": "{count, plural, one {zi} few {zile} other {de zile}}",
-    "theVenue": "Locația",
     "openInMaps": "Deschide harta",
-    "whatToWear": "Ce să porți",
-    "yesPlease": "Da, te rugăm",
-    "bestSkipped": "Mai bine nu",
-    "menu": "Meniu",
     "account": "Titular cont",
     "iban": "IBAN",
     "reference": "Mențiune",
     "copy": "Copiază",
     "copied": "Copiat",
-    "place": "Cazare",
-    "distance": "Distanță",
-    "price": "Preț",
-    "heldUntil": "Camere rezervate până pe",
-    "website": "Site",
-    "reply": "Răspuns",
-    "replyNote": "Un singur răspuns îi cuprinde pe toți cei care vin cu tine. Răspunsurile se închid pe {date}.",
-    "privacy": "Ce trimiți aici — nume, prezență și orice adaugi — ajunge doar la {hosts}, pentru acest eveniment. Se șterge odată cu întreaga invitație la {days} zile după eveniment."
+    "hours": "{count, plural, one {oră} few {ore} other {de ore}}",
+    "minutes": "{count, plural, one {minut} few {minute} other {de minute}}",
+    "seconds": "{count, plural, one {secundă} few {secunde} other {de secunde}}",
+    "countdownLabel": "{count, plural, one {Mai este # zi} few {Mai sunt # zile} other {Mai sunt # de zile}}",
+    "dressCode": "Ținută",
+    "gifts": "Cadouri"
   },
   "Nav": {
     "aria": "Secțiuni meniu",
@@ -218,11 +208,11 @@
     "price": "{amount, plural, =0 {Gratuit} other {# RON}}",
     "free": {
       "name": "Gratuit",
-      "blurb": "Invitație simplă din șabloanele gratuite, cu formular de confirmare minimal. Fără plan de așezare."
+      "blurb": "Invitație simplă din șabloanele gratuite, cu formular de răspuns minimal. Fără plan de așezare."
     },
     "standard": {
       "name": "Standard",
-      "blurb": "Orice șablon simplu, cu formular de confirmare minimal și plan de așezare.",
+      "blurb": "Orice șablon simplu, cu formular de răspuns minimal și plan de așezare.",
       "upsell": "Deblochează toate șabloanele simple și adaugă un plan de așezare. Plătești doar diferența și nu pierzi nimic din ce ai scris."
     },
     "custom": {
@@ -253,7 +243,7 @@
     "repliesClosedTitle": "Răspunsuri închise pe {date}",
     "repliesClosedBody": "Formularul de răspuns s-a închis {custom, select, yes {la ora pe care ai ales-o} other {cu o zi înainte de eveniment}}. Poți adăuga în continuare în lista de invitați răspunsurile primite la telefon.",
     "unpaidTitle": "Ciornă neplătită",
-    "unpaidBody": "Pachetul {package} costă {price}. Pagina rămâne ascunsă și formularul de confirmare rămâne închis până se confirmă plata.",
+    "unpaidBody": "Pachetul {package} costă {price}. Pagina rămâne ascunsă și formularul de răspuns rămâne închis până se confirmă plata.",
     "hiddenTitle": "Invitație ascunsă",
     "hiddenBody": "Nimeni nu poate deschide pagina, nici măcar un invitat care are linkul, și nu poate sosi niciun răspuns. Setează mai jos vizibilitatea la Publică sau Protejată când ești gata s-o trimiți.",
     "attentionTitle": "{count, plural, one {# răspuns de verificat} few {# răspunsuri de verificat} other {# de răspunsuri de verificat}}",
@@ -470,7 +460,7 @@
     "attendingBabies": "<b>{actor}</b> vine, cu {babies, plural, one {# bebeluș} few {# bebeluși} other {# de bebeluși}}",
     "replied": "<b>{actor}</b> a răspuns",
     "declined": "<b>{actor}</b> a refuzat",
-    "phoneRsvp": "<b>Tu</b> ai adăugat confirmare pentru <b>{subject}</b>",
+    "phoneRsvp": "<b>Tu</b> ai adăugat un răspuns telefonic pentru <b>{subject}</b>",
     "children": "{count, plural, one {# copil} few {# copii} other {# de copii}}",
     "vegetarian": "vegetarian",
     "glutenFree": "fără gluten",
@@ -478,7 +468,7 @@
     "addedByHost": "adăugat de gazdă"
   },
   "Meta": {
-    "description": "Invitații, confirmări și tot ce urmează.",
+    "description": "Invitații, răspunsuri și tot ce urmează.",
     "dashboard": "Panou · Festio",
     "events": "Evenimente · Festio",
     "event": "{title} · Festio",

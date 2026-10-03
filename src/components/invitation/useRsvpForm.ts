@@ -163,7 +163,6 @@ export function useRsvpForm() {
     derived: {
       going,
       problem,
-      noteLeft: NOTE_LIMIT - note.length,
       sent,
     },
     buildPayload,

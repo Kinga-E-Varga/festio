@@ -742,23 +742,24 @@
   }
 
   /*
-   * The modular invitation's 1280px column on its ground, in the palette's
-   * own ink (`--m8`). On the guest page, narrower than that the column fills
-   * the scroller, which clips the shadow away.
+   * The modular invitation's column on its ground, in the palette's
+   * mixed `--m-shadow` (the ground, darkened). On the guest page, narrower
+   * than that the column fills the scroller, which clips the shadow away.
    */
   .elevation-band {
-    box-shadow: 0px 0px 14px color-mix(in srgb, var(--m7) 60%, transparent);
+    box-shadow: 0px 0px 14px
+      color-mix(in srgb, var(--m-shadow) 70%, transparent);
   }
 
   /*
-   * A modular invitation's own scrollbar, in its palette: thin, a mid-tone
-   * thumb on the page ground. `scrollbar-color` for Chrome and Firefox; the
-   * `::-webkit-scrollbar` rules for Safari, which Chrome ignores once
-   * `scrollbar-color` is set.
+   * A modular invitation's own scrollbar, in its palette: thin, a `--m-line`
+   * thumb on the page's `--m-surface`. `scrollbar-color` for Chrome and
+   * Firefox; the `::-webkit-scrollbar` rules for Safari, which Chrome
+   * ignores once `scrollbar-color` is set.
    */
   .invite-scroll {
     scrollbar-width: thin;
-    scrollbar-color: var(--m7) var(--m2);
+    scrollbar-color: var(--m-line) var(--m-surface);
   }
 
   .invite-scroll::-webkit-scrollbar {
@@ -766,11 +767,11 @@
   }
 
   .invite-scroll::-webkit-scrollbar-track {
-    background: var(--m2);
+    background: var(--m-surface);
   }
 
   .invite-scroll::-webkit-scrollbar-thumb {
-    background: var(--m7);
+    background: var(--m-line);
     border-radius: 4px;
   }
 }

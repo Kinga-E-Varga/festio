@@ -53,8 +53,9 @@ export async function loadPattern(id: string): Promise<ModularPattern | null> {
 }
 
 /**
- * A template's palette, pair, pattern and sections; null when any id names
- * nothing.
+ * A template's palette, pair, pattern, sections and the sections they
+ * read; null when any id names nothing. Sections come in each one's own
+ * `order`, whatever order the template lists them in.
  */
 export async function loadDesign(
   template: ModularTemplate,
@@ -73,5 +74,18 @@ export async function loadDesign(
     if (!definition) return null;
     sections.push({ definition, variant: template.sections[index].variant });
   }
-  return { palette, fontPair, pattern, sections };
+  sections.sort((a, b) => a.definition.order - b.definition.order);
+
+  /* A read that names nothing is a typo in a section file: fail as loudly as a missing section. */
+  const readIds = [
+    ...new Set(sections.flatMap(({ definition }) => definition.reads ?? [])),
+  ];
+  const reads = await Promise.all(readIds.map(loadSection));
+  const related: ModularDesign["related"] = {};
+  for (const [index, definition] of reads.entries()) {
+    if (!definition) return null;
+    related[readIds[index]] = definition;
+  }
+
+  return { palette, fontPair, pattern, sections, related };
 }

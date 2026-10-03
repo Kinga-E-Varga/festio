@@ -7,7 +7,7 @@
   },
   "Rsvp": {
     "defaultMessage": "We would love to know if you can join us.",
-    "respond": "Respond Now",
+    "respond": "Reply now",
     "close": "Close",
     "attendance": "Can you make it?",
     "whoIsComing": "Who is coming",
@@ -32,51 +32,41 @@
     "dietOtherInput": "Tell us more",
     "noteLabel": "Note for the host",
     "notePlaceholder": "Optional",
-    "charactersLeft": "{count, plural, one {# character left} other {# characters left}}",
     "going": "Going",
     "notGoing": "Not going",
     "statusWarning": "Please let us know if you're coming.",
-    "nameWarning": "Please fill in a name for everyone you are RSVPing for.",
+    "nameWarning": "Please fill in a name for everyone you are replying for.",
     "ageWarning": "Please pick an age group for everyone coming.",
     "dietWarning": "Please pick dietary needs for everyone coming — or None.",
     "dietOtherWarning": "Please tell us what the other dietary need is.",
-    "submit": "Submit Response",
+    "submit": "Send reply",
     "privacy": "Your name and reply go only to the hosts of this event, and are deleted {days} days after it. Nothing is shared with anyone else.",
     "sentTitle": "Thank you — your reply is with the hosts.",
     "sentNote": "Need to change something? The hosts can correct any reply for you.",
     "paused": "Replies are closed for now. Please contact the host."
   },
   "Print": {
-    "defaultNote": "Please respond before the 5th of august 2024 on the link provided below.",
+    "defaultNote": "Please reply before the 5th of august 2024 on the link provided below.",
     "password": "Password: {password}"
   },
   "Sections": {
     "sections": "Sections",
     "openSections": "Open sections",
     "closeSections": "Close sections",
-    "rsvp": "RSVP",
-    "repliesClose": "Replies close {date}",
-    "rsvpBy": "RSVP by {date}",
+    "rsvp": "Reply",
     "days": "{count, plural, one {day} other {days}}",
-    "theVenue": "The venue",
     "openInMaps": "Open in Maps",
-    "whatToWear": "What to wear",
-    "yesPlease": "Yes, please",
-    "bestSkipped": "Best skipped",
-    "menu": "Menu",
     "account": "Account holder",
     "iban": "IBAN",
     "reference": "Reference",
     "copy": "Copy",
     "copied": "Copied",
-    "place": "Place",
-    "distance": "Distance",
-    "price": "Price",
-    "heldUntil": "Rooms held until",
-    "website": "Website",
-    "reply": "Reply",
-    "replyNote": "One reply covers everyone coming with you. Replies close {date}.",
-    "privacy": "What you send here — names, attendance and anything you add — goes only to {hosts}, for this event. It is deleted with the whole invitation {days} days after the date."
+    "hours": "{count, plural, one {hour} other {hours}}",
+    "minutes": "{count, plural, one {minute} other {minutes}}",
+    "seconds": "{count, plural, one {second} other {seconds}}",
+    "countdownLabel": "{count, plural, one {# day} other {# days}} to go",
+    "dressCode": "Dress code",
+    "gifts": "Gifts"
   },
   "Nav": {
     "aria": "Dashboard sections",
@@ -110,7 +100,7 @@
     "printSizes": "Print sizes",
     "seatingCharts": "Seating charts",
     "gettingStarted": "Getting started",
-    "writingQuestions": "Writing RSVP questions",
+    "writingQuestions": "Writing reply questions",
     "sharingLink": "Sharing your link",
     "cancelPostpone": "Cancel or postpone",
     "termsDpa": "Terms & DPA",
@@ -136,7 +126,7 @@
   },
   "Rail": {
     "needsAttention": "Needs your attention",
-    "recentRsvps": "Recent RSVPs",
+    "recentRsvps": "Recent replies",
     "unknownTag": "Unknown",
     "dataRetention": "Data retention",
     "retention": "Each invitation and all its guest data is deleted automatically <big>{days}</big> days after the event date. Your account stays.",
@@ -145,7 +135,7 @@
   "Events": {
     "title": "Events",
     "newEvent": "New event",
-    "lede": "Each event is one record and one purchase. Every event has an invitation with a response form, so you can track and manage your guests.",
+    "lede": "Each event is one record and one purchase. Every event has an invitation with a reply form, so you can track and manage your guests.",
     "tabAll": "All",
     "tabActive": "Active",
     "tabDrafts": "Drafts",
@@ -218,17 +208,17 @@
     "price": "{amount, plural, =0 {Free} other {# RON}}",
     "free": {
       "name": "Free",
-      "blurb": "A simple invitation from the free templates, with a minimal RSVP form. No seating chart."
+      "blurb": "A simple invitation from the free templates, with a minimal reply form. No seating chart."
     },
     "standard": {
       "name": "Standard",
-      "blurb": "Any simple template, with a minimal RSVP form and a seating chart.",
+      "blurb": "Any simple template, with a minimal reply form and a seating chart.",
       "upsell": "Opens every simple template and adds a seating chart. You pay the difference, and nothing you have written is lost."
     },
     "custom": {
       "name": "Custom",
-      "blurb": "Every template, simple or modular: your own sections, RSVP questions, palette, fonts and images. Seating chart included.",
-      "upsell": "Unlocks modular templates with your own sections, RSVP questions, palette and fonts. You pay the difference, and nothing you have written is lost."
+      "blurb": "Every template, simple or modular: your own sections, reply questions, palette, fonts and images. Seating chart included.",
+      "upsell": "Unlocks modular templates with your own sections, reply questions, palette and fonts. You pay the difference, and nothing you have written is lost."
     }
   },
   "Occasions": {
@@ -253,7 +243,7 @@
     "repliesClosedTitle": "Replies closed on {date}",
     "repliesClosedBody": "The reply form closed {custom, select, yes {at the time you set} other {the day before the event}}. You can still add replies that reach you in any other way.",
     "unpaidTitle": "This draft is unpaid",
-    "unpaidBody": "The {package} package costs {price}. The page stays hidden and the RSVP form stays closed until payment clears.",
+    "unpaidBody": "The {package} package costs {price}. The page stays hidden and the reply form stays closed until payment clears.",
     "hiddenTitle": "This invitation is hidden",
     "hiddenBody": "Nobody can open the page, not even a guest holding the link, and no reply can arrive. Set the visibility to Public or Protected below once you are ready to share it.",
     "attentionTitle": "{count, plural, one {# reply needs a look} other {# replies need a look}}",
@@ -343,7 +333,7 @@
     "pastTitle": "This event has already happened",
     "pastBody": "There is nothing left to cancel. The record disappears on its own at the deletion date above.",
     "cancelTitle": "Cancel the event",
-    "cancelBody": "Closes the RSVP form and replaces the invitation with a short message from you. {count, plural, =0 {No guest has replied yet.} one {# guest has already replied and will not be notified.} other {# guests have already replied and none of them will be notified.}} Guest and event data are kept for another {days} days, and you can reopen the event at any point in that window.",
+    "cancelBody": "Closes the reply form and replaces the invitation with a short message from you. {count, plural, =0 {No guest has replied yet.} one {# guest has already replied and will not be notified.} other {# guests have already replied and none of them will be notified.}} Guest and event data are kept for another {days} days, and you can reopen the event at any point in that window.",
     "cancelButton": "Cancel event",
     "cancelled": "Event cancelled — the invitation now shows your message",
     "draftTitle": "Delete the draft",
@@ -422,7 +412,7 @@
     "hiddenUntilPaid": "Hidden until payment clears",
     "attention": "{count, plural, one {# reply needs a look: a name not on your list or used twice.} other {# replies need a look: names not on your list or used twice.}}",
     "reviewReplies": "Review replies",
-    "opensWhenPublic": "The RSVP form opens when you make the page public.",
+    "opensWhenPublic": "The reply form opens when you make the page public.",
     "paymentPending": "Payment is pending, so the page stays hidden.",
     "payPublish": "Pay & publish",
     "pastRetention": "Guest data is deleted {days} days after the event — this one is already past that window.",
@@ -470,7 +460,7 @@
     "attendingBabies": "<b>{actor}</b> is attending, {babies, plural, one {# baby} other {# babies}}",
     "replied": "<b>{actor}</b> replied",
     "declined": "<b>{actor}</b> declined",
-    "phoneRsvp": "<b>You</b> added a phone RSVP for <b>{subject}</b>",
+    "phoneRsvp": "<b>You</b> added a phone reply for <b>{subject}</b>",
     "children": "{count, plural, one {# child} other {# children}}",
     "vegetarian": "vegetarian",
     "glutenFree": "gluten-free",
@@ -478,7 +468,7 @@
     "addedByHost": "added by host"
   },
   "Meta": {
-    "description": "Invitations, RSVPs and everything after.",
+    "description": "Invitations, replies and everything after.",
     "dashboard": "Dashboard · Festio",
     "events": "Events · Festio",
     "event": "{title} · Festio",

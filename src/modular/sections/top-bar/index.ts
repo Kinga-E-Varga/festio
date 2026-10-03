@@ -6,7 +6,8 @@ import type { SectionDefinition } from "@/types/modular";
  * way down. No menu label: it is the menu.
  *
  * Every variant is 56px tall, 64px from `@5xl` (`h-14 @5xl:h-16`): the
- * sections' `scroll-margin` and the page's loading bar assume it.
+ * sections' `scroll-margin` and the page's loading bar assume it. The
+ * footer reads its `mark`.
  */
 export const section: SectionDefinition = {
   id: "top-bar",
@@ -19,7 +20,7 @@ export const section: SectionDefinition = {
       label: { en: "mark", ro: "semn", hu: "jel" },
       type: "text",
       maxLength: 24,
-      // Empty: the hosts' initials ("M & A").
+      // Empty: the hosts' initials ("M & L").
       fallback: "",
     },
   ],

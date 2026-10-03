@@ -6,7 +6,15 @@ import type { LocalizedText } from "@/lib/language";
  */
 export const LABELS = {
   heading: { en: "heading", ro: "titlu", hu: "címsor" },
-  kicker: {
+  headingItalic: {
+    en: "second heading line (italic)",
+    ro: "al doilea rând al titlului (cursiv)",
+    hu: "a címsor második sora (dőlt)",
+  },
+  photo: { en: "photo", ro: "fotografie", hu: "fotó" },
+  icon: { en: "icon", ro: "pictogramă", hu: "ikon" },
+  link: { en: "link", ro: "link", hu: "link" },
+  eyebrow: {
     en: "small line above",
     ro: "rând mic deasupra",
     hu: "kis sor fölötte",

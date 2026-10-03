@@ -14,6 +14,8 @@ const eslintConfig = defineConfig([
     "next-env.d.ts",
     // Archived features, not part of the app.
     "archived/**",
+    // Specs, plans and design prototypes, not part of the app.
+    "context/**",
   ]),
 ]);
 

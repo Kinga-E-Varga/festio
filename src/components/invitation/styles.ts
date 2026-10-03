@@ -1,3 +1,5 @@
+import type { RsvpSkin } from "./RsvpForm";
+
 /**
  * Guest-facing chrome, styled entirely from the template's palette. Festio's
  * own colours and faces must never reach an invitation, so every value here
@@ -29,9 +31,6 @@ const LABEL_CORE = "text-[11px] font-semibold tracking-[0.16em] uppercase";
 export const REPLY_LABEL = `${LABEL_CORE} text-[color:var(--c4)]`;
 
 const HINT_CORE = "text-[12px] leading-[1.45] text-justify";
-
-/** The reply's characters-left counter, in `--c4` like its labels. */
-export const COUNT_HINT = `${HINT_CORE} text-[color:var(--c4)]`;
 
 /** The reply's privacy note under Send, in `--c3`. */
 export const PRIVACY_HINT = `${HINT_CORE} text-[color:var(--c3)]`;
@@ -130,6 +129,28 @@ export const AGE_DROPDOWN = {
  */
 export const ADD_PERSON =
   "inline-flex cursor-pointer items-center gap-1.5 rounded-sm border-1 border-[var(--c3)] bg-[var(--c3)] px-3 py-1.5 font-sans text-[11px] font-semibold tracking-[0.06em] whitespace-nowrap uppercase text-[color:var(--c1)] transition-all duration-200 hover:opacity-60";
+
+/** The × beside a name: `--c4`, `--c3` under the pointer. */
+const REMOVE_NAME =
+  "text-[color:var(--c4)] transition-colors hover:text-[color:var(--c3)]";
+
+/** The one warning above Send, in the palette's warning colour `--c6`. */
+const WARNING = "text-[12px] text-center leading-[1.45] text-[color:var(--c6)]";
+
+/** A simple invitation's reply form, every part in the template's `--c*`. */
+export const SIMPLE_RSVP_SKIN: RsvpSkin = {
+  label: REPLY_LABEL,
+  input: BOXED_INPUT,
+  choice: { picked: ATTEND_SOLID, unpicked: ATTEND_OUTLINE },
+  remove: REMOVE_NAME,
+  addPerson: ADD_PERSON,
+  submit: SOLID,
+  privacy: PRIVACY_HINT,
+  warning: WARNING,
+  space: { group: "gap-10", field: "gap-2", legend: "mb-3", send: "-mt-5" },
+  age: AGE_DROPDOWN,
+  diet: DIET_DROPDOWN,
+};
 
 /**
  * The reply surface's width, edge included — `--spacing-invite-panel`, so the

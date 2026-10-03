@@ -19,7 +19,7 @@ interface ModularEditorProps {
 }
 
 /**
- * The modular template page: the invitation as its shadowed 1280px column
+ * The modular template page: the invitation as its shadowed column
  * on its own ground, with the editor's top bar above it and the edit panel
  * beside it. Same bar, same panel shell, same toasts as the simple editor. Nothing is editable yet, so nothing is ever unsaved and
  * Save stays off. The page stays scrollable and the RSVP form works; a reply

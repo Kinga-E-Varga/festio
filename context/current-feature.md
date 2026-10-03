@@ -1,4 +1,4 @@
-# Current Feature
+# Current Feature: Modular invitations 2 — Olive Garden
 
 ## Status
 
@@ -6,46 +6,125 @@ Completed
 
 ## Goals
 
-**Modular invitations — templates split, max width, RSVP jump fix**
+Redo the modular library's look from the prototype in
+`context/plans/online-invitation-design-ideas/` (Nocturne palette). The prototype is a
+reference only: evaluate its code, don't copy it straight in.
 
-1. **Split `src/templates/` in two.**
-   - `src/templates/simple/<id>/` — simple (basic) templates: `wolf-dance`.
-   - `src/templates/modular/<id>/` — modular (custom) templates: `garden`, `garden-midnight`.
-   - `loadSimpleTemplate(id)` looks only in `simple/`. `loadTemplate(id)` (the `/templates/<id>` page) tries both.
-   - Template ids stay unique across both folders. Adding a template is still adding one folder, no registration.
-   - `TemplateCard.tsx` stays at the root of `src/templates/`; it only draws simple templates, so it imports from `simple/`.
-2. **Cap the modular invitation at 1280px wide.**
-   - The top bar, sections and footer stop at 1280px, centred, on a plain `--m4` ground (a step darker than the page), with a soft shadow in the palette's `--m8` (`elevation-band`). No border.
-   - On the guest page: only visible when the invitation is wider than 1280px.
-   - In the editor: the viewing area keeps its padding (none at the bottom) but takes the invitation's `--m4` as its ground; the rounded frame (border, corners, `elevation-page`) goes. The invitation itself is the 1280px column with its own shadow, so its scrollbar sits at the column's edge (`ModularInvitation`'s `framed`).
-3. **Ground patterns.**
-   - A new shared library, `src/modular/patterns/<id>.ts`, found by id like palettes (`loadPattern`). A pattern is its Tailwind classes, in palette roles only. Ids are permanent.
-   - A modular template names one in its preset (`pattern: "dots"`); none means a plain ground. Not host-switchable yet.
-   - `dots`: small `--m5` polka dots (1.5px), each row offset half a step (28px tile, second layer at 14px 14px), over the `--m4` ground.
-   - Garden uses dots; Garden Midnight stays plain.
-   - Shown wherever the ground shows: around the column on a wide guest screen and in the editor's viewing area. Never on sections. `groundClasses` in `src/modular/styles.ts` is the one place the ground is written.
-4. **The top bar becomes a section.**
-   - `src/modular/sections/top-bar/`: required, first (`order: 0`), no menu label. Today's bar is its `classic` variant (moved from `components/modular/ModularTopBar.tsx`).
-   - `ModularInvitation` draws it straight in the column, not in a `<section>`, so it stays sticky; a bar-height placeholder while it loads.
-   - Its variants get `nav` (links, drawer open, open the drawer) in `VariantProps`, like RSVP's `onRsvp`. Every variant keeps the bar's height (`h-14 @5xl:h-16`).
-   - A `mark` field (max 24): empty means the hosts' initials. Host editing comes in phase 2.
-   - Garden lists it first; Garden Midnight inherits it. The footer and the drawer stay part of the page.
-5. **No shadow on the editors' side panel** (simple, modular and print): `elevation-panel` removed; the panel's edge line stays.
-6. **Fix: jumping to RSVP shifts the whole editor page up.**
-   - Clicking RSVP in the top bar or the cover's RSVP button cuts off the top of the editor; only a refresh brings it back.
-   - Cause: anchor jumps scroll every scrollable ancestor, and `overflow: hidden` boxes can still be scrolled by the browser, just with no scrollbar.
-   - Fix: those wrapping boxes use `overflow: clip` instead, so only the invitation's own scroll area moves. Covers the sections drawer's jumps too.
-   - Check the guest page for the same issue.
+### Clean-up
+
+- Delete every current section variant **except `playlist/record`**. Each section gets one
+  new variant, drawn from the prototype. Section ids stay.
+- Delete the `map` section. Its place is taken by a photo inside `location`.
+- Delete the Terracotta and Midnight palettes, the Classic and Script font pairs, and the
+  Garden and Garden Midnight templates.
+- Keep the `dots` pattern, even though nothing uses it.
+
+### Colour model
+
+- A palette goes from 15 positional roles (`c1`–`c15`) to **15 named roles**: `canvas`,
+  `surface`, `surface-alt`, `ink`, `ink-muted`, `line`, `accent`, `accent-ink`,
+  `accent-soft`, `secondary`, `secondary-ink`, `secondary-soft`, `tertiary`, `tertiary-ink`, `error`.
+- `error` is the RSVP form's warnings (`--c6`), apart from `secondary` so a warning doesn't
+  read as decoration.
+- `surface-alt`, `ink-muted`, `line` and the two `-soft` tints started as mixes, but no mix
+  matched the prototype, so each palette sets them.
+- Only the shadow is mixed, in `vars.ts`, in `oklab`: `shadow` = canvas + ~80% black (the
+  page ground, darkened). The `inverse` pair just swaps ink and surface.
+- More roles can come later.
+- Re-point the shared `--c1`–`--c6` mapping (host bar, edit panel, RSVP form) at the new names.
+- Update `project-overview.md`: "a palette is 15 fixed colour roles" → "15 colour roles, the
+  rest mixed from them; more may be added".
+- **Nocturne**, the only palette: canvas `#e8e4d9` (light, as the prototype shows it), surface `#22251f`, surface-alt
+  `#2c3028`, ink `#f0eee5`, ink-muted `#b2b6a7`, line `#41463b`, accent `#a8b891`, accent-ink `#1a2118`, accent-soft `#353f30`,
+  secondary `#d88d6d`, secondary-ink `#241812`, secondary-soft `#463127`,
+  tertiary `#e2c480`, tertiary-ink `#2a251a`, error `#ef8a7e`.
+- Invitation shadow: `elevation-band` (`0 0 14px`, 70% opacity); its colour changes from
+  `--m7` to the mixed `shadow`. Don't use the prototype's shadows.
+
+### Fonts
+
+- One font pair: **Gelasio** headings, **Arimo** body, via `next/font/google`.
+
+### Icons
+
+- A shared, hand-drawn icon library in `src/modular/` (no `lucide-react`) any section can
+  offer as a choice. Adding an icon = one place, nothing else to touch.
+- Start with: meal, heart, sparkle, moon, train, bus, car, compass, gift, pin, clock.
+
+### Section headings
+
+- Every section heading has separate optional fields: eyebrow, heading, italic second
+  heading line, note. Any can be empty and the heading must still look good.
+
+### Sections (in page order)
+
+- `top-bar` — monogram (`mark`) + section links; the prototype's palette switch becomes an
+  **RSVP** button that jumps to the form.
+- `cover` — cover photo with kicker, date, "Scroll to celebrate". Photo required. No fade
+  over the photo: it looked better without.
+- `title` — hero: eyebrow, names, caption. **No date link.**
+- `date-time` — "The day" text + card; keeps the parts-of-the-day list (up to 4).
+- `countdown` — its own section, right under date-time; live days, hours, minutes, seconds.
+- `location` — venue card + a **photo where the map was**. Photo required in this variant.
+- `schedule` — host adds days, and events per day (time, title, note, icon). No highlighted
+  day. Icons only, colours alternate by day: odd `accent` on `accent-soft`, even `secondary`
+  on `secondary-soft`.
+- `menu` — menu card.
+- `notes` — new, "A few helpful notes" (see below).
+- `dress-code` — dress code card; stays a section of its own too.
+- `gifts` — gifts card; stays a section of its own too.
+- `accommodation` — "A soft place to land".
+- `transportation` — train / shuttle / car cards, each with an icon from the library.
+- `faq` — FAQ accordion.
+- `rsvp` — **our existing form and logic** in the prototype's look: intro beside the form,
+  heart, field styles, thank-you screen with sign-off. "Kindly reply by" is host-written
+  text, not filled from the closing date.
+- **RSVP skins** — one reply form (`RsvpForm`) for simple and modular invitations, one
+  layout. Its look is a `skin`: every part (labels, inputs, Coming / Not coming, ×, Add
+  person, Send, privacy, warning, spacing, age and diet dropdowns) is required. Simple
+  invitations use `SIMPLE_RSVP_SKIN` (today's `--c*` look); each modular RSVP variant sets
+  its own in `--m-*` — `rsvp/split` in the prototype's look.
+- `footer` — new, **required and always last**: monogram (read from the top bar's `mark` —
+  one source), the date from the event, "Back to the beginning".
+- `playlist` keeps its old `record` variant, as a green band right before `rsvp`.
+
+### Helpful notes (`notes`)
+
+- Holds subsections, **at most 4 in total**: **Dress code**, **Gifts** (each once) and
+  **Custom** (host's own title and text, any number).
+- Dress code and Gifts read the **same data** as the standalone `dress-code` and `gifts`
+  sections — one source. Showing both twice is allowed; removing one is up to the host.
+- Numbering ("01 · Dress code") is automatic.
+
+### Template
+
+- **Olive Garden** — Nocturne, Gelasio + Arimo, no pattern, every section above except the
+  standalone `dress-code` and `gifts` (Helpful notes shows both), with `playlist` between
+  `faq` and `rsvp`.
+- The prototype's Tuscany photo is the sample image for the cover and location photo until
+  uploads exist.
+
+### Mobile
+
+- The prototype barely handles phone widths. Design the mobile layout in the same style,
+  following the existing modular page's behaviour (drawer, a centred column).
+- The column grows to 1440px (was 1280px), set once as `INVITE_COLUMN` in `src/modular/vars.ts`.
 
 ## Notes
 
-- Not in scope: editing sections, palette / font switching, RSVP questions.
-- Update `context/repo-map.md` (Templates section) in the same commit.
+- Spec: `context/features/modular-2-olive-garden.md`.
+- Plan: `context/plans/modular-invitations-2-olive-garden.md`
+- Firestore schema is still unsettled. How the shared dress-code / gifts data is stored is
+  a later layout question; for now both places read the same section values.
+- Image fields are new. No upload yet — the sample photo is the value.
+- No saved events use the old variants, palettes, pairs or the `map` section, so deleting
+  them breaks nothing.
 
 ## History
 
 <!-- Keep this updated latest to earliest -->
 
+- Modular invitations — templates split, 1280px column — `src/templates/` in `simple/` and `modular/`; the modular invitation capped at 1280px on its `--m4` ground with a faint palette shadow, shown the same way in the editor (no rounded frame, no bottom padding); ground patterns as a shared library with polka dots on Garden; the top bar as a required `top-bar` section with a `mark` field; no shadow on the editors' side panel; anchor jumps to RSVP no longer shift the editor up (`overflow: clip`)
 - Custom invitation editor UI — the modular editor frames the invitation on the print ground (mustard-50) with padding per breakpoint, rounded corners, a thin border and a soft shadow; the edit panel moved out of the invitation into the editor, the sections drawer stays inside the box; modular invitations get a thin palette scrollbar (`--m7` on `--m2`); `elevation-btn` renamed `elevation-print`
 - Text uniformity — one sans scale (10 / 11 / 11.5 / 12.5 / 13.5 / 14) and fewer spacings and weights across the host app, serif headings resized; every single-line field 40px tall; the editor side panel's tabs underlined in neutral with an edge-only open tab, the X only while the panel covers the viewport, View at every width and no title row on the print panel
 - Invitation editor rework — one shared top bar and page frame for the simple, modular and print editors (BACK, title and tags, save status, Edit / View, Save or Export, Save off until something changed), `HostBar` removed; side panels in Festio's own chrome with neutral Text / Replies / Design tabs, a Print settings title, the event editor's fields and grey inputs, choice buttons and checkbox; app icons in the top bar; shared bar buttons and banner tones in `event-editor/styles.ts`

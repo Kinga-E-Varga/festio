@@ -1,12 +1,37 @@
+import { headingFields } from "@/modular/heading";
 import { LABELS } from "@/modular/labels";
 import type { SectionDefinition } from "@/types/modular";
 
+/** The countdown reads `moments`: it counts to the first one's time. */
 export const section: SectionDefinition = {
   id: "date-time",
   name: { en: "Date & time", ro: "Data și ora", hu: "Dátum és időpont" },
   required: true,
   order: 30,
+  menuLabel: { en: "The day", ro: "Ziua", hu: "A nap" },
   fields: [
+    ...headingFields({
+      eyebrow: {
+        en: "Mark your calendar",
+        ro: "Notează în calendar",
+        hu: "Jelöld be a naptárban",
+      },
+      heading: {
+        en: "A day to remember.",
+        ro: "O zi de neuitat.",
+        hu: "Egy nap, amit nem felejtünk.",
+      },
+      headingItalic: {
+        en: "A weekend to savor.",
+        ro: "Un weekend de savurat.",
+        hu: "Egy hétvége, amit kiélvezünk.",
+      },
+      note: {
+        en: "We can’t wait to gather beneath the Tuscan sky with all of our favorite people.",
+        ro: "Abia așteptăm să ne strângem sub cerul Toscanei cu toți cei dragi.",
+        hu: "Alig várjuk, hogy a toszkán ég alatt együtt legyünk mindenkivel, akit szeretünk.",
+      },
+    }),
     {
       id: "moments",
       label: {
@@ -23,27 +48,8 @@ export const section: SectionDefinition = {
       ],
       fallback: [
         {
-          time: "16:00",
+          time: "15:30",
           title: { en: "Ceremony", ro: "Ceremonia", hu: "Szertartás" },
-          place: {
-            en: "The walled garden",
-            ro: "Grădina cu ziduri",
-            hu: "A fallal körülvett kert",
-          },
-        },
-        {
-          time: "18:30",
-          title: { en: "Reception", ro: "Recepția", hu: "Fogadás" },
-          place: {
-            en: "Dinner in the main hall",
-            ro: "Cina în salonul mare",
-            hu: "Vacsora a nagyteremben",
-          },
-        },
-        {
-          time: "21:00",
-          title: { en: "Party", ro: "Petrecerea", hu: "Buli" },
-          place: { en: "Until late", ro: "Până târziu", hu: "Késő éjszakáig" },
         },
       ],
     },

@@ -63,10 +63,10 @@ export function SectionsDrawer({ open, links, onClose }: SectionsDrawerProps) {
       role="dialog"
       aria-modal="true"
       aria-label={t("sections")}
-      className="absolute inset-0 z-40 flex flex-col bg-[var(--m2)] px-6 py-4 text-[color:var(--m8)]"
+      className="absolute inset-0 z-40 flex flex-col bg-[var(--m-surface)] px-6 py-4 text-[color:var(--m-ink)]"
     >
-      <div className="flex items-center justify-between border-b-1 border-[var(--m5)] pb-2.5">
-        <span className="text-[13px] tracking-[0.16em] uppercase text-[color:var(--m10)]">
+      <div className="flex items-center justify-between border-b-1 border-[var(--m-line)] pb-2.5">
+        <span className="text-[13px] tracking-[0.16em] uppercase text-[color:var(--m-ink-muted)]">
           {t("sections")}
         </span>
         <button
@@ -96,7 +96,7 @@ export function SectionsDrawer({ open, links, onClose }: SectionsDrawerProps) {
             key={link.id}
             href={`#${link.id}`}
             onClick={(event) => go(event, link.id)}
-            className="border-b-1 border-[var(--m4)] py-3.5 text-[16px] last:border-b-0"
+            className="border-b-1 border-[var(--m-line)] py-3.5 text-[16px] last:border-b-0"
           >
             {link.label}
           </a>

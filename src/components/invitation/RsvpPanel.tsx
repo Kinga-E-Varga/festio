@@ -9,7 +9,7 @@ import type {
 } from "@/types/invitation";
 import { XIcon } from "./icons";
 import { RsvpForm } from "./RsvpForm";
-import { PANEL } from "./styles";
+import { PANEL, SIMPLE_RSVP_SKIN } from "./styles";
 import { useRsvpForm, type RsvpFormState } from "./useRsvpForm";
 
 const TITLE =
@@ -208,5 +208,5 @@ function Reply({ form, onSend }: { form: RsvpFormState; onSend: () => void }) {
       </div>
     );
   }
-  return <RsvpForm form={form} onSubmit={onSend} />;
+  return <RsvpForm form={form} skin={SIMPLE_RSVP_SKIN} onSubmit={onSend} />;
 }
