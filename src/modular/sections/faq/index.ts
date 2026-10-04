@@ -7,6 +7,12 @@ export const section: SectionDefinition = {
   required: false,
   order: 140,
   menuLabel: { en: "FAQ", ro: "Întrebări", hu: "GYIK" },
+  variants: [
+    {
+      id: "split",
+      name: { en: "Split", ro: "Pe două coloane", hu: "Kétoszlopos" },
+    },
+  ],
   fields: [
     ...headingFields({
       eyebrow: {

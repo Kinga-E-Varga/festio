@@ -376,7 +376,24 @@
     "designSoon": "Design options are coming soon.",
     "dateHint": "Set with your event details — edit it there to change the date itself.",
     "rsvpMessageHint": "Shown above the reply button, beside the invitation — on larger screens only. On phones, guests see just the button.",
-    "testReply": "Nothing saved — this is a test"
+    "testReply": "Nothing saved — this is a test",
+    "leaveUnsaved": "You have unsaved changes. Leave anyway?"
+  },
+  "DesignTab": {
+    "template": "Template",
+    "change": "Change",
+    "close": "Close",
+    "palette": "Colour palette",
+    "pattern": "Background pattern",
+    "plainPattern": "Plain",
+    "fontPair": "Fonts",
+    "sections": "Sections",
+    "variantFor": "Style for {section}",
+    "reveal": "Go to {section}",
+    "view": "View",
+    "noteDressCode": "Dress code",
+    "noteGifts": "Gifts",
+    "noteCustom": "Your own notes"
   },
   "PrintPanel": {
     "cardStyle": "card style",

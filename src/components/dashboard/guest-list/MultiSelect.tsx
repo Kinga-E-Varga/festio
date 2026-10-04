@@ -22,7 +22,7 @@ export interface MultiSelectSkin {
 }
 
 /** The host app's look — Festio's own tokens. */
-const DASHBOARD_SKIN: MultiSelectSkin = {
+export const DASHBOARD_SKIN: MultiSelectSkin = {
   label: `mb-1.5 block ${LABEL}`,
   toggle: `${INPUT} flex cursor-pointer items-center justify-between gap-2 text-left`,
   placeholder: "text-neutral-600",

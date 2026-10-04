@@ -58,7 +58,7 @@ export function Variant({ values, basics, nav }: VariantProps) {
       </nav>
       <a
         href="#rsvp"
-        className={`${EYEBROW} inline-flex min-h-10 shrink-0 items-center rounded-full border-1 border-[var(--m-accent)] bg-[var(--m-accent)] px-5 text-[color:var(--m-accent-ink)] transition-colors hover:border-[var(--m-secondary)] hover:bg-[var(--m-secondary)] hover:text-[color:var(--m-secondary-ink)]`}
+        className={`${EYEBROW} inline-flex min-h-10 shrink-0 items-center border-1 border-[var(--m-accent)] bg-[var(--m-accent)] px-5 text-[color:var(--m-accent-ink)] transition-colors hover:border-[var(--m-secondary)] hover:bg-[var(--m-secondary)] hover:text-[color:var(--m-secondary-ink)]`}
       >
         {t("rsvp")}
       </a>

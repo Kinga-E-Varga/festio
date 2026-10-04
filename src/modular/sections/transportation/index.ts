@@ -8,6 +8,9 @@ export const section: SectionDefinition = {
   required: false,
   order: 72,
   menuLabel: { en: "Getting there", ro: "Cum ajungi", hu: "Odajutás" },
+  variants: [
+    { id: "cards", name: { en: "Cards", ro: "Carduri", hu: "Kártyák" } },
+  ],
   fields: [
     ...headingFields({
       eyebrow: {

@@ -8,7 +8,7 @@ export const FIELD_GRID =
   "grid grid-cols-1 gap-4 gap-x-5 @min-[820px]:grid-cols-2";
 
 /** One fixed height for every single-line field (dates and selects otherwise size themselves); textareas keep growing. */
-const FIELD =
+export const FIELD =
   "w-full border px-3 [&:not(textarea)]:h-10 py-[9px] text-[13.5px] text-neutral-900 transition-colors focus:outline-2 focus:-outline-offset-1 disabled:cursor-not-allowed disabled:bg-neutral-300 disabled:text-neutral-800";
 export const INPUT = `${FIELD} border-mustard-300 bg-neutral-50 outline-mustard-400 hover:border-mustard-500 focus:border-mustard-400 disabled:border-mustard-300`;
 /** The same field on the palest gold with a warm grey edge, for the editors' side panels. */
@@ -21,11 +21,26 @@ export const LABEL =
 /** The explanatory line under a field. */
 export const HINT = "text-[11.5px] leading-[1.45] text-neutral-700";
 
+/**
+ * A side panel's choice buttons (Flat / Folded, a palette, a section's
+ * style): ink in the panel's text colour either way, with a text field's
+ * edge. Picked, a warm grey fill; otherwise the palest gold. Either
+ * one fills with the edge's own grey on hover. As tall as a text field beside
+ * them — its 9px padding, its 13.5px type and its 1px border.
+ */
+const PANEL_CHOICE =
+  "inline-flex cursor-pointer items-center justify-center border px-4 py-[9px] text-[13.5px] font-medium transition-colors border-neutral-400 text-neutral-800 hover:bg-neutral-400";
+export const PANEL_CHOICE_ON = `${PANEL_CHOICE} bg-neutral-300`;
+export const PANEL_CHOICE_OFF = `${PANEL_CHOICE} bg-mustard-50`;
+
 export const ERROR = "text-[11.5px] font-medium text-rust-600";
 
 /** The gold action's colours ("Stop using the list", "Different person", the list box's Save), at any size. Hovered, the fill takes the border's shade. */
 export const GOLD_BTN =
   "border-mustard-300 bg-mustard-200 text-mustard-600 hover:bg-mustard-300";
+/** The gold action's outline pair: a pale fill, and on hover the same fill as the gold action's hover. */
+export const GOLD_OUTLINE =
+  "border-mustard-300 bg-neutral-50 text-mustard-600 hover:bg-mustard-300";
 
 /** The big buttons' shape, without colours: every variant below builds on it. */
 export const BUTTON =
@@ -69,6 +84,8 @@ const BAR_BUTTON =
 /** The save bar's buttons, also worn by the invitation editors' top bar. */
 export const BAR_OUTLINE = `${BAR_BUTTON} border-mustard-400 bg-transparent text-mustard-400 hover:bg-mustard-50/10`;
 export const BAR_SOLID = `${BAR_BUTTON} border-mustard-400 bg-mustard-400 font-semibold text-neutral-900 hover:border-mustard-300 hover:bg-mustard-300`;
+/** The side panel's View, in the open tab's colours: dark fill, pale type. */
+export const BAR_DARK = `${BAR_BUTTON} border-neutral-900 bg-neutral-900 font-semibold text-mustard-100 hover:border-neutral-800 hover:bg-neutral-800`;
 export const BAR_DISABLED = `${BAR_BUTTON} cursor-not-allowed border-neutral-800 bg-transparent text-neutral-700`;
 
 /** The status dot: terracotta while there is something to save, green once there isn't. */

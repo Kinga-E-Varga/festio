@@ -3,10 +3,10 @@ import { PAD } from "@/modular/styles";
 import type { VariantProps } from "@/types/modular";
 
 /**
- * An accent band with a drawn record: the disc in the palette's darkest
- * green, the label orange, the hole a mixed darker green so it stands apart
- * from the label, and the shadow the soft dark green. The board's link to an
- * RSVP song question waits for that question.
+ * An accent band with a drawn record. The disc, its grooves, the hole and the
+ * shadow are mixed from the band's own colour toward black, so any palette
+ * gets a dark disc that matches its band. The label is the secondary colour. The board's link to an RSVP song question waits for
+ * that question.
  */
 export function Variant({ values }: VariantProps) {
   return (
@@ -16,14 +16,14 @@ export function Variant({ values }: VariantProps) {
       <svg
         viewBox="0 0 260 260"
         aria-hidden="true"
-        className="size-[180px] shrink-0 drop-shadow-xl drop-shadow-(color:--m-accent-soft)/70 @3xl:size-[260px]"
+        className="size-[180px] shrink-0 drop-shadow-xl drop-shadow-(color:--record-shadow)/70 [--record-line:color-mix(in_oklab,var(--m-accent),black_50%)] [--record-shadow:color-mix(in_oklab,var(--m-accent),black_55%)] @3xl:size-[260px]"
       >
         <circle
           cx="130"
           cy="130"
           r="128"
           strokeWidth="2"
-          className="fill-[var(--m-accent-ink)] stroke-[var(--m-line)]"
+          className="fill-[color-mix(in_oklab,var(--m-accent),black_70%)] stroke-(--record-line)"
         />
         {[104, 84, 64].map((radius) => (
           <circle
@@ -33,7 +33,7 @@ export function Variant({ values }: VariantProps) {
             r={radius}
             fill="none"
             strokeWidth="1.5"
-            className="stroke-[var(--m-line)]"
+            className="stroke-(--record-line)"
           />
         ))}
         <circle
@@ -46,7 +46,7 @@ export function Variant({ values }: VariantProps) {
           cx="130"
           cy="130"
           r="5"
-          className="fill-[color-mix(in_oklab,var(--m-accent)_60%,var(--m-accent-ink))]"
+          className="fill-[color-mix(in_oklab,var(--m-accent),black_30%)]"
         />
       </svg>
       <div className="min-w-0 flex-1">

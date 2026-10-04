@@ -376,7 +376,24 @@
     "designSoon": "Opțiunile de design vin în curând.",
     "dateHint": "Setat în detaliile evenimentului — schimbă-o acolo ca să modifici data..",
     "rsvpMessageHint": "Apare deasupra butonului de răspuns, lângă invitație — doar pe ecrane mai mari. Pe telefon, invitații văd doar butonul.",
-    "testReply": "Nimic salvat — acesta este un test"
+    "testReply": "Nimic salvat — acesta este un test",
+    "leaveUnsaved": "Ai modificări nesalvate. Pleci oricum?"
+  },
+  "DesignTab": {
+    "template": "Șablon",
+    "change": "Schimbă",
+    "close": "Închide",
+    "palette": "Paletă de culori",
+    "pattern": "Model de fundal",
+    "plainPattern": "Simplu",
+    "fontPair": "Fonturi",
+    "sections": "Secțiuni",
+    "variantFor": "Stilul pentru {section}",
+    "reveal": "Mergi la {section}",
+    "view": "Vezi",
+    "noteDressCode": "Ținută",
+    "noteGifts": "Cadouri",
+    "noteCustom": "Notițele tale"
   },
   "PrintPanel": {
     "cardStyle": "stil invitațe",

@@ -40,6 +40,22 @@ const SHARED: Record<string, string> = {
  */
 export const INVITE_COLUMN = 1440;
 
+/** The palette's roles as `--m-<role>`: enough to draw a swatch or a pattern tile. */
+export function paletteVars(palette: ModularPalette): CSSProperties {
+  const roles = Object.keys(palette.colors) as ColorRole[];
+  return Object.fromEntries(
+    roles.map((role) => [`--m-${role}`, palette.colors[role]]),
+  ) as CSSProperties;
+}
+
+/** The pair's two faces as `--font-primary` / `--font-secondary`. */
+export function fontVars(fontPair: FontPair): CSSProperties {
+  return {
+    "--font-primary": `var(${fontPair.fonts.primary.cssVar})`,
+    "--font-secondary": `var(${fontPair.fonts.secondary.cssVar})`,
+  } as CSSProperties;
+}
+
 /**
  * The palette's roles, the mixes, the shared roles, the pair's two faces
  * and the column's width.
@@ -48,17 +64,13 @@ export function modularVars(
   palette: ModularPalette,
   fontPair: FontPair,
 ): CSSProperties {
-  const roles = Object.keys(palette.colors) as ColorRole[];
   return {
-    ...Object.fromEntries(
-      roles.map((role) => [`--m-${role}`, palette.colors[role]]),
-    ),
+    ...paletteVars(palette),
     ...Object.fromEntries(
       Object.entries(MIXES).map(([name, mix]) => [`--m-${name}`, mix]),
     ),
     ...SHARED,
-    "--font-primary": `var(${fontPair.fonts.primary.cssVar})`,
-    "--font-secondary": `var(${fontPair.fonts.secondary.cssVar})`,
+    ...fontVars(fontPair),
     "--invite-column": `${INVITE_COLUMN}px`,
   } as CSSProperties;
 }

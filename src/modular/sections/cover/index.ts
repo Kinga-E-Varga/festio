@@ -8,6 +8,12 @@ export const section: SectionDefinition = {
   required: true,
   order: 10,
   ground: "own",
+  variants: [
+    {
+      id: "photo",
+      name: { en: "Full photo", ro: "Fotografie întreagă", hu: "Teljes fotó" },
+    },
+  ],
   fields: [
     {
       id: "photo",

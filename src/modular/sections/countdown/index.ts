@@ -9,6 +9,12 @@ export const section: SectionDefinition = {
   order: 40,
   ground: "joined",
   reads: ["date-time"],
+  variants: [
+    {
+      id: "ticking",
+      name: { en: "Ticking clock", ro: "Ceas care bate", hu: "Ketyegő óra" },
+    },
+  ],
   fields: headingFields({
     eyebrow: {
       en: "Counting the days",

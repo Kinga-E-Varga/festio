@@ -1,4 +1,11 @@
-import { Arimo, Gelasio, Kapakana, Noto_Serif } from "next/font/google";
+import {
+  Arimo,
+  Fraunces,
+  Gelasio,
+  Kapakana,
+  Noto_Serif,
+  Space_Grotesk,
+} from "next/font/google";
 import type { TemplateFont } from "@/types/invitation";
 
 /**
@@ -36,6 +43,17 @@ const arimo = Arimo({
   subsets: ["latin", "latin-ext"],
 });
 
+const fraunces = Fraunces({
+  variable: "--font-fraunces",
+  subsets: ["latin", "latin-ext"],
+  style: ["normal", "italic"],
+});
+
+const spaceGrotesk = Space_Grotesk({
+  variable: "--font-space-grotesk",
+  subsets: ["latin", "latin-ext"],
+});
+
 function token(
   font: { className: string; variable: string },
   cssVar: string,
@@ -48,4 +66,6 @@ export const fonts = {
   kapakana: token(kapakana, "--font-kapakana"),
   gelasio: token(gelasio, "--font-gelasio"),
   arimo: token(arimo, "--font-arimo"),
+  fraunces: token(fraunces, "--font-fraunces"),
+  spaceGrotesk: token(spaceGrotesk, "--font-space-grotesk"),
 };

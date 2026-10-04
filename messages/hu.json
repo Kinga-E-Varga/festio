@@ -376,7 +376,24 @@
     "designSoon": "A dizájn beállításai hamarosan érkeznek.",
     "dateHint": "Az esemény részleteinél állítható — ott módosítsd, ha magát a dátumot akarod megváltoztatni.",
     "rsvpMessageHint": "A válasz gomb fölött jelenik meg, a meghívó mellett — csak nagyobb képernyőn. Telefonon a vendégek csak a gombot látják.",
-    "testReply": "Semmi nincs mentve — ez csak próba"
+    "testReply": "Semmi nincs mentve — ez csak próba",
+    "leaveUnsaved": "Mentetlen módosításaid vannak. Biztosan kilépsz?"
+  },
+  "DesignTab": {
+    "template": "Sablon",
+    "change": "Csere",
+    "close": "Bezárás",
+    "palette": "Színpaletta",
+    "pattern": "Háttérminta",
+    "plainPattern": "Sima",
+    "fontPair": "Betűtípusok",
+    "sections": "Szakaszok",
+    "variantFor": "{section} stílusa",
+    "reveal": "Ugrás ide: {section}",
+    "view": "Mutasd",
+    "noteDressCode": "Dresszkód",
+    "noteGifts": "Ajándékok",
+    "noteCustom": "Saját tudnivalók"
   },
   "PrintPanel": {
     "cardStyle": "kártya stílusa",

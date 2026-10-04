@@ -4,22 +4,13 @@ import { useTranslations } from "next-intl";
 import {
   BANNER_TONE,
   LABEL,
+  PANEL_CHOICE_OFF,
+  PANEL_CHOICE_ON,
   PANEL_INPUT,
 } from "@/components/dashboard/event-editor/styles";
 import { Icon } from "@/components/icons";
 import { PanelViewButton, SidePanel } from "@/components/invitation/SidePanel";
 import type { PrintSettings, PrintShape } from "@/types/print";
-
-/**
- * Flat / Folded: ink in the panel's text colour either way, with a text
- * field's edge. Picked, a warm grey fill; otherwise the palest gold. Either
- * one fills with the edge's own grey on hover. As tall as a text field beside
- * them — its 9px padding, its 13.5px type and its 1px border.
- */
-const CHOICE =
-  "inline-flex cursor-pointer items-center justify-center border border-neutral-400 px-4 py-[9px] text-[13.5px] font-medium text-neutral-800 transition-colors hover:bg-neutral-400";
-const CHOICE_ON = `${CHOICE} bg-neutral-300`;
-const CHOICE_OFF = `${CHOICE} bg-mustard-50`;
 
 /*
  * Each shape's id is also its key into `PrintPanel` — its label, and under
@@ -74,7 +65,9 @@ export function PrintPanel({
                 type="button"
                 aria-pressed={settings.shape === shape}
                 onClick={() => onChange("shape", shape)}
-                className={settings.shape === shape ? CHOICE_ON : CHOICE_OFF}
+                className={
+                  settings.shape === shape ? PANEL_CHOICE_ON : PANEL_CHOICE_OFF
+                }
               >
                 {t(shape)}
               </button>

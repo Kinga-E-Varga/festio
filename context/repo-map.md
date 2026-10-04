@@ -54,25 +54,27 @@ One file per template, **auto-discovered — no registration step.**
 
 Two folders: `simple/` (basic invitations) and `modular/` (custom invitations). An id is unique across both.
 
-- `index.ts` — `loadSimpleTemplate(id)` imports `./simple/<id>` only; it is what the guest, print and invitation pages use, so a modular template is not found there. `loadTemplate(id)` (the `/templates/<id>` page) tries `simple/`, then `modular/`. Adding a template never touches this file.
+- `index.ts` — `loadSimpleTemplate(id)` imports `./simple/<id>` only; it is what the guest, print and invitation pages use, so a modular template is not found there. `loadTemplate(id)` (the `/templates/<id>` page) tries `simple/`, then `modular/`. `modularTemplates()` lists every modular template (`import.meta.glob`). Adding a template never touches this file.
 - `simple/<id>/index.tsx` — a simple template (e.g. `simple/wolf-dance/`). Holds identity, package, palette, fonts, editable fields, sections, design. A field's `fallback` is `LocalizedText`: all three languages when it is a phrase, a plain string when it is sample content.
 - `modular/<id>/index.ts` — a modular template (e.g. `modular/olive-garden/`), a preset only: `kind: "modular"`, palette id, font-pair id, `{ section, variant }` list.
 - `TemplateCard.tsx` — a simple template's card, loaded in the browser from `simple/`.
 
 ## Modular library — `src/modular/`
 
-Shared by every modular template, found by id with a dynamic import — nothing registers.
+Shared by every modular template, listed with Turbopack's `import.meta.glob` — nothing registers.
 
-- `sections/<id>/index.ts` — the section: permanent id, name, required, `order`, optional menu label, fields with sample content. `sections/<id>/<variant>.tsx` — one file per variant, exporting `Variant`. `top-bar` is a section too (required, first), drawn apart from the others so it stays sticky; `footer` is required and last. A section may list `reads` — other sections whose values it shows (notes ← dress-code, gifts; footer ← top-bar; countdown ← date-time).
+- `sections/<id>/index.ts` — the section: permanent id, name, required, `order`, optional menu label, its `variants` (id + name; the first is the default), fields with sample content. `sections/<id>/<variant>.tsx` — one file per variant, exporting `Variant`. `top-bar` is a section too (required, first), drawn apart from the others so it stays sticky; `footer` is required and last. A section may list `reads` — other sections whose values it shows (notes ← dress-code, gifts; footer ← top-bar; countdown ← date-time).
 - `palettes/<id>.ts` (15 named roles — `canvas`, `surface`(-alt), `ink`(-muted), `line`, `accent`(-ink, -soft), `secondary`(-ink, -soft), `tertiary`(-ink), `error`), `font-pairs/<id>.ts` (`primary` body, `secondary` headings), `patterns/<id>.ts` (the ground's pattern as Tailwind classes, e.g. `dots`).
-- `index.ts` — `loadSection`, `loadPalette`, `loadFontPair`, `loadPattern`, `loadDesign` (server). `variants.ts` — `loadVariant` (browser only; kept apart so variants never enter the server graph).
-- `vars.ts` — the roles as `--m-<role>`, the `shadow` (the ground darkened, one oklab `color-mix`) and the `inverse`/`inverse-ink` pair, and the one mapping onto the shared `--c1`–`--c6`. `INVITE_COLUMN` — the column's widest (1440px), as `--invite-column` and in photos' `sizes`. `content.ts` — values (`text`, `list`, `groups`), basics, date and countdown helpers, `imageSrc`, `safeLink`. `sample.ts` — `SAMPLE_BASICS`, `SAMPLE_PHOTO`. `nav.ts` — `TOP_BAR_ID`, `SECTIONS_TRIGGER_ID`. `ground.ts` — `sectionGrounds` (each section's surface, taking turns; `own` sections skipped, `joined` ones match the one before) and `otherGround` (a card's). `styles.ts` (the type scale and shared classes, incl. `groundClasses`), `labels.ts`, `MapsLink.tsx`.
-- `icons.tsx` — the hand-drawn icon library (`ICONS`, one entry per icon a host can pick) and `Icon`. `heading.ts` + `SectionHeading.tsx` — every section heading's four optional fields and how they draw. `AmpersandText.tsx`, `clock.ts` (`useNow`), `notes.ts` (`noteItems`). `cards/` — `NoteCard` and the Dress code / Gifts cards, shared by those sections and Helpful notes.
+- `index.ts` — `loadLibrary` (server): every palette, font pair, pattern, section and modular template. `variants.ts` — `loadVariant` (browser only; kept apart so variants never enter the server graph).
+- `state.ts` — `ModularState` (ids, every section's on/off + variant, every section's values) and its helpers: `initialState`, `applyTemplate`, `setSectionOn`, `setVariant`, `setNoteSwitch` / `noteSwitchOn`, `resolveDesign`, `sameState`.
+- `vars.ts` — the roles as `--m-<role>` (`paletteVars`; the pair's faces `fontVars`), the `shadow` (the ground darkened, one oklab `color-mix`) and the `inverse`/`inverse-ink` pair, and the one mapping onto the shared `--c1`–`--c6`. `INVITE_COLUMN` — the column's widest (1440px), as `--invite-column` and in photos' `sizes`. `content.ts` — values (`text`, `list`, `groups`), basics, date and countdown helpers, `imageSrc`, `safeLink`. `sample.ts` — `SAMPLE_BASICS`, `SAMPLE_PHOTO`. `nav.ts` — `TOP_BAR_ID`, `SECTIONS_TRIGGER_ID`. `ground.ts` — `sectionGrounds` (each section's surface, taking turns; `own` sections skipped, `joined` ones match the one before) and `otherGround` (a card's). `styles.ts` (the type scale and shared classes, incl. `groundClasses`), `labels.ts`, `MapsLink.tsx`.
+- `icons.tsx` — the hand-drawn icon library (`ICONS`, one entry per icon a host can pick) and `Icon`. `heading.ts` + `SectionHeading.tsx` — every section heading's four optional fields and how they draw. `AmpersandText.tsx`, `clock.ts` (`useNow`), `notes.ts` (`noteItems`, `MAX_NOTES` (6), `NOTE_SWITCH` — Helpful notes' Dress code / Gifts / Custom toggles, `customNoteSample`). `cards/` — `NoteCard` and the Dress code / Gifts cards, shared by those sections and Helpful notes.
 
 ## Modular page — `src/components/modular/`
 
 - `ModularInvitation.tsx` — the guest page: the `top-bar` section straight in the column, `SectionsDrawer`, the other sections via `SectionView` (loads a variant with `use`). `framed` for the editor.
-- `ModularEditor.tsx` + `ModularEditPanel.tsx` — the `/templates/<id>` editor for modular templates.
+- `ModularEditor.tsx` + `ModularEditPanel.tsx` — the `/templates/<id>` editor for modular templates: working and saved state, Save in memory, leave warning.
+- `design/` — the Design tab: `DesignTab.tsx`, `TemplatePicker.tsx`, `LookPickers.tsx` (palette, pattern, font pair), `SectionsList.tsx` (section switches, styles, Helpful notes switches).
 
 ## Invitation — `src/components/invitation/`
 
@@ -82,6 +84,7 @@ Shared by every modular template, found by id with a dynamic import — nothing 
 - `RsvpPanel.tsx` / `RsvpForm.tsx` / `useRsvpForm.ts` — guest RSVP.
 - `ScaledStage.tsx` — scales the invitation to its container.
 - `PanelTabs.tsx` — the Text / Replies / Design tabs, shared by both edit panels.
+- `PanelSwitch.tsx` — the side panel's on/off switch.
 - `styles.ts`, `icons.tsx` — local to invitations.
 
 ## Print — `src/components/print/`
@@ -113,7 +116,7 @@ Event pages: `EventHeader.tsx` (BACK + title + date), `BackButton.tsx`, `Replies
 | `event.ts`         | `invitationLink`, `contentFreeze` (24h rule), `deletionDate`, date formatting, expected-guests and reply-cap helpers, `replyClose` / `replyWindow`                                       |
 | `slug.ts`          | `RESERVED_SLUGS` (the one list), slug limits, `normalizeSlug`, suggestions, the invite rewrite pattern. Relative imports only — `next.config.ts` reads it.                               |
 | `invitation.ts`    | Template vars, `findByInvite`, seed/fallback values, `DATE_FORMATS`                                                                                                                      |
-| `fonts.ts`         | Invitation fonts via `next/font/google` (per-template, not the app chrome — that's `src/app/fonts.ts`). Also Gelasio and Arimo for the font pair.                                        |
+| `fonts.ts`         | Invitation fonts via `next/font/google` (per-template, not the app chrome — that's `src/app/fonts.ts`). Also the font pairs' faces (Gelasio, Arimo, Fraunces, Space Grotesk).            |
 | `history.ts`       | Local visit tracking; `useLeaveFestio(fallback)` — the one BACK, with each page's own fallback when no Festio page is behind it                                                          |
 | `guests.ts`        | Guest rows from list + replies: matching, Unknown/Duplicate tags, grouping and splitting by category, counts, filters, repeat check. Type imports only.                                  |
 | `leave-warning.ts` | `useLeaveWarning(active, message)` — while there are unsaved changes, asks before reload/close (the browser's prompt) and before in-app links or a `data-leaves` control (BACK)          |

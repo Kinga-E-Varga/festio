@@ -9,6 +9,12 @@ export const section: SectionDefinition = {
   required: true,
   order: 30,
   menuLabel: { en: "The day", ro: "Ziua", hu: "A nap" },
+  variants: [
+    {
+      id: "calendar-card",
+      name: { en: "Calendar card", ro: "Card calendar", hu: "Naptárkártya" },
+    },
+  ],
   fields: [
     ...headingFields({
       eyebrow: {

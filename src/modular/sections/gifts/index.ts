@@ -10,6 +10,7 @@ export const section: SectionDefinition = {
   required: false,
   order: 110,
   menuLabel: GOOD_TO_KNOW,
+  variants: [{ id: "card", name: { en: "Card", ro: "Card", hu: "Kártya" } }],
   fields: [
     ...headingFields({
       eyebrow: {

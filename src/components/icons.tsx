@@ -42,6 +42,33 @@ const PATHS: Record<IconName, ReactNode> = {
       <path d="M9.5 9.25v10.5" />
     </>
   ),
+  palette: (
+    <>
+      <path d="M12 3.25a8.75 8.75 0 1 0 0 17.5c1 0 1.75-.75 1.75-1.7 0-.45-.18-.85-.45-1.15a1.7 1.7 0 0 1-.45-1.15c0-.95.78-1.7 1.75-1.7h2.05a4.1 4.1 0 0 0 4.1-4.1c0-4.3-3.92-7.7-8.75-7.7Z" />
+      <circle cx="7.6" cy="11.6" r="1.05" />
+      <circle cx="9.9" cy="7.6" r="1.05" />
+      <circle cx="14.4" cy="7.6" r="1.05" />
+    </>
+  ),
+  fonts: (
+    <>
+      <path d="M5 7V4.75h14V7" />
+      <path d="M12 4.75v14.5" />
+      <path d="M9 19.25h6" />
+    </>
+  ),
+  pattern: (
+    <>
+      <circle cx="6" cy="6" r="1.25" />
+      <circle cx="12" cy="6" r="1.25" />
+      <circle cx="18" cy="6" r="1.25" />
+      <circle cx="9" cy="12" r="1.25" />
+      <circle cx="15" cy="12" r="1.25" />
+      <circle cx="6" cy="18" r="1.25" />
+      <circle cx="12" cy="18" r="1.25" />
+      <circle cx="18" cy="18" r="1.25" />
+    </>
+  ),
   printer: (
     <>
       <path d="M7.5 8V3.75h9V8" />

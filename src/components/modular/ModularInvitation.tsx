@@ -2,7 +2,6 @@
 
 import { Suspense, useState } from "react";
 import { localized, type Language, type LocalizedText } from "@/lib/language";
-import { sectionValues } from "@/modular/content";
 import { sectionGrounds } from "@/modular/ground";
 import { TOP_BAR_ID } from "@/modular/nav";
 import { groundClasses } from "@/modular/styles";
@@ -30,17 +29,13 @@ interface ModularInvitationProps {
   onRsvp?: (payload: RsvpPayload) => void;
 }
 
-/** The values of the sections `definition` reads, in the invitation's language. */
+/** The values of the sections `definition` reads — on the page or not. */
 function relatedValues(
   definition: SectionDefinition,
   design: ModularDesign,
-  language: Language,
 ): Partial<Record<string, SectionValues>> {
   return Object.fromEntries(
-    (definition.reads ?? []).map((id) => [
-      id,
-      sectionValues(design.related[id], language),
-    ]),
+    (definition.reads ?? []).map((id) => [id, design.values[id] ?? {}]),
   );
 }
 
@@ -116,8 +111,8 @@ export function ModularInvitation({
                 <SectionView
                   section={bar.definition.id}
                   variant={bar.variant}
-                  values={sectionValues(bar.definition, language)}
-                  related={relatedValues(bar.definition, design, language)}
+                  values={design.values[bar.definition.id] ?? {}}
+                  related={relatedValues(bar.definition, design)}
                   basics={basics}
                   language={language}
                   ground="surface"
@@ -139,8 +134,8 @@ export function ModularInvitation({
                   <SectionView
                     section={definition.id}
                     variant={variant}
-                    values={sectionValues(definition, language)}
-                    related={relatedValues(definition, design, language)}
+                    values={design.values[definition.id] ?? {}}
+                    related={relatedValues(definition, design)}
                     basics={basics}
                     language={language}
                     ground={grounds[index]}

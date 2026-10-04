@@ -2,8 +2,8 @@ import type { ModularPalette } from "@/types/modular";
 
 /** Olive and terracotta on a deep green-black, with a soft gold, on a light beige ground. */
 export const palette: ModularPalette = {
-  id: "nocturne",
-  name: "Nocturne",
+  id: "dark-olive",
+  name: "Dark Olive",
   colors: {
     canvas: "#e8e4d9",
     surface: "#22251f",

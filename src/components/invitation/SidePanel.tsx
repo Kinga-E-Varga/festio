@@ -1,6 +1,6 @@
 import { useTranslations } from "next-intl";
 import type { ReactNode } from "react";
-import { BAR_SOLID } from "@/components/dashboard/event-editor/styles";
+import { BAR_DARK } from "@/components/dashboard/event-editor/styles";
 import { XIcon } from "./icons";
 import { PANEL } from "./styles";
 
@@ -48,12 +48,19 @@ export function SidePanel({
        * shows only while the panel covers the viewport.
        */}
       <div className="flex flex-1 flex-col overflow-y-auto">
+        {/*
+         * With tabs, the gap under them belongs to the sticky header, so a
+         * long form scrolls out of sight a gap below the tabs' line rather
+         * than right against it.
+         */}
         <div
-          className={`sticky top-0 z-10 bg-mustard-100 ${tabs ? "" : "invite:hidden"}`}
+          className={`sticky top-0 z-10 bg-mustard-100 ${tabs ? "pb-8" : "invite:hidden"}`}
         >
           <Header tabs={tabs} onClose={onClose} />
         </div>
-        <div className="flex flex-1 flex-col p-5 pt-8 invite:p-8">
+        <div
+          className={`flex flex-1 flex-col p-5 invite:p-8 ${tabs ? "pt-0 invite:pt-0" : "pt-8"}`}
+        >
           {children}
         </div>
       </div>
@@ -117,7 +124,7 @@ export function PanelViewButton({
       <button
         type="button"
         onClick={onClose}
-        className={`${BAR_SOLID} flex-1 mb-6 ${className}`}
+        className={`${BAR_DARK} flex-1 mb-6 ${className}`}
       >
         {t("view")}
       </button>

@@ -6,4 +6,5 @@ export const fontPair: FontPair = {
   id: "gelasio-arimo",
   name: "Gelasio & Arimo",
   fonts: { primary: fonts.arimo, secondary: fonts.gelasio },
+  faceNames: { primary: "Arimo", secondary: "Gelasio" },
 };

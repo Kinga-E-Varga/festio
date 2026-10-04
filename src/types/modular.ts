@@ -62,6 +62,8 @@ export interface FontPair {
   id: string;
   name: string;
   fonts: TemplateFonts;
+  /** Each face's own name, as the Design tab shows it set in that face. */
+  faceNames: { primary: string; secondary: string };
 }
 
 /**
@@ -125,6 +127,14 @@ export interface ToggleField {
   fallback: boolean;
 }
 
+/** One way to draw a section: `sections/<section>/<id>.tsx`. */
+export interface VariantInfo {
+  /** Permanent — events store it. */
+  id: string;
+  /** What the host's variant picker calls it. */
+  name: LocalizedText;
+}
+
 export type SectionField =
   ScalarField | ToggleField | ListField | GroupListField;
 
@@ -151,7 +161,7 @@ export interface SectionDefinition {
   /**
    * Other sections whose values this one shows, by id — so content entered
    * once is read in both places (the footer's mark is the top bar's).
-   * Loaded with the design whether or not those sections are on the page.
+   * Read from the state whether or not those sections are on.
    */
   reads?: string[];
   /**
@@ -161,6 +171,12 @@ export interface SectionDefinition {
    * as the section before, so the two read as one band.
    */
   ground?: "own" | "joined";
+  /**
+   * Its variants, each a file beside this one. The first is the default for
+   * a section a template leaves off. Listed here so the editor can name them
+   * without loading their code.
+   */
+  variants: VariantInfo[];
   fields: SectionField[];
 }
 
@@ -259,12 +275,48 @@ export interface ModularTemplateModule {
   template: ModularTemplate;
 }
 
-/** A template with its ids resolved — what the page draws from. */
+/** What the editor edits and Save keeps: ids only, plus every section's values. */
+export interface ModularState {
+  palette: string;
+  fontPair: string;
+  /** No pattern: a plain ground. */
+  pattern: string | null;
+  /**
+   * Every section in the library, in the fixed order. Kept as a list, with
+   * its order, so rearranging can come later.
+   */
+  sections: SectionState[];
+  /**
+   * Every section's values in the invitation's language, on or off: turning
+   * a section off only hides it.
+   */
+  values: Record<string, SectionValues>;
+}
+
+export interface SectionState {
+  section: string;
+  variant: string;
+  /** Always true for a required section. */
+  on: boolean;
+}
+
+/** Everything a modular invitation can be made from, as the editor lists it. */
+export interface ModularLibrary {
+  palettes: ModularPalette[];
+  fontPairs: FontPair[];
+  patterns: ModularPattern[];
+  /** In their fixed `order`. */
+  sections: SectionDefinition[];
+  templates: ModularTemplate[];
+}
+
+/** A state with its ids resolved — what the page draws from. */
 export interface ModularDesign {
   palette: ModularPalette;
   fontPair: FontPair;
   pattern: ModularPattern | null;
+  /** Only the sections that are on, in order. */
   sections: { definition: SectionDefinition; variant: string }[];
-  /** Every section some section `reads`, by id. */
-  related: Record<string, SectionDefinition>;
+  /** Every section's values, on or off — a section may read one that is off. */
+  values: Record<string, SectionValues>;
 }

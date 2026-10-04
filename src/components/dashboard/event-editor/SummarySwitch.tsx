@@ -3,6 +3,12 @@ import { GOLD_BTN, HINT } from "@/components/dashboard/event-editor/styles";
 import { Icon } from "@/components/icons";
 import type { IconName } from "@/types/dashboard";
 
+/** The row's look, without its size: gold edge, pale fill, type and side padding. */
+export const SUMMARY_SURFACE =
+  "border border-mustard-300 bg-neutral-50 pr-4 pl-5 font-medium text-neutral-800";
+/** The event editor's row: the surface at its full height. */
+const SUMMARY_BOX = `${SUMMARY_SURFACE} min-h-[72px] py-3.5`;
+
 interface SummarySwitchProps {
   icon: IconName;
   /** The setting as one sentence; it always stays beside the icon. */
@@ -32,7 +38,9 @@ export function SummarySwitch({
 }: SummarySwitchProps) {
   return (
     <>
-      <div className="flex min-h-[72px] flex-col gap-3 border border-mustard-300 bg-neutral-50 py-3.5 pr-4 pl-5 font-medium text-neutral-800 @min-[460px]:flex-row @min-[460px]:items-center @min-[460px]:gap-4">
+      <div
+        className={`${SUMMARY_BOX} flex flex-col gap-3 @min-[460px]:flex-row @min-[460px]:items-center @min-[460px]:gap-4`}
+      >
         <div className="flex min-w-0 flex-1 flex-col gap-3 @min-[680px]:flex-row @min-[680px]:items-center @min-[680px]:gap-4">
           <div className="flex min-w-0 items-center gap-4">
             <Icon name={icon} className="size-[22px] text-mustard-500" />

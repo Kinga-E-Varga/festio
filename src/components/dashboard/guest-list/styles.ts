@@ -1,4 +1,8 @@
-import { BUTTON, GOLD_BTN } from "@/components/dashboard/event-editor/styles";
+import {
+  BUTTON,
+  GOLD_BTN,
+  GOLD_OUTLINE,
+} from "@/components/dashboard/event-editor/styles";
 
 /** Guest-list controls, on top of the event editor's shared form styles. */
 
@@ -47,9 +51,6 @@ export const ICON_BTN_DANGER = `${ICON_BASE} hover:bg-rust-200 hover:text-rust-5
  * the big shape in the gold action's colours.
  */
 export const BTN_LIST = `${BUTTON} ${GOLD_BTN}`;
-/** The gold action's outline pair: a pale fill, and on hover the same fill as the gold action's hover. */
-const GOLD_OUTLINE =
-  "border-mustard-300 bg-neutral-50 text-mustard-600 hover:bg-mustard-300";
 export const BTN_LIST_OUTLINE = `${BUTTON} ${GOLD_OUTLINE}`;
 
 /*

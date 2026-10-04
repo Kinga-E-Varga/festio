@@ -11,6 +11,12 @@ export const section: SectionDefinition = {
   order: 160,
   ground: "own",
   reads: ["top-bar"],
+  variants: [
+    {
+      id: "monogram",
+      name: { en: "Monogram", ro: "Monogramă", hu: "Monogram" },
+    },
+  ],
   fields: [
     {
       id: "backLabel",

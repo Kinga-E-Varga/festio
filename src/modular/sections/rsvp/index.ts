@@ -12,6 +12,12 @@ export const section: SectionDefinition = {
   required: true,
   order: 150,
   ground: "own",
+  variants: [
+    {
+      id: "split",
+      name: { en: "Split", ro: "Pe două coloane", hu: "Kétoszlopos" },
+    },
+  ],
   fields: [
     ...headingFields({
       eyebrow: {

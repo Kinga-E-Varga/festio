@@ -140,6 +140,7 @@ export function EditorTopBar({
         <Icon
           name={action.kind === "save" ? "check" : "download"}
           className="size-4"
+          strokeWidth={action.kind === "save" ? 2 : undefined}
         />
         {t(action.kind)}
       </button>

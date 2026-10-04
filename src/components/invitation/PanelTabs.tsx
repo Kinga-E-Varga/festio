@@ -11,14 +11,14 @@ const TAB =
   "-mb-px h-10 flex-1 rounded-t-xs border-b-3 border-transparent text-[14px] font-[500] text-neutral-900 transition-colors not-aria-selected:hover:border-neutral-800 not-aria-selected:hover:bg-mustard-200 aria-selected:text-mustard-100 aria-selected:bg-neutral-900 aria-selected:border-neutral-900 aria-selected:font-[500] focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-steel-500";
 
 /**
- * The editor's tabs, in the order the host meets them: the invitation's
- * text, then the reply's, then the design. Shared by the simple and the
+ * The editor's tabs, in the order the host meets them: the design first,
+ * then the invitation's text, then the reply's. Shared by the simple and the
  * modular edit panels, which differ only in what each tab holds.
  */
 const TABS = [
+  { id: "design", labelKey: "tabDesign" },
   { id: "text", labelKey: "tabText" },
   { id: "replies", labelKey: "tabReplies" },
-  { id: "design", labelKey: "tabDesign" },
 ] as const;
 
 export type PanelTabId = (typeof TABS)[number]["id"];

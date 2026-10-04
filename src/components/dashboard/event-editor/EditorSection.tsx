@@ -18,14 +18,7 @@ export function EditorSection({
   return (
     // The blocks inside lay themselves out against the section, not the page.
     <section className={`@container ${first ? "mt-[35px]" : "mt-[50px]"}`}>
-      <header
-        className={`flex items-center gap-[18px] ${hint ? "mb-1" : "mb-[18px]"}`}
-      >
-        <h2 className="font-serif text-[17px] tracking-[0.14em] text-neutral-900 uppercase">
-          {title}
-        </h2>
-        <span aria-hidden="true" className="h-px flex-1 bg-neutral-900" />
-      </header>
+      <EditorHeading title={title} className={hint ? "mb-1" : "mb-[18px]"} />
 
       {hint ? (
         <p className="mb-[18px] text-[12.5px] text-neutral-700">{hint}</p>
@@ -33,5 +26,32 @@ export function EditorSection({
 
       {children}
     </section>
+  );
+}
+
+/**
+ * A section's title: serif capitals with a rule running out to the edge.
+ * Also the Design tab's group titles, so both editors title alike.
+ */
+export function EditorHeading({
+  title,
+  id,
+  className = "",
+}: {
+  title: string;
+  /** For a group that names itself by it (`aria-labelledby`). */
+  id?: string;
+  className?: string;
+}) {
+  return (
+    <header className={`flex items-center gap-[18px] ${className}`}>
+      <h2
+        id={id}
+        className="font-serif text-[17px] tracking-[0.14em] text-neutral-900 uppercase"
+      >
+        {title}
+      </h2>
+      <span aria-hidden="true" className="h-px flex-1 bg-neutral-900" />
+    </header>
   );
 }

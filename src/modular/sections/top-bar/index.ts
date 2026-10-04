@@ -14,6 +14,12 @@ export const section: SectionDefinition = {
   name: { en: "Top bar", ro: "Bara de sus", hu: "Felső sáv" },
   required: true,
   order: 0,
+  variants: [
+    {
+      id: "monogram",
+      name: { en: "Monogram", ro: "Monogramă", hu: "Monogram" },
+    },
+  ],
   fields: [
     {
       id: "mark",

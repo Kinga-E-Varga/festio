@@ -1,7 +1,7 @@
 import type { ModularTemplate } from "@/types/modular";
 
 /**
- * Nocturne and Gelasio + Arimo on a plain ground: every section but the
+ * Dark Olive and Gelasio + Arimo on a plain ground: every section but the
  * standalone Dress code and Gifts — Helpful notes shows both.
  */
 export const template: ModularTemplate = {
@@ -10,7 +10,7 @@ export const template: ModularTemplate = {
   name: "Olive Garden",
   package: "custom",
   eventTypes: ["wedding"],
-  palette: "nocturne",
+  palette: "dark-olive",
   fontPair: "gelasio-arimo",
   sections: [
     { section: "top-bar", variant: "monogram" },

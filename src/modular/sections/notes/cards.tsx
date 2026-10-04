@@ -14,45 +14,48 @@ import { otherGround } from "@/modular/ground";
 export function Variant({ values, related, ground }: VariantProps) {
   const t = useTranslations("Sections");
   const cardGround = otherGround(ground);
-  const items = noteItems(list(values, "items"));
+  const items = noteItems(list(values, "items"), values);
 
   return (
     <div className={`${STACK} ${GROUND[ground]} ${PAD}`}>
       <SectionHeading values={values} />
-      <div className={`${COLUMN} flex flex-col gap-3`}>
-        {items.map((item, index) => {
-          if (item.kind === "dress-code") {
+      {/* With every subsection off, only the heading: an empty list would still take the stack's gap. */}
+      {items.length > 0 ? (
+        <div className={`${COLUMN} flex flex-col gap-3`}>
+          {items.map((item, index) => {
+            if (item.kind === "dress-code") {
+              return (
+                <DressCodeCard
+                  key={index}
+                  values={related["dress-code"] ?? {}}
+                  label={t("dressCode")}
+                  ground={cardGround}
+                />
+              );
+            }
+            if (item.kind === "gifts") {
+              return (
+                <GiftsCard
+                  key={index}
+                  values={related.gifts ?? {}}
+                  label={t("gifts")}
+                  ground={cardGround}
+                />
+              );
+            }
             return (
-              <DressCodeCard
+              <NoteCard
                 key={index}
-                values={related["dress-code"] ?? {}}
-                label={t("dressCode")}
+                icon={isIconName(item.icon) ? item.icon : undefined}
+                tone="accent"
+                label={item.title ?? ""}
+                body={item.text}
                 ground={cardGround}
               />
             );
-          }
-          if (item.kind === "gifts") {
-            return (
-              <GiftsCard
-                key={index}
-                values={related.gifts ?? {}}
-                label={t("gifts")}
-                ground={cardGround}
-              />
-            );
-          }
-          return (
-            <NoteCard
-              key={index}
-              icon={isIconName(item.icon) ? item.icon : undefined}
-              tone="accent"
-              label={item.title ?? ""}
-              body={item.text}
-              ground={cardGround}
-            />
-          );
-        })}
-      </div>
+          })}
+        </div>
+      ) : null}
     </div>
   );
 }

@@ -1,10 +1,10 @@
 import { headingFields } from "@/modular/heading";
 import { LABELS } from "@/modular/labels";
-import { GOOD_TO_KNOW, MAX_NOTES } from "@/modular/notes";
+import { GOOD_TO_KNOW, MAX_NOTES, NOTE_SWITCH } from "@/modular/notes";
 import type { SectionDefinition } from "@/types/modular";
 
 /**
- * Up to four numbered subsections. Dress code and Gifts are the standalone
+ * Up to six numbered subsections. Dress code and Gifts are the standalone
  * sections' own values (`reads`), written once; a Custom one is the host's
  * own title, text and icon. `kind` is one of `NOTE_KINDS`.
  */
@@ -19,6 +19,9 @@ export const section: SectionDefinition = {
   order: 90,
   menuLabel: GOOD_TO_KNOW,
   reads: ["dress-code", "gifts"],
+  variants: [
+    { id: "cards", name: { en: "Cards", ro: "Carduri", hu: "Kártyák" } },
+  ],
   fields: [
     ...headingFields({
       eyebrow: {
@@ -37,6 +40,28 @@ export const section: SectionDefinition = {
         hu: "A részletek, amelyektől egy szép hétvége könnyednek érződik.",
       },
     }),
+    {
+      id: NOTE_SWITCH["dress-code"],
+      label: { en: "dress code", ro: "ținută", hu: "dresszkód" },
+      type: "toggle",
+      fallback: true,
+    },
+    {
+      id: NOTE_SWITCH.gifts,
+      label: { en: "gifts", ro: "cadouri", hu: "ajándékok" },
+      type: "toggle",
+      fallback: true,
+    },
+    {
+      id: NOTE_SWITCH.custom,
+      label: {
+        en: "your own notes",
+        ro: "notițele tale",
+        hu: "saját tudnivalók",
+      },
+      type: "toggle",
+      fallback: true,
+    },
     {
       id: "items",
       label: { en: "notes", ro: "informații", hu: "tudnivalók" },

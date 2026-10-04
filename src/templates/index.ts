@@ -1,4 +1,5 @@
 import type { SimpleTemplateModule, TemplateModule } from "@/types/invitation";
+import type { ModularTemplate, ModularTemplateModule } from "@/types/modular";
 
 /**
  * Templates are found by folder name: `src/templates/simple/<id>/index` or
@@ -31,4 +32,17 @@ async function loadModularTemplate(id: string): Promise<TemplateModule | null> {
   } catch {
     return null;
   }
+}
+
+/*
+ * Every modular template, found the same way as by id: a folder under
+ * `modular/`, listed at build time by Turbopack's glob — nothing registers it.
+ */
+const MODULAR = import.meta.glob("./modular/*/index.ts", { eager: true });
+
+/** Every modular template, by name. */
+export function modularTemplates(): ModularTemplate[] {
+  return Object.values(MODULAR)
+    .map((module) => (module as ModularTemplateModule).template)
+    .sort((a, b) => a.name.localeCompare(b.name));
 }

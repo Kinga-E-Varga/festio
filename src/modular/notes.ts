@@ -1,5 +1,10 @@
-import type { LocalizedText } from "@/lib/language";
-import type { ListItem } from "@/types/modular";
+import { localized, type Language, type LocalizedText } from "@/lib/language";
+import { isOn } from "@/modular/content";
+import type {
+  ListItem,
+  SectionDefinition,
+  SectionValues,
+} from "@/types/modular";
 
 /**
  * The menu link for Helpful notes, Dress code and Gifts — one object, so the
@@ -16,29 +21,59 @@ export const NOTE_KINDS = ["dress-code", "gifts", "custom"] as const;
 export type NoteKind = (typeof NOTE_KINDS)[number];
 
 /** Helpful notes holds at most this many subsections, of every kind together. */
-export const MAX_NOTES = 4;
+export const MAX_NOTES = 6;
+
+/**
+ * Each kind's on/off switch: a `toggle` field on Helpful notes. The Design
+ * tab draws them; the text editor leaves them out. Custom covers every
+ * custom note at once.
+ */
+export const NOTE_SWITCH: Record<NoteKind, string> = {
+  "dress-code": "showDressCode",
+  gifts: "showGifts",
+  custom: "showCustom",
+};
 
 function isNoteKind(value: string | undefined): value is NoteKind {
   return NOTE_KINDS.some((kind) => kind === value);
 }
 
 /**
- * The subsections to draw, in order: known kinds only, Dress code and Gifts
- * once each (the first wins — an editor should never allow a second, but
- * stored data is not trusted to follow it), at most `MAX_NOTES`.
+ * The subsections to draw, in order: known kinds only, switched-off kinds
+ * left out, Dress code and Gifts once each (the first wins — an editor
+ * should never allow a second, but stored data is not trusted to follow
+ * it), at most `MAX_NOTES`.
  */
 export function noteItems(
   items: ListItem[],
+  values: SectionValues,
 ): (ListItem & { kind: NoteKind })[] {
   const seen = new Set<NoteKind>();
   const kept: (ListItem & { kind: NoteKind })[] = [];
   for (const item of items) {
     const kind = item.kind;
-    if (!isNoteKind(kind)) continue;
+    if (!isNoteKind(kind) || !isOn(values, NOTE_SWITCH[kind])) continue;
     if (kind !== "custom" && seen.has(kind)) continue;
     seen.add(kind);
     kept.push({ ...item, kind });
     if (kept.length === MAX_NOTES) break;
   }
   return kept;
+}
+
+/**
+ * The note the Design tab adds when Custom is turned on with none left: the
+ * section's own sample custom note, so the preview shows a card, not a gap.
+ */
+export function customNoteSample(
+  definition: SectionDefinition,
+  language: Language,
+): ListItem | null {
+  const field = definition.fields.find((candidate) => candidate.id === "items");
+  if (field?.type !== "list") return null;
+  const sample = field.fallback.find((item) => item.kind === "custom");
+  if (!sample) return null;
+  return Object.fromEntries(
+    Object.entries(sample).map(([id, copy]) => [id, localized(copy, language)]),
+  );
 }

@@ -9,6 +9,16 @@ export const section: SectionDefinition = {
   name: { en: "Location", ro: "Locația", hu: "Helyszín" },
   required: true,
   order: 50,
+  variants: [
+    {
+      id: "venue-photo",
+      name: {
+        en: "Venue photo",
+        ro: "Fotografia locației",
+        hu: "Helyszínfotó",
+      },
+    },
+  ],
   fields: [
     ...headingFields({
       eyebrow: {

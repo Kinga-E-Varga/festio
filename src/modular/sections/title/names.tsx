@@ -11,13 +11,13 @@ import {
 } from "@/modular/styles";
 import type { VariantProps } from "@/types/modular";
 
-/** Three small diamonds in the tertiary colour, the middle one filled. */
+/** Three small diamonds in the muted ink, like the caption, the middle one filled. */
 function Ornament() {
-  const outline = "size-1.5 rotate-45 border-1 border-[var(--m-tertiary)]";
+  const outline = "size-2 rotate-45 border-1 border-[var(--m-ink-muted)]";
   return (
-    <div aria-hidden="true" className="mb-7 flex items-center gap-2">
+    <div aria-hidden="true" className="mb-7 flex items-center gap-2.5">
       <span className={outline} />
-      <span className="size-2 rotate-45 bg-[var(--m-tertiary)]" />
+      <span className="size-2.5 rotate-45 bg-[var(--m-ink-muted)]" />
       <span className={outline} />
     </div>
   );
@@ -39,7 +39,7 @@ export function Variant({ values, basics, ground }: VariantProps) {
         </p>
       ) : null}
       <h1
-        className={`${DISPLAY} mt-4 mb-2 text-[56px] @md:text-[64px] @3xl:text-[80px] @5xl:text-[96px]`}
+        className={`${DISPLAY} mt-4 mb-2 tracking-[-0.03em]! text-[56px] @md:text-[64px] @3xl:text-[80px] @5xl:text-[96px]`}
       >
         <AmpersandText text={hostNames(basics)} className={AMPERSAND} />
       </h1>

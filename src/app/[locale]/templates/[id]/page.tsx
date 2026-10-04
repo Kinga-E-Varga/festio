@@ -4,8 +4,9 @@ import { notFound } from "next/navigation";
 import { HostInvitationEditor } from "@/components/invitation/HostInvitationEditor";
 import { ModularEditor } from "@/components/modular/ModularEditor";
 import { fallbackValues } from "@/lib/invitation";
-import { loadDesign } from "@/modular";
+import { loadLibrary } from "@/modular";
 import { SAMPLE_BASICS } from "@/modular/sample";
+import { initialState, resolveDesign } from "@/modular/state";
 import { loadTemplate } from "@/templates";
 
 type Props = PageProps<"/[locale]/templates/[id]">;
@@ -26,7 +27,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
  * A template on its own, before any host has picked it or an event exists —
  * the same editor a host gets on a real event, just seeded from the
  * template's own fallback copy instead of `seedValues(template, event)`.
- * A modular template gets the modular editor, seeded from `SAMPLE_BASICS`.
+ * A modular template gets the modular editor, seeded from `SAMPLE_BASICS`
+ * and the whole library, so the Design tab can offer every palette, pair,
+ * pattern and section.
  */
 export default async function TemplatePreviewPage({ params }: Props) {
   const { id } = await params;
@@ -45,11 +48,15 @@ export default async function TemplatePreviewPage({ params }: Props) {
   const language = await getLocale();
 
   if (template.kind === "modular") {
-    const design = await loadDesign(template);
-    if (!design) notFound();
+    const library = loadLibrary();
+    const initial = initialState(template, library, language);
+    /* A palette or pair id that names nothing is a typo in the template file. */
+    if (!resolveDesign(initial, library)) notFound();
     return (
       <ModularEditor
-        design={design}
+        library={library}
+        initial={initial}
+        templateId={template.id}
         basics={SAMPLE_BASICS}
         language={language}
         title={template.name}

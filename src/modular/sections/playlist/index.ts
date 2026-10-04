@@ -7,6 +7,9 @@ export const section: SectionDefinition = {
   required: false,
   order: 145,
   ground: "own",
+  variants: [
+    { id: "record", name: { en: "Record", ro: "Vinil", hu: "Bakelit" } },
+  ],
   fields: [
     ...headingFields({
       heading: {

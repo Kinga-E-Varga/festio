@@ -7,6 +7,7 @@ export const section: SectionDefinition = {
   name: { en: "Title", ro: "Titlu", hu: "Cím" },
   required: true,
   order: 20,
+  variants: [{ id: "names", name: { en: "Names", ro: "Nume", hu: "Nevek" } }],
   fields: [
     {
       id: "eyebrow",
