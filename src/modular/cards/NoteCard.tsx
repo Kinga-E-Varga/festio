@@ -4,11 +4,12 @@ import type { Ground } from "@/types/modular";
 import {
   BODY,
   CARD,
-  EYEBROW,
+  INNER_EYEBROW,
   GROUND,
   H3,
   MEASURE,
   MUTED,
+  TONE_TEXT,
   type TONES,
 } from "@/modular/styles";
 import { CardIcon } from "./CardIcon";
@@ -47,9 +48,7 @@ export function NoteCard({
       <div className="flex items-center gap-3 @3xl:flex-col @3xl:gap-3.5 @3xl:text-center">
         {icon ? <CardIcon name={icon} tone={tone} large /> : null}
         {label ? (
-          <span className={`${EYEBROW} text-[color:var(--m-secondary)]`}>
-            {label}
-          </span>
+          <span className={`${INNER_EYEBROW} ${TONE_TEXT[tone]}`}>{label}</span>
         ) : null}
       </div>
       {title || body ? (

@@ -2,8 +2,9 @@
 
 import { Suspense, useState } from "react";
 import { localized, type Language, type LocalizedText } from "@/lib/language";
+import { cornerVars } from "@/modular/corners";
 import { sectionGrounds } from "@/modular/ground";
-import { TOP_BAR_ID } from "@/modular/nav";
+import { HEADER_ID } from "@/modular/nav";
 import { groundClasses } from "@/modular/styles";
 import { fontClasses, modularVars } from "@/modular/vars";
 import type { RsvpPayload } from "@/types/invitation";
@@ -78,23 +79,26 @@ export function ModularInvitation({
   const [menuOpen, setMenuOpen] = useState(false);
   const links = menuLinks(design.sections, language);
   /*
-   * The top bar is a section, but drawn straight in the column rather than
+   * The header is a section, but drawn straight in the column rather than
    * in a `<section>` of its own: sticky only holds inside its parent.
    */
   const bar = design.sections.find(
-    ({ definition }) => definition.id === TOP_BAR_ID,
+    ({ definition }) => definition.id === HEADER_ID,
   );
   const body = design.sections.filter((choice) => choice !== bar);
-  const grounds = sectionGrounds(body.map(({ definition }) => definition));
+  const grounds = sectionGrounds(body);
 
   return (
     <div
-      style={modularVars(design.palette, design.fontPair)}
+      style={{
+        ...modularVars(design.palette, design.fontPair),
+        ...cornerVars(design.corners),
+      }}
       className={`invite relative flex h-full flex-col overflow-clip bg-[var(--m-surface)] ${framed ? "elevation-band mx-auto max-w-(--invite-column)" : ""} font-[family-name:var(--font-primary)] text-[color:var(--m-ink)] ${fontClasses(design.fontPair)}`}
     >
       {/* While the drawer covers the page, everything under it is out of the tab order. */}
       <div inert={menuOpen} className="flex min-h-0 flex-1 flex-col">
-        {/* The page scrolls in here, not the window, so the top bar stays put. */}
+        {/* The page scrolls in here, not the window, so the header stays put. */}
         <div
           className={`invite-scroll min-h-0 flex-1 overflow-y-auto scroll-smooth ${framed ? "" : groundClasses(design.pattern)}`}
         >
@@ -109,7 +113,7 @@ export function ModularInvitation({
             {bar ? (
               <Suspense fallback={<BarSkeleton />}>
                 <SectionView
-                  section={bar.definition.id}
+                  section={bar.definition}
                   variant={bar.variant}
                   values={design.values[bar.definition.id] ?? {}}
                   related={relatedValues(bar.definition, design)}
@@ -132,7 +136,7 @@ export function ModularInvitation({
               >
                 <Suspense fallback={<SectionSkeleton />}>
                   <SectionView
-                    section={definition.id}
+                    section={definition}
                     variant={variant}
                     values={design.values[definition.id] ?? {}}
                     related={relatedValues(definition, design)}

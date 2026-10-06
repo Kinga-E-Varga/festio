@@ -1,4 +1,4 @@
-import { headingFields } from "@/modular/heading";
+import { HEADING_FIELDS } from "@/modular/heading";
 import type { SectionDefinition } from "@/types/modular";
 
 /**
@@ -14,28 +14,16 @@ export const section: SectionDefinition = {
   ground: "own",
   variants: [
     {
-      id: "split",
-      name: { en: "Split", ro: "Pe două coloane", hu: "Kétoszlopos" },
+      id: "1",
+      name: { en: "Soft band", ro: "Bandă discretă", hu: "Lágy sáv" },
+    },
+    {
+      id: "2",
+      name: { en: "Bold band", ro: "Bandă intensă", hu: "Élénk sáv" },
     },
   ],
   fields: [
-    ...headingFields({
-      eyebrow: {
-        en: "A little note back",
-        ro: "Un mic răspuns",
-        hu: "Egy kis visszajelzés",
-      },
-      heading: {
-        en: "Will you join us?",
-        ro: "Ne veți fi alături?",
-        hu: "Velünk tartasz?",
-      },
-      note: {
-        en: "Save your seat at our table. Kindly reply by 1 August 2027.",
-        ro: "Păstrează-ți locul la masa noastră. Te rugăm să răspunzi până pe 1 august 2027.",
-        hu: "Foglald le a helyed az asztalunknál. Kérjük, 2027. augusztus 1-ig válaszolj.",
-      },
-    }),
+    ...HEADING_FIELDS,
     {
       id: "thankYou",
       label: {
@@ -45,7 +33,6 @@ export const section: SectionDefinition = {
       },
       type: "text",
       maxLength: 30,
-      fallback: { en: "Thank you", ro: "Mulțumim", hu: "Köszönjük" },
     },
     {
       id: "thanks",
@@ -56,11 +43,6 @@ export const section: SectionDefinition = {
       },
       type: "text",
       maxLength: 60,
-      fallback: {
-        en: "Your reply is with us.",
-        ro: "Am primit răspunsul tău.",
-        hu: "Megkaptuk a válaszod.",
-      },
     },
   ],
 };

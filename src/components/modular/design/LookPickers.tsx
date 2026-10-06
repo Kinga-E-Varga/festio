@@ -2,6 +2,8 @@
 
 import { useTranslations } from "next-intl";
 import { EditorHeading } from "@/components/dashboard/event-editor/EditorSection";
+import { CORNER_IDS, type CornersId, cornerVars } from "@/modular/corners";
+import { SERIF } from "@/modular/styles";
 import { fontClasses, fontVars, paletteVars } from "@/modular/vars";
 import type {
   ColorRole,
@@ -103,10 +105,10 @@ export function PalettePicker({
 
 /**
  * A pattern's sample: drawn in the app's gold on the pale fill — the shape,
- * not the colours, which the palette sets. Patterns draw in `--m-line`.
+ * not the colours, which the palette sets. Patterns draw in `--m-pattern`.
  */
 const PATTERN_SAMPLE =
-  "border border-mustard-300 bg-neutral-50 [--m-line:var(--color-mustard-400)]";
+  "border border-mustard-300 bg-neutral-50 [--m-pattern:var(--color-mustard-400)]";
 
 /**
  * Plain, or one of the patterns: the box with an icon and the pattern's
@@ -210,7 +212,7 @@ export function FontPairPicker({
           >
             <span
               aria-hidden="true"
-              className="max-w-full truncate font-[family-name:var(--font-secondary)] text-[15px] leading-tight sm:text-[18px]"
+              className={`max-w-full truncate ${SERIF} text-[15px] leading-tight sm:text-[18px]`}
             >
               {option.faceNames.secondary}
             </span>
@@ -221,6 +223,55 @@ export function FontPairPicker({
               {option.faceNames.primary}
             </span>
           </button>
+        ))}
+      </RollOut>
+    </div>
+  );
+}
+
+/**
+ * One corners step for the whole page: the box with an icon and the step's
+ * name, and its cards each a 60px square drawn with the step's box corners,
+ * as tall as the other pickers' cards.
+ */
+export function CornersPicker({
+  current,
+  onPick,
+}: {
+  current: CornersId;
+  onPick: (id: CornersId) => void;
+}) {
+  const t = useTranslations("DesignTab");
+  const name = t(`corner.${current}`);
+
+  return (
+    <div
+      role="group"
+      aria-labelledby="design-heading-corners"
+      className="mb-8 flex flex-col"
+    >
+      <EditorHeading
+        id="design-heading-corners"
+        title={t("corners")}
+        className="mb-[18px]"
+      />
+      <RollOut
+        id="design-corners"
+        label={`${t("corners")}: ${name}`}
+        icon="corners"
+        summary={<span className="min-w-0">{name}</span>}
+        layout="flex flex-wrap gap-3"
+      >
+        {CORNER_IDS.map((id) => (
+          <button
+            key={id}
+            type="button"
+            aria-pressed={id === current}
+            aria-label={t(`corner.${id}`)}
+            onClick={() => onPick(id)}
+            style={cornerVars(id)}
+            className={`${OPTION_CARD} size-[60px] rounded-(--m-corner)! border-2 border-mustard-400 bg-neutral-50`}
+          />
         ))}
       </RollOut>
     </div>

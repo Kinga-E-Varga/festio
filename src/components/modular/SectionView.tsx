@@ -2,20 +2,28 @@
 
 import { use } from "react";
 import { loadVariant } from "@/modular/variants";
-import type { VariantModule, VariantProps } from "@/types/modular";
+import type {
+  SectionDefinition,
+  VariantModule,
+  VariantProps,
+} from "@/types/modular";
 
 /*
  * One promise per variant, kept so `use` gets the same one every render —
- * a fresh import would suspend forever. A missing file resolves to null.
+ * a fresh import would suspend forever. A variant not listed, or with no
+ * file, resolves to null.
  */
 const loads = new Map<string, Promise<VariantModule | null>>();
 
-function variantFor(section: string, variant: string) {
-  const key = `${section}/${variant}`;
+function variantFor(section: SectionDefinition, variant: string) {
+  const listed = section.variants.some(({ id }) => id === variant);
+  const key = `${section.id}/${variant}`;
   const existing = loads.get(key);
   if (existing) return existing;
 
-  const load = loadVariant(section, variant).catch(() => null);
+  const load = listed
+    ? loadVariant(section.id, variant).catch(() => null)
+    : Promise.resolve(null);
   loads.set(key, load);
   return load;
 }
@@ -29,7 +37,7 @@ export function SectionView({
   section,
   variant,
   ...props
-}: VariantProps & { section: string; variant: string }) {
+}: VariantProps & { section: SectionDefinition; variant: string }) {
   const loaded = use(variantFor(section, variant));
   if (!loaded) return null;
   return <loaded.Variant {...props} />;

@@ -57,6 +57,7 @@ const PATHS: Record<IconName, ReactNode> = {
       <path d="M9 19.25h6" />
     </>
   ),
+  corners: <path d="M5 19.25V12a7 7 0 0 1 7-7h7.25" />,
   pattern: (
     <>
       <circle cx="6" cy="6" r="1.25" />

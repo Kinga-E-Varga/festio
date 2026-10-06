@@ -387,10 +387,15 @@
     "pattern": "Háttérminta",
     "plainPattern": "Sima",
     "fontPair": "Betűtípusok",
+    "corners": "Dobozok sarkai",
+    "corner": {
+      "sharp": "Szögletes",
+      "slight": "Enyhén lekerekített",
+      "soft": "Lekerekített",
+      "round": "Kerek"
+    },
     "sections": "Szakaszok",
-    "variantFor": "{section} stílusa",
     "reveal": "Ugrás ide: {section}",
-    "view": "Mutasd",
     "noteDressCode": "Dresszkód",
     "noteGifts": "Ajándékok",
     "noteCustom": "Saját tudnivalók"

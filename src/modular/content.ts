@@ -1,18 +1,6 @@
 import { formatDay } from "@/lib/event";
-import {
-  LANGUAGE_LOCALE,
-  localized,
-  type Language,
-  type LocalizedText,
-} from "@/lib/language";
-import type {
-  Group,
-  InvitationBasics,
-  ListItem,
-  SectionDefinition,
-  SectionField,
-  SectionValues,
-} from "@/types/modular";
+import { LANGUAGE_LOCALE, type Language } from "@/lib/language";
+import type { Group, ListItem, SectionValues } from "@/types/modular";
 
 const SECOND_MS = 1000;
 const MINUTE_MS = 60 * SECOND_MS;
@@ -21,50 +9,6 @@ const DAY_MS = 24 * HOUR_MS;
 
 /** `HH:MM`, 24-hour — what a `time` field holds. */
 const TIME = /^([01]\d|2[0-3]):[0-5]\d$/;
-
-function localizeItem(
-  item: Record<string, LocalizedText>,
-  language: Language,
-): ListItem {
-  return Object.fromEntries(
-    Object.entries(item).map(([id, copy]) => [id, localized(copy, language)]),
-  );
-}
-
-function fallbackValue(
-  field: SectionField,
-  language: Language,
-): SectionValues[string] {
-  switch (field.type) {
-    case "toggle":
-      return field.fallback;
-    case "list":
-      return field.fallback.map((item) => localizeItem(item, language));
-    case "groups":
-      return field.fallback.map((group) => ({
-        values: localizeItem(group.values, language),
-        items: group.items.map((item) => localizeItem(item, language)),
-      }));
-    default:
-      return localized(field.fallback, language);
-  }
-}
-
-/**
- * A section's sample content in one language. There is no event yet, so
- * every field is its own fallback; later the host's values lie over it.
- */
-export function sectionValues(
-  definition: SectionDefinition,
-  language: Language,
-): SectionValues {
-  return Object.fromEntries(
-    definition.fields.map((field) => [
-      field.id,
-      fallbackValue(field, language),
-    ]),
-  );
-}
 
 /** One plain value; empty when the field is missing or is a list. */
 export function text(values: SectionValues, id: string): string {
@@ -95,31 +39,6 @@ export function groups(values: SectionValues, id: string): Group[] {
   const value = values[id];
   if (!Array.isArray(value)) return [];
   return (value as (ListItem | Group)[]).filter(isGroup);
-}
-
-/** "Mara & Luca" — or just "Mara" for one host. */
-export function hostNames(basics: InvitationBasics): string {
-  return filledHosts(basics).join(" & ");
-}
-
-/** "M & L" — the mark when the host wrote none. */
-export function hostInitials(basics: InvitationBasics): string {
-  return filledHosts(basics)
-    .map((name) => name.charAt(0).toUpperCase())
-    .join(" & ");
-}
-
-/** The hosts' names, trimmed, without the empty ones — so no stray "&". */
-function filledHosts(basics: InvitationBasics): string[] {
-  return basics.hosts.map((name) => name.trim()).filter(Boolean);
-}
-
-/** The top bar's mark from its values: the host's own, else their initials. */
-export function markOf(
-  values: SectionValues,
-  basics: InvitationBasics,
-): string {
-  return text(values, "mark") || hostInitials(basics);
 }
 
 function day(iso: string): Date {
@@ -153,6 +72,16 @@ export function yearOf(iso: string): number {
 /** "18 September 2027", in the invitation's language. */
 export function longDate(iso: string, language: Language): string {
   return formatDay(iso, language);
+}
+
+/** "Sat, 18 September 2027": the weekday short, in the invitation's language. */
+export function shortWeekdayDate(iso: string, language: Language): string {
+  return day(iso).toLocaleDateString(LANGUAGE_LOCALE[language], {
+    weekday: "short",
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  });
 }
 
 /**
@@ -204,4 +133,9 @@ export function safeLink(value: string | undefined): string | null {
   } catch {
     return null;
   }
+}
+
+/** What "Open in Maps" searches for: the venue, then its address on one line. */
+export function mapsQuery(venue = "", address = ""): string {
+  return [venue, address.replace(/\n/g, ", ")].filter(Boolean).join(", ");
 }

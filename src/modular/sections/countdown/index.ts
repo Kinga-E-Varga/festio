@@ -1,25 +1,24 @@
-import { headingFields } from "@/modular/heading";
+import { HEADING_FIELDS } from "@/modular/heading";
 import type { SectionDefinition } from "@/types/modular";
 
-/** Right under date & time, in its band. Counts to the first part of the day (`reads`). */
+/** Right under date & time. Counts to the first part of the day (`reads`). */
 export const section: SectionDefinition = {
   id: "countdown",
   name: { en: "Countdown", ro: "Numărătoare inversă", hu: "Visszaszámlálás" },
   required: false,
   order: 40,
-  ground: "joined",
   reads: ["date-time"],
   variants: [
     {
-      id: "ticking",
-      name: { en: "Ticking clock", ro: "Ceas care bate", hu: "Ketyegő óra" },
+      id: "1",
+      name: { en: "Simple", ro: "Simplu", hu: "Egyszerű" },
+      // In date & time's band, whatever its colour.
+      ground: "joined",
+    },
+    {
+      id: "2",
+      name: { en: "Cards", ro: "Carduri", hu: "Kártyák" },
     },
   ],
-  fields: headingFields({
-    eyebrow: {
-      en: "Counting the days",
-      ro: "Numărăm zilele",
-      hu: "Számoljuk a napokat",
-    },
-  }),
+  fields: [...HEADING_FIELDS],
 };

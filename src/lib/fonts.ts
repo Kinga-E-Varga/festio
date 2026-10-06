@@ -47,6 +47,8 @@ const fraunces = Fraunces({
   variable: "--font-fraunces",
   subsets: ["latin", "latin-ext"],
   style: ["normal", "italic"],
+  // Optical size: large text takes the high-contrast display cut by itself.
+  axes: ["opsz"],
 });
 
 const spaceGrotesk = Space_Grotesk({

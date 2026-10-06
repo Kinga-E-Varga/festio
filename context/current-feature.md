@@ -1,6 +1,6 @@
-# Current Feature: Modular invitations 3 — Design editor
+# Current Feature
 
-Fill the **Design** tab of the modular editor's panel (`ModularEditPanel`) with working settings. Text editing of the sections is a separate feature.
+Modular invitations 4 — Section variants & palettes — a second look for every section, a second template, box corners, more palettes with moods, and a palette skill.
 
 ## Status
 
@@ -8,40 +8,27 @@ Completed
 
 ## Goals
 
-- **Template** (top of the Design tab): shows the current template; clicking it rolls out the modular templates under it, like the palettes. Only Olive Garden exists for now.
-  - Picking a template replaces the palette, ground pattern and font pair with the template's own.
-  - It does not change the sections: what is on stays on, what is off stays off.
-- **Colour palette:** pick one whole palette, never single colours. Only Dark Olive for now.
-- **Ground pattern:** pick the pattern drawn on the ground around the invitation, or none. Only Dots for now. Drawn in the palette's colours.
-- **Font pair:** pick one whole pair (body + headings). Only Gelasio + Arimo for now.
-- **Sections:** turn each optional section on or off.
-  - Always on, no switch: top bar, cover, title, date & time, location, reply form, footer.
-  - Optional: countdown, schedule, transportation, accommodation, menu, helpful notes, dress code, gifts, FAQ, playlist.
-  - Fixed order; no rearranging for now.
-  - Every section that is on shows its variant picker right below it, required ones included. Off hides the picker. Switching variant never loses content.
-- **Helpful notes subsections:** Dress code, Gifts and a custom one, each with its own switch right under the Helpful notes switch.
-  - Up to 6 subsections in total (`MAX_NOTES`, now 4).
-  - The custom switch covers all custom notes at once. Turning it on adds one custom note; the Design tab never adds more. The text editor can add or delete them (same notes). Deleting the last custom note there turns the switch off; turning it on again adds one.
-  - Custom switch off hides every custom note but keeps them; on brings them all back.
-  - Dress code and Gifts are never on twice: turning on the standalone section switches its Helpful notes subsection off, and the other way around.
-- The preview updates live as the host changes a setting.
-- **Saving:** nothing is saved until Save in the editor top bar — covers every change in edit mode, every tab.
-  - Save stays off and no unsaved state shows until something changed (`dirty`).
-  - Leave-page warning while there are unsaved changes in any tab (`useLeaveWarning`, as on the guest list).
-  - Saved in memory only, like the simple editor. No event or Firestore yet.
+- **Variants:** a second variant for most sections, numbered by id (`1.tsx`, `2.tsx`; ids never renamed or reused) — header Colourful / Plain, cover Box / Badge, title Colorful & divider / Plain, date & time, countdown, location, schedule, transportation, accommodation, menu (3), Helpful notes, FAQ, reply Soft band / Bold band, footer Plain / Accent band. Parts two variants share live in their own file beside them; a variant never imports another.
+- **Shared pieces:** `HeaderBar`, `TitleNames`, `CoverPhoto`, `WashedPhoto`, `IconHeading`, `Mark` (a line in three parts), `countdown.ts`; `top-bar` renamed `header`.
+- **Samples apart from the sections:** every sample in `defaults.ts`, read by the editor only (`samples.ts`); a template's `values` hold only what it changes.
+- **Coastal Fun:** a second modular template — Sunbaked, Fraunces & Space Grotesk, round corners, the second variants.
+- **Box corners:** Sharp / Slight / Soft / Round (`corners.ts`), set by a template, picked in the Design tab.
+- **Design tab:** each section's styles roll out as bands under its row; switches with the label after the track.
+- **Palettes:** Coastal, Linen, Noir, Peony, Thistle, Y2K, Flint, Sunset next to Sunbaked and Orchard (was Dark Olive); every palette has a `mood` — `subtle`, `balanced` or `vivid`; readability fixes across them.
+- **`/palette` skill:** a new palette from a mood, light or dark and an optional reference, with a checker that tests every text pair and writes a swatch page (`.claude/skills/palette/`).
+- **Fixes:** the reply form's ids from `useId` (clean hydration); the diet dropdown wraps instead of widening the page on a phone.
 
 ## Notes
 
-- Spec: `context/features/modular-3-design-editor.md`. Builds on `modular-2-olive-garden.md`.
-- Plan: `context/plans/modular-invitations-3-design-editor.md`
-- **Content belongs to the section.** Turning a section or a Helpful notes subsection off only hides it; the data stays, and turning it back on brings back exactly what the host had. Holds for every section.
-- Section order is stored with the sections list, so rearranging can be added later.
-- Events store section, variant, palette, pattern and font-pair ids. Template ids are not stored.
+- Palette ids are permanent once events store them; nothing is stored yet, so the renames (Orchard, Peony, Thistle, Y2K, Flint) were free.
+- Sunbaked keeps some text under 4.5:1 on purpose; the follow-up idea is in `context/fixes/pending/palette-text-shades.md`.
+- New sample photos in `public/modular/samples/`; `tuscany.png` removed.
 
 ## History
 
 <!-- Keep this updated latest to earliest -->
 
+- Modular invitations 3 — Design editor — the modular editor's Design tab: template, palette, ground pattern and font pair pickers that roll out like the palettes; section switches with a variant picker under each section that is on; Helpful notes switches for Dress code, Gifts and custom notes, never on twice with the standalone sections; live preview; Save in memory with a leave-page warning; the Sunbaked palette and the Fraunces & Space Grotesk pair; the playlist record's disc, rings, hole and shadow mixed from its band
 - Modular invitations 2 — Olive Garden — the modular library redone from the Nocturne prototype: palettes as 15 named roles (Nocturne only), Gelasio + Arimo, a hand-drawn icon library, one new variant per section with a shared four-part heading, Helpful notes and a required footer; one reply form with skins for simple and modular; section backgrounds alternated by the page (own-colour and joined sections); split sections with the content capped at 620px; the column widened to 1440px (`INVITE_COLUMN`); a toggle field type; a shared Good to know menu link; "reply" everywhere in guest and host text
 - Modular invitations — templates split, 1280px column — `src/templates/` in `simple/` and `modular/`; the modular invitation capped at 1280px on its `--m4` ground with a faint palette shadow, shown the same way in the editor (no rounded frame, no bottom padding); ground patterns as a shared library with polka dots on Garden; the top bar as a required `top-bar` section with a `mark` field; no shadow on the editors' side panel; anchor jumps to RSVP no longer shift the editor up (`overflow: clip`)
 - Custom invitation editor UI — the modular editor frames the invitation on the print ground (mustard-50) with padding per breakpoint, rounded corners, a thin border and a soft shadow; the edit panel moved out of the invitation into the editor, the sections drawer stays inside the box; modular invitations get a thin palette scrollbar (`--m7` on `--m2`); `elevation-btn` renamed `elevation-print`

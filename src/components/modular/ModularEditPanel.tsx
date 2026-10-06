@@ -21,7 +21,8 @@ interface ModularEditPanelProps {
   templateId: string;
   /** The invitation's language. */
   language: Language;
-  onChange: (next: ModularState) => void;
+  /** `show`: a section to bring into view once the change is drawn. */
+  onChange: (next: ModularState, show?: string) => void;
   onTemplate: (id: string) => void;
   /** Brings a section into view in the preview. */
   onReveal: (id: string) => void;

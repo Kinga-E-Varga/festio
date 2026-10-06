@@ -1,5 +1,7 @@
 import type { Language } from "@/lib/language";
-import { isOn, list, sectionValues } from "@/modular/content";
+import { isOn, list } from "@/modular/content";
+import { sectionValues } from "@/modular/samples";
+import { DEFAULT_CORNERS, isCornersId } from "@/modular/corners";
 import {
   MAX_NOTES,
   NOTE_KINDS,
@@ -18,10 +20,10 @@ import type {
 export const NOTES_ID = "notes";
 
 /**
- * A template as a fresh state: its palette, pattern and pair, every library
- * section in order — on when the template lists it or it is required — with
- * the template's variant or the section's first, and every section's sample
- * values. A variant the section does not list falls back to its first.
+ * A template as a fresh state: its palette, pattern, corners and pair,
+ * every library section in order — on when the template lists it or it is
+ * required — with the template's variant or the section's first, and every
+ * section's sample values. A variant the section does not list falls back to its first.
  */
 export function initialState(
   template: ModularTemplate,
@@ -35,6 +37,7 @@ export function initialState(
     palette: template.palette,
     fontPair: template.fontPair,
     pattern: template.pattern ?? null,
+    corners: template.corners ?? DEFAULT_CORNERS,
     sections: library.sections.map((definition) => {
       const wanted = picked.get(definition.id);
       const known = definition.variants.some(({ id }) => id === wanted);
@@ -47,13 +50,17 @@ export function initialState(
     values: Object.fromEntries(
       library.sections.map((definition) => [
         definition.id,
-        sectionValues(definition, language),
+        sectionValues(definition, language, template.values?.[definition.id]),
       ]),
     ),
   };
 }
 
-/** A template's look over the state: palette, pattern and pair only — sections stay as they are. */
+/**
+ * A template's look over the state: palette, pattern, corners and pair
+ * only. Sections and values stay as they are — a template's samples are
+ * copied once, by `initialState`, and after that only the host changes them.
+ */
 export function applyTemplate(
   state: ModularState,
   template: ModularTemplate,
@@ -63,6 +70,7 @@ export function applyTemplate(
     palette: template.palette,
     fontPair: template.fontPair,
     pattern: template.pattern ?? null,
+    corners: template.corners ?? DEFAULT_CORNERS,
   };
 }
 
@@ -187,6 +195,7 @@ export function resolveDesign(
     ? (library.patterns.find(({ id }) => id === state.pattern) ?? null)
     : null;
   if (!palette || !fontPair) return null;
+  const corners = isCornersId(state.corners) ? state.corners : DEFAULT_CORNERS;
 
   const sections: ModularDesign["sections"] = [];
   for (const { section, variant, on } of state.sections) {
@@ -194,7 +203,14 @@ export function resolveDesign(
     const definition = library.sections.find(({ id }) => id === section);
     if (definition) sections.push({ definition, variant });
   }
-  return { palette, fontPair, pattern, sections, values: state.values };
+  return {
+    palette,
+    fontPair,
+    pattern,
+    corners,
+    sections,
+    values: state.values,
+  };
 }
 
 /**

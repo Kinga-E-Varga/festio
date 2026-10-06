@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import type { Language, LocalizedText } from "@/lib/language";
+import type { CornersId } from "@/modular/corners";
 import type { EventKind } from "@/types/dashboard";
 import type { RsvpPayload, TemplateFonts } from "@/types/invitation";
 
@@ -34,12 +35,30 @@ export type ColorRole =
  * Colours mixed from the roles in `vars.ts`, never set by a palette. Read
  * the same way: `--m-<name>`.
  */
-export type MixedColor = "shadow" | "inverse" | "inverse-ink";
+export type MixedColor =
+  | "shadow"
+  | "pattern"
+  | "inverse"
+  | "inverse-ink"
+  | "accent-ink-muted"
+  | "tertiary-ink-muted"
+  | "page-ink"
+  | "page-ink-muted"
+  | "page-secondary"
+  | "page-accent";
+
+/**
+ * How much colour a palette carries: `subtle` greyed-down and quiet,
+ * `balanced` clear but softened, `vivid` saturated and bright. Ids are
+ * permanent.
+ */
+export type PaletteMood = "subtle" | "balanced" | "vivid";
 
 /** A premade palette. Hosts pick a whole one, never a single colour. */
 export interface ModularPalette {
   id: string;
   name: string;
+  mood: PaletteMood;
   colors: Record<ColorRole, string>;
 }
 
@@ -81,15 +100,12 @@ export interface ItemField {
   maxLength: number;
 }
 
-/** A single host-editable value, with the sample content that stands in for it. */
-export interface ScalarField extends ItemField {
-  fallback: LocalizedText;
-}
+/** A single host-editable value. Its sample lives in `DEFAULTS`. */
+export type ScalarField = ItemField;
 
 /**
  * A repeating group: schedule items, FAQ entries, menu courses… Each item
- * holds one value per `item` field. A phrase is given in every language; a
- * name, a time or an address stays a plain string.
+ * holds one value per `item` field.
  */
 export interface ListField {
   id: string;
@@ -97,7 +113,6 @@ export interface ListField {
   type: "list";
   maxItems: number;
   item: ItemField[];
-  fallback: Record<string, LocalizedText>[];
 }
 
 /**
@@ -113,10 +128,6 @@ export interface GroupListField {
   group: ItemField[];
   /** The list inside each group: a day's events. */
   items: { label: LocalizedText; maxItems: number; item: ItemField[] };
-  fallback: {
-    values: Record<string, LocalizedText>;
-    items: Record<string, LocalizedText>[];
-  }[];
 }
 
 /** An on/off switch: show a part of the section or leave it out. */
@@ -124,15 +135,20 @@ export interface ToggleField {
   id: string;
   label: LocalizedText;
   type: "toggle";
-  fallback: boolean;
 }
 
 /** One way to draw a section: `sections/<section>/<id>.tsx`. */
 export interface VariantInfo {
-  /** Permanent — events store it. */
+  /**
+   * A number, counted up within the section ("1", "2"…). Permanent — events
+   * store it — and never reused, even once its variant is gone. It is also
+   * the file's name, so the file is never renamed; the name may change.
+   */
   id: string;
   /** What the host's variant picker calls it. */
   name: LocalizedText;
+  /** This variant's own ground rule, over the section's. */
+  ground?: GroundRule;
 }
 
 export type SectionField =
@@ -148,29 +164,24 @@ export interface SectionDefinition {
   id: string;
   /** What the host's editor calls the section. */
   name: LocalizedText;
-  /** Top bar, cover, title, date & time, location and RSVP are always on. */
+  /** Header, cover, title, date & time, location and RSVP are always on. */
   required: boolean;
-  /** The section's place in the fixed order: top bar 0, cover 10, title 20… */
+  /** The section's place in the fixed order: header 0, cover 10, title 20… */
   order: number;
   /**
-   * Shown as a link in the top bar and the mobile drawer when present.
+   * Shown as a link in the header and the mobile drawer when present.
    * Sections given the very same label object share one link, to the first
    * of them on the page (`GOOD_TO_KNOW`).
    */
   menuLabel?: LocalizedText;
   /**
    * Other sections whose values this one shows, by id — so content entered
-   * once is read in both places (the footer's mark is the top bar's).
+   * once is read in both places (the footer's mark is the header's).
    * Read from the state whether or not those sections are on.
    */
   reads?: string[];
-  /**
-   * How the page picks the section's ground. Left out, it takes the next of
-   * the two surfaces in turn. `own`: it draws its own colour (a photo, an
-   * accent band) and the turns carry on past it. `joined`: the same ground
-   * as the section before, so the two read as one band.
-   */
-  ground?: "own" | "joined";
+  /** How the page picks the section's ground; a variant may set its own. */
+  ground?: GroundRule;
   /**
    * Its variants, each a file beside this one. The first is the default for
    * a section a template leaves off. Listed here so the editor can name them
@@ -182,6 +193,18 @@ export interface SectionDefinition {
 
 /** The two surfaces sections and cards take turns on. */
 export type Ground = "surface" | "surface-alt";
+
+/** What the page gives a section: a surface, or the accent band. */
+export type SectionGround = Ground | "accent";
+
+/**
+ * How the page picks a section's ground. Left out, it takes the next of the
+ * two surfaces in turn. `own`: it draws its own colour (a photo). `accent`:
+ * it is an accent band. After either, the turns start again at `surface`.
+ * `joined`: the same ground as the section right before, whatever it is, so
+ * the two read as one band.
+ */
+export type GroundRule = "own" | "accent" | "joined";
 
 /** A section folder's `index.ts`. */
 export interface SectionModule {
@@ -204,24 +227,22 @@ export type SectionValues = Record<
 >;
 
 /**
- * Facts several sections show, entered once: the hosts' names, the date,
- * the venue. Phase 1 has no event, so they come from `SAMPLE_BASICS`.
+ * Facts several sections show, entered once: the date. Phase 1 has no
+ * event, so it comes from `DEFAULT_BASICS`. The locations are the location
+ * section's own.
  */
 export interface InvitationBasics {
-  hosts: string[];
   /** ISO `YYYY-MM-DD`. */
   date: string;
-  venue: string;
-  address: string;
 }
 
-/** A section with a menu label, as the top bar and the drawer link it. */
+/** A section with a menu label, as the header and the drawer link it. */
 export interface MenuLink {
   id: string;
   label: string;
 }
 
-/** What the top bar needs from the page around it. */
+/** What the header needs from the page around it. */
 export interface BarNav {
   links: MenuLink[];
   menuOpen: boolean;
@@ -235,15 +256,15 @@ export interface VariantProps {
   language: Language;
   /** The values of the sections this one `reads`, by id. */
   related: Partial<Record<string, SectionValues>>;
-  /** The surface the page gave this section; its cards take the other one. */
-  ground: Ground;
+  /** The ground the page gave this section; its cards take the other surface. */
+  ground: SectionGround;
   /** The RSVP variant hands the guest's reply up; every other one ignores it. */
   onRsvp?: (payload: RsvpPayload) => void;
-  /** Only the top bar's variants read it. */
+  /** Only the header's variants read it. */
   nav?: BarNav;
 }
 
-/** A variant file: `sections/<section>/<variant>.tsx`. */
+/** A variant file: `sections/<section>/<id>.tsx`. */
 export interface VariantModule {
   Variant: (props: VariantProps) => ReactNode;
 }
@@ -268,8 +289,31 @@ export interface ModularTemplate {
   fontPair: string;
   /** No pattern: a plain ground. */
   pattern?: string;
+  /** Left out: `DEFAULT_CORNERS`. */
+  corners?: CornersId;
   sections: SectionChoice[];
+  /**
+   * Its own sample for some sections' fields, by section id, then field id
+   * — `DEFAULTS` for the rest.
+   */
+  values?: Record<string, SectionSamples>;
 }
+
+/**
+ * One field's sample, before it is read in a language: a plain value, a
+ * toggle, a list's items or a `groups` field's groups.
+ */
+export type FieldSample =
+  LocalizedText | boolean | Record<string, LocalizedText>[] | GroupSample[];
+
+/** One group of a `groups` field's sample: its own values and its items. */
+export interface GroupSample {
+  values: Record<string, LocalizedText>;
+  items: Record<string, LocalizedText>[];
+}
+
+/** A section's samples, by field id. */
+export type SectionSamples = Record<string, FieldSample>;
 
 export interface ModularTemplateModule {
   template: ModularTemplate;
@@ -281,6 +325,8 @@ export interface ModularState {
   fontPair: string;
   /** No pattern: a plain ground. */
   pattern: string | null;
+  /** A `CORNERS` id. */
+  corners: string;
   /**
    * Every section in the library, in the fixed order. Kept as a list, with
    * its order, so rearranging can come later.
@@ -315,6 +361,7 @@ export interface ModularDesign {
   palette: ModularPalette;
   fontPair: FontPair;
   pattern: ModularPattern | null;
+  corners: CornersId;
   /** Only the sections that are on, in order. */
   sections: { definition: SectionDefinition; variant: string }[];
   /** Every section's values, on or off — a section may read one that is off. */

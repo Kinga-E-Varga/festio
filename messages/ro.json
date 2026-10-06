@@ -387,10 +387,15 @@
     "pattern": "Model de fundal",
     "plainPattern": "Simplu",
     "fontPair": "Fonturi",
+    "corners": "Colțurile casetelor",
+    "corner": {
+      "sharp": "Drepte",
+      "slight": "Ușor rotunjite",
+      "soft": "Rotunjite",
+      "round": "Rotunde"
+    },
     "sections": "Secțiuni",
-    "variantFor": "Stilul pentru {section}",
     "reveal": "Mergi la {section}",
-    "view": "Vezi",
     "noteDressCode": "Ținută",
     "noteGifts": "Cadouri",
     "noteCustom": "Notițele tale"

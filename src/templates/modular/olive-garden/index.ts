@@ -1,8 +1,9 @@
 import type { ModularTemplate } from "@/types/modular";
 
 /**
- * Dark Olive and Gelasio + Arimo on a plain ground: every section but the
- * standalone Dress code and Gifts — Helpful notes shows both.
+ * Orchard and Gelasio + Arimo on a plain ground: every section but the
+ * standalone Dress code and Gifts — Helpful notes shows both. Two locations:
+ * the ceremony and the reception, from `DEFAULTS`. The cover photo is its own.
  */
 export const template: ModularTemplate = {
   kind: "modular",
@@ -10,23 +11,26 @@ export const template: ModularTemplate = {
   name: "Olive Garden",
   package: "custom",
   eventTypes: ["wedding"],
-  palette: "dark-olive",
+  palette: "orchard",
   fontPair: "gelasio-arimo",
   sections: [
-    { section: "top-bar", variant: "monogram" },
-    { section: "cover", variant: "photo" },
-    { section: "title", variant: "names" },
-    { section: "date-time", variant: "calendar-card" },
-    { section: "countdown", variant: "ticking" },
-    { section: "location", variant: "venue-photo" },
-    { section: "schedule", variant: "days" },
-    { section: "transportation", variant: "cards" },
-    { section: "accommodation", variant: "stays" },
-    { section: "menu", variant: "courses" },
-    { section: "notes", variant: "cards" },
-    { section: "faq", variant: "split" },
-    { section: "playlist", variant: "record" },
-    { section: "rsvp", variant: "split" },
-    { section: "footer", variant: "monogram" },
+    { section: "header", variant: "1" }, // square
+    { section: "cover", variant: "1" }, // full-box
+    { section: "title", variant: "1" }, // diamonds
+    { section: "date-time", variant: "1" }, // calendar-card
+    { section: "countdown", variant: "1" }, // plain
+    { section: "location", variant: "1" }, // photo-card
+    { section: "schedule", variant: "1" }, // icons
+    { section: "transportation", variant: "1" }, // cards
+    { section: "accommodation", variant: "1" }, // stays
+    { section: "menu", variant: "1" }, // courses
+    { section: "notes", variant: "1" }, // cards
+    { section: "faq", variant: "1" }, // split
+    { section: "playlist", variant: "1" }, // record
+    { section: "rsvp", variant: "1" }, // split
+    { section: "footer", variant: "1" }, // monogram
   ],
+  values: {
+    cover: { photo: "/modular/samples/couple-ava-mateo.jpg" },
+  },
 };

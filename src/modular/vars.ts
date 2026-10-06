@@ -7,15 +7,32 @@ import type {
 } from "@/types/modular";
 
 /*
- * The few colours a palette does not set: the shadow, the page ground
- * darkened, mixed once here in oklab, and the inverse pair, the page's own
- * two colours swapped. A mix reads other custom properties on the same
- * element, so it follows whatever palette is set.
+ * The few colours a palette does not set, mixed once here in oklab: the
+ * shadow, the page ground darkened; the pattern's ink, the page ground a
+ * little darkened; the inverse pair, the page's own two colours swapped;
+ * and the muted inks on the accent and tertiary bands, each band's ink a
+ * fifth of the way to the band. A mix reads other custom properties where
+ * it is set — here, on the invitation — so it follows whatever palette is
+ * set and keeps that value all the way down.
+ *
+ * The `page-*` copies hold the palette's own ink, muted ink, secondary and
+ * accent for the same reason: a band points those roles at its own ink
+ * (`GROUND` in `styles.ts`), and a surface inside it takes them back from
+ * here.
  */
 const MIXES: Record<MixedColor, string> = {
   shadow: "color-mix(in oklab, var(--m-canvas), black 80%)",
+  pattern: "color-mix(in oklab, var(--m-canvas), black 10%)",
   inverse: "var(--m-ink)",
   "inverse-ink": "var(--m-surface)",
+  "accent-ink-muted":
+    "color-mix(in oklab, var(--m-accent-ink), var(--m-accent) 20%)",
+  "tertiary-ink-muted":
+    "color-mix(in oklab, var(--m-tertiary-ink), var(--m-tertiary) 20%)",
+  "page-ink": "var(--m-ink)",
+  "page-ink-muted": "var(--m-ink-muted)",
+  "page-secondary": "var(--m-secondary)",
+  "page-accent": "var(--m-accent)",
 };
 
 /*
@@ -40,7 +57,7 @@ const SHARED: Record<string, string> = {
  */
 export const INVITE_COLUMN = 1440;
 
-/** The palette's roles as `--m-<role>`: enough to draw a swatch or a pattern tile. */
+/** The palette's roles as `--m-<role>`: enough to draw a swatch. */
 export function paletteVars(palette: ModularPalette): CSSProperties {
   const roles = Object.keys(palette.colors) as ColorRole[];
   return Object.fromEntries(

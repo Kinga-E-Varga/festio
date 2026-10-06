@@ -4,10 +4,11 @@ import { EYEBROW, H2, LEAD, MUTED } from "./styles";
 
 interface SectionHeadingProps {
   values: SectionValues;
-  /** `start`: centred on a phone, left-aligned beside content on a wider page. */
-  align?: "center" | "start";
-  /** `accent`: written on the accent band, in `accent-ink`. */
-  tone?: "default" | "accent";
+  /**
+   * `start`: centred on a phone, left-aligned beside content on a wider page.
+   * `start-late`: the same, but only from `@6xl`, for a split that stacks longer.
+   */
+  align?: "center" | "start" | "start-late";
 }
 
 /**
@@ -18,7 +19,6 @@ interface SectionHeadingProps {
 export function SectionHeading({
   values,
   align = "center",
-  tone = "default",
 }: SectionHeadingProps) {
   const eyebrow = text(values, "eyebrow");
   const heading = text(values, "heading");
@@ -26,40 +26,30 @@ export function SectionHeading({
   const note = text(values, "note");
   if (!eyebrow && !heading && !italic && !note) return null;
 
-  const onAccent = tone === "accent";
-  const place =
-    align === "center"
-      ? "items-center text-center"
-      : "items-center text-center @3xl:items-start @3xl:text-left";
+  const place = {
+    center: "items-center text-center",
+    start: "items-center text-center @3xl:items-start @3xl:text-left",
+    "start-late": "items-center text-center @6xl:items-start @6xl:text-left",
+  }[align];
 
   return (
     <div className={`flex w-full flex-col gap-4 ${place}`}>
       {eyebrow ? (
-        <p
-          className={`${EYEBROW} ${onAccent ? "text-[color:var(--m-accent-ink)]" : "text-[color:var(--m-secondary)]"}`}
-        >
+        <p className={`${EYEBROW} text-[color:var(--m-secondary)]`}>
           {eyebrow}
         </p>
       ) : null}
       {heading || italic ? (
-        <h2
-          className={`${H2} ${onAccent ? "text-[color:var(--m-accent-ink)]" : "text-[color:var(--m-ink)]"}`}
-        >
+        <h2 className={`${H2} text-[color:var(--m-ink)]`}>
           {heading}
           {heading && italic ? <br /> : null}
           {italic ? (
-            <em
-              className={`italic ${onAccent ? "" : "text-[color:var(--m-secondary)]"}`}
-            >
-              {italic}
-            </em>
+            <em className="italic text-[color:var(--m-secondary)]">{italic}</em>
           ) : null}
         </h2>
       ) : null}
       {note ? (
-        <p
-          className={`${LEAD} max-w-160 whitespace-pre-line ${onAccent ? "text-[color:var(--m-accent-ink)] opacity-80" : MUTED}`}
-        >
+        <p className={`${LEAD} max-w-160 whitespace-pre-line ${MUTED}`}>
           {note}
         </p>
       ) : null}

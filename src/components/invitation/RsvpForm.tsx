@@ -1,7 +1,7 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { useState } from "react";
+import { useId, useState } from "react";
 import {
   AGE_KEY,
   AGES,
@@ -92,6 +92,12 @@ interface RsvpFormProps {
  */
 export function RsvpForm({ form, skin, onSubmit }: RsvpFormProps) {
   const t = useTranslations("Rsvp");
+  /*
+   * Element ids come from `useId` and the row's place, never the row's own
+   * id: React Hook Form makes that one up at random, so the server's and the
+   * browser's would differ and the page would fail to hydrate cleanly.
+   */
+  const formId = useId();
   const { values, set, derived } = form;
   const [attempted, setAttempted] = useState(false);
   const warning = attempted && derived.problem ? derived.problem : null;
@@ -138,12 +144,12 @@ export function RsvpForm({ form, skin, onSubmit }: RsvpFormProps) {
         {values.rows.map((row, index) => (
           <div key={row.id} className={PERSON}>
             <div className={`flex flex-col ${skin.space.field}`}>
-              <label htmlFor={`name-${row.id}`} className={skin.label}>
+              <label htmlFor={`${formId}-name-${index}`} className={skin.label}>
                 {t("name")}
               </label>
               <div className="flex items-center gap-3">
                 <input
-                  id={`name-${row.id}`}
+                  id={`${formId}-name-${index}`}
                   type="text"
                   value={row.value}
                   maxLength={NAME_LIMIT}

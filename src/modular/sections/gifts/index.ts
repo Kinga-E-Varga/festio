@@ -1,4 +1,4 @@
-import { headingFields } from "@/modular/heading";
+import { HEADING_FIELDS } from "@/modular/heading";
 import { LABELS } from "@/modular/labels";
 import { GOOD_TO_KNOW } from "@/modular/notes";
 import type { SectionDefinition } from "@/types/modular";
@@ -10,41 +10,20 @@ export const section: SectionDefinition = {
   required: false,
   order: 110,
   menuLabel: GOOD_TO_KNOW,
-  variants: [{ id: "card", name: { en: "Card", ro: "Card", hu: "Kártya" } }],
+  variants: [{ id: "1", name: { en: "Card", ro: "Card", hu: "Kártya" } }],
   fields: [
-    ...headingFields({
-      eyebrow: {
-        en: "With gratitude",
-        ro: "Cu recunoștință",
-        hu: "Hálával",
-      },
-      heading: {
-        en: "A note on gifts",
-        ro: "Despre cadouri",
-        hu: "Az ajándékokról",
-      },
-    }),
+    ...HEADING_FIELDS,
     {
       id: "title",
       label: LABELS.title,
       type: "text",
       maxLength: 80,
-      fallback: {
-        en: "Your presence is our present",
-        ro: "Prezența ta e cel mai frumos dar",
-        hu: "A jelenléted a legszebb ajándék",
-      },
     },
     {
       id: "body",
       label: LABELS.text,
       type: "longText",
       maxLength: 300,
-      fallback: {
-        en: "Truly. If you’d like to give something, a contribution to our honeymoon fund would mean the world.",
-        ro: "Chiar așa. Dacă vrei totuși să ne dăruiești ceva, o contribuție pentru luna de miere ne-ar bucura enorm.",
-        hu: "Tényleg. Ha mégis adnál valamit, a nászutunkhoz való hozzájárulás nagyon sokat jelentene.",
-      },
     },
     {
       id: "showAccount",
@@ -54,7 +33,6 @@ export const section: SectionDefinition = {
         hu: "számlaadatok mutatása",
       },
       type: "toggle",
-      fallback: true,
     },
     {
       id: "holder",
@@ -65,21 +43,18 @@ export const section: SectionDefinition = {
       },
       type: "text",
       maxLength: 60,
-      fallback: "Mara Rossi",
     },
     {
       id: "iban",
       label: { en: "IBAN", ro: "IBAN", hu: "IBAN" },
       type: "text",
       maxLength: 42,
-      fallback: "IT60 X054 2811 1010 0000 0123 456",
     },
     {
       id: "reference",
       label: { en: "reference", ro: "mențiune", hu: "közlemény" },
       type: "text",
       maxLength: 60,
-      fallback: "Mara & Luca",
     },
   ],
 };

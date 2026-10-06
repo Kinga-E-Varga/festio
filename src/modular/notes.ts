@@ -1,10 +1,6 @@
-import { localized, type Language, type LocalizedText } from "@/lib/language";
+import type { LocalizedText } from "@/lib/language";
 import { isOn } from "@/modular/content";
-import type {
-  ListItem,
-  SectionDefinition,
-  SectionValues,
-} from "@/types/modular";
+import type { ListItem, SectionValues } from "@/types/modular";
 
 /**
  * The menu link for Helpful notes, Dress code and Gifts — one object, so the
@@ -59,21 +55,4 @@ export function noteItems(
     if (kept.length === MAX_NOTES) break;
   }
   return kept;
-}
-
-/**
- * The note the Design tab adds when Custom is turned on with none left: the
- * section's own sample custom note, so the preview shows a card, not a gap.
- */
-export function customNoteSample(
-  definition: SectionDefinition,
-  language: Language,
-): ListItem | null {
-  const field = definition.fields.find((candidate) => candidate.id === "items");
-  if (field?.type !== "list") return null;
-  const sample = field.fallback.find((item) => item.kind === "custom");
-  if (!sample) return null;
-  return Object.fromEntries(
-    Object.entries(sample).map(([id, copy]) => [id, localized(copy, language)]),
-  );
 }

@@ -1,4 +1,4 @@
-import { headingFields } from "@/modular/heading";
+import { HEADING_FIELDS } from "@/modular/heading";
 import { LABELS } from "@/modular/labels";
 import type { SectionDefinition } from "@/types/modular";
 
@@ -9,22 +9,29 @@ export const section: SectionDefinition = {
   order: 80,
   menuLabel: { en: "Menu", ro: "Meniu", hu: "Menü" },
   variants: [
-    { id: "courses", name: { en: "Courses", ro: "Feluri", hu: "Fogások" } },
+    {
+      id: "1",
+      name: { en: "Simple grid", ro: "Grilă simplă", hu: "Egyszerű rács" },
+    },
+    {
+      id: "2",
+      name: {
+        en: "Icon & card",
+        ro: "Pictogramă și card",
+        hu: "Ikon és kártya",
+      },
+    },
+    {
+      id: "3",
+      name: {
+        en: "Framed card",
+        ro: "Card cu ramă",
+        hu: "Keretes kártya",
+      },
+    },
   ],
   fields: [
-    ...headingFields({
-      eyebrow: { en: "At the table", ro: "La masă", hu: "Az asztalnál" },
-      heading: {
-        en: "A menu for lingering",
-        ro: "Un meniu fără grabă",
-        hu: "Egy menü, amivel nem sietünk",
-      },
-      note: {
-        en: "A family-style Tuscan dinner, made with the season and meant to be shared.",
-        ro: "O cină toscană în familie, gătită cu ce aduce sezonul și făcută pentru a fi împărțită.",
-        hu: "Családias toszkán vacsora az évszak ízeiből, közös tálakból.",
-      },
-    }),
+    ...HEADING_FIELDS,
     {
       id: "courses",
       label: { en: "courses", ro: "feluri", hu: "fogások" },
@@ -37,62 +44,14 @@ export const section: SectionDefinition = {
           type: "text",
           maxLength: 30,
         },
-        { id: "title", label: LABELS.title, type: "text", maxLength: 40 },
+        /* One dish per line, when a course has several. */
+        {
+          id: "title",
+          label: LABELS.title,
+          type: "longText",
+          maxLength: 120,
+        },
         { id: "note", label: LABELS.note, type: "text", maxLength: 100 },
-      ],
-      fallback: [
-        {
-          label: { en: "To begin", ro: "La început", hu: "Kezdésnek" },
-          title: {
-            en: "Garden antipasti",
-            ro: "Antipasti din grădină",
-            hu: "Kerti antipasti",
-          },
-          note: {
-            en: "Little seasonal bites from the garden",
-            ro: "Gustări mici de sezon, din grădină",
-            hu: "Apró szezonális falatok a kertből",
-          },
-        },
-        {
-          label: "Primo",
-          title: {
-            en: "Fresh pasta",
-            ro: "Paste proaspete",
-            hu: "Friss tészta",
-          },
-          note: {
-            en: "Handmade, and passed around the table",
-            ro: "Făcute în casă și date din mână în mână",
-            hu: "Házi készítésű, kézről kézre adva",
-          },
-        },
-        {
-          label: "Secondo",
-          title: {
-            en: "A slow-cooked main",
-            ro: "Un fel principal gătit încet",
-            hu: "Lassan főtt főétel",
-          },
-          note: {
-            en: "A Tuscan favorite, served family-style",
-            ro: "Un preferat toscan, servit ca în familie",
-            hu: "Toszkán kedvenc, családiasan tálalva",
-          },
-        },
-        {
-          label: { en: "To finish", ro: "La final", hu: "Végül" },
-          title: {
-            en: "Something sweet",
-            ro: "Ceva dulce",
-            hu: "Valami édes",
-          },
-          note: {
-            en: "One more reason to linger a little longer",
-            ro: "Încă un motiv să mai rămâi puțin",
-            hu: "Még egy ok, hogy maradj egy kicsit",
-          },
-        },
       ],
     },
   ],

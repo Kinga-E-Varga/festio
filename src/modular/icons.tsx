@@ -61,15 +61,33 @@ export const ICONS = {
   ),
   pin: (
     <>
-      <path d="M12 19.5c-3.4-3.8-6-7-6-10a6 6 0 0 1 12 0c0 3-2.6 6.2-6 10Z" />
-      <circle cx="12" cy="9.5" r="2.2" />
-      <path d="M8 21.5h8" />
+      <path d="M12 21.5c-4.3-4.6-7.5-8.4-7.5-11.5a7.5 7.5 0 0 1 15 0c0 3.1-3.2 6.9-7.5 11.5Z" />
+      <circle cx="12" cy="10" r="2.7" />
     </>
   ),
   clock: (
     <>
       <circle cx="12" cy="12" r="9" />
       <path d="M12 7v5l3 2" />
+    </>
+  ),
+  question: (
+    <>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.6.3-1 .9-1 1.6v.6" />
+      <circle cx="12" cy="17" r="0.6" />
+    </>
+  ),
+  bed: (
+    <>
+      <path d="M3 19V6M3 14h18M21 19v-6a3 3 0 0 0-3-3h-7v4" />
+      <circle cx="7" cy="10.5" r="1.8" />
+    </>
+  ),
+  mail: (
+    <>
+      <rect x="3" y="5.5" width="18" height="13" rx="2" />
+      <path d="M3.5 7l8.5 6.5L20.5 7" />
     </>
   ),
 } satisfies Record<string, ReactNode>;

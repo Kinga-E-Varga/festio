@@ -89,6 +89,22 @@
   --color-rust-400: #cd8080;
   --color-rust-500: #b75759;
   --color-rust-600: #7b2c30;
+
+  /*
+   * A slow float up and down — the cover's circle. It moves `translate`, not
+   * `transform`, so a `rotate-*` on the same element stays as it is.
+   */
+  --animate-bob: bob 3s ease-in-out infinite;
+
+  @keyframes bob {
+    0%,
+    100% {
+      translate: 0 0;
+    }
+    50% {
+      translate: 0 -6px;
+    }
+  }
 }
 
 @layer base {

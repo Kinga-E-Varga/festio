@@ -1,24 +1,62 @@
 import { LABELS } from "@/modular/labels";
 import type { SectionDefinition } from "@/types/modular";
 
-/** The hosts' names, large. The names are the event's; the lines around them the host's. */
+/** The names, large, in three parts like the header's mark, between two lines. */
 export const section: SectionDefinition = {
   id: "title",
   name: { en: "Title", ro: "Titlu", hu: "Cím" },
   required: true,
   order: 20,
-  variants: [{ id: "names", name: { en: "Names", ro: "Nume", hu: "Nevek" } }],
+  variants: [
+    {
+      id: "1",
+      name: {
+        en: "Colorful & divider",
+        ro: "Colorat cu separator",
+        hu: "Színes elválasztóval",
+      },
+    },
+    {
+      id: "2",
+      name: { en: "Plain", ro: "Simplu", hu: "Egyszerű" },
+    },
+  ],
   fields: [
+    {
+      id: "namesStart",
+      label: {
+        en: "names, first part",
+        ro: "nume, prima parte",
+        hu: "nevek, első rész",
+      },
+      type: "text",
+      maxLength: 40,
+    },
+    {
+      id: "namesMiddle",
+      label: {
+        en: "names, middle",
+        ro: "nume, mijloc",
+        hu: "nevek, középső rész",
+      },
+      type: "text",
+      maxLength: 6,
+    },
+    {
+      id: "namesEnd",
+      label: {
+        en: "names, last part",
+        ro: "nume, ultima parte",
+        hu: "nevek, utolsó rész",
+      },
+      type: "text",
+      maxLength: 40,
+    },
     {
       id: "eyebrow",
       label: LABELS.eyebrow,
       type: "text",
       maxLength: 60,
-      fallback: {
-        en: "Together with our families",
-        ro: "Împreună cu familiile noastre",
-        hu: "Családjainkkal együtt",
-      },
     },
     {
       id: "caption",
@@ -29,11 +67,6 @@ export const section: SectionDefinition = {
       },
       type: "text",
       maxLength: 120,
-      fallback: {
-        en: "invite you to celebrate the beginning of our forever",
-        ro: "vă invită să fiți alături de ei la început de drum",
-        hu: "meghívnak, hogy velük ünnepeld közös életük kezdetét",
-      },
     },
   ],
 };

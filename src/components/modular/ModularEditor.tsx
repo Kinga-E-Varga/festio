@@ -23,11 +23,20 @@ import { ModularInvitation } from "./ModularInvitation";
  */
 const PANEL_BESIDE = "(min-width: 1000px)";
 
-/** A section into view; the top bar has no anchor of its own — it is the top of the page. */
+/**
+ * A section into view, in the middle of the page — or from its top when it
+ * is taller than the page, so its start is never cut off. The header has no
+ * anchor of its own — it is the top of the page.
+ */
 function scrollToSection(id: string) {
   const section = document.getElementById(id);
-  if (section) section.scrollIntoView();
-  else document.querySelector(".invite-scroll")?.scrollTo({ top: 0 });
+  const page = document.querySelector(".invite-scroll");
+  if (!section) {
+    page?.scrollTo({ top: 0 });
+    return;
+  }
+  const tall = page ? section.offsetHeight > page.clientHeight : false;
+  section.scrollIntoView({ block: tall ? "start" : "center" });
 }
 
 interface ModularEditorProps {
@@ -69,27 +78,33 @@ export function ModularEditor({
   const dirty = !sameState(state, saved);
   useLeaveWarning(dirty, t("leaveUnsaved"));
 
-  /* A section just turned on, waiting to be scrolled to once it is drawn. */
-  const turnedOn = useRef<string | null>(null);
+  /*
+   * A section just turned on, given a new style or asked for, waiting to be scrolled
+   * to once it is drawn.
+   */
+  const toShow = useRef<string | null>(null);
 
-  function change(next: ModularState) {
-    const shown = next.sections.find(
-      (section, index) => section.on && !state.sections[index]?.on,
-    );
-    if (shown) turnedOn.current = shown.section;
+  function change(next: ModularState, show?: string) {
+    /* A section the change turned off has nothing to go to. */
+    if (
+      show &&
+      next.sections.some(({ section, on }) => section === show && on)
+    ) {
+      toShow.current = show;
+    }
     setState(next);
     setJustSaved(false);
   }
 
   /*
-   * After the render that drew it, a section turned on comes into view, so
-   * the host sees what they added. The panel stays open: they are still
-   * choosing.
+   * After the render that drew it, a section turned on, restyled or asked
+   * for comes into view, so the host sees what they changed. The panel stays open:
+   * they are still choosing.
    */
   useEffect(() => {
-    if (!turnedOn.current) return;
-    scrollToSection(turnedOn.current);
-    turnedOn.current = null;
+    if (!toShow.current) return;
+    scrollToSection(toShow.current);
+    toShow.current = null;
   });
 
   /* In memory only, like the simple editor: there is no event yet. */

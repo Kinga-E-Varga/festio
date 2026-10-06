@@ -1,4 +1,4 @@
-import type { Ground, ModularPattern } from "@/types/modular";
+import type { ModularPattern, SectionGround } from "@/types/modular";
 
 /*
  * The modular library's one scale. Variants build from these and from plain
@@ -10,8 +10,16 @@ import type { Ground, ModularPattern } from "@/types/modular";
 
 /* ── Faces and headings ─────────────────────────────────────────────── */
 
-/** The pair's heading face. */
-export const SERIF = "font-[family-name:var(--font-secondary)] font-normal";
+/** The heading face at medium, whatever the pair. */
+export const SERIF = "font-[family-name:var(--font-secondary)] font-medium";
+
+/** The heading face at semibold, whatever the pair: a small mark that would look thin. */
+export const SERIF_BOLDER =
+  "font-[family-name:var(--font-secondary)] font-semibold";
+
+/** The heading face at bold, whatever the pair: a short line that has to hold its own over a photo. */
+export const SERIF_BOLDEST =
+  "font-[family-name:var(--font-secondary)] font-bold";
 
 /**
  * Headings: the heading face, balanced, and free to break a word too long
@@ -29,11 +37,26 @@ export const H3 = `${HEADING} text-[22px] leading-[1.3] text-[color:var(--m-ink)
 /** A small serif line: a question, an event, a stay, a closing line. Colour is the variant's. */
 export const H4 = `${HEADING} text-[17px] leading-[1.4] @3xl:text-[18px]`;
 
+/** A serif line in italic: the title's caption, the reply note. Colour is the variant's. */
+export const ITALIC_LINE = `${HEADING} text-[18px] leading-[1.4] italic @3xl:text-[20px]`;
+
+/** An item's title in the newer variants — an event, a way, a stay, a dish: `H4` in ink. */
+export const ITEM_TITLE = `${H4} text-[color:var(--m-ink)]`;
+
+/** A venue's name on a card, or one of several stops. Colour is the variant's. */
+export const VENUE = `${HEADING} text-[36px] leading-[1.1] tracking-[-0.03em] @3xl:text-[40px]`;
+
 /** Large serif in the accent, set tight: the names, the day, the countdown, the mark. Size is the variant's. */
 export const DISPLAY = `${HEADING} leading-none tracking-[-0.06em] text-[color:var(--m-accent)]`;
 
-/** The `&` in a mark or the hosts' names. */
-export const AMPERSAND = "text-[0.8em] italic text-[color:var(--m-secondary)]";
+/**
+ * Large serif set the way the optical size wants it: medium weight, a touch
+ * tight. The Plain date. Size and colour are the variant's.
+ */
+export const DISPLAY_PLAIN = `${SERIF} text-balance [overflow-wrap:anywhere] leading-none tracking-[-0.03em]`;
+
+/** The middle part of a three-part line: the header's mark, the title's names. */
+export const AMPERSAND = "text-[0.8em] text-[color:var(--m-secondary)]";
 
 /* ── Running text ───────────────────────────────────────────────────── */
 
@@ -51,6 +74,10 @@ export const CAPTION = "text-[12px] leading-[1.5]";
 
 /** The small uppercase line above a heading, a date or a card. Colour is the variant's. */
 export const EYEBROW =
+  "text-[11.5px] leading-[1.5] font-semibold tracking-[0.19em] uppercase @3xl:text-[12.5px]";
+
+/** The eyebrow inside a section — a card's, a day's — 11px at every width. Colour is the variant's. */
+export const INNER_EYEBROW =
   "text-[11px] leading-[1.5] font-semibold tracking-[0.19em] uppercase";
 
 /** A quieter uppercase label: a venue's kind, a course, units, a weekday, an account line. */
@@ -71,7 +98,7 @@ export const LINK =
  */
 export const UNDERLINE_LINK = `${LINK} underline decoration-current underline-offset-6 transition-opacity hover:opacity-80`;
 
-/** A quiet link in the muted ink, the secondary under the pointer: the top bar's sections, the way back up. */
+/** A quiet link in the muted ink, the secondary under the pointer: the header's sections, the way back up. */
 export const MUTED_LINK = `inline-flex min-h-11 items-center gap-2 text-[13px] ${MUTED} transition-colors hover:text-[color:var(--m-secondary)]`;
 
 /** The arrow inside a `group/link`. */
@@ -80,12 +107,31 @@ export const ARROW_NUDGE =
 
 /** A small outlined button (Copy). Never shrinks, so its label never wraps. */
 export const OUTLINE_BUTTON =
-  "inline-flex min-h-9 shrink-0 items-center justify-center border-1 border-[var(--m-accent)] px-4 text-[12px] font-semibold tracking-[0.04em] text-[color:var(--m-accent)] transition-colors hover:bg-[var(--m-accent)] hover:text-[color:var(--m-accent-ink)]";
+  "inline-flex min-h-8 shrink-0 items-center justify-center border-1 border-[var(--m-accent)] px-4 text-[12px] font-semibold tracking-[0.04em] text-[color:var(--m-accent)] transition-colors hover:bg-[var(--m-accent)] hover:text-[color:var(--m-accent-ink)]";
 
-/** A section's or card's background, by its ground. */
-export const GROUND: Record<Ground, string> = {
-  surface: "bg-[var(--m-surface)]",
-  "surface-alt": "bg-[var(--m-surface-alt)]",
+/*
+ * The roles text is written in — ink, muted ink, secondary and accent — as
+ * the palette sets them. A surface sets them back, so a card inside the
+ * accent band reads as it does on the page.
+ */
+const PAGE_ROLES =
+  "text-[color:var(--m-ink)] [--m-ink:var(--m-page-ink)] [--m-ink-muted:var(--m-page-ink-muted)] [--m-secondary:var(--m-page-secondary)] [--m-accent:var(--m-page-accent)]";
+
+/*
+ * On the accent band every one of those roles is the band's ink, muted ink
+ * its mix, so whatever a variant writes in them reads on the band with no
+ * case of its own. The band's fill reads the palette's accent from its
+ * `page-` copy, as `--m-accent` is the ink here. Alone, for text on an
+ * accent fill a variant draws itself (the playlist's band).
+ */
+export const ON_ACCENT =
+  "text-[color:var(--m-ink)] [--m-ink:var(--m-accent-ink)] [--m-ink-muted:var(--m-accent-ink-muted)] [--m-secondary:var(--m-accent-ink)] [--m-accent:var(--m-accent-ink)]";
+
+/** A section's or card's background, by its ground, with the roles that read on it. */
+export const GROUND: Record<SectionGround, string> = {
+  surface: `bg-[var(--m-surface)] ${PAGE_ROLES}`,
+  "surface-alt": `bg-[var(--m-surface-alt)] ${PAGE_ROLES}`,
+  accent: `bg-[var(--m-page-accent)] ${ON_ACCENT}`,
 };
 
 /* ── Section layout ─────────────────────────────────────────────────── */
@@ -94,11 +140,14 @@ export const GROUND: Record<Ground, string> = {
 export const PAD_X = "px-6 @3xl:px-14 @5xl:px-30";
 
 /** A section's top and bottom padding, apart so a section may drop one. */
-export const PAD_TOP = "pt-16 @3xl:pt-20 @5xl:pt-27";
-export const PAD_BOTTOM = "pb-16 @3xl:pb-20 @5xl:pb-27";
+export const PAD_TOP = "pt-16 @3xl:pt-20 @5xl:pt-25";
+export const PAD_BOTTOM = "pb-16 @3xl:pb-20 @5xl:pb-25";
 
 /** A section's padding. */
 export const PAD = `${PAD_X} ${PAD_TOP} ${PAD_BOTTOM}`;
+
+/** A tighter section padding: 56px top and bottom on a phone, 80px from `@3xl`. */
+export const PAD_SNUG = `${PAD_X} py-14 @3xl:py-20`;
 
 /** A heading over its content. */
 export const STACK = "flex flex-col gap-8 @3xl:gap-11";
@@ -126,8 +175,17 @@ export const MEASURE = "max-w-xl";
 
 /* ── Cards and surfaces ─────────────────────────────────────────────── */
 
-/** A card: a hairline edge and its padding. Its ground is the variant's. */
-export const CARD = "border-1 border-[var(--m-line)] p-6 @3xl:px-8 @3xl:py-7";
+/** A box's corners, as round as the host's corners step (`corners.ts`). */
+export const CORNER = "rounded-(--m-corner)";
+
+/** A button's or small label's corners: fully round on the last step. */
+export const PILL = "rounded-(--m-corner-pill)";
+
+/** A form field's or its dropdown list's corners: the box's, but never rounder than soft's. */
+export const FIELD_CORNER = "rounded-(--m-corner-field)";
+
+/** A card: a hairline edge, the corners and its padding. Its ground is the variant's. */
+export const CARD = `${CORNER} border-1 border-[var(--m-line)] p-6 @3xl:px-8 @3xl:py-7`;
 
 /** Frosted glass: the page's surface, a touch see-through, blurring what passes under it. */
 export const FROSTED = "bg-[var(--m-surface)]/94 backdrop-blur-sm";
@@ -139,6 +197,12 @@ export const ICON_DISC = "grid shrink-0 place-items-center rounded-full";
 export const TONES = {
   accent: "bg-[var(--m-accent-soft)] text-[color:var(--m-accent)]",
   secondary: "bg-[var(--m-secondary-soft)] text-[color:var(--m-secondary)]",
+} as const;
+
+/** Text in either accent, matching its `TONES` icon. */
+export const TONE_TEXT = {
+  accent: "text-[color:var(--m-accent)]",
+  secondary: "text-[color:var(--m-secondary)]",
 } as const;
 
 /*
@@ -160,8 +224,8 @@ export function columnsFor(count: number): string {
 /**
  * The invitation's ground — around its column on a wide guest screen, and
  * the editor's viewing area: `--m-canvas`, with the template's pattern if it
- * has one.
+ * has one, laid over the canvas in multiply so it darkens it like ink.
  */
 export function groundClasses(pattern: ModularPattern | null): string {
-  return `bg-[var(--m-canvas)] ${pattern?.className ?? ""}`;
+  return `bg-[var(--m-canvas)] ${pattern ? `${pattern.className} bg-blend-multiply` : ""}`;
 }

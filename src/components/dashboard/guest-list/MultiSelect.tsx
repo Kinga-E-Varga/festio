@@ -128,8 +128,13 @@ export function MultiSelect<T extends string>({
         onClick={() => setOpen(!open)}
         className={skin.toggle}
       >
+        {/*
+         * Many picks wrap onto more lines: one line that only clips is still
+         * as wide as all of them to the layout around it, so it pushed the
+         * field and, on a phone, the page wider.
+         */}
         <span
-          className={`truncate ${shown.length > 0 ? "" : skin.placeholder}`}
+          className={`min-w-0 [overflow-wrap:anywhere] ${shown.length > 0 ? "" : skin.placeholder}`}
         >
           {shown.length > 0 ? shown.join(", ") : placeholder}
         </span>

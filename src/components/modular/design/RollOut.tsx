@@ -43,7 +43,6 @@ export function RollOut({
   children,
   layout = "grid grid-cols-3 gap-3 @min-[360px]:grid-cols-4",
 }: RollOutProps) {
-  const t = useTranslations("DesignTab");
   const [open, setOpen] = useState(false);
 
   return (
@@ -60,31 +59,64 @@ export function RollOut({
           <Icon name={icon} className="size-[22px] text-mustard-500" />
         ) : null}
         <span className="flex min-w-0 flex-1">{summary}</span>
-        <span className="flex shrink-0 items-center gap-1.5 text-mustard-600">
-          <span className="text-[13.5px] opacity-0 transition-opacity group-hover:opacity-100 group-focus-visible:opacity-100">
-            {t(open ? "close" : "change")}
-          </span>
-          <Icon
-            name="chevron"
-            className={`size-5 transition-transform ${open ? "rotate-180" : ""}`}
-          />
-        </span>
+        <RollArrow open={open} reveal="group-focus-visible:opacity-100" />
       </button>
-      {/*
-       * Rolls out by growing its one grid row from nothing to its height;
-       * while shut it is out of the tab order.
-       */}
-      <div
-        id={id}
-        inert={!open}
-        className={`grid transition-[grid-template-rows] duration-300 ease-out ${open ? "grid-rows-[1fr]" : "grid-rows-[0fr]"}`}
-      >
+      <RollPanel id={id} open={open}>
         <div className="overflow-hidden">
           <div className="@container pt-3 pb-1">
             <div className={layout}>{children}</div>
           </div>
         </div>
-      </div>
+      </RollPanel>
     </>
+  );
+}
+
+/**
+ * A Design box's down arrow, with "Change" beside it while hovered or
+ * focused — "Close" while open. `reveal` is the class that shows the word
+ * on focus, as the box's markup decides what counts as focused.
+ */
+export function RollArrow({ open, reveal }: { open: boolean; reveal: string }) {
+  const t = useTranslations("DesignTab");
+  return (
+    <span
+      aria-hidden="true"
+      className="flex shrink-0 items-center gap-1.5 text-mustard-600"
+    >
+      <span
+        className={`text-[13.5px] opacity-0 transition-opacity group-hover:opacity-100 ${reveal}`}
+      >
+        {t(open ? "close" : "change")}
+      </span>
+      <Icon
+        name="chevron"
+        className={`size-5 transition-transform ${open ? "rotate-180" : ""}`}
+      />
+    </span>
+  );
+}
+
+/**
+ * Rolls out by growing its one grid row from nothing to its height; while
+ * shut it is out of the tab order. Its child must clip (`overflow-hidden`).
+ */
+export function RollPanel({
+  id,
+  open,
+  children,
+}: {
+  id: string;
+  open: boolean;
+  children: ReactNode;
+}) {
+  return (
+    <div
+      id={id}
+      inert={!open}
+      className={`grid transition-[grid-template-rows] duration-300 ease-out ${open ? "grid-rows-[1fr]" : "grid-rows-[0fr]"}`}
+    >
+      {children}
+    </div>
   );
 }

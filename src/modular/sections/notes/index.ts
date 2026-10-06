@@ -1,4 +1,4 @@
-import { headingFields } from "@/modular/heading";
+import { HEADING_FIELDS } from "@/modular/heading";
 import { LABELS } from "@/modular/labels";
 import { GOOD_TO_KNOW, MAX_NOTES, NOTE_SWITCH } from "@/modular/notes";
 import type { SectionDefinition } from "@/types/modular";
@@ -20,37 +20,35 @@ export const section: SectionDefinition = {
   menuLabel: GOOD_TO_KNOW,
   reads: ["dress-code", "gifts"],
   variants: [
-    { id: "cards", name: { en: "Cards", ro: "Carduri", hu: "Kártyák" } },
+    {
+      id: "1",
+      name: {
+        en: "Cards with icons",
+        ro: "Carduri cu pictograme",
+        hu: "Kártyák ikonokkal",
+      },
+    },
+    // "2" is retired (Simple, removed): never reuse it.
+    {
+      id: "3",
+      name: {
+        en: "Icon & list",
+        ro: "Pictogramă și listă",
+        hu: "Ikon és lista",
+      },
+    },
   ],
   fields: [
-    ...headingFields({
-      eyebrow: {
-        en: "The little things",
-        ro: "Lucrurile mărunte",
-        hu: "Az apróságok",
-      },
-      heading: {
-        en: "A few helpful notes",
-        ro: "Câteva informații utile",
-        hu: "Néhány hasznos tudnivaló",
-      },
-      note: {
-        en: "The details that make a lovely weekend feel effortless.",
-        ro: "Detaliile care fac un weekend frumos să pară ușor.",
-        hu: "A részletek, amelyektől egy szép hétvége könnyednek érződik.",
-      },
-    }),
+    ...HEADING_FIELDS,
     {
       id: NOTE_SWITCH["dress-code"],
       label: { en: "dress code", ro: "ținută", hu: "dresszkód" },
       type: "toggle",
-      fallback: true,
     },
     {
       id: NOTE_SWITCH.gifts,
       label: { en: "gifts", ro: "cadouri", hu: "ajándékok" },
       type: "toggle",
-      fallback: true,
     },
     {
       id: NOTE_SWITCH.custom,
@@ -60,7 +58,6 @@ export const section: SectionDefinition = {
         hu: "saját tudnivalók",
       },
       type: "toggle",
-      fallback: true,
     },
     {
       id: "items",
@@ -74,23 +71,10 @@ export const section: SectionDefinition = {
           type: "text",
           maxLength: 20,
         },
+        { id: "label", label: LABELS.eyebrow, type: "text", maxLength: 30 },
         { id: "title", label: LABELS.title, type: "text", maxLength: 40 },
         { id: "text", label: LABELS.text, type: "longText", maxLength: 300 },
         { id: "icon", label: LABELS.icon, type: "icon", maxLength: 20 },
-      ],
-      fallback: [
-        { kind: "dress-code", title: "", text: "", icon: "" },
-        { kind: "gifts", title: "", text: "", icon: "" },
-        {
-          kind: "custom",
-          title: { en: "Little ones", ro: "Cei mici", hu: "A legkisebbek" },
-          text: {
-            en: "Children are very welcome. There’s a quiet room with games, and a sitter from nine in the evening.",
-            ro: "Copiii sunt bineveniți. Avem o cameră liniștită cu jocuri și o bonă de la ora nouă seara.",
-            hu: "A gyerekeket szeretettel várjuk. Lesz egy csendes szoba játékokkal, este kilenctől pedig bébiszitter.",
-          },
-          icon: "heart",
-        },
       ],
     },
   ],

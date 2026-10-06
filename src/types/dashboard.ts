@@ -10,6 +10,7 @@ export type IconName =
   | "palette"
   | "fonts"
   | "pattern"
+  | "corners"
   | "printer"
   | "billing"
   | "shield"

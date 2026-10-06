@@ -1,7 +1,7 @@
 import type { SectionDefinition } from "@/types/modular";
 
 /**
- * Always on and always last. Its mark is the top bar's (`reads`), so the
+ * Always on and always last. Its mark is the header's (`reads`), so the
  * host writes it once; the date comes from the event.
  */
 export const section: SectionDefinition = {
@@ -10,11 +10,16 @@ export const section: SectionDefinition = {
   required: true,
   order: 160,
   ground: "own",
-  reads: ["top-bar"],
+  reads: ["header"],
   variants: [
     {
-      id: "monogram",
-      name: { en: "Monogram", ro: "Monogramă", hu: "Monogram" },
+      id: "1",
+      name: { en: "Plain", ro: "Simplu", hu: "Egyszerű" },
+    },
+    {
+      id: "2",
+      name: { en: "Accent band", ro: "Bandă în accent", hu: "Kiemelő sáv" },
+      ground: "accent",
     },
   ],
   fields: [
@@ -27,11 +32,6 @@ export const section: SectionDefinition = {
       },
       type: "text",
       maxLength: 40,
-      fallback: {
-        en: "Back to the beginning",
-        ro: "Înapoi la început",
-        hu: "Vissza az elejére",
-      },
     },
   ],
 };

@@ -387,10 +387,15 @@
     "pattern": "Background pattern",
     "plainPattern": "Plain",
     "fontPair": "Fonts",
+    "corners": "Box corners",
+    "corner": {
+      "sharp": "Sharp",
+      "slight": "Slight",
+      "soft": "Soft",
+      "round": "Round"
+    },
     "sections": "Sections",
-    "variantFor": "Style for {section}",
     "reveal": "Go to {section}",
-    "view": "View",
     "noteDressCode": "Dress code",
     "noteGifts": "Gifts",
     "noteCustom": "Your own notes"

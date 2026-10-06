@@ -1,4 +1,4 @@
-import { headingFields } from "@/modular/heading";
+import { HEADING_FIELDS } from "@/modular/heading";
 import { LABELS } from "@/modular/labels";
 import type { SectionDefinition } from "@/types/modular";
 
@@ -9,26 +9,21 @@ export const section: SectionDefinition = {
   order: 75,
   menuLabel: { en: "Accommodation", ro: "Cazare", hu: "Szállás" },
   variants: [
-    { id: "stays", name: { en: "Stays", ro: "Cazări", hu: "Szállások" } },
+    {
+      id: "1",
+      name: { en: "Simple list", ro: "Listă simplă", hu: "Egyszerű lista" },
+    },
+    {
+      id: "2",
+      name: {
+        en: "Icon & list",
+        ro: "Pictogramă și listă",
+        hu: "Ikon és lista",
+      },
+    },
   ],
   fields: [
-    ...headingFields({
-      eyebrow: {
-        en: "Make a weekend of it",
-        ro: "Fă din asta un weekend",
-        hu: "Legyen belőle egy hétvége",
-      },
-      heading: {
-        en: "A soft place to land",
-        ro: "Un loc liniștit de cazare",
-        hu: "Egy puha hely a pihenéshez",
-      },
-      note: {
-        en: "We’ve gathered a few stays nearby, from a room at the villa to a hilltop hideaway.",
-        ro: "Am adunat câteva cazări în apropiere, de la o cameră la vilă la un refugiu pe deal.",
-        hu: "Összegyűjtöttünk néhány közeli szállást, a villa szobáitól egy dombtetői búvóhelyig.",
-      },
-    }),
+    ...HEADING_FIELDS,
     {
       id: "places",
       label: { en: "places to stay", ro: "locuri de cazare", hu: "szállások" },
@@ -44,50 +39,6 @@ export const section: SectionDefinition = {
           maxLength: 40,
         },
         { id: "link", label: LABELS.link, type: "text", maxLength: 300 },
-      ],
-      fallback: [
-        {
-          name: "Villa Lena",
-          note: {
-            en: "On the estate · limited rooms",
-            ro: "Pe domeniu · camere puține",
-            hu: "A birtokon · kevés szoba",
-          },
-          distance: {
-            en: "The easiest stay",
-            ro: "Cea mai simplă variantă",
-            hu: "A legkényelmesebb",
-          },
-          link: "https://www.villalena.it/",
-        },
-        {
-          name: "Borgo di Colleoli",
-          note: {
-            en: "Country house · 10 min drive",
-            ro: "Casă la țară · 10 min cu mașina",
-            hu: "Vidéki ház · 10 perc autóval",
-          },
-          distance: {
-            en: "A little extra quiet",
-            ro: "Ceva mai liniștit",
-            hu: "Egy kicsit csendesebb",
-          },
-          link: "https://www.google.com/maps/search/hotels+Palaia+Tuscany",
-        },
-        {
-          name: "San Miniato",
-          note: {
-            en: "Town stays · 25 min drive",
-            ro: "Cazări în oraș · 25 min cu mașina",
-            hu: "Városi szállások · 25 perc autóval",
-          },
-          distance: {
-            en: "More places to explore",
-            ro: "Mai multe de explorat",
-            hu: "Több felfedeznivaló",
-          },
-          link: "https://www.google.com/maps/search/hotels+San+Miniato+Italy",
-        },
       ],
     },
   ],
