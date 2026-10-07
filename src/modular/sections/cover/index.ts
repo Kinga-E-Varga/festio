@@ -11,10 +11,12 @@ export const section: SectionDefinition = {
     {
       id: "1",
       name: { en: "Box", ro: "Casetă", hu: "Doboz" },
+      shows: ["photo", "kicker"],
     },
     {
       id: "2",
       name: { en: "Badge", ro: "Insignă", hu: "Jelvény" },
+      shows: ["photo", "kicker"],
     },
   ],
   fields: [
@@ -26,13 +28,7 @@ export const section: SectionDefinition = {
     },
     {
       id: "kicker",
-      label: LABELS.eyebrow,
-      type: "text",
-      maxLength: 60,
-    },
-    {
-      id: "dateLine",
-      label: { en: "date line", ro: "rândul cu data", hu: "dátumsor" },
+      label: { en: "highlight", ro: "evidențiere", hu: "kiemelés" },
       type: "text",
       maxLength: 60,
     },

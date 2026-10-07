@@ -1,4 +1,4 @@
-import type { ScalarField } from "@/types/modular";
+import type { ScalarField, SectionValues } from "@/types/modular";
 import { LABELS } from "./labels";
 
 /**
@@ -16,3 +16,27 @@ export const HEADING_FIELDS: readonly ScalarField[] = [
   },
   { id: "note", label: LABELS.note, type: "longText", maxLength: 240 },
 ];
+
+/** Every heading field: what a variant drawing `SectionHeading` shows. */
+export const HEADING_SHOWS = HEADING_FIELDS.map(({ id }) => id);
+
+/** `IconHeading` leaves the eyebrow out. */
+export const ICON_HEADING_SHOWS = HEADING_SHOWS.filter(
+  (id) => id !== "eyebrow",
+);
+
+/**
+ * `values` with the heading fields `shows` leaves out emptied: a variant
+ * draws only the heading parts the Content tab offers for it. The same
+ * object back when nothing needs emptying.
+ */
+export function shownHeading(
+  values: SectionValues,
+  shows: readonly string[],
+): SectionValues {
+  const hidden = HEADING_SHOWS.filter(
+    (id) => !shows.includes(id) && values[id],
+  );
+  if (hidden.length === 0) return values;
+  return { ...values, ...Object.fromEntries(hidden.map((id) => [id, ""])) };
+}

@@ -25,10 +25,7 @@ export function Variant({ values, ground }: VariantProps) {
     <div className={`${SPLIT} ${GROUND[ground]} ${PAD}`}>
       <IconHeading icon="question" values={values}>
         <div className="flex flex-col items-center gap-2 @3xl:items-start">
-          <SectionHeading
-            values={{ ...values, eyebrow: "", headingItalic: "" }}
-            align="start"
-          />
+          <SectionHeading values={values} align="start" />
           {linkLabel ? (
             <a href="#rsvp" className={UNDERLINE_LINK}>
               {linkLabel}

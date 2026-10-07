@@ -1,4 +1,8 @@
-import { HEADING_FIELDS } from "@/modular/heading";
+import {
+  HEADING_FIELDS,
+  HEADING_SHOWS,
+  ICON_HEADING_SHOWS,
+} from "@/modular/heading";
 import { LABELS } from "@/modular/labels";
 import { GOOD_TO_KNOW, MAX_NOTES, NOTE_SWITCH } from "@/modular/notes";
 import type { SectionDefinition } from "@/types/modular";
@@ -19,6 +23,7 @@ export const section: SectionDefinition = {
   order: 90,
   menuLabel: GOOD_TO_KNOW,
   reads: ["dress-code", "gifts"],
+  // No variant draws an italic second line under the heading.
   variants: [
     {
       id: "1",
@@ -27,6 +32,13 @@ export const section: SectionDefinition = {
         ro: "Carduri cu pictograme",
         hu: "Kártyák ikonokkal",
       },
+      shows: [
+        ...HEADING_SHOWS.filter((id) => id !== "headingItalic"),
+        "items.label",
+        "items.title",
+        "items.text",
+        "items.icon",
+      ],
     },
     // "2" is retired (Simple, removed): never reuse it.
     {
@@ -36,6 +48,12 @@ export const section: SectionDefinition = {
         ro: "Pictogramă și listă",
         hu: "Ikon és lista",
       },
+      shows: [
+        ...ICON_HEADING_SHOWS.filter((id) => id !== "headingItalic"),
+        "items.label",
+        "items.title",
+        "items.text",
+      ],
     },
   ],
   fields: [

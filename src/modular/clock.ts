@@ -28,10 +28,19 @@ function subscribe(listener: () => void): () => void {
   };
 }
 
-/** Milliseconds since the epoch, updated every second; `null` on the server and while hydrating. */
-export function useNow(): number | null {
+/** No ticks: for a clock that has nothing left to show. */
+function still(): () => void {
+  return () => {};
+}
+
+/**
+ * Milliseconds since the epoch, updated every second; `null` on the server
+ * and while hydrating. Once `until` has passed it stops ticking: nothing it
+ * drives changes after that.
+ */
+export function useNow(until = Infinity): number | null {
   return useSyncExternalStore(
-    subscribe,
+    now < until ? subscribe : still,
     () => now,
     () => null,
   );

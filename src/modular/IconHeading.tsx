@@ -9,8 +9,8 @@ const PLACE = {
 };
 
 /**
- * A large icon on its soft disc over the section's heading, its eyebrow left
- * out; centred on a phone, left-aligned beside content on a wider page.
+ * A large icon on its soft disc over the section's heading — no eyebrow:
+ * its variants leave it out of their `shows` (`ICON_HEADING_SHOWS`); centred on a phone, left-aligned beside content on a wider page.
  * `children` takes the heading's place when a variant draws more under it.
  */
 export function IconHeading({
@@ -35,9 +35,7 @@ export function IconHeading({
       <span className={`${ICON_DISC} size-14 ${TONES[tone]}`}>
         <Icon name={icon} className="size-8" />
       </span>
-      {children ?? (
-        <SectionHeading values={{ ...values, eyebrow: "" }} align={align} />
-      )}
+      {children ?? <SectionHeading values={values} align={align} />}
     </div>
   );
 }

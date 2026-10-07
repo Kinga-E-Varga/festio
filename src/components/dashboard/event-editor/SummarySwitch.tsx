@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import { GOLD_BTN, HINT } from "@/components/dashboard/event-editor/styles";
+import { GOLD_ACTION, HINT } from "@/components/dashboard/event-editor/styles";
 import { Icon } from "@/components/icons";
 import type { IconName } from "@/types/dashboard";
 
@@ -52,7 +52,7 @@ export function SummarySwitch({
           type="button"
           onClick={onAction}
           disabled={disabled}
-          className={`w-full shrink-0 cursor-pointer @min-[460px]:w-auto @min-[460px]:min-w-[145px] rounded-sm border px-2.5 py-[12px] text-center text-sm leading-[1.3] font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-50 ${GOLD_BTN}`}
+          className={`w-full shrink-0 @min-[460px]:w-auto @min-[460px]:min-w-[145px] ${GOLD_ACTION}`}
         >
           {action}
         </button>

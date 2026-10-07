@@ -47,7 +47,7 @@ export function SidePanel({
        * through. With no tabs (the print page) it holds only the X, so it
        * shows only while the panel covers the viewport.
        */}
-      <div className="flex flex-1 flex-col overflow-y-auto">
+      <div data-panel-scroll className="flex flex-1 flex-col overflow-y-auto">
         {/*
          * With tabs, the gap under them belongs to the sticky header, so a
          * long form scrolls out of sight a gap below the tabs' line rather

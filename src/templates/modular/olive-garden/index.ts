@@ -16,7 +16,7 @@ export const template: ModularTemplate = {
   sections: [
     { section: "header", variant: "1" }, // square
     { section: "cover", variant: "1" }, // full-box
-    { section: "title", variant: "1" }, // diamonds
+    { section: "title", variant: "1" }, // colorful
     { section: "date-time", variant: "1" }, // calendar-card
     { section: "countdown", variant: "1" }, // plain
     { section: "location", variant: "1" }, // photo-card

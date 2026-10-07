@@ -1,20 +1,12 @@
 "use client";
 
 import { useLocale, useTranslations } from "next-intl";
-import { useState } from "react";
 import { EditorHeading } from "@/components/dashboard/event-editor/EditorSection";
+import { Icon } from "@/components/icons";
 import { PanelSwitch } from "@/components/invitation/PanelSwitch";
 import { localized, type Language } from "@/lib/language";
-import { NOTE_KINDS, type NoteKind } from "@/modular/notes";
 import { customNoteSample } from "@/modular/samples";
-import {
-  NOTES_ID,
-  noteSwitchOn,
-  setNoteSwitch,
-  setSectionOn,
-  setVariant,
-  showNotes,
-} from "@/modular/state";
+import { NOTES_ID, setSectionOn, setVariant, showNotes } from "@/modular/state";
 import type {
   ModularLibrary,
   ModularState,
@@ -22,39 +14,15 @@ import type {
   SectionState,
 } from "@/types/modular";
 import { RollArrow } from "./RollOut";
+import { SectionBar } from "./SectionBar";
+import {
+  BOX_MARK,
+  BOX_MARK_STROKE,
+  SECTION_CARD as CARD,
+  SECTION_NAME as NAME,
+  SECTION_REVEAL as REVEAL,
+} from "./styles";
 import { VariantBands } from "./VariantBands";
-
-/**
- * A section's bar, the event editor's summary row: a pale card with a gold
- * edge, the toggle where that row has an icon — a required section has
- * none, its name at the left — and the styles arrow on the right. On,
- * the whole bar brings the section into view and rolls its styles out
- * under it, sharing the edge; while they are out, it only rolls them back.
- * Hovered, it says "Change" or "Close" by the arrow, like the other Design
- * boxes.
- */
-const CARD =
-  "flex min-h-[50px] flex-col justify-center border border-mustard-300 py-1 pr-4 pl-5 text-neutral-800 transition-colors";
-/**
- * An on section's whole bar: a button laid over the card, under its
- * switches, which sit above it.
- */
-const REVEAL =
-  "absolute inset-0 cursor-pointer focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-mustard-500";
-const NAME = "text-[14px] font-medium text-neutral-800";
-/**
- * Helpful notes' own switches, inside its card under a divider that runs
- * edge to edge, each toggle first, lined up with the section's name. The
- * styles come after them.
- */
-const NOTES =
-  "mt-1 -mr-4 -mb-1 -ml-5 flex flex-col border-t border-mustard-300 pt-1.5 pr-4 pl-[68px]";
-
-const NOTE_LABEL = {
-  "dress-code": "noteDressCode",
-  gifts: "noteGifts",
-  custom: "noteCustom",
-} as const satisfies Record<NoteKind, string>;
 
 interface SectionsListProps {
   library: ModularLibrary;
@@ -63,21 +31,32 @@ interface SectionsListProps {
   language: Language;
   /** `show`: a section to bring into view once the change is drawn. */
   onChange: (next: ModularState, show?: string) => void;
-  /** Brings a section into view in the preview. */
-  onReveal: (id: string) => void;
+  /** The Design tab's one section with its styles out. */
+  openStyles: string | null;
+  onOpenStyles: (id: string | null) => void;
+  /** One of a section's styles picked. */
+  onStylePicked: () => void;
+}
+
+/** A section's card in the Design tab, by its id: what the preview scrolls to. */
+export function designCardId(section: string) {
+  return `design-card-${section}`;
 }
 
 /**
  * Every section in its fixed order: a switch for the optional ones, the
- * style picker under each one that is on, and Helpful notes' own three
- * switches right under its own.
+ * style picker under each one that is on. Helpful notes' Dress code,
+ * Gifts and custom notes are switched in the Content tab. One section's styles out at a time, as in
+ * the Content tab: opening one rolls the open one back.
  */
 export function SectionsList({
   library,
   state,
   language,
   onChange,
-  onReveal,
+  openStyles,
+  onOpenStyles,
+  onStylePicked,
 }: SectionsListProps) {
   const t = useTranslations("DesignTab");
 
@@ -105,7 +84,9 @@ export function SectionsList({
               state={state}
               language={language}
               onChange={onChange}
-              onReveal={onReveal}
+              onStylePicked={onStylePicked}
+              stylesOpen={openStyles === definition.id}
+              onStyles={(open) => onOpenStyles(open ? definition.id : null)}
             />
           ) : null;
         })}
@@ -120,18 +101,19 @@ function SectionRow({
   state,
   language,
   onChange,
-  onReveal,
+  onStylePicked,
+  stylesOpen,
+  onStyles,
 }: {
   definition: SectionDefinition;
   section: SectionState;
-} & Omit<SectionsListProps, "library">) {
+  stylesOpen: boolean;
+  onStyles: (open: boolean) => void;
+} & Omit<SectionsListProps, "library" | "openStyles" | "onOpenStyles">) {
   const t = useTranslations("DesignTab");
   const host = useLocale() as Language;
   const name = localized(definition.name, host);
   const switchId = `design-section-${definition.id}`;
-  /* An optional section that is off: its card has no fill until hovered. */
-  const offable = !definition.required && !section.on;
-  const [stylesOpen, setStylesOpen] = useState(false);
   const stylesId = `design-variants-${definition.id}`;
 
   function turn(on: boolean) {
@@ -155,14 +137,8 @@ function SectionRow({
   const title = <span className={NAME}>{name}</span>;
 
   return (
-    <div className="flex flex-col">
-      {/*
-       * Off, the card drops its fill — only its edge is left, like a slot —
-       * and hovered, the fill comes back. Only the switch turns it on.
-       */}
-      <div
-        className={`${CARD} group relative ${offable ? "bg-transparent hover:bg-neutral-50" : "bg-neutral-50"} ${section.on ? "hover:bg-mustard-50" : ""}`}
-      >
+    <div id={designCardId(definition.id)} className="flex flex-col">
+      <div className={`${CARD} group relative`}>
         {/* Laid first, so the switches are drawn over it. */}
         {section.on ? (
           <button
@@ -171,20 +147,43 @@ function SectionRow({
             aria-label={t("reveal", { section: name })}
             aria-expanded={stylesOpen}
             aria-controls={stylesId}
-            onClick={() => {
-              if (!stylesOpen) onReveal(definition.id);
-              setStylesOpen(!stylesOpen);
-            }}
+            onClick={() => onStyles(!stylesOpen)}
             className={REVEAL}
           />
         ) : null}
         {definition.required ? (
-          <div className="flex min-h-10 items-center justify-between gap-3">
-            {title}
-            {arrow}
-          </div>
+          <SectionBar
+            /*
+             * A lock where the switch would be, set like the look pickers'
+             * icons above — same place, size and gap — so its name starts
+             * where theirs do, and a switch's: always on, nothing to flip.
+             */
+            mark={
+              <span
+                role="img"
+                aria-label={t("alwaysOn")}
+                title={t("alwaysOn")}
+                className="flex shrink-0"
+              >
+                <Icon
+                  name="lock"
+                  className={`${BOX_MARK} w-[22px]`}
+                  strokeWidth={BOX_MARK_STROKE}
+                />
+              </span>
+            }
+            name={name}
+            arrow={arrow}
+          />
         ) : (
           <PanelSwitch
+            /*
+             * 11px from the card's edge, 11px to the name: even on both
+             * sides, and the name still starts where the icon boxes' do
+             * (11 + 36 + 11 = 58).
+             */
+            className="-ml-[9px]"
+            gap="gap-[11px]"
             id={switchId}
             label={name}
             checked={section.on}
@@ -193,28 +192,6 @@ function SectionRow({
             end={arrow}
           />
         )}
-        {section.on && definition.id === NOTES_ID ? (
-          <div className={NOTES}>
-            {NOTE_KINDS.map((kind) => (
-              <PanelSwitch
-                key={kind}
-                id={`design-note-${kind}`}
-                label={t(NOTE_LABEL[kind])}
-                heading={<span className={NAME}>{t(NOTE_LABEL[kind])}</span>}
-                checked={noteSwitchOn(state, kind)}
-                onChange={(on) => {
-                  const next = setNoteSwitch(
-                    state,
-                    kind,
-                    on,
-                    customNoteSample(definition, language),
-                  );
-                  onChange(next, NOTES_ID);
-                }}
-              />
-            ))}
-          </div>
-        ) : null}
       </div>
       {section.on ? (
         <VariantBands
@@ -225,9 +202,10 @@ function SectionRow({
             label: localized(variant.name, host),
           }))}
           value={section.variant}
-          onPick={(variant) =>
-            onChange(setVariant(state, definition.id, variant), definition.id)
-          }
+          onPick={(variant) => {
+            onChange(setVariant(state, definition.id, variant), definition.id);
+            onStylePicked();
+          }}
         />
       ) : null}
     </div>

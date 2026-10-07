@@ -2,7 +2,7 @@
 
 import { Icon } from "@/components/icons";
 import { RollPanel } from "./RollOut";
-import { DESIGN_BAND } from "./styles";
+import { BOX_MARK, BOX_MARK_STROKE, DESIGN_BAND } from "./styles";
 
 interface VariantBandsProps<T extends string> {
   /** The rolled-out bands' id, for the arrow that opens them. */
@@ -15,7 +15,7 @@ interface VariantBandsProps<T extends string> {
 
 /**
  * A section's styles, glued under its row: rolled out by its bar, every
- * style in a band, the current one ticked. They stay out after a pick, so
+ * style in a band, the current one ticked where the bars draw their icons. They stay out after a pick, so
  * the host can try several.
  */
 export function VariantBands<T extends string>({
@@ -38,12 +38,19 @@ export function VariantBands<T extends string>({
               onClick={() => onPick(option.value)}
               className={DESIGN_BAND}
             >
+              {/* The tick's place, kept empty when not picked. */}
+              <span className={`${BOX_MARK} flex w-[22px]`}>
+                {picked ? (
+                  <Icon
+                    name="check"
+                    className={`${BOX_MARK} w-[22px]`}
+                    strokeWidth={BOX_MARK_STROKE}
+                  />
+                ) : null}
+              </span>
               <span className="min-w-0 [overflow-wrap:anywhere]">
                 {option.label}
               </span>
-              {picked ? (
-                <Icon name="check" className="size-4 shrink-0" />
-              ) : null}
             </button>
           );
         })}

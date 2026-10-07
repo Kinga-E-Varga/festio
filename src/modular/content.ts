@@ -1,4 +1,4 @@
-import { formatDay } from "@/lib/event";
+import { formatDay, isRealDate } from "@/lib/event";
 import { LANGUAGE_LOCALE, type Language } from "@/lib/language";
 import type { Group, ListItem, SectionValues } from "@/types/modular";
 
@@ -69,27 +69,42 @@ export function yearOf(iso: string): number {
   return day(iso).getFullYear();
 }
 
+/**
+ * A schedule day's date, always written the same way: EN "Friday · 17 Sept",
+ * RO "Vineri · 17 sept.", HU "Péntek · szept. 17.". Empty when it is not a
+ * real day.
+ */
+export function scheduleDay(iso: string, language: Language): string {
+  const date = day(iso);
+  if (!isRealDate(date)) return "";
+  const locale = LANGUAGE_LOCALE[language];
+  const name = date.toLocaleDateString(locale, { weekday: "long" });
+  const short = date.toLocaleDateString(locale, {
+    day: "numeric",
+    month: "short",
+  });
+  return `${name.charAt(0).toLocaleUpperCase(locale)}${name.slice(1)} · ${short}`;
+}
+
 /** "18 September 2027", in the invitation's language. */
 export function longDate(iso: string, language: Language): string {
   return formatDay(iso, language);
 }
 
-/** "Sat, 18 September 2027": the weekday short, in the invitation's language. */
-export function shortWeekdayDate(iso: string, language: Language): string {
-  return day(iso).toLocaleDateString(LANGUAGE_LOCALE[language], {
-    weekday: "short",
-    day: "numeric",
-    month: "long",
-    year: "numeric",
-  });
+/** When the event's day begins, in the guest's own clock: its midnight. */
+export function eventStart(iso: string): Date {
+  return day(iso);
 }
 
 /**
- * When the event starts, in the guest's own clock: the day at `time` when it
- * is a real `HH:MM`, else at midnight.
+ * A `time` value as the invitation writes it: EN "3:30 pm", RO and HU
+ * "15:30". Anything that is not `HH:MM` is shown as typed.
  */
-export function eventStart(iso: string, time?: string): Date {
-  return new Date(`${iso}T${time && TIME.test(time) ? time : "00:00"}`);
+export function formatTime(time: string, language: Language): string {
+  if (!TIME.test(time) || language !== "en") return time;
+  const [hours, minutes] = time.split(":");
+  const hour = Number(hours);
+  return `${hour % 12 || 12}:${minutes} ${hour < 12 ? "am" : "pm"}`;
 }
 
 export interface TimeLeft {

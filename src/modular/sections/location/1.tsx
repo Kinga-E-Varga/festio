@@ -6,8 +6,8 @@ import { WashedPhoto } from "@/modular/WashedPhoto";
 import { SectionHeading } from "@/modular/SectionHeading";
 import {
   ARROW_NUDGE,
-  CAPS,
   CORNER,
+  EYEBROW,
   GROUND,
   VENUE,
   LEAD,
@@ -38,6 +38,7 @@ export function Variant({ values, ground }: VariantProps) {
 
   return (
     <div className={`${STACK} ${GROUND[ground]} ${PAD}`}>
+      {/* No italic heading here, even one kept from another variant. */}
       <SectionHeading values={values} />
       {venues.length > 0 ? (
         <ul className="flex flex-col gap-4 @3xl:gap-6">
@@ -66,7 +67,7 @@ function VenueCard({
       <div className="flex flex-col items-center justify-center bg-[var(--m-accent)] p-8 text-center text-[color:var(--m-accent-ink)] @3xl:items-start @3xl:px-12 @3xl:py-10 @3xl:text-left">
         {venue.label ? (
           <p
-            className={`${CAPS} inline-flex items-center gap-3 text-[12.5px]! leading-none! font-medium`}
+            className={`${EYEBROW} inline-flex items-center gap-3 leading-none!`}
           >
             <CardIcon name="pin" tone="accent" />
             {venue.label}

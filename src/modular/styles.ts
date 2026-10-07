@@ -55,8 +55,15 @@ export const DISPLAY = `${HEADING} leading-none tracking-[-0.06em] text-[color:v
  */
 export const DISPLAY_PLAIN = `${SERIF} text-balance [overflow-wrap:anywhere] leading-none tracking-[-0.03em]`;
 
-/** The middle part of a three-part line: the header's mark, the title's names. */
-export const AMPERSAND = "text-[0.8em] text-[color:var(--m-secondary)]";
+/** One large plain line on a band: the band date, the bold reply's heading. Colour is the variant's. */
+export const BAND_LINE = `${DISPLAY_PLAIN} text-[40px] @md:text-[48px] @3xl:text-[60px] @5xl:text-[68px]`;
+
+/** The middle part's size beside the line's other parts. */
+export const AMPERSAND_SIZE = "text-[0.8em]";
+/** The middle part's colour, in every three-part line. */
+export const AMPERSAND_INK = "text-[color:var(--m-secondary)]";
+/** The middle part of a three-part line (the title's names, the footer's mark): a size smaller than the line. */
+export const AMPERSAND = `${AMPERSAND_SIZE} ${AMPERSAND_INK}`;
 
 /* ── Running text ───────────────────────────────────────────────────── */
 
@@ -105,9 +112,15 @@ export const MUTED_LINK = `inline-flex min-h-11 items-center gap-2 text-[13px] $
 export const ARROW_NUDGE =
   "size-3.5 shrink-0 transition-transform group-hover/link:translate-x-0.5 group-hover/link:-translate-y-0.5";
 
-/** A small outlined button (Copy). Never shrinks, so its label never wraps. */
-export const OUTLINE_BUTTON =
-  "inline-flex min-h-8 shrink-0 items-center justify-center border-1 border-[var(--m-accent)] px-4 text-[12px] font-semibold tracking-[0.04em] text-[color:var(--m-accent)] transition-colors hover:bg-[var(--m-accent)] hover:text-[color:var(--m-accent-ink)]";
+/** A small outlined button's shape and type, without its colour. */
+const OUTLINE_SHAPE =
+  "inline-flex min-h-8 shrink-0 items-center justify-center border-1 px-4 text-[12px] font-semibold tracking-[0.04em] transition-colors";
+
+/** A small outlined button in the accent. Never shrinks, so its label never wraps. */
+export const OUTLINE_BUTTON = `${OUTLINE_SHAPE} border-[var(--m-accent)] text-[color:var(--m-accent)] hover:bg-[var(--m-accent)] hover:text-[color:var(--m-accent-ink)]`;
+
+/** The same button in the secondary: the account's Copy in a gift card's side column. */
+export const OUTLINE_SECONDARY = `${OUTLINE_SHAPE} border-[var(--m-secondary)] text-[color:var(--m-secondary)] hover:bg-[var(--m-secondary)] hover:text-[color:var(--m-secondary-ink)]`;
 
 /*
  * The roles text is written in — ink, muted ink, secondary and accent — as
@@ -206,8 +219,10 @@ export const TONE_TEXT = {
 } as const;
 
 /*
- * Columns for one to four cards: all in a row once there is room, two by two
- * for four on a mid-width page. Never an empty cell.
+ * Columns for one to six cards: up to four all in a row once there is room,
+ * two by two for four on a mid-width page. Five and six go in rows of
+ * three (two on a mid-width page) — five is the only count left with an
+ * empty cell.
  */
 const COLUMNS = [
   "",
@@ -215,10 +230,12 @@ const COLUMNS = [
   "@3xl:grid-cols-2",
   "@3xl:grid-cols-3",
   "@3xl:grid-cols-2 @5xl:grid-cols-4",
+  "@3xl:grid-cols-2 @5xl:grid-cols-3",
+  "@3xl:grid-cols-2 @5xl:grid-cols-3",
 ];
 
 export function columnsFor(count: number): string {
-  return COLUMNS[Math.min(count, 4)] ?? "";
+  return COLUMNS[Math.min(count, COLUMNS.length - 1)];
 }
 
 /**

@@ -1,11 +1,20 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { useEffect, useRef, useState } from "react";
+import {
+  useCallback,
+  useDeferredValue,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { useToast } from "@/components/dashboard/Toast";
 import { EditorFrame } from "@/components/invitation/EditorTopBar";
+import type { PanelTabId } from "@/components/invitation/PanelTabs";
 import type { Language } from "@/lib/language";
 import { useLeaveWarning } from "@/lib/leave-warning";
+import { firstMissing } from "@/modular/fields";
 import { applyTemplate, resolveDesign, sameState } from "@/modular/state";
 import { groundClasses } from "@/modular/styles";
 import { modularVars } from "@/modular/vars";
@@ -14,6 +23,8 @@ import type {
   ModularLibrary,
   ModularState,
 } from "@/types/modular";
+import { contentCardId } from "./content/ContentTab";
+import { designCardId } from "./design/SectionsList";
 import { ModularEditPanel } from "./ModularEditPanel";
 import { ModularInvitation } from "./ModularInvitation";
 
@@ -37,6 +48,24 @@ function scrollToSection(id: string) {
   }
   const tall = page ? section.offsetHeight > page.clientHeight : false;
   section.scrollIntoView({ block: tall ? "start" : "center" });
+}
+
+/*
+ * A section's card (by its element id) to the top of the open tab, just
+ * under the panel's sticky tabs. The panel scrolls on its own, apart from
+ * the page.
+ */
+function scrollToCard(id: string) {
+  const card = document.getElementById(id);
+  const panel = card?.closest<HTMLElement>("[data-panel-scroll]");
+  if (!card || !panel) return;
+  const sticky = panel.firstElementChild?.clientHeight ?? 0;
+  const top =
+    card.getBoundingClientRect().top -
+    panel.getBoundingClientRect().top +
+    panel.scrollTop -
+    sticky;
+  panel.scrollTo({ top, behavior: "smooth" });
 }
 
 interface ModularEditorProps {
@@ -73,16 +102,43 @@ export function ModularEditor({
   const [justSaved, setJustSaved] = useState(false);
   /* Not stored: only which template the Design tab shows as current. */
   const [template, setTemplate] = useState(templateId);
+  const [tab, setTab] = useState<PanelTabId>("design");
+  /* The Content tab's one open section. */
+  const [openSection, setOpenSection] = useState<string | null>(null);
+  /* The Design tab's one section with its styles out. */
+  const [openStyles, setOpenStyles] = useState<string | null>(null);
+  /* Save was tried with an empty required field: every such field says so. */
+  const [showErrors, setShowErrors] = useState(false);
   const toast = useToast();
+  const showToast = toast.show;
+  /*
+   * The preview draws a deferred copy of the state: typing in the panel
+   * stays quick, and the invitation catches up as soon as React is free.
+   */
+  const preview = useDeferredValue(state);
+  const design = useMemo(
+    () => resolveDesign(preview, library),
+    [preview, library],
+  );
 
-  const dirty = !sameState(state, saved);
+  const dirty = useMemo(() => !sameState(state, saved), [state, saved]);
   useLeaveWarning(dirty, t("leaveUnsaved"));
 
   /*
-   * A section just turned on, given a new style or asked for, waiting to be scrolled
-   * to once it is drawn.
+   * Steps that can only run once the next render is drawn: scrolling to a
+   * section, focusing a field, scrolling to a card. Each runs once, then
+   * is dropped; one that needs the preview waits until it has caught up.
    */
-  const toShow = useRef<string | null>(null);
+  const afterDraw = useRef<{ run: () => void; preview?: boolean }[]>([]);
+
+  useEffect(() => {
+    const caughtUp = preview === state;
+    afterDraw.current = afterDraw.current.filter((step) => {
+      if (step.preview && !caughtUp) return true;
+      step.run();
+      return false;
+    });
+  });
 
   function change(next: ModularState, show?: string) {
     /* A section the change turned off has nothing to go to. */
@@ -90,25 +146,38 @@ export function ModularEditor({
       show &&
       next.sections.some(({ section, on }) => section === show && on)
     ) {
-      toShow.current = show;
+      /*
+       * The section turned on, restyled or asked for comes into view, so
+       * the host sees what they changed. The panel stays open: they are
+       * still choosing.
+       */
+      afterDraw.current.push({
+        run: () => scrollToSection(show),
+        preview: true,
+      });
     }
     setState(next);
     setJustSaved(false);
   }
 
   /*
-   * After the render that drew it, a section turned on, restyled or asked
-   * for comes into view, so the host sees what they changed. The panel stays open:
-   * they are still choosing.
+   * In memory only, like the simple editor: there is no event yet. An empty
+   * required field stops it: the host is taken there, and every such field
+   * says so.
    */
-  useEffect(() => {
-    if (!toShow.current) return;
-    scrollToSection(toShow.current);
-    toShow.current = null;
-  });
-
-  /* In memory only, like the simple editor: there is no event yet. */
   function save() {
+    const missing = firstMissing(state, library);
+    if (missing) {
+      setEditing(true);
+      setTab("content");
+      setShowErrors(true);
+      openFields(missing.section);
+      afterDraw.current.push({
+        run: () => document.getElementById(missing.id)?.focus(),
+      });
+      return;
+    }
+    setShowErrors(false);
     setSaved(state);
     setJustSaved(true);
     toast.show(t("saved"));
@@ -121,13 +190,69 @@ export function ModularEditor({
     change(applyTemplate(state, picked));
   }
 
-  /* A section into view. Where the panel covers the screen it closes first, so the host sees where it went. */
-  function reveal(id: string) {
-    if (!window.matchMedia(PANEL_BESIDE).matches) setEditing(false);
-    scrollToSection(id);
+  /*
+   * A section's styles out in the Design tab. Its section comes into view
+   * only beside the panel: where the panel covers the screen, nothing moves
+   * and it stays open on the styles just opened, as with the Content tab.
+   */
+  function openStylesOf(id: string | null) {
+    setOpenStyles(id);
+    if (id && window.matchMedia(PANEL_BESIDE).matches) scrollToSection(id);
   }
 
-  const design = resolveDesign(state, library);
+  /*
+   * A style picked: where the panel covers the screen it closes, so the
+   * host sees it; the change itself scrolls to the section once drawn
+   * (`afterDraw`).
+   */
+  function stylePicked() {
+    if (!window.matchMedia(PANEL_BESIDE).matches) setEditing(false);
+  }
+
+  /*
+   * A section's fields out in the Content tab. Its section comes into view
+   * only beside the panel: where the panel covers the screen, closing it
+   * would hide the fields just opened.
+   */
+  const openFields = useCallback((id: string | null) => {
+    setOpenSection(id);
+    if (id && window.matchMedia(PANEL_BESIDE).matches) scrollToSection(id);
+  }, []);
+
+  /* The preview's Content button: the panel on Content, that section's fields out. */
+  const editContent = useCallback(
+    (id: string) => {
+      setEditing(true);
+      setTab("content");
+      openFields(id);
+      afterDraw.current.push({ run: () => scrollToCard(contentCardId(id)) });
+    },
+    [openFields],
+  );
+
+  /* The preview's Design button: the panel on Design, that section's styles out. */
+  const editDesign = useCallback((id: string) => {
+    setEditing(true);
+    setTab("design");
+    setOpenStyles(id);
+    afterDraw.current.push({ run: () => scrollToCard(designCardId(id)) });
+  }, []);
+
+  /* Kept the same between renders, so the preview skips the ones that change nothing it draws. */
+  const edit = useMemo(
+    () =>
+      editing
+        ? {
+            design: { label: t("editDesign"), onEdit: editDesign },
+            content: { label: t("editContent"), onEdit: editContent },
+          }
+        : undefined,
+    [editing, t, editDesign, editContent],
+  );
+  const testReply = useCallback(
+    () => showToast(t("testReply"), "warning"),
+    [showToast, t],
+  );
 
   return (
     <EditorFrame
@@ -164,20 +289,29 @@ export function ModularEditor({
               basics={basics}
               language={language}
               framed
-              onRsvp={() => toast.show(t("testReply"), "warning")}
+              edit={edit}
+              onRsvp={testReply}
             />
           ) : null}
         </div>
         <ModularEditPanel
           open={editing}
           onClose={() => setEditing(false)}
+          tab={tab}
+          onTab={setTab}
           library={library}
           state={state}
+          basics={basics}
+          openSection={openSection}
+          onOpenSection={openFields}
+          showErrors={showErrors}
           templateId={template}
           language={language}
           onChange={change}
           onTemplate={pickTemplate}
-          onReveal={reveal}
+          openStyles={openStyles}
+          onOpenStyles={openStylesOf}
+          onStylePicked={stylePicked}
         />
       </div>
     </EditorFrame>

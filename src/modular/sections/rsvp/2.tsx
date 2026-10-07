@@ -2,8 +2,7 @@
 
 import { RsvpForm } from "@/components/invitation/RsvpForm";
 import { text } from "@/modular/content";
-import { SectionHeading } from "@/modular/SectionHeading";
-import { CARD, ITALIC_LINE, MUTED, PAD } from "@/modular/styles";
+import { BAND_LINE, CARD, ITALIC_LINE, MUTED, PAD } from "@/modular/styles";
 import type { VariantProps } from "@/types/modular";
 import { SKIN, ThankYouCard, useReply } from "./reply";
 
@@ -28,10 +27,6 @@ const HEADING_COLUMN = "@3xl:min-w-0 @3xl:shrink @3xl:basis-[350px]";
 const CARD_WIDTH =
   "mx-auto w-full max-w-140 @3xl:mx-0 @3xl:max-w-[620px] @3xl:shrink-0 @3xl:grow @3xl:basis-[380px]";
 
-/* The heading far larger than `H2`'s 34 / 44 / 48px: 80px on a wide page. */
-const LARGER_HEADING =
-  "[&_h2]:text-[48px] @3xl:[&_h2]:text-[64px] @5xl:[&_h2]:text-[80px]";
-
 /*
  * The heading on the band: its ink and eyebrow in the tertiary's ink, the
  * only colour the palette promises reads on it, and muted text in that
@@ -49,14 +44,20 @@ const ON_BAND =
  */
 export function Variant({ values, onRsvp }: VariantProps) {
   const { form, send } = useReply(onRsvp);
+  const heading = text(values, "heading");
   const note = text(values, "note");
 
   return (
     <div className={`${LAYOUT} bg-[var(--m-tertiary)] ${PAD}`}>
       <div
-        className={`flex flex-col items-center gap-5 ${HEADING_COLUMN} ${ON_BAND} ${LARGER_HEADING}`}
+        className={`flex flex-col items-center gap-5 ${HEADING_COLUMN} ${ON_BAND}`}
       >
-        <SectionHeading values={{ ...values, eyebrow: "", note: "" }} />
+        {/* Set like the band date, in the band's ink. */}
+        {heading ? (
+          <h2 className={`${BAND_LINE} text-center text-[color:var(--m-ink)]`}>
+            {heading}
+          </h2>
+        ) : null}
         {/* The note in the title caption's style. */}
         {note ? (
           <p

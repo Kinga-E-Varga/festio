@@ -8,6 +8,7 @@ export type IconName =
   | "seating"
   | "templates"
   | "palette"
+  | "brush"
   | "fonts"
   | "pattern"
   | "corners"

@@ -4,11 +4,10 @@ import { useTranslations } from "next-intl";
 import {
   BANNER_TONE,
   LABEL,
-  PANEL_CHOICE_OFF,
-  PANEL_CHOICE_ON,
-  PANEL_INPUT,
+  INPUT,
+  PANEL_CHOICE,
 } from "@/components/dashboard/event-editor/styles";
-import { Icon } from "@/components/icons";
+import { PanelSwitch } from "@/components/invitation/PanelSwitch";
 import { PanelViewButton, SidePanel } from "@/components/invitation/SidePanel";
 import type { PrintSettings, PrintShape } from "@/types/print";
 
@@ -65,9 +64,7 @@ export function PrintPanel({
                 type="button"
                 aria-pressed={settings.shape === shape}
                 onClick={() => onChange("shape", shape)}
-                className={
-                  settings.shape === shape ? PANEL_CHOICE_ON : PANEL_CHOICE_OFF
-                }
+                className={PANEL_CHOICE}
               >
                 {t(shape)}
               </button>
@@ -77,25 +74,12 @@ export function PrintPanel({
 
         <fieldset className="flex flex-col mb-6">
           <legend className={`${LABEL} mb-2`}>{t("background")}</legend>
-          {/* The event editor's checkbox in the choice buttons' colours: the real input, drawn on, its tick laid over it. */}
-          <label className="flex cursor-pointer items-start gap-[9px] text-[13.5px] leading-[1.45] text-neutral-800">
-            <span className="relative mt-px grid size-4 shrink-0 place-items-center">
-              <input
-                type="checkbox"
-                checked={settings.tinted}
-                onChange={(control) =>
-                  onChange("tinted", control.target.checked)
-                }
-                className="peer size-4 cursor-pointer appearance-none border-[1.5px] border-neutral-800 bg-mustard-50 transition-colors checked:bg-neutral-300 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-mustard-400"
-              />
-              <Icon
-                name="check"
-                strokeWidth={3}
-                className="pointer-events-none absolute size-3 text-neutral-800 opacity-0 peer-checked:opacity-100"
-              />
-            </span>
-            {t("tinted")}
-          </label>
+          <PanelSwitch
+            id="print-tinted"
+            label={t("tinted")}
+            checked={settings.tinted}
+            onChange={(on) => onChange("tinted", on)}
+          />
         </fieldset>
 
         <LineField
@@ -182,7 +166,7 @@ function LineField({
         placeholder={placeholder}
         value={value}
         onChange={(control) => onChange(control.target.value)}
-        className={`${PANEL_INPUT} resize-none`}
+        className={`${INPUT} resize-none`}
       />
     </div>
   );

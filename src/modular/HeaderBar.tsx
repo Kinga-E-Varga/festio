@@ -2,7 +2,13 @@ import { useTranslations } from "next-intl";
 import { SECTIONS_TRIGGER_ID } from "@/modular/nav";
 import { Icon } from "@/modular/icons";
 import { Mark, markParts } from "@/modular/Mark";
-import { SERIF_BOLDER, FROSTED, MUTED_LINK, PILL } from "@/modular/styles";
+import {
+  AMPERSAND_INK,
+  SERIF_BOLDER,
+  FROSTED,
+  MUTED_LINK,
+  PILL,
+} from "@/modular/styles";
 import type { VariantProps } from "@/types/modular";
 
 interface HeaderBarProps extends VariantProps {
@@ -21,31 +27,41 @@ const SECONDARY_FILL =
   "border-[var(--m-secondary)] bg-[var(--m-secondary)] text-[color:var(--m-secondary-ink)]";
 
 /*
- * The mark, in every variant: the heading face a step bolder, set tight.
+ * The mark, in every variant: the heading face a step bolder at 23px, set tight.
  * Its optical size is pinned at 22, past Fraunces' 21.66 limit, so its
- * alternate letters (&, h, m, n, s) show at every mark size; a face without
+ * alternate letters (&, h, m, n, s) show; a face without
  * an optical size ignores it.
  */
-const MARK = `${SERIF_BOLDER} leading-none tracking-[-0.04em] [font-variation-settings:'opsz'_22]`;
+const MARK = `${SERIF_BOLDER} text-[23px] leading-none tracking-[-0.04em] [font-variation-settings:'opsz'_22]`;
 
-/** Each variant's mark (size, colour), section links (look, gap), ☰ and Reply button. */
+/** The mark's middle part: 20px in every variant; its colour is the variant's. */
+const MARK_MIDDLE = "text-[20px]";
+
+/** Balanced's look, which Plain shares but for the mark's middle. */
+const ROUNDED = {
+  mark: "text-[color:var(--m-ink)]",
+  middle: AMPERSAND_INK,
+  link: MUTED_LINK,
+  links: "gap-7",
+  // The icon sits on the bar's edge; the button keeps its 44px for a thumb.
+  menu: "-mx-3",
+  reply: `${REPLY_TEXT} ${SECONDARY_FILL} hover:border-[var(--m-accent)] hover:bg-[var(--m-accent)] hover:text-[color:var(--m-accent-ink)]`,
+};
+
+/** Each variant's mark colour and its middle's, section links (look, gap), ☰ and Reply button. */
 const LOOKS = {
   square: {
-    mark: "text-[22px] text-[color:var(--m-accent)] @5xl:text-[24px]",
+    mark: "text-[color:var(--m-accent)]",
+    middle: AMPERSAND_INK,
     link: MUTED_LINK,
     links: "gap-7",
     menu: "",
     // The eyebrow's look at 11px: a button, not an eyebrow.
     reply: `${REPLY_TEXT} ${ACCENT_FILL} hover:border-[var(--m-secondary)] hover:bg-[var(--m-secondary)] hover:text-[color:var(--m-secondary-ink)]`,
   },
-  rounded: {
-    mark: "text-[22px] text-[color:var(--m-ink)]",
-    link: MUTED_LINK,
-    links: "gap-7",
-    // The icon sits on the bar's edge; the button keeps its 44px for a thumb.
-    menu: "-mx-3",
-    reply: `${REPLY_TEXT} ${SECONDARY_FILL} hover:border-[var(--m-accent)] hover:bg-[var(--m-accent)] hover:text-[color:var(--m-accent-ink)]`,
-  },
+  rounded: ROUNDED,
+  // The middle in the mark's own colour: one ink across the whole mark.
+  plain: { ...ROUNDED, middle: "" },
 };
 
 /**
@@ -59,11 +75,15 @@ const LOOKS = {
 export function HeaderBar({ values, nav, look }: HeaderBarProps) {
   const t = useTranslations("Sections");
   const links = nav?.links ?? [];
-  const mark = markParts(values, "mark");
+  const mark = markParts(
+    values,
+    "mark",
+    `${MARK_MIDDLE} ${LOOKS[look].middle}`,
+  );
 
   return (
     <header
-      className={`${FROSTED} sticky top-0 z-20 flex h-14 items-center gap-3 border-b-1 border-[var(--m-line)] px-3 text-[color:var(--m-ink)] @5xl:h-16 @5xl:gap-8 @5xl:px-10`}
+      className={`${FROSTED} group/edit sticky top-0 z-20 flex h-14 items-center gap-3 border-b-1 border-[var(--m-line)] px-3 text-[color:var(--m-ink)] @5xl:h-16 @5xl:gap-8 @5xl:px-10`}
     >
       {links.length > 0 ? (
         <button
@@ -107,6 +127,7 @@ export function HeaderBar({ values, nav, look }: HeaderBarProps) {
       >
         {t("rsvp")}
       </a>
+      {nav?.edit}
     </header>
   );
 }

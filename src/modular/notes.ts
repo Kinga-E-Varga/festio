@@ -20,9 +20,8 @@ export type NoteKind = (typeof NOTE_KINDS)[number];
 export const MAX_NOTES = 6;
 
 /**
- * Each kind's on/off switch: a `toggle` field on Helpful notes. The Design
- * tab draws them; the text editor leaves them out. Custom covers every
- * custom note at once.
+ * Each kind's on/off switch: a `toggle` field on Helpful notes, drawn on
+ * its part's bar in the Content tab. Custom covers every custom note at once.
  */
 export const NOTE_SWITCH: Record<NoteKind, string> = {
   "dress-code": "showDressCode",

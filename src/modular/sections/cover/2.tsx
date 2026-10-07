@@ -10,7 +10,8 @@ import type { VariantProps } from "@/types/modular";
  */
 export function Variant({ values, basics, language }: VariantProps) {
   const kicker = text(values, "kicker");
-  const date = text(values, "dateLine") || longDate(basics.date, language);
+  /* The event's own date, in the invitation's language. */
+  const date = longDate(basics.date, language);
 
   return (
     <CoverPhoto

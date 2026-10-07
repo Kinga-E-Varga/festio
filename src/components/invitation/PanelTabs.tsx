@@ -12,12 +12,12 @@ const TAB =
 
 /**
  * The editor's tabs, in the order the host meets them: the design first,
- * then the invitation's text, then the reply's. Shared by the simple and the
+ * then the invitation's content, then the reply's. Shared by the simple and the
  * modular edit panels, which differ only in what each tab holds.
  */
 const TABS = [
   { id: "design", labelKey: "tabDesign" },
-  { id: "text", labelKey: "tabText" },
+  { id: "content", labelKey: "tabContent" },
   { id: "replies", labelKey: "tabReplies" },
 ] as const;
 

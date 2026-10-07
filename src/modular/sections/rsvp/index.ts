@@ -1,4 +1,8 @@
-import { HEADING_FIELDS } from "@/modular/heading";
+import {
+  HEADING_FIELDS,
+  HEADING_SHOWS,
+  ICON_HEADING_SHOWS,
+} from "@/modular/heading";
 import type { SectionDefinition } from "@/types/modular";
 
 /**
@@ -16,14 +20,21 @@ export const section: SectionDefinition = {
     {
       id: "1",
       name: { en: "Soft band", ro: "Bandă discretă", hu: "Lágy sáv" },
+      shows: [...HEADING_SHOWS],
     },
     {
       id: "2",
       name: { en: "Bold band", ro: "Bandă intensă", hu: "Élénk sáv" },
+      // No italic second line under the heading.
+      shows: ICON_HEADING_SHOWS.filter((id) => id !== "headingItalic"),
     },
   ],
   fields: [
     ...HEADING_FIELDS,
+    /*
+     * The thank-you texts: drawn by both variants from the samples, but in
+     * no variant's `shows`, so the Content tab does not offer them yet.
+     */
     {
       id: "thankYou",
       label: {

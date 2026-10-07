@@ -1,4 +1,8 @@
-import { HEADING_FIELDS } from "@/modular/heading";
+import {
+  HEADING_FIELDS,
+  HEADING_SHOWS,
+  ICON_HEADING_SHOWS,
+} from "@/modular/heading";
 import { LABELS } from "@/modular/labels";
 import type { SectionDefinition } from "@/types/modular";
 
@@ -12,6 +16,13 @@ export const section: SectionDefinition = {
     {
       id: "1",
       name: { en: "Simple list", ro: "Listă simplă", hu: "Egyszerű lista" },
+      shows: [
+        ...HEADING_SHOWS,
+        "places.name",
+        "places.note",
+        "places.distance",
+        "places.link",
+      ],
     },
     {
       id: "2",
@@ -20,6 +31,14 @@ export const section: SectionDefinition = {
         ro: "Pictogramă și listă",
         hu: "Ikon és lista",
       },
+      // No italic second line under the heading.
+      shows: [
+        ...ICON_HEADING_SHOWS.filter((id) => id !== "headingItalic"),
+        "places.name",
+        "places.note",
+        "places.distance",
+        "places.link",
+      ],
     },
   ],
   fields: [
@@ -27,6 +46,12 @@ export const section: SectionDefinition = {
     {
       id: "places",
       label: { en: "places to stay", ro: "locuri de cazare", hu: "szállások" },
+      itemLabel: { en: "place", ro: "cazarea", hu: "szállás" },
+      addLabel: {
+        en: "add new place",
+        ro: "adaugă o cazare nouă",
+        hu: "új szállás hozzáadása",
+      },
       type: "list",
       maxItems: 6,
       item: [

@@ -1,7 +1,7 @@
 import type { ModularTemplate } from "@/types/modular";
 
 /**
- * Sunbaked and Fraunces + Space Grotesk on a plain ground, with the Rounded
+ * Sunbaked and Fraunces + Space Grotesk on a plain ground, with the Plain
  * header. Helpful notes shows Dress code and Gifts.
  * One location, for the ceremony and the dinner.
  */
@@ -15,7 +15,7 @@ export const template: ModularTemplate = {
   fontPair: "fraunces-space-grotesk",
   corners: "round",
   sections: [
-    { section: "header", variant: "2" }, // rounded
+    { section: "header", variant: "3" }, // plain
     { section: "cover", variant: "2" }, // full-circle
     { section: "title", variant: "2" }, // plain
     { section: "date-time", variant: "2" }, // plain
@@ -31,11 +31,14 @@ export const template: ModularTemplate = {
     { section: "footer", variant: "2" }, // band
   ],
   values: {
-    header: { markStart: "Maddie & Claude", markMiddle: "", markEnd: "" },
+    header: { markStart: "Maddie", markEnd: "Claude" },
     title: {
-      namesStart: "Maddie & Claude are tying the knot",
-      namesMiddle: "",
-      namesEnd: "",
+      decoration: "none",
+      secondLine: {
+        en: "are tying the knot",
+        ro: "își unesc destinele",
+        hu: "összeházasodnak",
+      },
       eyebrow: {
         en: "We’re getting married",
         ro: "Ne căsătorim",
@@ -45,13 +48,6 @@ export const template: ModularTemplate = {
         en: "Come for the vows, stay for the dancing. A weekend of food, music and terrible dance moves on the cliffs above Cassis.",
         ro: "Veniți la jurăminte, rămâneți la dans. Un weekend cu mâncare, muzică și dans stângaci pe falezele de deasupra Cassis-ului.",
         hu: "Gyere a fogadalomra, maradj a táncra. Egy hétvége étellel, zenével és borzasztó tánclépésekkel a Cassis fölötti sziklákon.",
-      },
-    },
-    "date-time": {
-      note: {
-        en: "Ceremony at 3:30 pm, apéritif at 5:00 pm, then dinner and dancing until late.",
-        ro: "Ceremonia la 15:30, aperitiv la 17:00, apoi cină și dans până târziu.",
-        hu: "Szertartás 15:30-kor, aperitif 17:00-kor, aztán vacsora és tánc késő estig.",
       },
     },
     countdown: {
@@ -88,11 +84,7 @@ export const template: ModularTemplate = {
       days: [
         {
           values: {
-            label: {
-              en: "Saturday · 18 Sep",
-              ro: "Sâmbătă · 18 sept.",
-              hu: "Szombat · szept. 18.",
-            },
+            date: "2027-09-18",
           },
           items: [
             {
@@ -147,10 +139,21 @@ export const template: ModularTemplate = {
         ro: "Cum ajungi fără bătăi de cap",
         hu: "Odajutás egyszerűen",
       },
-      note: {
-        en: "By train, by shuttle or by car: however you come, we’ll help you find the way.",
-        ro: "Cu trenul, cu transferul sau cu mașina: oricum ai veni, te ajutăm să găsești drumul.",
-        hu: "Vonattal, transzferrel vagy autóval: bárhogy jössz, segítünk odatalálni.",
+    },
+    // Variant 2 draws no second line, so the heading ends without a comma.
+    accommodation: {
+      heading: {
+        en: "A soft place to land",
+        ro: "Un loc liniștit de cazare",
+        hu: "Egy puha hely a pihenéshez",
+      },
+    },
+    // FAQ's variant 2 draws no second line either.
+    faq: {
+      heading: {
+        en: "Good questions",
+        ro: "Întrebări bune",
+        hu: "Jó kérdések",
       },
     },
     menu: {
@@ -200,7 +203,6 @@ export const template: ModularTemplate = {
         },
       ],
     },
-    gifts: { showAccount: false },
     cover: {
       photo: "/modular/samples/couple-ava-mateo.jpg",
       kicker: { en: "You're invited", ro: "Te invităm", hu: "Meghívunk" },

@@ -1,4 +1,4 @@
-import { HEADING_FIELDS } from "@/modular/heading";
+import { HEADING_FIELDS, HEADING_SHOWS } from "@/modular/heading";
 import { LABELS } from "@/modular/labels";
 import type { SectionDefinition } from "@/types/modular";
 
@@ -19,6 +19,14 @@ export const section: SectionDefinition = {
         ro: "Carduri cu fotografie",
         hu: "Fotós kártyák",
       },
+      // Every heading field but the italic heading.
+      shows: [
+        ...HEADING_SHOWS.filter((id) => id !== "headingItalic"),
+        "venues.label",
+        "venues.venue",
+        "venues.address",
+        "venues.photo",
+      ],
     },
     {
       id: "2",
@@ -27,6 +35,13 @@ export const section: SectionDefinition = {
         ro: "Pictogramă și fotografie",
         hu: "Ikon és fotó",
       },
+      shows: [
+        "venues.label",
+        "venues.venue",
+        "venues.address",
+        "venues.detail",
+        "venues.photo",
+      ],
     },
   ],
   fields: [
@@ -34,15 +49,22 @@ export const section: SectionDefinition = {
     {
       id: "venues",
       label: { en: "locations", ro: "locații", hu: "helyszínek" },
+      itemLabel: { en: "location", ro: "locația", hu: "helyszín" },
+      addLabel: {
+        en: "add new location",
+        ro: "adaugă o locație nouă",
+        hu: "új helyszín hozzáadása",
+      },
       type: "list",
       maxItems: 3,
+      minItems: 1,
       item: [
         {
           id: "label",
           label: {
-            en: "line above the venue",
-            ro: "rândul de deasupra locației",
-            hu: "sor a helyszín fölött",
+            en: "what happens here",
+            ro: "ce are loc aici",
+            hu: "mi lesz itt",
           },
           type: "text",
           maxLength: 40,
@@ -56,12 +78,8 @@ export const section: SectionDefinition = {
         },
         {
           id: "detail",
-          label: {
-            en: "line under the venue",
-            ro: "rând sub locație",
-            hu: "sor a helyszín alatt",
-          },
-          type: "text",
+          label: LABELS.note,
+          type: "longText",
           maxLength: 80,
         },
         { id: "photo", label: LABELS.photo, type: "image", maxLength: 300 },

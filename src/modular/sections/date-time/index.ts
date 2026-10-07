@@ -1,11 +1,13 @@
-import { HEADING_FIELDS } from "@/modular/heading";
-import { LABELS } from "@/modular/labels";
+import { HEADING_FIELDS, HEADING_SHOWS } from "@/modular/heading";
 import type { SectionDefinition } from "@/types/modular";
 
-/** The countdown reads `moments`: it counts to the first one's time. */
+/**
+ * The event's date; the id stays `date-time`, as ids are permanent. Every
+ * variant shows the heading's `note`.
+ */
 export const section: SectionDefinition = {
   id: "date-time",
-  name: { en: "Date & time", ro: "Data și ora", hu: "Dátum és időpont" },
+  name: { en: "Date", ro: "Data", hu: "Dátum" },
   required: true,
   order: 30,
   menuLabel: { en: "The day", ro: "Ziua", hu: "A nap" },
@@ -13,6 +15,7 @@ export const section: SectionDefinition = {
     {
       id: "1",
       name: { en: "Calendar card", ro: "Card calendar", hu: "Naptárkártya" },
+      shows: ["eventDate", ...HEADING_SHOWS],
     },
     {
       id: "2",
@@ -22,24 +25,29 @@ export const section: SectionDefinition = {
         hu: "Kiemelés és nagy dátum",
       },
       ground: "accent",
+      shows: ["eventDate", "dateFormat", "note"],
+    },
+    {
+      id: "3",
+      name: {
+        en: "Tear-off",
+        ro: "Calendar de perete",
+        hu: "Letéphető naptár",
+      },
+      shows: ["eventDate", ...HEADING_SHOWS],
     },
   ],
   fields: [
-    ...HEADING_FIELDS,
     {
-      id: "moments",
-      label: {
-        en: "parts of the day",
-        ro: "momentele zilei",
-        hu: "a nap részei",
-      },
-      type: "list",
-      maxItems: 4,
-      item: [
-        { id: "time", label: LABELS.time, type: "time", maxLength: 5 },
-        { id: "title", label: LABELS.title, type: "text", maxLength: 40 },
-        { id: "place", label: LABELS.place, type: "text", maxLength: 60 },
-      ],
+      id: "eventDate",
+      label: { en: "date", ro: "data", hu: "dátum" },
+      type: "eventDate",
     },
+    {
+      id: "dateFormat",
+      label: { en: "date format", ro: "formatul datei", hu: "dátumformátum" },
+      type: "dateFormat",
+    },
+    ...HEADING_FIELDS,
   ],
 };

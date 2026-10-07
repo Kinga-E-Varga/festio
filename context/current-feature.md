@@ -1,6 +1,6 @@
-# Current Feature
+# Current Feature: Modular invitations 5 — Content tab
 
-Modular invitations 4 — Section variants & palettes — a second look for every section, a second template, box corners, more palettes with moods, and a palette skill.
+The modular editor's empty Text tab becomes the Content tab, where the host edits the values of every section that is on. Spec: `context/features/modular-5-content-tab.md`.
 
 ## Status
 
@@ -8,26 +8,34 @@ Completed
 
 ## Goals
 
-- **Variants:** a second variant for most sections, numbered by id (`1.tsx`, `2.tsx`; ids never renamed or reused) — header Colourful / Plain, cover Box / Badge, title Colorful & divider / Plain, date & time, countdown, location, schedule, transportation, accommodation, menu (3), Helpful notes, FAQ, reply Soft band / Bold band, footer Plain / Accent band. Parts two variants share live in their own file beside them; a variant never imports another.
-- **Shared pieces:** `HeaderBar`, `TitleNames`, `CoverPhoto`, `WashedPhoto`, `IconHeading`, `Mark` (a line in three parts), `countdown.ts`; `top-bar` renamed `header`.
-- **Samples apart from the sections:** every sample in `defaults.ts`, read by the editor only (`samples.ts`); a template's `values` hold only what it changes.
-- **Coastal Fun:** a second modular template — Sunbaked, Fraunces & Space Grotesk, round corners, the second variants.
-- **Box corners:** Sharp / Slight / Soft / Round (`corners.ts`), set by a template, picked in the Design tab.
-- **Design tab:** each section's styles roll out as bands under its row; switches with the label after the track.
-- **Palettes:** Coastal, Linen, Noir, Peony, Thistle, Y2K, Flint, Sunset next to Sunbaked and Orchard (was Dark Olive); every palette has a `mood` — `subtle`, `balanced` or `vivid`; readability fixes across them.
-- **`/palette` skill:** a new palette from a mood, light or dark and an optional reference, with a checker that tests every text pair and writes a swatch page (`.claude/skills/palette/`).
-- **Fixes:** the reply form's ids from `useId` (clean hydration); the diet dropdown wraps instead of widening the page on a phone.
+- "Text" tab renamed "Content" in every editor (simple, modular, print): EN Content, RO Conținut, HU Tartalom
+- Content tab lists only the sections switched on in Design, reusing the Design section cards, with a page-position number (1, 2, 3…) in place of the switch
+- Clicking a section scrolls the preview to it and opens its fields; one section open at a time
+- CLICK TO EDIT box on hover over a preview section (top-right, Edit mode only, no touch devices, host locale), opening the panel on Content with that section's fields
+- Each variant lists the fields it shows; Content shows only those; switching variant keeps every value
+- Inputs for every field type: text, long text, time, toggle, image (thumbnail + inactive "Change photo" + "coming soon"), icon (grid picker), list and groups with Add / Remove
+- Lists: no reorder, Add stops at the max, Remove asks nothing; Location keeps at least one venue, every other list may be empty
+- Icon picking only in Schedule variant 1 and Helpful notes' custom notes
+- Date (id stays `date-time`): the date only, no time — the `moments` list is gone; date read-only from event details with a "set in the event details" line; variants Calendar card, Accent & big date (with its date format) and Tear-off; countdown counts to the start of the event day
+- Helpful notes shows the Dress code / Gifts fields when those switches are on (same values as the standalone sections); Reply edits only its texts
+- Times shown in the invitation language's style (EN 3:30 pm, RO/HU 15:30), in Schedule
+- Required fields: marked in the tab; small error below the field on blur when emptied, gone once filled; Save stays clickable but saves nothing and jumps to the first empty required field (panel opens on Content, section opens, field focused with the error); a required field the variant hides does not block
+- Content and Design share one working state, one Save (in memory) and one leave-page warning
 
 ## Notes
 
-- Palette ids are permanent once events store them; nothing is stored yet, so the renames (Orchard, Peony, Thistle, Y2K, Flint) were free.
-- Sunbaked keeps some text under 4.5:1 on purpose; the follow-up idea is in `context/fixes/pending/palette-text-shades.md`.
-- New sample photos in `public/modular/samples/`; `tuscany.png` removed.
+- No fallback to sample text: an empty field shows nothing (may change later)
+- No character counter
+- A field a template leaves empty on purpose still shows in Content if the variant shows it — empty never means hidden
+- Out of scope: photo uploads, reordering list items, reply questions (Replies tab)
+- Open: which other fields are required — decided after seeing the form
+- Plan: `context/plans/modular-invitations-5-content-tab.md`
 
 ## History
 
 <!-- Keep this updated latest to earliest -->
 
+- Modular invitations 4 — Section variants & palettes — a second variant for most sections (header, cover, title, date & time, countdown, location, schedule, travel, stays, menu, Helpful notes, FAQ, reply, footer), numbered by id, with shared pieces (`HeaderBar`, `TitleNames`, `CoverPhoto`, `WashedPhoto`, `IconHeading`, `Mark`) and `top-bar` renamed `header`; every sample in `defaults.ts`, templates keeping only their changes; the Coastal Fun template; box corners (Sharp / Slight / Soft / Round); section styles rolling out as bands in the Design tab; new palettes (Coastal, Linen, Noir, Peony, Thistle, Y2K, Flint, Sunset), Dark Olive renamed Orchard, a `mood` (subtle / balanced / vivid) on every palette and readability fixes; the `/palette` skill with a contrast checker and swatch page; reply form ids from `useId` and a wrapping diet dropdown
 - Modular invitations 3 — Design editor — the modular editor's Design tab: template, palette, ground pattern and font pair pickers that roll out like the palettes; section switches with a variant picker under each section that is on; Helpful notes switches for Dress code, Gifts and custom notes, never on twice with the standalone sections; live preview; Save in memory with a leave-page warning; the Sunbaked palette and the Fraunces & Space Grotesk pair; the playlist record's disc, rings, hole and shadow mixed from its band
 - Modular invitations 2 — Olive Garden — the modular library redone from the Nocturne prototype: palettes as 15 named roles (Nocturne only), Gelasio + Arimo, a hand-drawn icon library, one new variant per section with a shared four-part heading, Helpful notes and a required footer; one reply form with skins for simple and modular; section backgrounds alternated by the page (own-colour and joined sections); split sections with the content capped at 620px; the column widened to 1440px (`INVITE_COLUMN`); a toggle field type; a shared Good to know menu link; "reply" everywhere in guest and host text
 - Modular invitations — templates split, 1280px column — `src/templates/` in `simple/` and `modular/`; the modular invitation capped at 1280px on its `--m4` ground with a faint palette shadow, shown the same way in the editor (no rounded frame, no bottom padding); ground patterns as a shared library with polka dots on Garden; the top bar as a required `top-bar` section with a `mark` field; no shadow on the editors' side panel; anchor jumps to RSVP no longer shift the editor up (`overflow: clip`)

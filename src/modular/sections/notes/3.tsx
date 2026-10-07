@@ -1,7 +1,7 @@
 import { useTranslations } from "next-intl";
 import type { ReactNode } from "react";
 import { DressCodeSwatches, hasSwatches } from "@/modular/cards/DressCodeCard";
-import { GiftAccount, hasAccount } from "@/modular/cards/GiftsCard";
+import { GiftActions, hasGiftActions } from "@/modular/cards/GiftsCard";
 import { list, text } from "@/modular/content";
 import { noteItems } from "@/modular/notes";
 import { IconHeading } from "@/modular/IconHeading";
@@ -56,7 +56,9 @@ export function Variant({ values, related, ground }: VariantProps) {
                   title={text(gifts, "title")}
                   body={text(gifts, "body")}
                 >
-                  {hasAccount(gifts) ? <GiftAccount values={gifts} /> : null}
+                  {hasGiftActions(gifts) ? (
+                    <GiftActions values={gifts} />
+                  ) : null}
                 </Row>
               );
             }

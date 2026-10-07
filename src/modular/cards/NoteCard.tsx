@@ -14,6 +14,16 @@ import {
 } from "@/modular/styles";
 import { CardIcon } from "./CardIcon";
 
+/*
+ * The side column's rule drawn by the column but placed by the card: as
+ * tall as the card, stopping at its padding (28px) so it never touches the
+ * edges. No left set, so it stays where the column starts; -ml-6 moves it
+ * back over the column's padding. `self-stretch`, or the column's centring
+ * would shrink it to nothing.
+ */
+const FULL_RULE =
+  "@5xl:before:absolute @5xl:before:inset-y-7 @5xl:before:-ml-6 @5xl:before:w-px @5xl:before:self-stretch @5xl:before:bg-[var(--m-line)]";
+
 interface NoteCardProps {
   /** None: the label stands alone. */
   icon?: IconName;
@@ -22,7 +32,7 @@ interface NoteCardProps {
   label: string;
   title?: string;
   body?: string;
-  /** The right-hand column: swatches, account details. */
+  /** The right-hand column: swatches, the gift buttons. */
   aside?: ReactNode;
   /** The card is the other surface from the band it sits on. */
   ground: Ground;
@@ -43,7 +53,7 @@ export function NoteCard({
 }: NoteCardProps) {
   return (
     <article
-      className={`${CARD} grid gap-4 ${GROUND[ground]} @3xl:grid-cols-[7rem_minmax(0,1fr)] @3xl:items-center @3xl:gap-x-9 @3xl:gap-y-7 ${aside ? "@5xl:grid-cols-[7rem_minmax(0,1fr)_18rem]" : ""}`}
+      className={`${CARD} relative grid gap-4 ${GROUND[ground]} @3xl:grid-cols-[7rem_minmax(0,1fr)] @3xl:items-center @3xl:gap-x-9 @3xl:gap-y-7 ${aside ? "@5xl:grid-cols-[7rem_minmax(0,1fr)_15rem]" : ""}`}
     >
       <div className="flex items-center gap-3 @3xl:flex-col @3xl:gap-3.5 @3xl:text-center">
         {icon ? <CardIcon name={icon} tone={tone} large /> : null}
@@ -62,7 +72,9 @@ export function NoteCard({
         </div>
       ) : null}
       {aside ? (
-        <aside className="flex flex-col justify-center gap-3 border-t-1 border-[var(--m-line)] pt-4 @3xl:col-span-2 @5xl:col-span-1 @5xl:border-t-0 @5xl:border-l-1 @5xl:pt-0 @5xl:pl-6">
+        <aside
+          className={`flex flex-col justify-center gap-3 border-t-1 border-[var(--m-line)] pt-4 @3xl:col-span-2 @5xl:col-span-1 @5xl:items-center @5xl:border-t-0 @5xl:pt-0 @5xl:pl-6 ${FULL_RULE}`}
+        >
           {aside}
         </aside>
       ) : null}

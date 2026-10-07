@@ -11,8 +11,6 @@ export const FIELD_GRID =
 export const FIELD =
   "w-full border px-3 [&:not(textarea)]:h-10 py-[9px] text-[13.5px] text-neutral-900 transition-colors focus:outline-2 focus:-outline-offset-1 disabled:cursor-not-allowed disabled:bg-neutral-300 disabled:text-neutral-800";
 export const INPUT = `${FIELD} border-mustard-300 bg-neutral-50 outline-mustard-400 hover:border-mustard-500 focus:border-mustard-400 disabled:border-mustard-300`;
-/** The same field on the palest gold with a warm grey edge, for the editors' side panels. */
-export const PANEL_INPUT = `${FIELD} border-neutral-400 bg-mustard-50 outline-neutral-600 hover:border-neutral-700 focus:border-neutral-600 disabled:border-neutral-400`;
 
 /** Field labels and the standalone legends above a group of controls. */
 export const LABEL =
@@ -21,26 +19,24 @@ export const LABEL =
 /** The explanatory line under a field. */
 export const HINT = "text-[11.5px] leading-[1.45] text-neutral-700";
 
-/**
- * A side panel's choice buttons (Flat / Folded, a palette, a section's
- * style): ink in the panel's text colour either way, with a text field's
- * edge. Picked, a warm grey fill; otherwise the palest gold. Either
- * one fills with the edge's own grey on hover. As tall as a text field beside
- * them — its 9px padding, its 13.5px type and its 1px border.
- */
-const PANEL_CHOICE =
-  "inline-flex cursor-pointer items-center justify-center border px-4 py-[9px] text-[13.5px] font-medium transition-colors border-neutral-400 text-neutral-800 hover:bg-neutral-400";
-export const PANEL_CHOICE_ON = `${PANEL_CHOICE} bg-neutral-300`;
-export const PANEL_CHOICE_OFF = `${PANEL_CHOICE} bg-mustard-50`;
-
 export const ERROR = "text-[11.5px] font-medium text-rust-600";
 
 /** The gold action's colours ("Stop using the list", "Different person", the list box's Save), at any size. Hovered, the fill takes the border's shade. */
 export const GOLD_BTN =
   "border-mustard-300 bg-mustard-200 text-mustard-600 hover:bg-mustard-300";
+/** The gold action as a button ("Close earlier", the Content tab's Change photo). Callers add its width. */
+export const GOLD_ACTION = `cursor-pointer rounded-sm border px-2.5 py-[12px] text-center text-sm leading-[1.3] font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-50 ${GOLD_BTN}`;
 /** The gold action's outline pair: a pale fill, and on hover the same fill as the gold action's hover. */
 export const GOLD_OUTLINE =
   "border-mustard-300 bg-neutral-50 text-mustard-600 hover:bg-mustard-300";
+/** A pick among gold outline buttons: the gold action's fill once picked (`aria-pressed`). */
+export const GOLD_PICK = `${GOLD_OUTLINE} aria-pressed:bg-mustard-200 aria-pressed:hover:bg-mustard-300`;
+/**
+ * A side panel's choice buttons (Flat / Folded): the gold outline pair,
+ * a gold fill once picked (`aria-pressed`). As tall as a text field beside
+ * them — its 9px padding, its 13.5px type and its 1px border.
+ */
+export const PANEL_CHOICE = `inline-flex cursor-pointer items-center justify-center border px-4 py-[9px] text-[13.5px] font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-mustard-500 ${GOLD_PICK}`;
 
 /** The big buttons' shape, without colours: every variant below builds on it. */
 export const BUTTON =

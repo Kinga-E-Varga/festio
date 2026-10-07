@@ -6,8 +6,18 @@ import { OUTLINE_BUTTON } from "@/modular/styles";
 
 const COPIED_MS = 2000;
 
-/** Copies an IBAN without its spaces; says so for two seconds. */
-export function CopyButton({ value }: { value: string }) {
+/**
+ * Copies an IBAN without its spaces; says so for two seconds. An outline
+ * button in the accent, at the start of its column, unless `className`
+ * says otherwise.
+ */
+export function CopyButton({
+  value,
+  className = `${OUTLINE_BUTTON} self-start`,
+}: {
+  value: string;
+  className?: string;
+}) {
   const t = useTranslations("Sections");
   const [copied, setCopied] = useState(false);
 
@@ -30,7 +40,7 @@ export function CopyButton({ value }: { value: string }) {
     <button
       type="button"
       onClick={copy}
-      className={`${OUTLINE_BUTTON} self-start`}
+      className={`${className} cursor-pointer`}
     >
       {copied ? t("copied") : t("copy")}
     </button>

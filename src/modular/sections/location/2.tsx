@@ -101,7 +101,9 @@ function Venue({ venue, size }: { venue: ListItem; size: string }) {
         {venue.address}
       </p>
       {venue.detail ? (
-        <p className={`${LEAD} mt-3 font-semibold text-[color:var(--m-ink)]`}>
+        <p
+          className={`${LEAD} mt-3 font-semibold whitespace-pre-line text-[color:var(--m-ink)]`}
+        >
           {venue.detail}
         </p>
       ) : null}

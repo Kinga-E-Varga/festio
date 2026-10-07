@@ -236,6 +236,11 @@ export const DATE_FORMATS: DateFormatOption[] = [
       date.toLocaleDateString(locale, { weekday: "long", ...DATE_PARTS }),
   },
   {
+    id: "shortWeekday",
+    render: (date, locale) =>
+      date.toLocaleDateString(locale, { weekday: "short", ...DATE_PARTS }),
+  },
+  {
     /* Hungarian writes a numeric date year first: 2026. 09. 06. */
     id: "dotted",
     render: (date, locale) =>

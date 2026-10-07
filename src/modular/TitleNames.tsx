@@ -1,6 +1,8 @@
 import { text } from "@/modular/content";
 import { Mark, markParts } from "@/modular/Mark";
 import {
+  AMPERSAND,
+  AMPERSAND_SIZE,
   DISPLAY,
   EYEBROW,
   GROUND,
@@ -23,7 +25,7 @@ function Ornament() {
 }
 
 interface TitleNamesProps extends VariantProps {
-  /** The variant drawing it: its diamonds and the names' colour. */
+  /** The variant drawing it: the names' colour. */
   look: keyof typeof LOOKS;
 }
 
@@ -31,44 +33,54 @@ interface TitleNamesProps extends VariantProps {
 const NAMES_SIZE =
   "text-[56px] @md:text-[64px] @3xl:text-[80px] @5xl:text-[96px]";
 
-/** Each variant's diamonds (or none) and names: in the accent, or in the ink. */
+/**
+ * Each variant's names and their middle part: in the accent with the middle
+ * in the secondary, or all in the ink. Plain alone has the title line under
+ * the names, set like them.
+ */
 const LOOKS = {
-  diamonds: {
-    diamonds: true,
+  colorful: {
     names: `${DISPLAY} ${NAMES_SIZE}`,
+    middle: AMPERSAND,
+    secondLine: false,
   },
   plain: {
-    diamonds: false,
     names: `${DISPLAY} ${NAMES_SIZE} text-[color:var(--m-ink)]!`,
+    middle: AMPERSAND_SIZE,
+    // The title line, in the names' ink.
+    secondLine: true,
   },
 };
 
 /**
  * The names as the page's one `h1` — none when all three parts are empty —
  * between a small line and an italic caption, shared by the title's
- * variants, which differ only in the diamonds above and the names' colour.
+ * variants, which differ only in the names' colour; the host's Decoration
+ * puts diamonds above, or nothing.
  * No date link.
  */
 export function TitleNames({ values, ground, look }: TitleNamesProps) {
-  const names = markParts(values, "names");
+  const names = markParts(values, "names", LOOKS[look].middle);
   const eyebrow = text(values, "eyebrow");
   const caption = text(values, "caption");
+  const second = LOOKS[look].secondLine ? text(values, "secondLine") : "";
 
   return (
     <div
       className={`flex flex-col items-center justify-center ${GROUND[ground]} text-center ${PAD_X} py-16 @3xl:py-25`}
     >
-      {LOOKS[look].diamonds ? <Ornament /> : null}
+      {text(values, "decoration") === "diamonds" ? <Ornament /> : null}
       {eyebrow ? (
         <p className={`${EYEBROW} text-[color:var(--m-secondary)]`}>
           {eyebrow}
         </p>
       ) : null}
-      {names.length > 0 ? (
+      {names.length > 0 || second ? (
         <h1
           className={`${LOOKS[look].names} mt-6 mb-3 max-w-4xl @3xl:mt-7 tracking-[-0.03em]!`}
         >
           <Mark parts={names} />
+          {second ? <span className="block">{second}</span> : null}
         </h1>
       ) : null}
       {caption ? (

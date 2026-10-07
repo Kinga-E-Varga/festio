@@ -8,29 +8,21 @@ import type {
   TemplateField,
   TemplateValues,
 } from "@/types/invitation";
-import {
-  dateFormatsFor,
-  DEFAULT_DATE_FORMAT,
-  EVENT_DATE,
-  formatInvitationDate,
-} from "@/lib/invitation";
+import { DEFAULT_DATE_FORMAT, EVENT_DATE } from "@/lib/invitation";
 import { localized, type Language } from "@/lib/language";
+import { DateFormatSelect } from "./DateFormatSelect";
 import {
   PanelTabs,
   TABPANEL_ID,
   tabElementId,
   type PanelTabId,
 } from "./PanelTabs";
-import {
-  HINT,
-  LABEL,
-  PANEL_INPUT,
-} from "@/components/dashboard/event-editor/styles";
+import { HINT, LABEL, INPUT } from "@/components/dashboard/event-editor/styles";
 import { PanelViewButton, SidePanel } from "./SidePanel";
 
-/** Text and Replies each show the fields of one scope; Design has nothing to edit yet. */
+/** Content and Replies each show the fields of one scope; Design has nothing to edit yet. */
 const SCOPE: Record<PanelTabId, FieldScope | null> = {
-  text: "card",
+  content: "card",
   replies: "rsvp",
   design: null,
 };
@@ -68,7 +60,7 @@ export function EditPanel({
   onClose,
 }: EditPanelProps) {
   const t = useTranslations("HostEditor");
-  const [tab, setTab] = useState<PanelTabId>("text");
+  const [tab, setTab] = useState<PanelTabId>("content");
   const scope = SCOPE[tab];
   const fields = scope
     ? template.fields.filter((field) => (field.scope ?? "card") === scope)
@@ -147,18 +139,13 @@ function Field({
            * All this picks is how it is written on the card, so every option
            * is the host's real date in that format.
            */}
-          <select
+          <DateFormatSelect
             id={`field-${field.id}`}
             value={value || DEFAULT_DATE_FORMAT}
-            onChange={(control) => onChange(field.id, control.target.value)}
-            className={PANEL_INPUT}
-          >
-            {dateFormatsFor(language).map((option) => (
-              <option key={option.id} value={option.id}>
-                {formatInvitationDate(eventDate, option.id, language)}
-              </option>
-            ))}
-          </select>
+            eventDate={eventDate}
+            language={language}
+            onChange={(next) => onChange(field.id, next)}
+          />
           <p className={HINT}>{t("dateHint")}</p>
         </>
       ) : field.type === "longText" ? (
@@ -168,7 +155,7 @@ function Field({
           value={value}
           maxLength={field.maxLength}
           onChange={(control) => onChange(field.id, control.target.value)}
-          className={`${PANEL_INPUT} resize-none`}
+          className={`${INPUT} resize-none`}
         />
       ) : (
         <input
@@ -177,7 +164,7 @@ function Field({
           value={value}
           maxLength={field.maxLength}
           onChange={(control) => onChange(field.id, control.target.value)}
-          className={PANEL_INPUT}
+          className={INPUT}
         />
       )}
       {/*

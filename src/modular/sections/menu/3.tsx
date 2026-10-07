@@ -42,7 +42,8 @@ export function Variant({ values, ground }: VariantProps) {
         <div
           className={`flex flex-col items-center gap-10 px-6 py-10 text-center ${FRAME} @3xl:px-14 @3xl:py-12`}
         >
-          <SectionHeading values={{ ...values, eyebrow: "", note: "" }} />
+          {/* The note is drawn last, under the courses, not in the heading. */}
+          <SectionHeading values={{ ...values, note: "" }} />
           <span className={RULE} />
           {courses.length > 0 ? (
             <ul className="flex flex-col gap-8">

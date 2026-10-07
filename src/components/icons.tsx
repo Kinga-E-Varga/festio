@@ -50,26 +50,44 @@ const PATHS: Record<IconName, ReactNode> = {
       <circle cx="14.4" cy="7.6" r="1.05" />
     </>
   ),
+  brush: (
+    <>
+      {/* A flat brush, bristles up with a notch of paint, handle down. */}
+      <path d="M5.56 2.8h2.48l2.12 4.23 2.12-4.23h6.16a.92.92 0 0 1 .92.92v11.04a.92.92 0 0 1-.92.92h-4.6v4.4a1.84 1.84 0 0 1-3.68 0v-4.4h-4.6a.92.92 0 0 1-.92-.92V3.72a.92.92 0 0 1 .92-.92Z" />
+      <path d="M4.64 12h14.72" />
+    </>
+  ),
   fonts: (
     <>
-      <path d="M5 7V4.75h14V7" />
-      <path d="M12 4.75v14.5" />
-      <path d="M9 19.25h6" />
+      {/* "Tt": a capital and a small t. */}
+      <path d="M3 6.5V4.75h11V6.5" />
+      <path d="M8.5 4.75v14.5" />
+      <path d="M6.5 19.25h4" />
+      <path d="M16.75 9.5v7.75a2 2 0 0 0 2 2h1.5" />
+      <path d="M14.5 12.25h5" />
     </>
   ),
-  corners: <path d="M5 19.25V12a7 7 0 0 1 7-7h7.25" />,
-  pattern: (
+  /* One rounded corner drawn, the rest of the box in solid dots. */
+  corners: (
     <>
-      <circle cx="6" cy="6" r="1.25" />
-      <circle cx="12" cy="6" r="1.25" />
-      <circle cx="18" cy="6" r="1.25" />
-      <circle cx="9" cy="12" r="1.25" />
-      <circle cx="15" cy="12" r="1.25" />
-      <circle cx="6" cy="18" r="1.25" />
-      <circle cx="12" cy="18" r="1.25" />
-      <circle cx="18" cy="18" r="1.25" />
+      <path d="M12 4h1a7 7 0 0 1 7 7v1" />
+      <g fill="currentColor" stroke="none">
+        <circle cx="4" cy="4" r="1.1" />
+        <circle cx="8" cy="4" r="1.1" />
+        <circle cx="4" cy="8" r="1.1" />
+        <circle cx="4" cy="12" r="1.1" />
+        <circle cx="4" cy="16" r="1.1" />
+        <circle cx="4" cy="20" r="1.1" />
+        <circle cx="8" cy="20" r="1.1" />
+        <circle cx="12" cy="20" r="1.1" />
+        <circle cx="16" cy="20" r="1.1" />
+        <circle cx="20" cy="20" r="1.1" />
+        <circle cx="20" cy="16" r="1.1" />
+      </g>
     </>
   ),
+  /* Diagonal stripes across a square, evenly spaced. */
+  pattern: <path d="M4 8 8 4M4 14 14 4M4 20 20 4M10 20 20 10M16 20 20 16" />,
   printer: (
     <>
       <path d="M7.5 8V3.75h9V8" />

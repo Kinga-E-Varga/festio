@@ -68,10 +68,13 @@ export function sectionValues(
 ): SectionValues {
   const defaults = DEFAULTS[definition.id];
   return Object.fromEntries(
-    definition.fields.map((field) => [
-      field.id,
-      readSample(field, own?.[field.id] ?? defaults?.[field.id], language),
-    ]),
+    definition.fields
+      // The event's date is the event's, never a section value.
+      .filter((field) => field.type !== "eventDate")
+      .map((field) => [
+        field.id,
+        readSample(field, own?.[field.id] ?? defaults?.[field.id], language),
+      ]),
   );
 }
 

@@ -16,7 +16,7 @@ import { otherGround } from "@/modular/ground";
 
 /** One card per way of arriving. */
 export function Variant({ values, ground }: VariantProps) {
-  const ways = list(values, "ways").slice(0, 4);
+  const ways = list(values, "ways").slice(0, 6);
 
   return (
     <div className={`${STACK} ${GROUND[ground]} ${PAD}`}>

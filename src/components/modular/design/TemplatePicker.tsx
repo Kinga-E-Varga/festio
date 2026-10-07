@@ -43,6 +43,8 @@ export function TemplatePicker({
         id="design-templates"
         label={`${t("template")}: ${name}`}
         icon="templates"
+        // The frame is mostly outline, so the app's own 1.5 already matches the others.
+        iconStroke={1.5}
         summary={<span className="min-w-0">{name}</span>}
       >
         {templates.map((template) => {

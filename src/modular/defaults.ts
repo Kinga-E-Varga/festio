@@ -25,12 +25,13 @@ export const DEFAULTS: Record<string, SectionSamples> = {
       ro: "Un weekend la Cassis",
       hu: "Egy hétvége Cassis-ban",
     },
-    dateLine: "",
   },
   title: {
+    decoration: "diamonds",
     namesStart: "Maddie",
     namesMiddle: "&",
     namesEnd: "Claude",
+    secondLine: "",
     eyebrow: {
       en: "Together with our families",
       ro: "Împreună cu familiile noastre",
@@ -43,6 +44,7 @@ export const DEFAULTS: Record<string, SectionSamples> = {
     },
   },
   "date-time": {
+    dateFormat: "shortWeekday",
     eyebrow: {
       en: "Mark your calendar",
       ro: "Notează în calendar",
@@ -54,25 +56,15 @@ export const DEFAULTS: Record<string, SectionSamples> = {
       hu: "Egy nap, amit nem felejtünk.",
     },
     headingItalic: {
-      en: "A weekend by the sea.",
-      ro: "Un weekend la mare.",
-      hu: "Egy hétvége a tengernél.",
+      en: "A weekend to savour.",
+      ro: "Un weekend de savurat.",
+      hu: "Egy hétvége, amit kiélvezünk.",
     },
     note: {
-      en: "We can’t wait to gather by the Mediterranean with all of our favorite people.",
-      ro: "Abia așteptăm să ne strângem lângă Mediterana cu toți cei dragi.",
-      hu: "Alig várjuk, hogy a Földközi-tenger partján együtt legyünk mindenkivel, akit szeretünk.",
+      en: "Ceremony at 4:00 pm, cocktails at 5:00 pm, then dinner and dancing until late.",
+      ro: "Ceremonia la 16:00, cocktailuri la 17:00, apoi cină și dans până târziu.",
+      hu: "Szertartás 16:00-kor, koktélok 17:00-kor, aztán vacsora és tánc késő estig.",
     },
-    moments: [
-      {
-        time: "15:30",
-        title: {
-          en: "Ceremony",
-          ro: "Ceremonia",
-          hu: "Szertartás",
-        },
-      },
-    ],
   },
   countdown: {
     eyebrow: {
@@ -80,9 +72,6 @@ export const DEFAULTS: Record<string, SectionSamples> = {
       ro: "Numărăm zilele",
       hu: "Számoljuk a napokat",
     },
-    heading: "",
-    headingItalic: "",
-    note: "",
   },
   location: {
     eyebrow: {
@@ -158,11 +147,7 @@ export const DEFAULTS: Record<string, SectionSamples> = {
     days: [
       {
         values: {
-          label: {
-            en: "Friday · 17 Sep",
-            ro: "Vineri · 17 sept.",
-            hu: "Péntek · szept. 17.",
-          },
+          date: "2027-09-17",
         },
         items: [
           {
@@ -183,11 +168,7 @@ export const DEFAULTS: Record<string, SectionSamples> = {
       },
       {
         values: {
-          label: {
-            en: "Saturday · 18 Sep",
-            ro: "Sâmbătă · 18 sept.",
-            hu: "Szombat · szept. 18.",
-          },
+          date: "2027-09-18",
         },
         items: [
           {
@@ -236,11 +217,7 @@ export const DEFAULTS: Record<string, SectionSamples> = {
       },
       {
         values: {
-          label: {
-            en: "Sunday · 19 Sep",
-            ro: "Duminică · 19 sept.",
-            hu: "Vasárnap · szept. 19.",
-          },
+          date: "2027-09-19",
         },
         items: [
           {
@@ -273,7 +250,11 @@ export const DEFAULTS: Record<string, SectionSamples> = {
       hu: "Az út is a része",
     },
     headingItalic: "",
-    note: "",
+    note: {
+      en: "By train, by shuttle or by car: however you come, we’ll help you find the way.",
+      ro: "Cu trenul, cu transferul sau cu mașina: oricum ai veni, te ajutăm să găsești drumul.",
+      hu: "Vonattal, transzferrel vagy autóval: bárhogy jössz, segítünk odatalálni.",
+    },
     ways: [
       {
         label: {
@@ -335,11 +316,15 @@ export const DEFAULTS: Record<string, SectionSamples> = {
       hu: "Legyen belőle egy hétvége",
     },
     heading: {
-      en: "A soft place to land",
-      ro: "Un loc liniștit de cazare",
-      hu: "Egy puha hely a pihenéshez",
+      en: "A soft place to land,",
+      ro: "Un loc liniștit de cazare,",
+      hu: "Egy puha hely a pihenéshez,",
     },
-    headingItalic: "",
+    headingItalic: {
+      en: "with the sea close by.",
+      ro: "cu marea la un pas.",
+      hu: "közel a tengerhez.",
+    },
     note: {
       en: "We’ve gathered a few stays nearby, from a room at the domaine to a hotel by the port.",
       ro: "Am adunat câteva cazări în apropiere, de la o cameră la domeniu la un hotel lângă port.",
@@ -557,6 +542,7 @@ export const DEFAULTS: Record<string, SectionSamples> = {
       ro: "Gândește-te la costume din in, rochii vaporoase și pantofi care se înțeleg cu terasele de piatră. După lăsarea serii bate vântul, așa că ia ceva subțire pe umeri.",
       hu: "Lenvászon öltöny, könnyű ruha és cipő, ami bírja a régi kőteraszokat. Sötétedés után feltámad a szél, hozz egy könnyű réteget.",
     },
+    showSwatches: true,
     swatchLabel: {
       en: "A few colors we love",
       ro: "Câteva culori care ne plac",
@@ -589,14 +575,16 @@ export const DEFAULTS: Record<string, SectionSamples> = {
       hu: "A jelenléted a legszebb ajándék",
     },
     body: {
-      en: "Truly. If you’d like to give something, a contribution to our honeymoon fund would mean the world.",
-      ro: "Chiar așa. Dacă vrei totuși să ne dăruiești ceva, o contribuție pentru luna de miere ne-ar bucura enorm.",
-      hu: "Tényleg. Ha mégis adnál valamit, a nászutunkhoz való hozzájárulás nagyon sokat jelentene.",
+      en: "Truly. If you’d like to give something, you’ll find our registry here, or you can add to our honeymoon fund. Either would mean the world.",
+      ro: "Chiar așa. Dacă vrei totuși să ne dăruiești ceva, găsești aici lista noastră de cadouri sau poți contribui la fondul pentru luna de miere. Orice variantă ne-ar bucura enorm.",
+      hu: "Tényleg. Ha mégis adnál valamit, itt találod az ajándéklistánkat, vagy hozzájárulhatsz a nászutunkhoz. Bármelyik nagyon sokat jelentene.",
     },
     showAccount: true,
     holder: "Madeline Éparvier",
     iban: "FR76 3000 6000 0112 3456 7890 189",
     reference: "Maddie & Claude",
+    showRegistry: true,
+    registryLink: "https://www.example.com/registry",
   },
   faq: {
     eyebrow: {
@@ -712,7 +700,11 @@ export const DEFAULTS: Record<string, SectionSamples> = {
       ro: "Veți fi acolo?",
       hu: "Ott leszel?",
     },
-    headingItalic: "",
+    headingItalic: {
+      en: "We hope so.",
+      ro: "Sperăm că da.",
+      hu: "Reméljük, igen.",
+    },
     note: {
       en: "Save your seat at our table. Kindly reply by 1 August 2027.",
       ro: "Păstrează-ți locul la masa noastră. Te rugăm să răspunzi până pe 1 august 2027.",
@@ -727,13 +719,6 @@ export const DEFAULTS: Record<string, SectionSamples> = {
       en: "Your reply is with us.",
       ro: "Am primit răspunsul tău.",
       hu: "Megkaptuk a válaszod.",
-    },
-  },
-  footer: {
-    backLabel: {
-      en: "Back to the beginning",
-      ro: "Înapoi la început",
-      hu: "Vissza az elejére",
     },
   },
 };

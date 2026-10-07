@@ -10,47 +10,42 @@ export const section: SectionDefinition = {
   variants: [
     {
       id: "1",
-      name: {
-        en: "Colorful & divider",
-        ro: "Colorat cu separator",
-        hu: "Színes elválasztóval",
-      },
+      name: { en: "Colorful", ro: "Colorat", hu: "Színes" },
+      shows: [
+        "decoration",
+        "eyebrow",
+        "namesStart",
+        "namesMiddle",
+        "namesEnd",
+        "caption",
+      ],
     },
     {
       id: "2",
       name: { en: "Plain", ro: "Simplu", hu: "Egyszerű" },
+      shows: [
+        "decoration",
+        "eyebrow",
+        "namesStart",
+        "namesMiddle",
+        "namesEnd",
+        "secondLine",
+        "caption",
+      ],
     },
   ],
   fields: [
     {
-      id: "namesStart",
-      label: {
-        en: "names, first part",
-        ro: "nume, prima parte",
-        hu: "nevek, első rész",
-      },
-      type: "text",
-      maxLength: 40,
-    },
-    {
-      id: "namesMiddle",
-      label: {
-        en: "names, middle",
-        ro: "nume, mijloc",
-        hu: "nevek, középső rész",
-      },
-      type: "text",
-      maxLength: 6,
-    },
-    {
-      id: "namesEnd",
-      label: {
-        en: "names, last part",
-        ro: "nume, ultima parte",
-        hu: "nevek, utolsó rész",
-      },
-      type: "text",
-      maxLength: 40,
+      id: "decoration",
+      label: { en: "decoration", ro: "decor", hu: "díszítés" },
+      type: "choice",
+      options: [
+        { id: "none", label: { en: "None", ro: "Niciunul", hu: "Nincs" } },
+        {
+          id: "diamonds",
+          label: { en: "Diamonds", ro: "Romburi", hu: "Rombuszok" },
+        },
+      ],
     },
     {
       id: "eyebrow",
@@ -59,12 +54,44 @@ export const section: SectionDefinition = {
       maxLength: 60,
     },
     {
-      id: "caption",
+      id: "namesStart",
       label: {
-        en: "line under the names",
-        ro: "rândul de sub nume",
-        hu: "sor a nevek alatt",
+        en: "name",
+        ro: "nume",
+        hu: "név",
       },
+      type: "text",
+      maxLength: 40,
+    },
+    {
+      id: "namesMiddle",
+      label: {
+        en: "mark",
+        ro: "semn",
+        hu: "jel",
+      },
+      type: "text",
+      maxLength: 12,
+    },
+    {
+      id: "namesEnd",
+      label: {
+        en: "name",
+        ro: "nume",
+        hu: "név",
+      },
+      type: "text",
+      maxLength: 40,
+    },
+    {
+      id: "secondLine",
+      label: { en: "title line", ro: "rând de titlu", hu: "címsor" },
+      type: "text",
+      maxLength: 40,
+    },
+    {
+      id: "caption",
+      label: { en: "subtitle", ro: "subtitlu", hu: "alcím" },
       type: "text",
       maxLength: 120,
     },

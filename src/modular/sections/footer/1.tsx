@@ -1,12 +1,13 @@
-import { longDate, text } from "@/modular/content";
+import { useTranslations } from "next-intl";
+import { longDate } from "@/modular/content";
 import { Icon } from "@/modular/icons";
 import { Mark, markParts } from "@/modular/Mark";
 import { DISPLAY, EYEBROW, MUTED_LINK } from "@/modular/styles";
 import type { VariantProps } from "@/types/modular";
 
 /** The mark again, the date, and the way back up. */
-export function Variant({ values, basics, language, related }: VariantProps) {
-  const back = text(values, "backLabel");
+export function Variant({ basics, language, related }: VariantProps) {
+  const t = useTranslations("Sections");
   const mark = markParts(related.header ?? {}, "mark");
 
   return (
@@ -19,12 +20,10 @@ export function Variant({ values, basics, language, related }: VariantProps) {
       <p className={`${EYEBROW} text-[color:var(--m-secondary)]`}>
         {longDate(basics.date, language)}
       </p>
-      {back ? (
-        <a href="#cover" className={`${MUTED_LINK} mt-3`}>
-          {back}
-          <Icon name="arrow-up" className="size-3" />
-        </a>
-      ) : null}
+      <a href="#cover" className={`${MUTED_LINK} mt-3`}>
+        {t("backToTop")}
+        <Icon name="arrow-up" className="size-3" />
+      </a>
     </div>
   );
 }

@@ -1,4 +1,4 @@
-import { HEADING_FIELDS } from "@/modular/heading";
+import { HEADING_FIELDS, HEADING_SHOWS } from "@/modular/heading";
 import type { SectionDefinition } from "@/types/modular";
 
 export const section: SectionDefinition = {
@@ -11,6 +11,7 @@ export const section: SectionDefinition = {
     {
       id: "1",
       name: { en: "Simple list", ro: "Listă simplă", hu: "Egyszerű lista" },
+      shows: [...HEADING_SHOWS, "linkLabel", "items.question", "items.answer"],
     },
     {
       id: "2",
@@ -19,6 +20,7 @@ export const section: SectionDefinition = {
         ro: "Pictogramă și bare",
         hu: "Ikon és sávok",
       },
+      shows: ["heading", "note", "linkLabel", "items.question", "items.answer"],
     },
   ],
   fields: [
@@ -36,6 +38,12 @@ export const section: SectionDefinition = {
     {
       id: "items",
       label: { en: "questions", ro: "întrebări", hu: "kérdések" },
+      itemLabel: { en: "question", ro: "întrebarea", hu: "kérdés" },
+      addLabel: {
+        en: "add new question",
+        ro: "adaugă o întrebare nouă",
+        hu: "új kérdés hozzáadása",
+      },
       type: "list",
       maxItems: 12,
       item: [

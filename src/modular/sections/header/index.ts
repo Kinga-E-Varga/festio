@@ -18,19 +18,26 @@ export const section: SectionDefinition = {
     {
       id: "1",
       name: { en: "Colourful", ro: "Colorat", hu: "Színes" },
+      shows: ["markStart", "markMiddle", "markEnd"],
     },
     {
       id: "2",
+      name: { en: "Balanced", ro: "Echilibrat", hu: "Kiegyensúlyozott" },
+      shows: ["markStart", "markMiddle", "markEnd"],
+    },
+    {
+      id: "3",
       name: { en: "Plain", ro: "Simplu", hu: "Egyszerű" },
+      shows: ["markStart", "markMiddle", "markEnd"],
     },
   ],
   fields: [
     {
       id: "markStart",
       label: {
-        en: "mark, first part",
-        ro: "semn, prima parte",
-        hu: "jel, első rész",
+        en: "name",
+        ro: "nume",
+        hu: "név",
       },
       type: "text",
       maxLength: 12,
@@ -38,19 +45,19 @@ export const section: SectionDefinition = {
     {
       id: "markMiddle",
       label: {
-        en: "mark, middle",
-        ro: "semn, mijloc",
-        hu: "jel, középső rész",
+        en: "mark",
+        ro: "semn",
+        hu: "jel",
       },
       type: "text",
-      maxLength: 4,
+      maxLength: 12,
     },
     {
       id: "markEnd",
       label: {
-        en: "mark, last part",
-        ro: "semn, ultima parte",
-        hu: "jel, utolsó rész",
+        en: "name",
+        ro: "nume",
+        hu: "név",
       },
       type: "text",
       maxLength: 12,

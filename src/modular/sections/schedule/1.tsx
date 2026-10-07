@@ -1,4 +1,4 @@
-import { groups } from "@/modular/content";
+import { formatTime, groups, scheduleDay } from "@/modular/content";
 import { Icon, isIconName } from "@/modular/icons";
 import { SectionHeading } from "@/modular/SectionHeading";
 import {
@@ -18,9 +18,9 @@ import type { VariantProps } from "@/types/modular";
  * The heading beside the days, each with its events. No day is singled
  * out: the icons take turns by day — the 1st, 3rd… in the accent, the 2nd,
  * 4th… in the secondary. An event with no known icon simply has none. A
- * single day shows no day label.
+ * single day shows no date.
  */
-export function Variant({ values, ground }: VariantProps) {
+export function Variant({ values, language, ground }: VariantProps) {
   const days = groups(values, "days");
 
   return (
@@ -32,16 +32,17 @@ export function Variant({ values, ground }: VariantProps) {
         <ol className={`border-t-1 border-[var(--m-line)]`}>
           {days.map((day, index) => {
             const tone = index % 2 === 0 ? TONES.accent : TONES.secondary;
+            const date = scheduleDay(day.values.date ?? "", language);
             return (
               <li
                 key={index}
                 className="border-b-1 border-[var(--m-line)] pt-4 pb-3"
               >
-                {days.length > 1 && day.values.label ? (
+                {days.length > 1 && date ? (
                   <p
                     className={`${INNER_EYEBROW} mb-1.5 text-[color:var(--m-secondary)]`}
                   >
-                    {day.values.label}
+                    {date}
                   </p>
                 ) : null}
                 {day.items.length > 0 ? (
@@ -54,7 +55,7 @@ export function Variant({ values, ground }: VariantProps) {
                         <span
                           className={`${BODY_SM} ${MUTED} pt-0.5 tabular-nums`}
                         >
-                          {event.time}
+                          {formatTime(event.time, language)}
                         </span>
                         <div className="min-w-0">
                           <h3 className={ITEM_TITLE}>{event.title}</h3>

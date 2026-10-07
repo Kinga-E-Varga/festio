@@ -1,7 +1,17 @@
-import { HEADING_FIELDS } from "@/modular/heading";
+import { HEADING_FIELDS, HEADING_SHOWS } from "@/modular/heading";
 import { LABELS } from "@/modular/labels";
 import { GOOD_TO_KNOW } from "@/modular/notes";
 import type { SectionDefinition } from "@/types/modular";
+
+/** What the card draws, here and inside Helpful notes. */
+const CARD = [
+  "title",
+  "body",
+  "showSwatches",
+  "swatchLabel",
+  // Names are kept, but no longer asked for.
+  "swatches.color",
+];
 
 /** Also drawn inside Helpful notes, from these same values. */
 export const section: SectionDefinition = {
@@ -10,7 +20,20 @@ export const section: SectionDefinition = {
   required: false,
   order: 100,
   menuLabel: GOOD_TO_KNOW,
-  variants: [{ id: "1", name: { en: "Card", ro: "Card", hu: "Kártya" } }],
+  noteCard: CARD,
+  variants: [
+    {
+      id: "1",
+      name: { en: "Card", ro: "Card", hu: "Kártya" },
+      // The heading's intro line and heading only: no italic line, no note.
+      shows: [
+        ...HEADING_SHOWS.filter(
+          (id) => id !== "headingItalic" && id !== "note",
+        ),
+        ...CARD,
+      ],
+    },
+  ],
   fields: [
     ...HEADING_FIELDS,
     {
@@ -26,11 +49,21 @@ export const section: SectionDefinition = {
       maxLength: 300,
     },
     {
+      id: "showSwatches",
+      label: {
+        en: "show colour swatches",
+        ro: "arată mostrele de culoare",
+        hu: "színminták mutatása",
+      },
+      type: "toggle",
+      controls: ["swatchLabel", "swatches"],
+    },
+    {
       id: "swatchLabel",
       label: {
-        en: "line above the colours",
-        ro: "rândul de deasupra culorilor",
-        hu: "sor a színek fölött",
+        en: "colours title",
+        ro: "titlul culorilor",
+        hu: "a színek címe",
       },
       type: "text",
       maxLength: 40,
@@ -38,6 +71,12 @@ export const section: SectionDefinition = {
     {
       id: "swatches",
       label: { en: "colours", ro: "culori", hu: "színek" },
+      itemLabel: { en: "colour", ro: "culoarea", hu: "szín" },
+      addLabel: {
+        en: "add new colour",
+        ro: "adaugă o culoare nouă",
+        hu: "új szín hozzáadása",
+      },
       type: "list",
       maxItems: 6,
       item: [
@@ -45,7 +84,7 @@ export const section: SectionDefinition = {
         {
           id: "color",
           label: { en: "colour", ro: "culoare", hu: "szín" },
-          type: "text",
+          type: "color",
           /* A hex colour, or one of the palette's roles ("secondary"). */
           maxLength: 9,
         },

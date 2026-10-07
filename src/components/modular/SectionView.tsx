@@ -1,6 +1,7 @@
 "use client";
 
-import { use } from "react";
+import { memo, use } from "react";
+import { shownHeading } from "@/modular/heading";
 import { loadVariant } from "@/modular/variants";
 import type {
   SectionDefinition,
@@ -33,12 +34,40 @@ function variantFor(section: SectionDefinition, variant: string) {
  * live as the host types. An id with no file draws nothing rather than
  * taking the page down with it.
  */
-export function SectionView({
+type SectionViewProps = VariantProps & {
+  section: SectionDefinition;
+  variant: string;
+};
+
+/*
+ * Redrawn only when something it draws changed. `related` is built afresh
+ * on every render, so it is compared by the values it holds.
+ */
+function sameProps(a: SectionViewProps, b: SectionViewProps): boolean {
+  const keys = Object.keys(a) as (keyof SectionViewProps)[];
+  if (keys.length !== Object.keys(b).length) return false;
+  return keys.every((key) => {
+    if (key !== "related") return a[key] === b[key];
+    const left = a.related ?? {};
+    const right = b.related ?? {};
+    const ids = Object.keys(left);
+    return (
+      ids.length === Object.keys(right).length &&
+      ids.every((id) => left[id] === right[id])
+    );
+  });
+}
+
+export const SectionView = memo(function SectionView({
   section,
   variant,
+  values,
   ...props
-}: VariantProps & { section: SectionDefinition; variant: string }) {
+}: SectionViewProps) {
   const loaded = use(variantFor(section, variant));
-  if (!loaded) return null;
-  return <loaded.Variant {...props} />;
-}
+  const info = section.variants.find(({ id }) => id === variant);
+  if (!loaded || !info) return null;
+  return (
+    <loaded.Variant values={shownHeading(values, info.shows)} {...props} />
+  );
+}, sameProps);

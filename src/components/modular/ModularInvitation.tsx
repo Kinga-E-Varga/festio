@@ -1,8 +1,10 @@
 "use client";
 
-import { Suspense, useState } from "react";
+import { memo, Suspense, useState } from "react";
+import { Icon } from "@/components/icons";
 import { localized, type Language, type LocalizedText } from "@/lib/language";
 import { cornerVars } from "@/modular/corners";
+import { hasContent } from "@/modular/fields";
 import { sectionGrounds } from "@/modular/ground";
 import { HEADER_ID } from "@/modular/nav";
 import { groundClasses } from "@/modular/styles";
@@ -28,6 +30,14 @@ interface ModularInvitationProps {
    */
   framed?: boolean;
   onRsvp?: (payload: RsvpPayload) => void;
+  /** The editor in Edit mode: a section's Design and Content buttons. */
+  edit?: SectionEdit;
+}
+
+/** The two ways into a section from the preview, each with its name. */
+interface SectionEdit {
+  design: { label: string; onEdit: (id: string) => void };
+  content: { label: string; onEdit: (id: string) => void };
 }
 
 /** The values of the sections `definition` reads — on the page or not. */
@@ -69,12 +79,13 @@ function menuLinks(
  * scrolled by an anchor jump (#rsvp), which shifted the whole editor up
  * with no scrollbar to bring it back.
  */
-export function ModularInvitation({
+export const ModularInvitation = memo(function ModularInvitation({
   design,
   basics,
   language,
   framed = false,
   onRsvp,
+  edit,
 }: ModularInvitationProps) {
   const [menuOpen, setMenuOpen] = useState(false);
   const links = menuLinks(design.sections, language);
@@ -124,6 +135,13 @@ export function ModularInvitation({
                     links,
                     menuOpen,
                     onOpenMenu: () => setMenuOpen(true),
+                    edit: edit ? (
+                      <EditButtons
+                        edit={edit}
+                        id={bar.definition.id}
+                        content={hasContent(bar.definition)}
+                      />
+                    ) : undefined,
                   }}
                 />
               </Suspense>
@@ -132,8 +150,15 @@ export function ModularInvitation({
               <section
                 key={definition.id}
                 id={definition.id}
-                className="scroll-mt-14 @5xl:scroll-mt-16"
+                className="group/edit relative scroll-mt-14 @5xl:scroll-mt-16"
               >
+                {edit ? (
+                  <EditButtons
+                    edit={edit}
+                    id={definition.id}
+                    content={hasContent(definition)}
+                  />
+                ) : null}
                 <Suspense fallback={<SectionSkeleton />}>
                   <SectionView
                     section={definition}
@@ -158,6 +183,66 @@ export function ModularInvitation({
         onClose={() => setMenuOpen(false)}
       />
     </div>
+  );
+});
+
+/**
+ * The editor's two buttons on a section, top right: its Design (a brush)
+ * and its Content (a T), each in the invitation's ink with a shadow all
+ * round, its name as label and tooltip; hovered, the fill a little
+ * see-through, the icon still solid. Only they open anything; the section itself stays the page.
+ * They show on a hovered section, or one the keyboard reaches them in; hidden,
+ * they are see-through and let clicks pass. Tailwind's hover only applies
+ * where the device can hover, so a touch screen never shows them. Under the
+ * sticky header, never over it; the header's own sit inside it, over Reply.
+ */
+function EditButtons({
+  edit,
+  id,
+  content,
+}: {
+  edit: SectionEdit;
+  id: string;
+  /** Left out for a section with nothing to edit, like the footer. */
+  content: boolean;
+}) {
+  return (
+    <div className="pointer-events-none absolute top-3 right-3 z-10 flex gap-2">
+      <EditButton
+        label={edit.design.label}
+        icon="brush"
+        onClick={() => edit.design.onEdit(id)}
+      />
+      {content ? (
+        <EditButton
+          label={edit.content.label}
+          icon="fonts"
+          onClick={() => edit.content.onEdit(id)}
+        />
+      ) : null}
+    </div>
+  );
+}
+
+function EditButton({
+  label,
+  icon,
+  onClick,
+}: {
+  label: string;
+  icon: "brush" | "fonts";
+  onClick: () => void;
+}) {
+  return (
+    <button
+      type="button"
+      aria-label={label}
+      title={label}
+      onClick={onClick}
+      className="pointer-events-none grid cursor-pointer place-items-center rounded-md bg-[var(--m-ink)] p-2.5 text-[color:var(--m-surface)] opacity-0 shadow-[0_1px_5px_rgb(0_0_0/0.3)] transition-[opacity,background-color] hover:bg-[var(--m-ink)]/80 group-hover/edit:pointer-events-auto group-hover/edit:opacity-100 focus-visible:pointer-events-auto focus-visible:opacity-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-mustard-500"
+    >
+      <Icon name={icon} className="size-5" strokeWidth={1.8} />
+    </button>
   );
 }
 

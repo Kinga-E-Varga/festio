@@ -1,4 +1,8 @@
-import { HEADING_FIELDS } from "@/modular/heading";
+import {
+  HEADING_FIELDS,
+  HEADING_SHOWS,
+  ICON_HEADING_SHOWS,
+} from "@/modular/heading";
 import { LABELS } from "@/modular/labels";
 import type { SectionDefinition } from "@/types/modular";
 
@@ -16,6 +20,14 @@ export const section: SectionDefinition = {
         ro: "Listă cu pictograme",
         hu: "Lista ikonokkal",
       },
+      shows: [
+        ...HEADING_SHOWS,
+        "days.date",
+        "days.items.time",
+        "days.items.title",
+        "days.items.note",
+        "days.items.icon",
+      ],
     },
     {
       id: "2",
@@ -24,6 +36,14 @@ export const section: SectionDefinition = {
         ro: "Pictogramă și listă",
         hu: "Ikon és lista",
       },
+      // No italic second line under the heading.
+      shows: [
+        ...ICON_HEADING_SHOWS.filter((id) => id !== "headingItalic"),
+        "days.date",
+        "days.items.time",
+        "days.items.title",
+        "days.items.note",
+      ],
     },
   ],
   fields: [
@@ -33,16 +53,28 @@ export const section: SectionDefinition = {
       label: { en: "days", ro: "zile", hu: "napok" },
       type: "groups",
       maxGroups: 4,
+      groupLabel: { en: "day", ro: "ziua", hu: "nap" },
+      addLabel: {
+        en: "add new day",
+        ro: "adaugă o zi nouă",
+        hu: "új nap hozzáadása",
+      },
       group: [
         {
-          id: "label",
-          label: { en: "day", ro: "ziua", hu: "nap" },
-          type: "text",
-          maxLength: 40,
+          id: "date",
+          label: { en: "date", ro: "data", hu: "dátum" },
+          type: "date",
+          maxLength: 10,
         },
       ],
       items: {
         label: { en: "events", ro: "evenimente", hu: "programpontok" },
+        itemLabel: { en: "event", ro: "evenimentul", hu: "programpont" },
+        addLabel: {
+          en: "add event to day {n}",
+          ro: "adaugă un eveniment în ziua {n}",
+          hu: "programpont hozzáadása: nap {n}",
+        },
         maxItems: 6,
         item: [
           { id: "time", label: LABELS.time, type: "time", maxLength: 5 },

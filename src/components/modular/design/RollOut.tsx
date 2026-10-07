@@ -4,7 +4,7 @@ import { useTranslations } from "next-intl";
 import { type ReactNode, useState } from "react";
 import { Icon } from "@/components/icons";
 import type { IconName } from "@/types/dashboard";
-import { DESIGN_BOX_BUTTON } from "./styles";
+import { BOX_MARK, BOX_MARK_STROKE, DESIGN_BOX_BUTTON } from "./styles";
 
 /**
  * One choice card in the rolled-out grid, as wide as its column. Picked, a
@@ -20,6 +20,11 @@ interface RollOutProps {
   /** What the box says to screen readers: the setting and its value. */
   label: string;
   icon?: IconName;
+  /**
+   * The icon's line, when `BOX_MARK_STROKE` makes it look heavier than the
+   * rest: a big outline shape carries more ink than a small one.
+   */
+  iconStroke?: number;
   /** What the box shows of the current choice. */
   summary: ReactNode;
   /** The choices, as `OPTION_CARD` buttons. */
@@ -39,6 +44,7 @@ export function RollOut({
   id,
   label,
   icon,
+  iconStroke = BOX_MARK_STROKE,
   summary,
   children,
   layout = "grid grid-cols-3 gap-3 @min-[360px]:grid-cols-4",
@@ -56,7 +62,11 @@ export function RollOut({
         className={DESIGN_BOX_BUTTON}
       >
         {icon ? (
-          <Icon name={icon} className="size-[22px] text-mustard-500" />
+          <Icon
+            name={icon}
+            className={`${BOX_MARK} w-[22px]`}
+            strokeWidth={iconStroke}
+          />
         ) : null}
         <span className="flex min-w-0 flex-1">{summary}</span>
         <RollArrow open={open} reveal="group-focus-visible:opacity-100" />
@@ -77,7 +87,16 @@ export function RollOut({
  * focused — "Close" while open. `reveal` is the class that shows the word
  * on focus, as the box's markup decides what counts as focused.
  */
-export function RollArrow({ open, reveal }: { open: boolean; reveal: string }) {
+export function RollArrow({
+  open,
+  reveal,
+  action,
+}: {
+  open: boolean;
+  reveal: string;
+  /** What it says while shut; left out, "Change". */
+  action?: string;
+}) {
   const t = useTranslations("DesignTab");
   return (
     <span
@@ -87,7 +106,7 @@ export function RollArrow({ open, reveal }: { open: boolean; reveal: string }) {
       <span
         className={`text-[13.5px] opacity-0 transition-opacity group-hover:opacity-100 ${reveal}`}
       >
-        {t(open ? "close" : "change")}
+        {open ? t("close") : (action ?? t("change"))}
       </span>
       <Icon
         name="chevron"

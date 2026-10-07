@@ -22,8 +22,11 @@ interface DesignTabProps {
   /** `show`: a section to bring into view once the change is drawn. */
   onChange: (next: ModularState, show?: string) => void;
   onTemplate: (id: string) => void;
-  /** Brings a section into view in the preview. */
-  onReveal: (id: string) => void;
+  /** The Design tab's one section with its styles out. */
+  openStyles: string | null;
+  onOpenStyles: (id: string | null) => void;
+  /** One of a section's styles picked. */
+  onStylePicked: () => void;
 }
 
 /**
@@ -37,7 +40,9 @@ export function DesignTab({
   language,
   onChange,
   onTemplate,
-  onReveal,
+  openStyles,
+  onOpenStyles,
+  onStylePicked,
 }: DesignTabProps) {
   return (
     <div className="flex flex-col">
@@ -71,7 +76,9 @@ export function DesignTab({
         state={state}
         language={language}
         onChange={onChange}
-        onReveal={onReveal}
+        openStyles={openStyles}
+        onOpenStyles={onOpenStyles}
+        onStylePicked={onStylePicked}
       />
     </div>
   );

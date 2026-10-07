@@ -75,31 +75,21 @@ export function applyTemplate(
 }
 
 /**
- * Dress code and Gifts each have a standalone section and a Helpful notes
- * subsection of the same id; only one of the two is ever on.
- */
-function isPaired(id: string): id is "dress-code" | "gifts" {
-  return id === "dress-code" || id === "gifts";
-}
-
-/**
  * Turns an optional section on or off; its values stay either way. Dress
- * code or Gifts turned on switches its Helpful notes twin off.
+ * code and Gifts may be on both standalone and in Helpful notes: a host
+ * spots a repeat more easily than a part that quietly went off.
  */
 export function setSectionOn(
   state: ModularState,
   id: string,
   on: boolean,
 ): ModularState {
-  const next = {
+  return {
     ...state,
     sections: state.sections.map((section) =>
       section.section === id ? { ...section, on } : section,
     ),
   };
-  return on && isPaired(id) && noteSwitchOn(next, id)
-    ? setNoteSwitch(next, id, false, null)
-    : next;
 }
 
 /** Picks a section's variant. Values belong to the section, so nothing is lost. */
@@ -133,9 +123,8 @@ export function noteSwitchOn(state: ModularState, kind: NoteKind): boolean {
 
 /**
  * Flips one Helpful notes switch. Off only hides; the last one off turns
- * Helpful notes itself off. Dress code or Gifts turned on here switches the
- * standalone section off. Custom on with no custom
- * note left adds `sample` — the only time the Design tab adds a note — and
+ * Helpful notes itself off. Custom on with no custom
+ * note left adds `sample` — the only time a switch adds a note — and
  * never past `MAX_NOTES`.
  */
 export function setNoteSwitch(
@@ -155,12 +144,10 @@ export function setNoteSwitch(
   ) {
     values.items = [...items, sample];
   }
-  let next: ModularState = {
+  const next: ModularState = {
     ...state,
     values: { ...state.values, [NOTES_ID]: values },
   };
-  /* Dress code or Gifts here turned on switches its standalone twin off. */
-  if (on && isPaired(kind)) next = setSectionOn(next, kind, false);
   /* With nothing left to show, the section itself goes off too. */
   return NOTE_KINDS.some((each) => noteSwitchOn(next, each))
     ? next
@@ -184,6 +171,23 @@ export function showNotes(
   );
 }
 
+/**
+ * The sections that are on, in page order, each with its definition; an id
+ * that names nothing is left out.
+ */
+export function sectionsOn(
+  state: ModularState,
+  library: ModularLibrary,
+): ModularDesign["sections"] {
+  const sections: ModularDesign["sections"] = [];
+  for (const { section, variant, on } of state.sections) {
+    if (!on) continue;
+    const definition = library.sections.find(({ id }) => id === section);
+    if (definition) sections.push({ definition, variant });
+  }
+  return sections;
+}
+
 /** The state's ids looked up in the library; null when one names nothing. */
 export function resolveDesign(
   state: ModularState,
@@ -197,18 +201,12 @@ export function resolveDesign(
   if (!palette || !fontPair) return null;
   const corners = isCornersId(state.corners) ? state.corners : DEFAULT_CORNERS;
 
-  const sections: ModularDesign["sections"] = [];
-  for (const { section, variant, on } of state.sections) {
-    if (!on) continue;
-    const definition = library.sections.find(({ id }) => id === section);
-    if (definition) sections.push({ definition, variant });
-  }
   return {
     palette,
     fontPair,
     pattern,
     corners,
-    sections,
+    sections: sectionsOn(state, library),
     values: state.values,
   };
 }

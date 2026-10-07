@@ -1,7 +1,7 @@
 import { TitleNames } from "@/modular/TitleNames";
 import type { VariantProps } from "@/types/modular";
 
-/** The names, with three diamonds above. */
+/** The names in the accent. */
 export function Variant(props: VariantProps) {
-  return <TitleNames {...props} look="diamonds" />;
+  return <TitleNames {...props} look="colorful" />;
 }

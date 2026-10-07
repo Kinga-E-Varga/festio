@@ -87,9 +87,14 @@ export interface FontPair {
 
 /**
  * `image` holds a path to a photo (no uploads yet — the sample photo is the
- * value); `icon` holds an id from `ICONS` in `src/modular/icons.tsx`.
+ * value); `icon` holds an id from `ICONS` in `src/modular/icons.tsx`; `date`
+ * holds an ISO `YYYY-MM-DD` day, written out by the variant in one fixed way;
+ * `lines` holds short lines joined by `\n` (a course's dishes), each line its
+ * own input in the Content tab; `color` holds a hex colour or a palette
+ * role's id ("accent"), picked with a colour picker.
  */
-export type ScalarFieldType = "text" | "longText" | "time" | "image" | "icon";
+export type ScalarFieldType =
+  "text" | "longText" | "time" | "date" | "image" | "icon" | "lines" | "color";
 
 /** One field inside a list item — what a repeated group is made of. */
 export interface ItemField {
@@ -97,7 +102,14 @@ export interface ItemField {
   /** What the host's edit form calls it. Host chrome: the host's locale. */
   label: LocalizedText;
   type: ScalarFieldType;
+  /** For `lines`, each line's limit. */
   maxLength: number;
+  /** The host must fill it in: Save waits until it is. */
+  required?: boolean;
+  /** `lines` only: Add stops here. 1 edits the first line alone. */
+  maxLines?: number;
+  /** `lines` only: Add's own words ("add title"). */
+  addLabel?: LocalizedText;
 }
 
 /** A single host-editable value. Its sample lives in `DEFAULTS`. */
@@ -111,7 +123,13 @@ export interface ListField {
   id: string;
   label: LocalizedText;
   type: "list";
+  /** One item's name, numbered in the Content tab ("location 1"). Left out: the list's name and a number. */
+  itemLabel?: LocalizedText;
+  /** Add's own words ("add new location"). Left out: just "Add". */
+  addLabel?: LocalizedText;
   maxItems: number;
+  /** Remove stops here. Left out: the list may be empty. */
+  minItems?: number;
   item: ItemField[];
 }
 
@@ -124,10 +142,21 @@ export interface GroupListField {
   label: LocalizedText;
   type: "groups";
   maxGroups: number;
-  /** The group's own fields: a day's label. */
+  /** One group's name, numbered in the Content tab ("day 1"). */
+  groupLabel: LocalizedText;
+  /** Add's own words for a new group ("add new day"). */
+  addLabel: LocalizedText;
+  /** The group's own fields: a day's date. */
   group: ItemField[];
-  /** The list inside each group: a day's events. */
-  items: { label: LocalizedText; maxItems: number; item: ItemField[] };
+  /** The list inside each group: a day's events, each item numbered by `itemLabel` ("event 1"). */
+  items: {
+    label: LocalizedText;
+    itemLabel: LocalizedText;
+    /** Add's own words, `{n}` the group's number ("add event to day {n}"). */
+    addLabel: LocalizedText;
+    maxItems: number;
+    item: ItemField[];
+  };
 }
 
 /** An on/off switch: show a part of the section or leave it out. */
@@ -135,6 +164,40 @@ export interface ToggleField {
   id: string;
   label: LocalizedText;
   type: "toggle";
+  /**
+   * The fields it turns on and off. The Content tab draws these right
+   * after it, only while it is on.
+   */
+  controls?: string[];
+}
+
+/** One option picked from a short list (a dropdown); the value is the option's id. */
+export interface ChoiceField {
+  id: string;
+  label: LocalizedText;
+  type: "choice";
+  /** Ids are stored, so never renamed or reused. */
+  options: { id: string; label: LocalizedText }[];
+}
+
+/**
+ * The event's date, read-only: it is set in the event details, so the
+ * field stores nothing.
+ */
+export interface EventDateField {
+  id: string;
+  label: LocalizedText;
+  type: "eventDate";
+}
+
+/**
+ * How the event's date is written: an id from `DATE_FORMATS`, its options
+ * the real date in each style.
+ */
+export interface DateFormatField {
+  id: string;
+  label: LocalizedText;
+  type: "dateFormat";
 }
 
 /** One way to draw a section: `sections/<section>/<id>.tsx`. */
@@ -149,10 +212,22 @@ export interface VariantInfo {
   name: LocalizedText;
   /** This variant's own ground rule, over the section's. */
   ground?: GroundRule;
+  /**
+   * The fields this variant draws, as paths: a field's id, `list.item` for a
+   * list's item field, `groups.field` and `groups.items.field` for a groups
+   * field. The Content tab shows only these; values it leaves out are kept.
+   */
+  shows: string[];
 }
 
 export type SectionField =
-  ScalarField | ToggleField | ListField | GroupListField;
+  | ScalarField
+  | ToggleField
+  | ChoiceField
+  | EventDateField
+  | DateFormatField
+  | ListField
+  | GroupListField;
 
 /**
  * One section, shared by every modular template. Its fields belong to it,
@@ -164,7 +239,7 @@ export interface SectionDefinition {
   id: string;
   /** What the host's editor calls the section. */
   name: LocalizedText;
-  /** Header, cover, title, date & time, location and RSVP are always on. */
+  /** Header, cover, title, date, location and RSVP are always on. */
   required: boolean;
   /** The section's place in the fixed order: header 0, cover 10, title 20… */
   order: number;
@@ -180,6 +255,11 @@ export interface SectionDefinition {
    * Read from the state whether or not those sections are on.
    */
   reads?: string[];
+  /**
+   * What its card draws inside Helpful notes (Dress code, Gifts), as
+   * `shows` paths: the fields the Content tab offers there.
+   */
+  noteCard?: string[];
   /** How the page picks the section's ground; a variant may set its own. */
   ground?: GroundRule;
   /**
@@ -247,6 +327,8 @@ export interface BarNav {
   links: MenuLink[];
   menuOpen: boolean;
   onOpenMenu: () => void;
+  /** The editor's Design and Content buttons, drawn inside the bar. */
+  edit?: ReactNode;
 }
 
 export interface VariantProps {
