@@ -1,3 +1,5 @@
+import { SEE_ALL_LINK } from "@/components/dashboard/styles";
+import { Icon } from "@/components/icons";
 import { Link } from "@/i18n/navigation";
 import type { ReactNode } from "react";
 
@@ -23,13 +25,11 @@ export function FocusView({ note, href, linkLabel, children }: FocusViewProps) {
        * The tabs above are all unselected, which on its own says nothing.
        * This says it, and is the way back to the full list.
        */}
-      <p className="mb-[26px] flex flex-wrap items-center gap-x-2 gap-y-1 border border-mustard-300 bg-mustard-100 px-4 py-3 text-[12.5px] text-neutral-700">
+      <p className="mb-[8px] flex flex-wrap items-center gap-x-2 gap-y-1 rounded-ui border border-neutral-400 bg-neutral-50 px-4 py-3 shadow-card text-[12.5px] text-neutral-800">
         <span>{note}</span>
-        <Link
-          href={href}
-          className="font-semibold text-forest-500 underline underline-offset-2 transition-colors hover:text-forest-600"
-        >
+        <Link href={href} className={SEE_ALL_LINK}>
           {linkLabel}
+          <Icon name="arrowRight" className="size-3.5" />
         </Link>
       </p>
 

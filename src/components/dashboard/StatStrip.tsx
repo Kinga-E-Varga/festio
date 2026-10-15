@@ -5,26 +5,30 @@ export function StatStrip() {
   const t = useTranslations("Stats");
 
   return (
-    // A one-pixel gap over a forest ground draws the dividers, so the cells
-    // need no per-edge border rules as the column count changes.
-    <dl className="grid grid-cols-1 gap-px border border-forest-500 bg-forest-500 min-[521px]:grid-cols-2 min-[1001px]:grid-cols-4">
-      {STATS.map((stat) => (
-        <div key={stat.labelKey} className="bg-forest-100 px-[22px] py-4">
-          <dt className="text-[10px] font-semibold tracking-[0.14em] text-forest-500 uppercase">
-            {t(stat.labelKey)}
-          </dt>
-          <dd className="mt-1.5 flex items-baseline gap-1.5">
-            <span className="font-serif text-3xl leading-none text-forest-600">
-              {stat.value}
-            </span>
-            {stat.detailKey ? (
-              <span className="text-[12.5px] font-medium text-forest-600">
-                {t(stat.detailKey, { count: stat.detailValue ?? 0 })}
+    // Columns follow the strip's own width, not the screen's: one, two, then
+    // all four once each box has room (about 170px) for its longest line.
+    <div className="@container">
+      {/* A one-pixel gap over the border colour draws the dividers, so the cells
+          need no per-edge border rules as the column count changes. */}
+      <dl className="grid grid-cols-1 gap-px overflow-hidden rounded-ui border border-neutral-400 bg-neutral-400 shadow-card @min-[420px]:grid-cols-2 @min-[680px]:grid-cols-4">
+        {STATS.map((stat) => (
+          <div key={stat.labelKey} className="bg-neutral-50 px-4 py-3.5">
+            <dt className="label-caps font-medium! text-neutral-800!">
+              {t(stat.labelKey)}
+            </dt>
+            <dd className="mt-2 flex items-baseline gap-1.5">
+              <span className="font-serif text-[26px] leading-none text-neutral-950 @min-[680px]:text-[28px]">
+                {stat.value}
               </span>
-            ) : null}
-          </dd>
-        </div>
-      ))}
-    </dl>
+              {stat.detailKey ? (
+                <span className="text-[12.5px] text-neutral-800">
+                  {t(stat.detailKey, { count: stat.detailValue ?? 0 })}
+                </span>
+              ) : null}
+            </dd>
+          </div>
+        ))}
+      </dl>
+    </div>
   );
 }

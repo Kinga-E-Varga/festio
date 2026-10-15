@@ -3,6 +3,7 @@
 import { useTranslations } from "next-intl";
 import { useEffect, useRef } from "react";
 import type { RsvpSkin } from "@/components/invitation/RsvpForm";
+import { REPLY_CONTROL_HEIGHT } from "@/components/invitation/styles";
 import { useRsvpForm } from "@/components/invitation/useRsvpForm";
 import { text } from "@/modular/content";
 import { CardIcon } from "@/modular/cards/CardIcon";
@@ -23,15 +24,15 @@ import type { VariantProps } from "@/types/modular";
  * Square, hairline-boxed fields on the page's surface, plain semibold
  * labels, the two choices side by side, and Send solid in the accent,
  * turning secondary under the pointer. Fields, choices and Send share one
- * 44px height, a comfortable tap; the form is spaced tightly — 20px between
+ * height, `REPLY_CONTROL_HEIGHT`; the form is spaced tightly — 20px between
  * groups, 6px from a label to its field.
  */
 /* The skin's own type: 14px controls, 12px labels set tight. */
 const LABEL =
   "text-[12px] leading-tight font-semibold text-[color:var(--m-ink)]";
 const CONTROL_TYPE = "text-[14px] leading-5";
-const FIELD = `w-full min-h-11 ${FIELD_CORNER} border-1 border-[var(--m-line)] bg-[var(--m-surface)] px-3 py-2.5 ${CONTROL_TYPE} text-[color:var(--m-ink)] transition-colors placeholder:text-[color:var(--m-ink-muted)] focus:border-[var(--m-accent)] focus:outline-none`;
-const CHOICE = `inline-flex min-h-11 flex-1 cursor-pointer items-center justify-center ${PILL} border-1 px-3 ${CONTROL_TYPE} transition-colors`;
+const FIELD = `w-full ${REPLY_CONTROL_HEIGHT} ${FIELD_CORNER} border-1 border-[var(--m-line)] bg-[var(--m-surface)] px-3 py-2 ${CONTROL_TYPE} text-[color:var(--m-ink)] transition-colors placeholder:text-[color:var(--m-ink-muted)] focus:border-[var(--m-accent)] focus:outline-none`;
+const CHOICE = `inline-flex ${REPLY_CONTROL_HEIGHT} flex-1 cursor-pointer items-center justify-center ${PILL} border-1 px-3 ${CONTROL_TYPE} transition-colors`;
 const PANEL = `absolute inset-x-0 top-full z-10 mt-1 grid overflow-hidden ${FIELD_CORNER} border-1 border-[var(--m-line)] bg-[var(--m-surface)] py-1 shadow-md shadow-(color:--m-shadow)/40`;
 const OPTION = `flex cursor-pointer items-center gap-2 px-3 py-1.5 ${CONTROL_TYPE} text-[color:var(--m-ink)] transition-colors hover:bg-[var(--m-surface-alt)]`;
 const DROPDOWN = {
@@ -54,7 +55,7 @@ export const SKIN: RsvpSkin = {
   },
   remove: `${MUTED} transition-colors hover:text-[color:var(--m-secondary)]`,
   addPerson: `inline-flex cursor-pointer items-center gap-1.5 py-2 ${CONTROL_TYPE} font-semibold text-[color:var(--m-secondary)] transition-colors hover:text-[color:var(--m-ink)]`,
-  submit: `inline-flex min-h-11 ${PILL} cursor-pointer items-center justify-center gap-2.5 bg-[var(--m-accent)] px-5 ${CONTROL_TYPE} font-semibold tracking-wide text-[color:var(--m-accent-ink)] transition-[background-color,color,transform] duration-150 hover:-translate-y-px hover:bg-[var(--m-secondary)] hover:text-[color:var(--m-secondary-ink)]`,
+  submit: `inline-flex ${REPLY_CONTROL_HEIGHT} ${PILL} cursor-pointer items-center justify-center gap-2.5 bg-[var(--m-accent)] px-5 ${CONTROL_TYPE} font-semibold tracking-wide text-[color:var(--m-accent-ink)] transition-[background-color,color,transform] duration-150 hover:-translate-y-px hover:bg-[var(--m-secondary)] hover:text-[color:var(--m-secondary-ink)]`,
   privacy: `${CAPTION} ${MUTED} text-center`,
   warning: `${BODY_SM} text-center text-[color:var(--m-error)]`,
   space: { group: "gap-5", field: "gap-1.5", legend: "mb-2", send: "mt-1" },

@@ -1,6 +1,6 @@
 "use client";
 
-import { INPUT } from "@/components/dashboard/event-editor/styles";
+import { Select } from "@/components/dashboard/event-editor/Select";
 import { dateFormatsFor, formatInvitationDate } from "@/lib/invitation";
 import type { Language } from "@/lib/language";
 
@@ -24,17 +24,16 @@ export function DateFormatSelect({
   onChange: (value: string) => void;
 }) {
   return (
-    <select
+    <Select
       id={id}
       value={value}
       onChange={(control) => onChange(control.target.value)}
-      className={INPUT}
     >
       {dateFormatsFor(language).map((option) => (
         <option key={option.id} value={option.id}>
           {formatInvitationDate(eventDate, option.id, language)}
         </option>
       ))}
-    </select>
+    </Select>
   );
 }

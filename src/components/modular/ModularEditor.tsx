@@ -280,7 +280,7 @@ export function ModularEditor({
          */}
         <div
           data-panel={editing ? "true" : undefined}
-          className="h-full px-3 pt-3 transition-[margin] duration-[620ms] ease-[cubic-bezier(0.22,1,0.36,1)] md:px-4.5 md:pt-4.5 invite:px-6 invite:pt-6 invite:data-[panel=true]:mr-invite-panel rail:px-10 rail:pt-10"
+          className="h-full px-3 pt-3 transition-[margin] duration-[620ms] ease-[cubic-bezier(0.22,1,0.36,1)] md:px-4.5 md:pt-4.5 invite:px-6 invite:pt-6 invite:data-[panel=true]:mr-invite-panel min-[1400px]:px-10 min-[1400px]:pt-10"
         >
           {/* A state id that names nothing leaves the ground empty rather than failing the page. */}
           {design ? (

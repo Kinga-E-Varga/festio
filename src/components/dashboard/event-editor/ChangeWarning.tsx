@@ -25,24 +25,29 @@ export function ChangeWarning({
   if (!warning.shown) return null;
 
   return (
-    <Banner tone="warn" icon="alert" title={title}>
+    <Banner
+      tone="warn"
+      icon="alert"
+      title={title}
+      footer={
+        <label className="mt-[11px] flex cursor-pointer items-start gap-[9px] border-t border-current/50 pt-2.5 font-semibold">
+          <span className="relative mt-px grid size-4 shrink-0 place-items-center">
+            <input
+              type="checkbox"
+              checked={warning.acknowledged}
+              onChange={(control) => warning.toggle(control.target.checked)}
+              className="peer size-4 cursor-pointer appearance-none rounded-ui border-[1.5px] border-warning-700 bg-secondary-100 checked:bg-warning-700"
+            />
+            <Icon
+              name="check"
+              className="pointer-events-none absolute size-3 text-secondary-100 opacity-0 peer-checked:opacity-100"
+            />
+          </span>
+          {t("acknowledge")}
+        </label>
+      }
+    >
       {children}
-
-      <label className="mt-[11px] flex cursor-pointer items-start gap-[9px] border-t border-terracotta-400 pt-2.5 font-semibold">
-        <span className="relative mt-px grid size-4 shrink-0 place-items-center">
-          <input
-            type="checkbox"
-            checked={warning.acknowledged}
-            onChange={(control) => warning.toggle(control.target.checked)}
-            className="peer size-4 cursor-pointer appearance-none rounded-[3px] border-[1.5px] border-terracotta-600 bg-mustard-50 checked:bg-terracotta-600"
-          />
-          <Icon
-            name="check"
-            className="pointer-events-none absolute size-3 text-mustard-50 opacity-0 peer-checked:opacity-100"
-          />
-        </span>
-        {t("acknowledge")}
-      </label>
     </Banner>
   );
 }

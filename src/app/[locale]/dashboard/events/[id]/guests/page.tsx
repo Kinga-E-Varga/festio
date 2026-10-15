@@ -2,10 +2,10 @@ import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import { notFound } from "next/navigation";
 import { EventHeader } from "@/components/dashboard/EventHeader";
-import { BTN_DARK } from "@/components/dashboard/event-editor/styles";
+import { BTN_ACCENT } from "@/components/dashboard/event-editor/styles";
 import { RepliesBanner } from "@/components/dashboard/RepliesBanner";
 import { GuestManager } from "@/components/dashboard/guest-list/GuestManager";
-import { Icon } from "@/components/icons";
+import { ButtonIcon } from "@/components/icons";
 import { GUEST_DATA_RETENTION_DAYS } from "@/lib/config";
 import { findEvent } from "@/mock/dashboard";
 import { findGuests } from "@/mock/guests";
@@ -35,21 +35,28 @@ export default async function GuestsPage({ params }: Props) {
         action={
           event.dataDeleted ? null : (
             // Not wired yet: export comes in a later feature.
-            <button type="button" className={`shrink-0 ${BTN_DARK}`}>
-              <Icon name="download" className="size-[18px]" />
+            <button type="button" className={`shrink-0 ${BTN_ACCENT}`}>
+              <ButtonIcon name="download" />
               {t("export")}
             </button>
           )
         }
       />
-      <RepliesBanner event={event} from="paused" />
 
       {event.dataDeleted ? (
-        <p className="mt-[35px] border border-neutral-500 bg-neutral-300 px-[15px] py-[13px] text-[12.5px] text-neutral-800">
-          {t("deleted", { days: GUEST_DATA_RETENTION_DAYS })}
-        </p>
+        /* Held clear of the header as the banners are. */
+        <div className="mt-8">
+          <RepliesBanner event={event} />
+          <p className="mt-3 rounded-ui border border-neutral-500 bg-neutral-300 px-[15px] py-[13px] text-[12.5px] text-neutral-800">
+            {t("deleted", { days: GUEST_DATA_RETENTION_DAYS })}
+          </p>
+        </div>
       ) : (
-        <GuestManager event={event} initial={findGuests(event.id)} />
+        <GuestManager
+          event={event}
+          initial={findGuests(event.id)}
+          notices={<RepliesBanner event={event} />}
+        />
       )}
     </div>
   );

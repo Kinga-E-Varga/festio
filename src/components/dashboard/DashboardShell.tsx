@@ -22,15 +22,33 @@ type Drawer = "nav" | "notices";
 
 /** Matches the `nav` and `rail` breakpoints where each column docks. */
 const NAV_DOCKED = "(min-width: 820px)";
-const RAIL_DOCKED = "(min-width: 1400px)";
+const RAIL_DOCKED = "(min-width: 1600px)";
 
 /*
- * Width is deliberately left out: each drawer sets its own to match the column
- * it stands in for, and two `w-*` utilities on one element resolve by
- * stylesheet order rather than by the order they are written.
+ * Width is deliberately left out: each drawer sets its own — the nav's
+ * matches its column, the notices' is wider than theirs, as it lies over the
+ * page instead of sharing it — and two `w-*` utilities on one element resolve
+ * by stylesheet order rather than by the order they are written.
  */
 const PANEL =
-  "fixed top-topbar bottom-0 z-40 flex flex-col bg-mustard-100 shadow-[0_0_40px_rgba(47,40,31,0.2)] transition-transform duration-200 ease-out";
+  "fixed top-topbar bottom-0 z-40 flex flex-col bg-neutral-200 shadow-[0_0_40px_rgba(47,40,31,0.2)] transition-transform duration-200 ease-out";
+
+/**
+ * A docked column is held off the top bar, the page's bottom and the
+ * window's edge, and sticky inside that margin. The nav is one card; the
+ * notifications rail holds a card per panel.
+ */
+const DOCKED = "sticky hidden shrink-0";
+/** The margin: 20px all round. */
+const GAP_20 =
+  "top-[calc(var(--spacing-topbar)+20px)] my-5 h-[calc(100vh-var(--spacing-topbar)-40px)]";
+/**
+ * The nav's: 12px while the notifications are a drawer, so the nav leans
+ * closer to the window's edge with no column across from it; 20px, like the
+ * rail's, once they dock.
+ */
+const NAV_GAP =
+  "ml-3 top-[calc(var(--spacing-topbar)+12px)] my-3 h-[calc(100vh-var(--spacing-topbar)-24px)] rail:ml-5 rail:top-[calc(var(--spacing-topbar)+20px)] rail:my-5 rail:h-[calc(100vh-var(--spacing-topbar)-40px)]";
 
 export function DashboardShell({
   nav,
@@ -101,7 +119,11 @@ export function DashboardShell({
   }, [open]);
 
   return (
-    <div className="flex flex-1 flex-col">
+    /* While a drawer is open the page under it holds still (`globals.css`). */
+    <div
+      className="flex flex-1 flex-col"
+      data-scroll-lock={anyOpen || undefined}
+    >
       <TopBar
         navOpen={navOpen}
         noticesOpen={noticesOpen}
@@ -110,17 +132,25 @@ export function DashboardShell({
       />
 
       <div className="flex flex-1 items-start">
-        <aside className="sticky top-topbar hidden h-[calc(100vh-var(--spacing-topbar))] w-side shrink-0 border-r border-mustard-300 nav:block">
+        <aside
+          className={`${DOCKED} ${NAV_GAP} side-card w-side overflow-hidden nav:block min-[1800px]:w-[272px]`}
+        >
           {nav}
         </aside>
 
-        <main className="min-w-0 flex-1 px-[18px] pt-6 pb-10 nav:px-8 nav:pt-[34px] nav:pb-[46px]">
-          <div className="mx-auto max-w-[1500px]">{children}</div>
+        {/*
+         * Fills the width between the columns; wider screens get wider
+         * margins instead of a cap. From 1200 the margins are the widest: a
+         * laptop has no docked rail, and once the rail docks at 1600 it and
+         * the nav are narrow until 1800, so the page keeps its room.
+         */}
+        <main className="min-w-0 flex-1 px-[18px] pt-6 pb-10 nav:px-8 nav:pt-6 nav:pb-10 min-[1200px]:px-12 min-[1800px]:pt-[34px] min-[1800px]:pb-[46px]">
+          {children}
         </main>
 
         <aside
           aria-label={t("activity")}
-          className="sticky top-topbar hidden h-[calc(100vh-var(--spacing-topbar))] w-rail shrink-0 overflow-y-auto border-l border-mustard-300 bg-mustard-100 px-[18px] py-5 rail:block"
+          className={`${DOCKED} ${GAP_20} mr-5 w-rail rail:block min-[1800px]:w-[380px]`}
         >
           {notices}
         </aside>
@@ -130,7 +160,7 @@ export function DashboardShell({
       <div
         aria-hidden="true"
         onClick={close}
-        className={`fixed inset-x-0 top-topbar bottom-0 z-30 bg-neutral-900/35 transition-opacity duration-200 ${
+        className={`fixed inset-x-0 top-topbar bottom-0 z-30 bg-neutral-950/35 transition-opacity duration-200 ${
           anyOpen ? "opacity-100" : "pointer-events-none opacity-0"
         }`}
       />
@@ -158,7 +188,7 @@ export function DashboardShell({
         aria-label={t("activity")}
         inert={!noticesOpen}
         onClick={closeOnLink}
-        className={`${PANEL} right-0 w-rail max-w-[88vw] overflow-y-auto px-[18px] py-5 rail:hidden ${
+        className={`${PANEL} right-0 w-[360px] max-w-[88vw] side-scroll overflow-y-auto px-[18px] py-5 rail:hidden ${
           noticesOpen ? "translate-x-0" : "translate-x-full"
         }`}
       >

@@ -6,7 +6,6 @@ import { RepliesBanner } from "@/components/dashboard/RepliesBanner";
 import { Banner } from "@/components/dashboard/event-editor/Banner";
 import { EventEditor } from "@/components/dashboard/event-editor/EventEditor";
 import {
-  contentFreeze,
   replyClose,
   replyWindow,
   formatDeadline,
@@ -34,7 +33,6 @@ export default async function EventPage({ params }: Props) {
   const tPackages = await getTranslations("Packages");
   const pkg = PACKAGES[event.package];
   const locale = await getLocale();
-  const freeze = formatDeadline(contentFreeze(event.date), locale);
   const replies = replyWindow(event);
   const repliesClose = formatDeadline(replyClose(event), locale);
 
@@ -42,72 +40,58 @@ export default async function EventPage({ params }: Props) {
     <div className="@container">
       <EventHeader event={event} />
 
-      {/* Only the banners that are true right now. */}
-      {event.locked ? (
-        <Banner
-          tone="frozen"
-          icon="lock"
-          title={t("closedTitle", { date: freeze })}
-        >
-          {t("closedBody")}
-        </Banner>
-      ) : event.isNextUp && event.locksIn ? (
-        <Banner
-          tone="warn"
-          icon="clock"
-          title={t("closingTitle", {
-            time: formatDuration(event.locksIn, locale),
-          })}
-        >
-          {t("closingBody", { date: freeze })}
-        </Banner>
-      ) : null}
+      {/*
+       * Only the banners that are true right now, held clear of the header.
+       * The margins collapse, so the first banner's own 18px and the header's
+       * 20px fold into this.
+       */}
+      <div className="mt-8">
+        {/* The reply form, when it is about to close or already has. */}
+        {replies === "closed" ? (
+          <Banner
+            tone="warn"
+            icon="lock"
+            title={t("repliesClosedTitle", {
+              date: repliesClose,
+            })}
+          >
+            {t("repliesClosedBody", {
+              custom: event.repliesCloseAt ? "yes" : "no",
+            })}
+          </Banner>
+        ) : replies === "soon" && event.repliesCloseIn ? (
+          <Banner
+            tone="warn"
+            icon="clock"
+            title={t("repliesClosingTitle", {
+              time: formatDuration(event.repliesCloseIn, locale),
+            })}
+          >
+            {t("repliesClosingBody", {
+              date: repliesClose,
+              custom: event.repliesCloseAt ? "yes" : "no",
+            })}
+          </Banner>
+        ) : null}
 
-      {/* The reply form, when it is about to close or already has. */}
-      {replies === "closed" ? (
-        <Banner
-          tone="warn"
-          icon="lock"
-          title={t("repliesClosedTitle", {
-            date: repliesClose,
-          })}
-        >
-          {t("repliesClosedBody", {
-            custom: event.repliesCloseAt ? "yes" : "no",
-          })}
-        </Banner>
-      ) : replies === "soon" && event.repliesCloseIn ? (
-        <Banner
-          tone="warn"
-          icon="clock"
-          title={t("repliesClosingTitle", {
-            time: formatDuration(event.repliesCloseIn, locale),
-          })}
-        >
-          {t("repliesClosingBody", {
-            date: repliesClose,
-            custom: event.repliesCloseAt ? "yes" : "no",
-          })}
-        </Banner>
-      ) : null}
+        {event.paid ? null : (
+          <Banner tone="warn" icon="info" title={t("unpaidTitle")}>
+            {t("unpaidBody", {
+              package: tPackages(`${event.package}.name`),
+              price: tPackages("price", { amount: pkg.price }),
+            })}
+          </Banner>
+        )}
 
-      {event.paid ? null : (
-        <Banner tone="warn" icon="info" title={t("unpaidTitle")}>
-          {t("unpaidBody", {
-            package: tPackages(`${event.package}.name`),
-            price: tPackages("price", { amount: pkg.price }),
-          })}
-        </Banner>
-      )}
+        {/* Paid for, but nobody can reach it — worth saying out loud. */}
+        {event.paid && event.visibility === "hidden" ? (
+          <Banner tone="warn" icon="eyeOff" title={t("hiddenTitle")}>
+            {t("hiddenBody")}
+          </Banner>
+        ) : null}
 
-      {/* Paid for, but nobody can reach it — worth saying out loud. */}
-      {event.paid && event.visibility === "hidden" ? (
-        <Banner tone="warn" icon="eyeOff" title={t("hiddenTitle")}>
-          {t("hiddenBody")}
-        </Banner>
-      ) : null}
-
-      <RepliesBanner event={event} from="warn" />
+        <RepliesBanner event={event} />
+      </div>
 
       <EventEditor
         event={event}

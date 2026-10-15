@@ -6,6 +6,8 @@ interface EditorSectionProps {
   hint?: string;
   /** The first section sits closer to the page head than to a section above. */
   first?: boolean;
+  /** An anchor other pages link to, held clear of the top bar. */
+  id?: string;
   children: ReactNode;
 }
 
@@ -13,15 +15,19 @@ export function EditorSection({
   title,
   hint,
   first = false,
+  id,
   children,
 }: EditorSectionProps) {
   return (
     // The blocks inside lay themselves out against the section, not the page.
-    <section className={`@container ${first ? "mt-[35px]" : "mt-[50px]"}`}>
-      <EditorHeading title={title} className={hint ? "mb-1" : "mb-[18px]"} />
+    <section
+      id={id}
+      className={`@container scroll-mt-[88px] ${first ? "mt-8" : "mt-11"}`}
+    >
+      <EditorHeading title={title} className={hint ? "mb-2" : "mb-5"} />
 
       {hint ? (
-        <p className="mb-[18px] text-[12.5px] text-neutral-700">{hint}</p>
+        <p className="mb-5 text-[12.5px] text-neutral-700">{hint}</p>
       ) : null}
 
       {children}
@@ -47,11 +53,11 @@ export function EditorHeading({
     <header className={`flex items-center gap-[18px] ${className}`}>
       <h2
         id={id}
-        className="font-serif text-[17px] tracking-[0.14em] text-neutral-900 uppercase"
+        className="font-serif text-[15px] tracking-[0.1em] text-neutral-950 uppercase"
       >
         {title}
       </h2>
-      <span aria-hidden="true" className="h-px flex-1 bg-neutral-900" />
+      <span aria-hidden="true" className="flex-1 border-t border-neutral-950" />
     </header>
   );
 }

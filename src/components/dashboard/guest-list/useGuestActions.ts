@@ -19,6 +19,7 @@ import type {
   ListName,
   ReplyValues,
 } from "@/types/guests";
+import { newId } from "@/lib/id";
 
 type Edit = (recipe: (current: EventGuests) => EventGuests) => void;
 
@@ -47,7 +48,7 @@ export function useGuestActions(
   /** A new reply (null) or one person's edit. */
   function saveReply(id: string | null, values: ReplyValues) {
     if (id === null) {
-      const ids = values.people.map(() => crypto.randomUUID());
+      const ids = values.people.map(() => newId());
       edit((current) =>
         newReplies(values, current.questions, ids, localNow()).reduce(
           (guests, added) => addReply(guests, added),
@@ -55,7 +56,7 @@ export function useGuestActions(
         ),
       );
     } else {
-      const ownId = crypto.randomUUID();
+      const ownId = newId();
       edit((current) => ({
         ...current,
         replies: editReply(
@@ -112,7 +113,7 @@ export function useGuestActions(
   }
 
   function addAsNew(reply: GuestReply) {
-    const id = crypto.randomUUID();
+    const id = newId();
     edit((current) => addReplyToList(current, reply.id, id));
     notify(t("toastAddedToList", { name: reply.name }));
   }

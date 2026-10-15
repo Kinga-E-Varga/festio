@@ -15,9 +15,10 @@ export function GuestSearch({ query, onQuery }: GuestSearchProps) {
   return (
     <label className="relative block w-full">
       <span className="sr-only">{t("search")}</span>
+      {/* Raised: every input is `relative` (for the date icon), so it would paint over it. */}
       <Icon
         name="search"
-        className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-neutral-700"
+        className="pointer-events-none absolute top-1/2 left-3 z-10 size-4 -translate-y-1/2 text-neutral-700"
       />
       <input
         type="search"

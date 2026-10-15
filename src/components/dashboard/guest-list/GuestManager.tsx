@@ -1,11 +1,10 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { useEffect, useEffectEvent, useState } from "react";
+import { type ReactNode, useEffect, useEffectEvent, useState } from "react";
 import { Toast, useToast } from "@/components/dashboard/Toast";
 import { Banner } from "@/components/dashboard/event-editor/Banner";
 import { EditorSection } from "@/components/dashboard/event-editor/EditorSection";
-import { SummarySwitch } from "@/components/dashboard/event-editor/SummarySwitch";
 import { AddNamesBox } from "@/components/dashboard/guest-list/AddNamesBox";
 import { GuestSearch } from "@/components/dashboard/guest-list/GuestSearch";
 import { GuestSummary } from "@/components/dashboard/guest-list/GuestSummary";
@@ -19,6 +18,7 @@ import {
   NEW_ROW,
   useRowEditor,
 } from "@/components/dashboard/guest-list/useRowEditor";
+import { Switch } from "@/components/invitation/PanelSwitch";
 import { useLeaveWarning } from "@/lib/leave-warning";
 import type { DashboardEvent } from "@/types/dashboard";
 import type { EventGuests, ListName } from "@/types/guests";
@@ -26,13 +26,15 @@ import type { EventGuests, ListName } from "@/types/guests";
 interface GuestManagerProps {
   event: DashboardEvent;
   initial: EventGuests;
+  /** The page's own banners, drawn above the list's, in the same block. */
+  notices?: ReactNode;
 }
 
 /** The list box eases out the way it eased in (`FADE_IN`). */
 const BOX_LEAVING = "pointer-events-none -translate-y-2 opacity-0";
 
 /** Everyone the event knows about, in one list the host can read and fix. */
-export function GuestManager({ event, initial }: GuestManagerProps) {
+export function GuestManager({ event, initial, notices }: GuestManagerProps) {
   const t = useTranslations("GuestList");
   const tPage = useTranslations("EventPage");
   const tEditor = useTranslations("EventEditor");
@@ -62,6 +64,7 @@ export function GuestManager({ event, initial }: GuestManagerProps) {
   useLeaveWarning(editor.unsaved || boxUnsaved, t("leaveUnsaved"));
   /* An action held back by the list box's unsaved changes; wrapped, like the row editor's. */
   const [boxPending, setBoxPending] = useState<(() => void) | null>(null);
+  const [boxAsked, setBoxAsked] = useState(0);
   function closeBox() {
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches)
       closeNow();
@@ -93,8 +96,10 @@ export function GuestManager({ event, initial }: GuestManagerProps) {
    * discard prompt; Discard closes the box, then does it.
    */
   function holdForBox(action: () => void) {
-    if (boxUnsaved) setBoxPending(() => action);
-    else action();
+    if (boxUnsaved) {
+      setBoxPending(() => action);
+      setBoxAsked((n) => n + 1);
+    } else action();
   }
   function discardBox() {
     const action = boxPending;
@@ -117,115 +122,114 @@ export function GuestManager({ event, initial }: GuestManagerProps) {
 
   return (
     <>
-      {/* Live from the rows, so it clears as the host sorts names out. */}
-      {list.counts.attention > 0 ? (
-        <Banner
-          tone="warn"
-          icon="alert"
-          title={tPage("attentionTitle", { count: list.counts.attention })}
-        >
-          {tPage("attentionBody")}
-        </Banner>
-      ) : null}
+      {/*
+       * Held clear of the header as on the event page: the margins collapse,
+       * so the first banner's own and the header's fold into this.
+       */}
+      <div className="mt-8">
+        {notices}
+        {/* Live from the rows, so it clears as the host sorts names out. */}
+        {list.counts.attention > 0 ? (
+          <Banner
+            tone="warn"
+            icon="alert"
+            title={tPage("attentionTitle", { count: list.counts.attention })}
+          >
+            {tPage("attentionBody")}
+          </Banner>
+        ) : null}
+      </div>
 
       <EditorSection title={t("sectionSummary")} first>
         <ReplySummary
           tally={list.tally}
           counts={list.counts}
           useList={list.useList}
+          expected={event.expectedGuests}
+          eventId={event.id}
         />
       </EditorSection>
 
       <EditorSection title={t("sectionList")}>
-        {/* The event editor's list setting, the same switch on both pages. */}
-        <div className="mb-8">
-          <SummarySwitch
-            icon="guests"
-            action={tEditor(list.useList ? "stopList" : "useList")}
-            onAction={() => editor.guard(() => list.set.useList(!list.useList))}
-            hint={tEditor("noListHint")}
-            text={
-              list.useList ? (
-                <>
-                  {tEditor("matchedList")}{" "}
-                  {/* The count reads on from the sentence, in the quieter hint style. */}
-                  <span className="text-[12.5px] font-normal text-neutral-700">
-                    {t("listCount", { count: list.guests.list.length })}
-                  </span>
-                </>
-              ) : (
-                tEditor("matchedNoList")
-              )
-            }
-          />
-        </div>
-
-        {/* The table's header: search and filters, the list and reply actions to the right. */}
-        <div className="mb-4 flex flex-col gap-6">
-          {/*
-           * Each step waits until the one before runs out of room:
-           * 1. one row: search, filters, the buttons far right;
-           * 2. the buttons move on top at their own size (`wrap-reverse` puts
-           *    the later item first);
-           * 3. the filters drop under the search;
-           * 4. the filters wrap among themselves.
-           */}
-          <div className="flex flex-wrap-reverse items-center gap-x-6 gap-y-3">
-            <div className="flex min-w-0 grow flex-wrap items-center gap-x-4 gap-y-3">
-              {/* 280px beside the filters; alone on its line it fills it. */}
-              <div className="w-[280px] grow">
-                <GuestSearch query={list.query} onQuery={list.set.query} />
-              </div>
-              {/* Takes nearly all the spare room on a shared line, so the search stays 280px. */}
-              <div className="min-w-0 grow-[999]">
-                <GuestSummary
-                  counts={list.counts}
-                  total={list.rows.length}
-                  useList={list.useList}
-                  filter={list.filter}
-                  onFilter={list.set.filter}
-                />
-              </div>
-            </div>
-            {/*
-             * Pushed right by the growing search and filters beside it; on top
-             * it starts at the left. Small screens give it the whole line.
-             */}
-            <div className="basis-full @min-[560px]:basis-auto">
-              <GuestToolbar
-                useList={list.useList}
-                onAddNames={() =>
-                  list.addOpen ? openBox() : editor.guard(openBox)
+        {/*
+         * The table's header: the list box when open, then the search, the
+         * filters, the list switch and the buttons.
+         */}
+        <div className="mb-4 flex flex-col gap-4">
+          {/* Above everything it opens from. 16px + the 16px gap = the 32px below it. */}
+          {list.addOpen ? (
+            <div
+              onTransitionEnd={(event) => {
+                if (leaving && event.target === event.currentTarget) closeNow();
+              }}
+              className={`mb-4 ${FADE_IN} ${leaving ? BOX_LEAVING : ""}`}
+            >
+              <AddNamesBox
+                list={list.guests.list}
+                repliedIds={repliedIds}
+                onSave={saveList}
+                onCancel={closeBox}
+                onDirty={setBoxDirty}
+                ask={
+                  boxPending
+                    ? {
+                        onDiscard: discardBox,
+                        onKeep: () => setBoxPending(null),
+                        asked: boxAsked,
+                      }
+                    : null
                 }
-                onAddGuest={() => editor.open(NEW_ROW)}
               />
             </div>
-            {/* Lines run bottom up, so the last item, the list box, sits on top of them all. 20px + the 12px row gap = the 32px above it. */}
-            {list.addOpen ? (
-              <div
-                onTransitionEnd={(event) => {
-                  if (leaving && event.target === event.currentTarget)
-                    closeNow();
-                }}
-                className={`mb-5 basis-full ${FADE_IN} ${leaving ? BOX_LEAVING : ""}`}
-              >
-                <AddNamesBox
-                  list={list.guests.list}
-                  repliedIds={repliedIds}
-                  onSave={saveList}
-                  onCancel={closeBox}
-                  onDirty={setBoxDirty}
-                  ask={
-                    boxPending
-                      ? {
-                          onDiscard: discardBox,
-                          onKeep: () => setBoxPending(null),
-                        }
-                      : null
+          ) : null}
+          {/*
+           * Wide, two rows of two: the search, then the filters, each beside
+           * its row of the controls. On a small screen they stack, the switch
+           * and buttons first.
+           */}
+          <div className="grid gap-x-6 gap-y-4 @min-[820px]:grid-cols-[minmax(0,1fr)_auto] @min-[820px]:items-center">
+            {/*
+             * The controls, wide: the list switch, then "Edit invite list"
+             * above "New reply" at the edge. Their columns share one width,
+             * the widest of them; with the list off its button is gone and the
+             * switch takes its spot, centred in it. Narrower, they join the stack
+             * above.
+             */}
+            <div
+              className={`contents @min-[820px]:col-start-2 @min-[820px]:row-span-2 @min-[820px]:row-start-1 @min-[820px]:grid @min-[820px]:grid-rows-subgrid @min-[820px]:items-center @min-[820px]:gap-x-6 ${list.useList ? "@min-[820px]:grid-cols-2" : "@min-[820px]:grid-cols-1"}`}
+            >
+              {/* Whether replies are matched against a list; the list's button follows it. */}
+              <label className="flex w-fit cursor-pointer items-center gap-2.5 text-[12.5px] font-medium text-neutral-800 @min-[820px]:row-start-1 @min-[820px]:justify-self-center">
+                <Switch
+                  label={tEditor("useList")}
+                  checked={list.useList}
+                  onChange={(on) => editor.guard(() => list.set.useList(on))}
+                />
+                {tEditor("useList")}
+              </label>
+              {/* Wide, the toolbar's buttons join this grid, one above the other. */}
+              <div className="@min-[820px]:contents">
+                <GuestToolbar
+                  useList={list.useList}
+                  onAddNames={() =>
+                    list.addOpen ? openBox() : editor.guard(openBox)
                   }
+                  onAddGuest={() => editor.open(NEW_ROW)}
                 />
               </div>
-            ) : null}
+            </div>
+            <div className="@min-[820px]:col-start-1 @min-[820px]:row-start-1 @min-[560px]:max-w-[400px]">
+              <GuestSearch query={list.query} onQuery={list.set.query} />
+            </div>
+            <div className="min-w-0 @min-[820px]:col-start-1 @min-[820px]:row-start-2">
+              <GuestSummary
+                counts={list.counts}
+                total={list.rows.length}
+                useList={list.useList}
+                filter={list.filter}
+                onFilter={list.set.filter}
+              />
+            </div>
           </div>
         </div>
 

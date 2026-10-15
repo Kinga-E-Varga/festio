@@ -17,9 +17,9 @@ export function EventHeader({ event, action }: EventHeaderProps) {
       <BackButton />
 
       {/* Laid out like the dashboard's greeting and its "New event". */}
-      <div className="mt-[18px] mb-3 flex flex-wrap items-start gap-x-6 gap-y-4 @min-[520px]:items-center">
+      <div className="mt-4 mb-5 flex flex-wrap items-start gap-x-6 gap-y-4 @min-[520px]:items-center">
         <div className="min-w-0 flex-1 @max-[520px]:basis-full">
-          <h1 className="font-serif text-[29px] leading-[1.08] text-balance text-neutral-900 @min-[720px]:text-[38px]">
+          <h1 className="mb-3 font-serif text-[26px] leading-[1.08] text-balance text-neutral-950 @min-[720px]:text-[32px]">
             {event.title}
           </h1>
 

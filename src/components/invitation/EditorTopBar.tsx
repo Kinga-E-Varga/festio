@@ -1,6 +1,5 @@
 import { useTranslations } from "next-intl";
 import type { ReactNode } from "react";
-import type { Visibility } from "@/types/dashboard";
 import { BackButton } from "@/components/dashboard/BackButton";
 import {
   BAR_DISABLED,
@@ -9,13 +8,7 @@ import {
   stateDot,
 } from "@/components/dashboard/event-editor/styles";
 import { Toast, type ToastTone } from "@/components/dashboard/Toast";
-import { Icon } from "@/components/icons";
-
-/** What the tags beside the title say. Absent on a template preview: no event yet. */
-export interface EditorStatus {
-  visibility: Visibility;
-  replies: number;
-}
+import { ButtonIcon } from "@/components/icons";
 
 /**
  * The bar's last button. The editors save, with the save status beside it;
@@ -34,18 +27,13 @@ export type EditorAction =
 
 interface EditorTopBarProps {
   title: string;
-  status?: EditorStatus;
   editing: boolean;
   onToggleEdit: () => void;
   action: EditorAction;
 }
 
-/** The visibility and reply-count tags beside the title. */
-const TAG =
-  "px-2 py-[3px] text-[12.5px] font-medium bg-neutral-300 text-neutral-950";
-
 const FOCUS =
-  "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-mustard-400";
+  "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-secondary-400";
 
 /**
  * The editors' top bar, shared by the simple and the modular editor and the
@@ -56,28 +44,26 @@ const FOCUS =
  */
 export function EditorTopBar({
   title,
-  status,
   editing,
   onToggleEdit,
   action,
 }: EditorTopBarProps) {
   const t = useTranslations("HostEditor");
-  const tEvent = useTranslations("Event");
   const tState = useTranslations("EventEditor");
   // Save is off without changes; Export always works.
   const disabled = action.kind === "save" && !action.dirty;
 
   return (
-    <header className="flex h-topbar shrink-0 items-center gap-3.5 border-b border-mustard-400 bg-neutral-900 px-4 font-sans text-mustard-50 sm:px-6">
+    <header className="flex h-topbar shrink-0 items-center gap-3.5 border-b border-secondary-400 bg-primary-900 px-4 font-sans text-secondary-100 sm:px-6">
       <div className="flex shrink-0">
         <BackButton tone="dark" />
       </div>
-      <div className="ml-0.5 h-8 w-px shrink-0 sm:ml-2.5 bg-mustard-50/35" />
+      <div className="ml-0.5 h-8 shrink-0 border-l border-secondary-100/35 sm:ml-2.5" />
       {/*
        * At least 114px — this padding plus the bar's gap — before the save
-       * status. The tag never shrinks, so near the breakpoint the title gives
-       * way first and cuts itself off. Below it the title and tag are hidden
-       * and the save status takes the space, from its left.
+       * status. Near the breakpoint the title gives way first and cuts itself
+       * off. Below it the title is hidden and the save status takes the
+       * space, from its left.
        */}
       <div className="hidden min-w-0 flex-1 items-center gap-3.5 lg:flex lg:pr-[100px]">
         {/*
@@ -90,14 +76,6 @@ export function EditorTopBar({
         >
           {title}
         </span>
-        {status && (
-          <span className="flex shrink-0 gap-3.5">
-            <span className={TAG}>{tEvent(status.visibility)}</span>
-            <span className={TAG}>
-              {t("replyCount", { count: status.replies })}
-            </span>
-          </span>
-        )}
       </div>
       {/*
        * The event editor's save bar status, word for word. Also what holds
@@ -111,7 +89,10 @@ export function EditorTopBar({
               aria-hidden="true"
               className={`hidden md:block ${stateDot(action.dirty)}`}
             />
-            <span role="status" className="sr-only md:not-sr-only">
+            <span
+              role="status"
+              className="sr-only text-neutral-100 md:not-sr-only"
+            >
               {tState(
                 action.dirty
                   ? "stateDirty"
@@ -128,7 +109,7 @@ export function EditorTopBar({
         onClick={onToggleEdit}
         className={`${BAR_OUTLINE} shrink-0 gap-1.5 ${FOCUS}`}
       >
-        <Icon name={editing ? "eye" : "pencil"} className="size-4" />
+        <ButtonIcon name={editing ? "eye" : "pencil"} />
         {editing ? t("view") : t("edit")}
       </button>
       <button
@@ -137,11 +118,7 @@ export function EditorTopBar({
         onClick={action.kind === "save" ? action.onSave : action.onExport}
         className={`${disabled ? BAR_DISABLED : BAR_SOLID} shrink-0 gap-1.5 ${FOCUS}`}
       >
-        <Icon
-          name={action.kind === "save" ? "check" : "download"}
-          className="size-4"
-          strokeWidth={action.kind === "save" ? 2 : undefined}
-        />
+        <ButtonIcon name={action.kind === "save" ? "check" : "download"} />
         {t(action.kind)}
       </button>
     </header>

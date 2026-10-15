@@ -3,7 +3,7 @@
 import { useTranslations } from "next-intl";
 import Image from "next/image";
 import type { ReactNode } from "react";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { PrintSettings } from "@/types/print";
 import front from "@/mock/inv-img/Screenshot 2026-07-27 213629.png";
 
@@ -23,29 +23,67 @@ interface PrintPreviewProps {
  *
  * Each shape is its own component and holds its own turned/shut state, so
  * switching shape mounts a fresh card and the new one is always shut. Nothing
- * has to reach across and reset it.
+ * has to reach across and reset it. Once the host has switched, each new card
+ * turns over or opens by itself, to show what it does; the first one, on
+ * arrival, stays still.
  */
 export function PrintPreview(props: PrintPreviewProps) {
+  const [firstShape] = useState(props.settings.shape);
+  const [switched, setSwitched] = useState(false);
+  if (!switched && props.settings.shape !== firstShape) setSwitched(true);
+
   return (
     <div className="sheet">
       {props.settings.shape === "flat" ? (
-        <FlatCard {...props} />
+        <FlatCard {...props} demo={switched} />
       ) : (
-        <FoldedCard {...props} />
+        <FoldedCard {...props} demo={switched} />
       )}
     </div>
   );
 }
 
-/** One sheet, printed both sides and turned over. */
-function FlatCard({ settings, ...written }: PrintPreviewProps) {
-  const t = useTranslations("PrintPanel");
+/** A beat before the card turns by itself. */
+const DEMO_DELAY = 300;
+
+/**
+ * A card's turned/shut state. With `demo` it turns once by itself as it
+ * mounts and stays turned, unless the host asks for less motion; a click of
+ * their own before then cancels it.
+ */
+function useTurn(demo: boolean) {
   const [open, setOpen] = useState(false);
+  const timer = useRef<number | undefined>(undefined);
+
+  useEffect(() => {
+    if (!demo || window.matchMedia("(prefers-reduced-motion: reduce)").matches)
+      return;
+    const id = window.setTimeout(() => setOpen(true), DEMO_DELAY);
+    timer.current = id;
+    return () => window.clearTimeout(id);
+  }, [demo]);
+
+  function toggle() {
+    window.clearTimeout(timer.current);
+    setOpen((was) => !was);
+  }
+
+  return { open, toggle };
+}
+
+interface CardProps extends PrintPreviewProps {
+  demo: boolean;
+}
+
+/** One sheet, printed both sides and turned over. */
+function FlatCard({ settings, demo, ...written }: CardProps) {
+  const t = useTranslations("PrintPanel");
+  const { open, toggle } = useTurn(demo);
 
   return (
     <TurnStage
       open={open}
-      onToggle={() => setOpen(!open)}
+      onToggle={toggle}
       ariaLabel={t("turnOver")}
       caption={open ? t("flipBack") : t("flip")}
     >
@@ -72,14 +110,14 @@ function FlatCard({ settings, ...written }: PrintPreviewProps) {
  * page wide shut. Only the right-hand page never moves; the cover and its
  * reverse are the two faces of the half that swings.
  */
-function FoldedCard({ settings, ...written }: PrintPreviewProps) {
+function FoldedCard({ settings, demo, ...written }: CardProps) {
   const t = useTranslations("PrintPanel");
-  const [open, setOpen] = useState(false);
+  const { open, toggle } = useTurn(demo);
 
   return (
     <TurnStage
       open={open}
-      onToggle={() => setOpen(!open)}
+      onToggle={toggle}
       ariaLabel={t("openCard")}
       caption={open ? t("clickClose") : t("clickOpen")}
     >
@@ -147,7 +185,7 @@ function TurnStage({
  */
 function Caption({ children }: { children: string }) {
   return (
-    <span className="block text-[14px] font-semibold tracking-[0.16em] text-[color:var(--c2)] uppercase">
+    <span className="block eyebrow tracking-[0.16em]! text-[color:var(--c2)]">
       {children}
     </span>
   );

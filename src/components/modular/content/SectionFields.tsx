@@ -233,7 +233,7 @@ function EventDateLine({
   return (
     <div className="flex flex-col gap-1.5">
       <span className={LABEL}>{localized(field.label, host)}</span>
-      <p className="text-[13.5px] text-neutral-900">{longDate(date, host)}</p>
+      <p className="text-[13.5px] text-neutral-950">{longDate(date, host)}</p>
       <p className={HINT}>{t("dateHint")}</p>
     </div>
   );

@@ -8,11 +8,11 @@ import { BOX_MARK, BOX_MARK_STROKE, DESIGN_BOX_BUTTON } from "./styles";
 
 /**
  * One choice card in the rolled-out grid, as wide as its column. Picked, a
- * gold ring with a gap; hovered, a fainter one. Callers add its height,
+ * neutral ring with a gap; hovered, a fainter one. Callers add its height,
  * what it shows and its own fill.
  */
 export const OPTION_CARD =
-  "m-1 flex cursor-pointer rounded-sm ring-offset-2 ring-offset-mustard-100 transition-shadow hover:ring-1 hover:ring-mustard-400 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-mustard-500 aria-pressed:ring-2 aria-pressed:ring-mustard-500";
+  "m-1 flex cursor-pointer rounded-sm ring-offset-2 ring-offset-neutral-100 transition-shadow hover:ring-1 hover:ring-neutral-400 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-neutral-500 aria-pressed:ring-2 aria-pressed:ring-neutral-500";
 
 interface RollOutProps {
   /** The rolled-out grid's id. */
@@ -101,10 +101,10 @@ export function RollArrow({
   return (
     <span
       aria-hidden="true"
-      className="flex shrink-0 items-center gap-1.5 text-mustard-600"
+      className="flex shrink-0 items-center gap-1.5 text-neutral-600"
     >
       <span
-        className={`text-[13.5px] opacity-0 transition-opacity group-hover:opacity-100 ${reveal}`}
+        className={`text-[12.5px] font-medium opacity-0 transition-opacity group-hover:opacity-100 ${reveal}`}
       >
         {open ? t("close") : (action ?? t("change"))}
       </span>

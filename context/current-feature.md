@@ -1,6 +1,6 @@
-# Current Feature: Modular invitations 5 — Content tab
+# Current Feature: Dashboard polish
 
-The modular editor's empty Text tab becomes the Content tab, where the host edits the values of every section that is on. Spec: `context/features/modular-5-content-tab.md`.
+Festio's own UI tightened and restyled, sized for laptops; the invitations checked for laptops too.
 
 ## Status
 
@@ -8,33 +8,21 @@ Completed
 
 ## Goals
 
-- "Text" tab renamed "Content" in every editor (simple, modular, print): EN Content, RO Conținut, HU Tartalom
-- Content tab lists only the sections switched on in Design, reusing the Design section cards, with a page-position number (1, 2, 3…) in place of the switch
-- Clicking a section scrolls the preview to it and opens its fields; one section open at a time
-- CLICK TO EDIT box on hover over a preview section (top-right, Edit mode only, no touch devices, host locale), opening the panel on Content with that section's fields
-- Each variant lists the fields it shows; Content shows only those; switching variant keeps every value
-- Inputs for every field type: text, long text, time, toggle, image (thumbnail + inactive "Change photo" + "coming soon"), icon (grid picker), list and groups with Add / Remove
-- Lists: no reorder, Add stops at the max, Remove asks nothing; Location keeps at least one venue, every other list may be empty
-- Icon picking only in Schedule variant 1 and Helpful notes' custom notes
-- Date (id stays `date-time`): the date only, no time — the `moments` list is gone; date read-only from event details with a "set in the event details" line; variants Calendar card, Accent & big date (with its date format) and Tear-off; countdown counts to the start of the event day
-- Helpful notes shows the Dress code / Gifts fields when those switches are on (same values as the standalone sections); Reply edits only its texts
-- Times shown in the invitation language's style (EN 3:30 pm, RO/HU 15:30), in Schedule
-- Required fields: marked in the tab; small error below the field on blur when emptied, gone once filled; Save stays clickable but saves nothing and jumps to the first empty required field (panel opens on Content, section opens, field focused with the error); a required field the variant hides does not block
-- Content and Design share one working state, one Save (in memory) and one leave-page warning
+- Palette tokens named by role (primary, secondary, accent, …) and one corner token, `rounded-ui`
+- Smaller sizes for laptops: nav, rail, top bar, 36px buttons and fields, headings
+- Events list cards and rows reworked; shared dashboard styles; nav, top bar, footer and rail touch-ups
+- Only the event date locks, from the event day (was: all content 24h before)
+- Invitations on laptops: the cover fits the first screen, 80px section spacing at most, reply form 40px with a mouse / 44px on touch (simple and modular), 36px section edit buttons
 
 ## Notes
 
-- No fallback to sample text: an empty field shows nothing (may change later)
-- No character counter
-- A field a template leaves empty on purpose still shows in Content if the variant shows it — empty never means hidden
-- Out of scope: photo uploads, reordering list items, reply questions (Replies tab)
-- Open: which other fields are required — decided after seeing the form
-- Plan: `context/plans/modular-invitations-5-content-tab.md`
+- Built on two local checkpoint commits; fold them into one commit at the end
 
 ## History
 
 <!-- Keep this updated latest to earliest -->
 
+- Modular invitations 5 — Content tab — the editor's Text tab renamed Content in every editor; the modular Content tab lists the sections that are on as numbered cards, one open at a time, scrolling the preview to it; Design and Content buttons on a hovered preview section; each variant lists the fields it shows; inputs for text, long text, time, toggle, image (photo upload coming soon), icon (grid picker), lists and groups with Add / Remove; Date shows only the date, read from the event details, with the Calendar card, Accent & big date and Tear-off variants; Helpful notes edits the Dress code / Gifts fields; times in the invitation language's style; required fields checked on blur and on Save, which jumps to the first empty one; one working state, Save and leave-page warning for Content and Design
 - Modular invitations 4 — Section variants & palettes — a second variant for most sections (header, cover, title, date & time, countdown, location, schedule, travel, stays, menu, Helpful notes, FAQ, reply, footer), numbered by id, with shared pieces (`HeaderBar`, `TitleNames`, `CoverPhoto`, `WashedPhoto`, `IconHeading`, `Mark`) and `top-bar` renamed `header`; every sample in `defaults.ts`, templates keeping only their changes; the Coastal Fun template; box corners (Sharp / Slight / Soft / Round); section styles rolling out as bands in the Design tab; new palettes (Coastal, Linen, Noir, Peony, Thistle, Y2K, Flint, Sunset), Dark Olive renamed Orchard, a `mood` (subtle / balanced / vivid) on every palette and readability fixes; the `/palette` skill with a contrast checker and swatch page; reply form ids from `useId` and a wrapping diet dropdown
 - Modular invitations 3 — Design editor — the modular editor's Design tab: template, palette, ground pattern and font pair pickers that roll out like the palettes; section switches with a variant picker under each section that is on; Helpful notes switches for Dress code, Gifts and custom notes, never on twice with the standalone sections; live preview; Save in memory with a leave-page warning; the Sunbaked palette and the Fraunces & Space Grotesk pair; the playlist record's disc, rings, hole and shadow mixed from its band
 - Modular invitations 2 — Olive Garden — the modular library redone from the Nocturne prototype: palettes as 15 named roles (Nocturne only), Gelasio + Arimo, a hand-drawn icon library, one new variant per section with a shared four-part heading, Helpful notes and a required footer; one reply form with skins for simple and modular; section backgrounds alternated by the page (own-colour and joined sections); split sections with the content capped at 620px; the column widened to 1440px (`INVITE_COLUMN`); a toggle field type; a shared Good to know menu link; "reply" everywhere in guest and host text

@@ -26,12 +26,12 @@ export const DASHBOARD_SKIN: MultiSelectSkin = {
   label: `mb-1.5 block ${LABEL}`,
   toggle: `${INPUT} flex cursor-pointer items-center justify-between gap-2 text-left`,
   placeholder: "text-neutral-600",
-  chevron: "",
+  chevron: "text-neutral-700",
   panel:
-    "absolute inset-x-0 top-full z-10 mt-1 border border-mustard-300 bg-neutral-50 py-1 shadow-sm",
+    "absolute inset-x-0 top-full z-10 mt-1 rounded-ui border border-neutral-400 bg-neutral-50 py-1 shadow-sm",
   option:
-    "flex cursor-pointer items-center gap-2.5 px-3 py-1.5 text-[13.5px] text-neutral-900 transition-colors hover:bg-mustard-100",
-  tick: "size-4 accent-mustard-600",
+    "flex cursor-pointer items-center gap-2.5 px-3 py-1.5 text-[13.5px] text-neutral-950 transition-colors hover:bg-neutral-150",
+  tick: "size-4 accent-neutral-600",
 };
 
 interface MultiSelectProps<T extends string> {

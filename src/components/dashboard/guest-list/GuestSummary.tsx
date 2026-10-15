@@ -133,7 +133,7 @@ function FilterMenu({ options, active, onPick }: FilterMenuProps) {
       {open ? (
         <div
           role="menu"
-          className="absolute top-full left-0 z-10 mt-1 min-w-[200px] border border-mustard-300 bg-neutral-50 py-1 shadow-md"
+          className="absolute top-full left-0 z-10 mt-1 min-w-[200px] rounded-ui border border-neutral-300 bg-neutral-50 py-1 shadow-md"
         >
           {options.map((chip) => (
             <button
@@ -145,7 +145,7 @@ function FilterMenu({ options, active, onPick }: FilterMenuProps) {
                 onPick(chip);
                 setOpen(false);
               }}
-              className="flex w-full cursor-pointer items-center justify-between gap-3 px-3 py-2 text-left text-[13.5px] text-neutral-800 transition-colors hover:bg-mustard-100 aria-checked:font-semibold aria-checked:text-forest-600"
+              className="flex w-full cursor-pointer items-center justify-between gap-3 px-3 py-2 text-left text-[13.5px] text-neutral-800 transition-colors hover:bg-neutral-150 aria-checked:font-semibold aria-checked:text-primary-900"
             >
               {chip.label}
               {active?.filter === chip.filter ? (

@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import type { ListName } from "@/types/guests";
+import { newId } from "@/lib/id";
 
 /** The preloaded list as the host edits it: nothing reaches the list until they save. */
 export function useListDraft(list: ListName[]) {
@@ -10,7 +11,7 @@ export function useListDraft(list: ListName[]) {
 
   function add(names: string[]) {
     const batch = names.map((name) => ({
-      id: crypto.randomUUID(),
+      id: newId(),
       name,
       sent: false,
     }));

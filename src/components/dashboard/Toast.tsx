@@ -7,10 +7,10 @@ const VISIBLE_MS = 4000;
 export type ToastTone = "success" | "neutral" | "warning" | "error";
 
 const TONE_CLASSES: Record<ToastTone, string> = {
-  success: "bg-forest-600 text-neutral-50",
+  success: "bg-primary-900 text-neutral-50",
   neutral: "bg-neutral-800 text-neutral-50",
-  warning: "bg-mustard-600 text-neutral-50",
-  error: "bg-rust-600 text-neutral-50",
+  warning: "bg-secondary-600 text-neutral-50",
+  error: "bg-danger-800 text-neutral-50",
 };
 
 /** One transient message at a time, cleared on its own. */

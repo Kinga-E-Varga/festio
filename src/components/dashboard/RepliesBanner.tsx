@@ -1,68 +1,24 @@
 import { getTranslations } from "next-intl/server";
 import { Banner } from "@/components/dashboard/event-editor/Banner";
 import { Link } from "@/i18n/navigation";
-import {
-  canReportFlood,
-  expectedLevel,
-  expectedPercent,
-  floodReportPath,
-  repliesPaused,
-} from "@/lib/event";
+import { floodReportPath, repliesPaused } from "@/lib/event";
 import type { DashboardEvent } from "@/types/dashboard";
 
-interface RepliesBannerProps {
-  event: DashboardEvent;
-  /** The editor warns from the warning level; the guest list only once replies are paused. */
-  from: "warn" | "paused";
-}
-
-/** One replies banner at most: paused says everything the others do. */
-export async function RepliesBanner({ event, from }: RepliesBannerProps) {
+/** The host hears about replies only once they hit the hidden cap and pause. */
+export async function RepliesBanner({ event }: { event: DashboardEvent }) {
+  if (!repliesPaused(event)) return null;
   const t = await getTranslations("EventPage");
   const tEvent = await getTranslations("Event");
-  /* Offered from 100% of expected guests, under whichever banner shows. */
-  const report = canReportFlood(event) ? (
-    <>
-      {" "}
+
+  return (
+    <Banner tone="warn" icon="alert" title={t("pausedTitle")}>
+      {t("pausedBody")}{" "}
       <Link
         href={floodReportPath(event)}
-        className="font-semibold underline underline-offset-[3px] transition-colors hover:text-neutral-900"
+        className="font-semibold underline underline-offset-[3px] transition-colors hover:text-neutral-950"
       >
         {tEvent("reportFlood")}
       </Link>
-    </>
-  ) : null;
-  const replies = {
-    replied: event.rsvp.replied,
-    expected: event.expectedGuests,
-    percent: expectedPercent(event.rsvp.replied, event.expectedGuests),
-  };
-  const level = expectedLevel(replies.percent);
-
-  if (repliesPaused(event)) {
-    return (
-      <Banner tone="warn" icon="alert" title={t("pausedTitle")}>
-        {t("pausedBody")}
-        {report}
-      </Banner>
-    );
-  }
-  if (from === "paused") return null;
-  if (replies.replied > replies.expected) {
-    return (
-      <Banner tone="warn" icon="guests" title={t("overExpectedTitle")}>
-        {t("overExpectedBody", replies)}
-        {report}
-      </Banner>
-    );
-  }
-  if (replies.replied > 0 && level !== "ok") {
-    return (
-      <Banner tone="warn" icon="guests" title={t("nearExpectedTitle", replies)}>
-        {t("nearExpectedBody", replies)}
-        {report}
-      </Banner>
-    );
-  }
-  return null;
+    </Banner>
+  );
 }

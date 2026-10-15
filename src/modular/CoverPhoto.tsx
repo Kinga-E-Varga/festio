@@ -18,8 +18,13 @@ export function CoverPhoto({
   children: ReactNode;
 }) {
   return (
+    /*
+     * From `@3xl` the cover never runs past the first screen, less the
+     * header (56px, 64px from `@5xl`), so a laptop's short screen still shows
+     * the date at its foot; never shorter than a phone's 440px.
+     */
     <div
-      className={`relative flex min-h-110 overflow-hidden bg-[var(--m-accent)] @3xl:min-h-140 @5xl:min-h-162 ${className}`}
+      className={`relative flex min-h-110 overflow-hidden bg-[var(--m-accent)] @3xl:min-h-[clamp(440px,calc(100svh_-_56px),560px)] @5xl:min-h-[clamp(440px,calc(100svh_-_64px),648px)] ${className}`}
     >
       {/*
        * The title's ground over the photo, as on the split location. The

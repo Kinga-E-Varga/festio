@@ -4,12 +4,11 @@ import previewCununie from "@/mock/inv-img/Screenshot 2026-07-27 213629.png";
 import previewRevelion from "@/mock/inv-img/Screenshot 2026-07-27 155217.png";
 import previewCumetrie from "@/mock/inv-img/Screenshot 2026-06-16 173040.png";
 import previewMajorat from "@/mock/inv-img/Screenshot 2026-07-28 172900.png";
-import { GUEST_DATA_RETENTION_DAYS } from "@/lib/config";
 import {
-  canReportFlood,
+  countdownNow,
+  defaultReplyClose,
   eventStatus,
-  expectedLevel,
-  expectedPercent,
+  isPast,
   floodReportPath,
   repliesPaused,
   replyWindow,
@@ -122,7 +121,6 @@ export const EVENTS: DashboardEvent[] = [
     /* Events without one read as English — the rollout default. */
     language: "ro",
     paid: true,
-    locksIn: { value: 30, unit: "hour" },
     repliesCloseIn: { value: 30, unit: "hour" },
     slug: "maria-andrei",
     password: "andrei26",
@@ -137,20 +135,8 @@ export const EVENTS: DashboardEvent[] = [
     needsAttention: 5,
     preloaded: true,
     preloadedCount: 124,
-    note: {
-      tone: "warning",
-      key: "attention",
-      values: { count: 5 },
-      actionKey: "reviewReplies",
-    },
-    attendeeNotes: [
-      { key: "childrenBabies", values: { children: 4, babies: 1 } },
-      { key: "vegetarian", values: { count: 7 } },
-      { key: "stepFree", values: { count: 2 } },
-    ],
     preview: previewCununie,
     seatingAvailable: true,
-    locked: false,
     dataDeleted: false,
   },
   {
@@ -165,26 +151,20 @@ export const EVENTS: DashboardEvent[] = [
     visibility: "public",
     package: "standard",
     paid: true,
-    locksIn: { value: 5, unit: "week" },
     slug: "botez-sofia",
     rsvp: {
-      replied: 70,
+      replied: 105,
       invited: 70,
-      attending: 63,
-      declined: 7,
+      attending: 94,
+      declined: 11,
       pending: 0,
     },
     expectedGuests: 70,
     needsAttention: 0,
     preloaded: true,
     preloadedCount: 70,
-    attendeeNotes: [
-      { key: "childrenBabies", values: { children: 6, babies: 2 } },
-      { key: "glutenFree", values: { count: 3 } },
-    ],
     preview: previewBotez,
     seatingAvailable: true,
-    locked: false,
     dataDeleted: false,
   },
   {
@@ -200,7 +180,6 @@ export const EVENTS: DashboardEvent[] = [
     package: "custom",
     language: "ro",
     paid: true,
-    locksIn: { value: 7, unit: "week" },
     slug: "ana-vlad",
     /* Matches the rows in `mock/guests.ts`. */
     rsvp: { replied: 8, invited: 8, attending: 7, declined: 1, pending: 3 },
@@ -210,7 +189,6 @@ export const EVENTS: DashboardEvent[] = [
     preloadedCount: 8,
     preview: previewAniversare,
     seatingAvailable: false,
-    locked: false,
     dataDeleted: false,
   },
   {
@@ -225,21 +203,14 @@ export const EVENTS: DashboardEvent[] = [
     visibility: "hidden",
     package: "free",
     paid: true,
-    locksIn: { value: 11, unit: "week" },
     slug: "ion-50",
-    linkNoteKey: "notSharedHidden",
     rsvp: { replied: 0, invited: 40, attending: 0, declined: 0, pending: 40 },
     expectedGuests: 60,
     needsAttention: 0,
     preloaded: false,
     preloadedCount: 0,
-    note: {
-      tone: "neutral",
-      key: "opensWhenPublic",
-    },
     preview: previewAniversare,
     seatingAvailable: false,
-    locked: false,
     dataDeleted: false,
   },
   {
@@ -254,22 +225,14 @@ export const EVENTS: DashboardEvent[] = [
     visibility: "hidden",
     package: "custom",
     paid: false,
-    locksIn: { value: 17, unit: "week" },
     slug: "revelion-2027",
-    linkNoteKey: "hiddenUntilPaid",
     rsvp: { replied: 0, invited: 0, attending: 0, declined: 0, pending: 0 },
     expectedGuests: 80,
     needsAttention: 0,
     preloaded: false,
     preloadedCount: 0,
-    note: {
-      tone: "warning",
-      key: "paymentPending",
-      actionKey: "payPublish",
-    },
     preview: previewRevelion,
     seatingAvailable: false,
-    locked: false,
     dataDeleted: false,
   },
   {
@@ -296,14 +259,8 @@ export const EVENTS: DashboardEvent[] = [
     needsAttention: 0,
     preloaded: true,
     preloadedCount: 60,
-    note: {
-      tone: "neutral",
-      key: "pastRetention",
-      values: { days: GUEST_DATA_RETENTION_DAYS },
-    },
     preview: previewCumetrie,
     seatingAvailable: true,
-    locked: true,
     dataDeleted: true,
   },
   {
@@ -333,7 +290,6 @@ export const EVENTS: DashboardEvent[] = [
     preloadedCount: 0,
     preview: previewMajorat,
     seatingAvailable: false,
-    locked: true,
     dataDeleted: false,
   },
 ];
@@ -350,47 +306,20 @@ function shortTitle(event: DashboardEvent): string {
 
 /**
  * Reply notices come from the events' own numbers, so they always match the
- * cards: paused once the hidden cap is hit, otherwise one from 80% of
- * expected guests. Only active events can still take replies.
+ * cards: one once the hidden cap is hit and replies pause. Only active events
+ * can still take replies.
  */
 function replyNotices(): AttentionNotice[] {
-  return EVENTS.filter((event) => eventStatus(event) === "active").flatMap(
-    (event): AttentionNotice[] => {
-      const name = shortTitle(event);
-      const { replied } = event.rsvp;
-      const reportHref = canReportFlood(event)
-        ? floodReportPath(event)
-        : undefined;
-      if (repliesPaused(event)) {
-        return [
-          {
-            id: `paused-${event.id}`,
-            key: "paused",
-            values: { event: name },
-            tone: "paused",
-            reportHref,
-          },
-        ];
-      }
-      const percent = expectedPercent(replied, event.expectedGuests);
-      if (replied === 0 || expectedLevel(percent) === "ok") return [];
-      const over = replied > event.expectedGuests;
-      return [
-        {
-          id: `expected-${event.id}`,
-          key: over ? "overExpected" : "nearExpected",
-          values: {
-            percent,
-            replied,
-            expected: event.expectedGuests,
-            event: name,
-          },
-          tone: over ? "overExpected" : "expected",
-          reportHref,
-        },
-      ];
-    },
-  );
+  return EVENTS.filter(
+    (event) => eventStatus(event) === "active" && repliesPaused(event),
+  ).map((event) => ({
+    id: `paused-${event.id}`,
+    eventId: event.id,
+    key: "paused",
+    values: { event: shortTitle(event) },
+    tone: "paused",
+    reportHref: floodReportPath(event),
+  }));
 }
 
 /*
@@ -401,43 +330,63 @@ function replyNotices(): AttentionNotice[] {
 export const ATTENTION_NOTICES: AttentionNotice[] = [
   {
     id: "attention",
+    eventId: "maria-andrei",
     key: "attention",
     values: { count: 5, event: "Maria & Andrei" },
     tone: "attention",
   },
-  ...EVENTS.filter(
-    (event) => event.isNextUp && event.locksIn && !event.locked,
-  ).map((event): AttentionNotice => ({
-    id: `editing-closes-${event.id}`,
-    key: "closing",
-    span: event.locksIn,
-    eventDate: event.date,
-    values: { event: shortTitle(event) },
-    tone: "deadline",
-  })),
   ...replyNotices(),
+  /* Chasing the last guests comes before the last edits. */
   ...EVENTS.filter(
     (event) => eventStatus(event) === "active" && replyWindow(event) !== "open",
   ).map((event): AttentionNotice => ({
     id: `replies-close-${event.id}`,
+    eventId: event.id,
     key: replyWindow(event) === "closed" ? "repliesClosed" : "repliesClosing",
     span: event.repliesCloseIn,
     closesAt: event.repliesCloseAt,
     eventDate: event.date,
     values: {
       event: shortTitle(event),
+      /* Who is left to chase: the task names them. */
+      pending: event.rsvp.pending,
       custom: event.repliesCloseAt ? "yes" : "no",
       /*
-       * A custom time can still move until the default close — the same
-       * moment editing freezes. On the default time there is nothing to
-       * change, so the guest list is offered instead.
+       * A custom time can still move until the default close. On the default
+       * time there is nothing to change, so the guest list is offered instead.
        */
-      change: event.repliesCloseAt && !event.locked ? "yes" : "no",
+      change:
+        event.repliesCloseAt &&
+        countdownNow(event) < defaultReplyClose(event.date)
+          ? "yes"
+          : "no",
     },
     tone: "deadline",
   })),
+  /* Paid for, but set to Hidden: nobody can open it yet. */
+  ...EVENTS.filter(
+    (event) => event.paid && event.visibility === "hidden" && !isPast(event),
+  ).map((event): AttentionNotice => ({
+    id: `hidden-${event.id}`,
+    eventId: event.id,
+    key: "hiddenPaid",
+    values: { event: shortTitle(event) },
+    tone: "hidden",
+  })),
+  /* Over, with its data not yet deleted: the last chance to export it. */
+  ...EVENTS.filter((event) => isPast(event) && !event.dataDeleted).map(
+    (event): AttentionNotice => ({
+      id: `deleting-${event.id}`,
+      eventId: event.id,
+      key: "deleting",
+      eventDate: event.date,
+      values: { event: shortTitle(event) },
+      tone: "deletion",
+    }),
+  ),
   {
     id: "unpaid",
+    eventId: "revelion",
     key: "unpaid",
     values: { event: "Revelion" },
     package: "custom",

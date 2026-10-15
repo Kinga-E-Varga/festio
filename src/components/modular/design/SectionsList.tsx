@@ -184,6 +184,7 @@ function SectionRow({
              */
             className="-ml-[9px]"
             gap="gap-[11px]"
+            tone="light"
             id={switchId}
             label={name}
             checked={section.on}

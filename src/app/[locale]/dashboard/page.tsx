@@ -2,8 +2,11 @@ import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import { EventList } from "@/components/dashboard/EventList";
 import { HostToday } from "@/components/dashboard/HostToday";
+import { NewEventButton } from "@/components/dashboard/NewEventButton";
 import { StatStrip } from "@/components/dashboard/StatStrip";
+import { SEE_ALL_LINK } from "@/components/dashboard/styles";
 import { Icon } from "@/components/icons";
+import { Link } from "@/i18n/navigation";
 import { eventStatus, orderEvents } from "@/lib/event";
 import { EVENTS, HOST } from "@/mock/dashboard";
 
@@ -14,46 +17,42 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default async function DashboardPage() {
   const t = await getTranslations("Dashboard");
-  const active = orderEvents(
-    EVENTS.filter((event) => eventStatus(event) === "active"),
+  // Every event still ahead, live or not: paid and hidden, or not yet paid.
+  const upcoming = orderEvents(
+    EVENTS.filter((event) => eventStatus(event) !== "past"),
     "active",
   );
 
   return (
     <div className="@container">
       {/*
-       * The greeting and the one thing a host starts from share a row, and the
-       * action drops under the greeting rather than shrinking to a bare plus —
-       * "New event" is the whole point of the page and has to stay readable.
+       * The greeting and the one thing a host starts from share a row under the
+       * date; on a narrow page the action folds to a plus so the greeting keeps it.
        */}
-      <header className="flex flex-wrap items-start gap-x-6 gap-y-4 @min-[520px]:items-center">
-        <div className="min-w-0 flex-1 @max-[520px]:basis-full">
-          <HostToday />
-          <h1 className="mt-1.5 font-serif text-[34px] leading-[1.05] text-neutral-900 @min-[720px]:text-[46px]">
+      <header>
+        <HostToday />
+        <div className="mt-4 flex items-center justify-between gap-4">
+          <h1 className="min-w-0 font-serif text-[32px] leading-[1.05] text-neutral-950 @min-[720px]:text-[40px]">
             {t("greeting", { name: HOST.name })}
           </h1>
+          <NewEventButton label={t("newEvent")} />
         </div>
-
-        <button
-          type="button"
-          className="flex shrink-0 items-center gap-2 rounded-md border border-forest-500 bg-forest-500 px-4 py-2.5 font-medium text-neutral-50 transition-colors hover:border-forest-600 hover:bg-forest-600"
-        >
-          <Icon name="plus" className="size-[18px]" strokeWidth={2} />
-          {t("newEvent")}
-        </button>
       </header>
 
-      <div className="mt-[26px]">
+      <div className="mt-5">
         <StatStrip />
       </div>
 
       <section>
-        <h2 className="mt-[34px] mb-[18px] flex items-center gap-[18px] font-serif text-[17px] tracking-[0.14em] text-neutral-900 uppercase">
-          {t("activeEvents")}
-          <span aria-hidden="true" className="h-px flex-1 bg-neutral-900" />
-        </h2>
+        <div className="mt-8 mb-4 flex flex-wrap items-baseline justify-between gap-x-6 gap-y-1 border-b border-neutral-400 pb-3">
+          <h2 className="section-title">{t("upcomingEvents")}</h2>
+          <Link href="/dashboard/events" className={SEE_ALL_LINK}>
+            {t("seeAllEvents")}
+            <Icon name="arrowRight" className="size-3.5" />
+          </Link>
+        </div>
 
-        <EventList events={active} emptyMessage={t("emptyActive")} />
+        <EventList events={upcoming} emptyMessage={t("emptyUpcoming")} />
       </section>
     </div>
   );

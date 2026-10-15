@@ -10,10 +10,18 @@ import type { ListName } from "@/types/guests";
 
 /* Each row draws both lines and pulls up 1px, so a column's first row carries its top line. */
 const ROW_BASE =
-  "-mt-px flex min-h-9 items-center gap-2 border-mustard-300 pl-2 text-[13.5px] text-neutral-900";
+  "-mt-px flex min-h-9 items-center gap-2 border-neutral-400 pl-2 text-[13.5px] text-neutral-950";
 const ROW = `${ROW_BASE} border-y`;
-/** A row's size with the inputs' fill and full edge; pinned while the list scrolls, over the rows below it. */
-const SEARCH_ROW = `${ROW_BASE} sticky top-0 z-10 border bg-neutral-50 transition-colors hover:border-mustard-500 focus-within:border-mustard-400`;
+/*
+ * The list's columns, shared with the search row so the search is one column wide.
+ * Both keep a scrollbar's room, so the list's scrollbar can't narrow its columns alone.
+ * That needs them clipped, so 1px all round keeps the search's focus ring (1px
+ * outside its edge) and the first row's top line in.
+ */
+const COLUMNS =
+  "grid-cols-[repeat(auto-fill,minmax(220px,1fr))] gap-x-10 p-px side-scroll [scrollbar-gutter:stable] [--scroll-track:var(--color-neutral-50)]";
+/** A row's height with the inputs' fill and full edge. */
+const SEARCH = `flex min-h-9 w-full items-center gap-2 rounded-ui border border-neutral-400 bg-neutral-50 pl-2 text-[13.5px] text-neutral-950 transition-colors outline-neutral-500 hover:border-neutral-600 focus-within:border-neutral-500 focus-within:outline-2 focus-within:-outline-offset-1`;
 
 interface DraftNameListProps {
   names: ListName[];
@@ -41,13 +49,16 @@ export function DraftNameList({
     return <p className={`mt-4 ${HINT}`}>{t("listEmpty")}</p>;
 
   return (
-    <>
-      <p className={`mt-4 ${HINT}`}>
-        {t("listCount", { count: names.length })}
-      </p>
-      <ul className="mt-3 grid max-h-[320px] grid-cols-[repeat(auto-fill,minmax(220px,1fr))] gap-x-10 overflow-y-auto pt-px">
-        {/* The search takes the first cell, a row's size, so it reads as part of the list. */}
-        <li className={SEARCH_ROW}>
+    <div className="@container">
+      {/*
+       * The search in the first column, the count beside it. Stacked, the count goes
+       * on top: a grid would drop it below, so one column is a reversed stack. 500px
+       * is two columns and their gap with a scrollbar's room to spare.
+       */}
+      <div
+        className={`mt-4 flex flex-col-reverse gap-2 overflow-hidden @min-[500px]:grid ${COLUMNS}`}
+      >
+        <label className={SEARCH}>
           <Icon name="search" className="size-4 text-neutral-700" />
           <input
             type="search"
@@ -55,9 +66,16 @@ export function DraftNameList({
             onChange={(control) => setQuery(control.target.value)}
             placeholder={t("searchList")}
             aria-label={t("searchList")}
-            className="min-w-0 grow bg-transparent py-1.5 outline-none placeholder:text-neutral-700"
+            className="min-w-0 grow bg-transparent py-1.5 outline-none"
           />
-        </li>
+        </label>
+        <p
+          className={`${HINT} @min-[500px]:col-start-2 @min-[500px]:col-end-[-1] @min-[500px]:self-center`}
+        >
+          {t("listCount", { count: names.length })}
+        </p>
+      </div>
+      <ul className={`mt-3 grid max-h-[320px] overflow-y-auto ${COLUMNS}`}>
         {shown.map((entry) => (
           <li key={entry.id} className={ROW}>
             <span className="min-w-0 grow truncate">{entry.name}</span>
@@ -81,6 +99,6 @@ export function DraftNameList({
       {shown.length === 0 ? (
         <p className={`mt-3 ${HINT}`}>{t("noMatches")}</p>
       ) : null}
-    </>
+    </div>
   );
 }

@@ -1,15 +1,26 @@
 import { useTranslations } from "next-intl";
 import { EditorSection } from "@/components/dashboard/event-editor/EditorSection";
+import {
+  BANNER_ICON,
+  BANNER_TITLE,
+  BANNER_TONE,
+  ICON_SQUARE,
+} from "@/components/dashboard/event-editor/styles";
 import { Icon } from "@/components/icons";
 import { PACKAGES, nextPackage } from "@/mock/dashboard";
 import type { DashboardEvent, IconName } from "@/types/dashboard";
 
-/* Hovering steps the tile itself down one shade of the same mustard. */
-const TILE =
-  "group flex gap-3.5 border border-mustard-300 bg-mustard-100 p-4 text-left transition-colors hover:border-mustard-400 hover:bg-mustard-200";
-/* The square holds still while the tile around it responds to the pointer. */
-const TILE_ICON =
-  "grid size-[34px] shrink-0 place-items-center border border-mustard-600 bg-mustard-600 text-mustard-50";
+/* The package box and the tiles under it share a shape: an icon square centred on two lines of text, as the banners have. */
+const BOX = "flex items-center gap-3.5 rounded-ui border p-4";
+const BOX_TEXT = "block text-[12.5px] leading-[1.5]";
+
+/* The current package, in the info banners' colours. */
+const CURRENT = `${BOX} ${BANNER_TONE.info}`;
+const CURRENT_ICON = `${ICON_SQUARE} ${BANNER_ICON.info}`;
+
+/* Hovering steps the tile itself down one shade of neutral; the square holds still. */
+const TILE = `${BOX} border-neutral-500 bg-neutral-150 text-left text-neutral-700 transition-colors hover:border-neutral-600 hover:bg-neutral-200`;
+const TILE_ICON = `${ICON_SQUARE} border-neutral-700 bg-neutral-700 text-neutral-50`;
 
 function Tile({
   icon,
@@ -23,13 +34,11 @@ function Tile({
   return (
     <button type="button" className={TILE}>
       <span className={TILE_ICON}>
-        <Icon name={icon} className="size-[17px]" />
+        <Icon name={icon} className="size-[17px]" strokeWidth={1.75} />
       </span>
       <span className="min-w-0">
-        <b className="mb-[3px] block font-semibold text-mustard-600">{title}</b>
-        <span className="block text-[12.5px] leading-[1.5] text-mustard-600">
-          {children}
-        </span>
+        <b className={BANNER_TITLE}>{title}</b>
+        <span className={BOX_TEXT}>{children}</span>
       </span>
     </button>
   );
@@ -46,18 +55,18 @@ export function PackageSection({ event }: { event: DashboardEvent }) {
     <EditorSection title={t("package")}>
       <div className="grid grid-cols-1 gap-3">
         {/* What this event already is, stated before anything on offer. */}
-        <div className="flex gap-3.5 border border-forest-500 border-l-4 bg-forest-100 p-4">
-          <span className="grid size-[34px] shrink-0 place-items-center border border-forest-500 bg-forest-500 text-neutral-50">
-            <Icon name="layers" className="size-[17px]" />
+        <div className={CURRENT}>
+          <span className={CURRENT_ICON}>
+            <Icon name="layers" className="size-[17px]" strokeWidth={1.75} />
           </span>
           <span className="min-w-0">
-            <b className="mb-[3px] block font-semibold text-forest-500">
+            <b className={BANNER_TITLE}>
               {t(event.paid ? "packagePaid" : "packageUnpaid", {
                 name: tPackages(`${event.package}.name`),
                 price: price(pkg.price),
               })}
             </b>
-            <span className="block text-[12.5px] leading-[1.5] text-forest-600">
+            <span className={BOX_TEXT}>
               {tPackages(`${event.package}.blurb`)}
             </span>
           </span>

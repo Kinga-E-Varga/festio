@@ -239,7 +239,7 @@ function EditButton({
       aria-label={label}
       title={label}
       onClick={onClick}
-      className="pointer-events-none grid cursor-pointer place-items-center rounded-md bg-[var(--m-ink)] p-2.5 text-[color:var(--m-surface)] opacity-0 shadow-[0_1px_5px_rgb(0_0_0/0.3)] transition-[opacity,background-color] hover:bg-[var(--m-ink)]/80 group-hover/edit:pointer-events-auto group-hover/edit:opacity-100 focus-visible:pointer-events-auto focus-visible:opacity-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-mustard-500"
+      className="pointer-events-none grid size-btn cursor-pointer place-items-center rounded-ui bg-[var(--m-ink)] text-[color:var(--m-surface)] opacity-0 shadow-[0_1px_5px_rgb(0_0_0/0.3)] transition-[opacity,background-color] hover:bg-[var(--m-ink)]/80 group-hover/edit:pointer-events-auto group-hover/edit:opacity-100 focus-visible:pointer-events-auto focus-visible:opacity-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-secondary-500"
     >
       <Icon name={icon} className="size-5" strokeWidth={1.8} />
     </button>

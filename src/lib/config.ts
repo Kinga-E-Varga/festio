@@ -12,8 +12,5 @@ export const GUEST_DATA_RETENTION_DAYS = 60;
 export const REPLY_CAP_MARGIN = 0.5;
 export const REPLY_CAP_MIN_EXTRA = 20;
 
-/** Percent of expected guests at which replies read as a warning. */
-export const EXPECTED_WARNING_PERCENT = 80;
-
 /** Days before the reply form closes at which the host is warned. */
 export const REPLIES_CLOSING_SOON_DAYS = 7;

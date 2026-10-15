@@ -8,7 +8,7 @@ import { PaletteColors } from "./palette";
 
 /* The browser's colour well, drawn as a round swatch. */
 const WELL =
-  "size-10 shrink-0 cursor-pointer rounded-full border border-mustard-300 bg-neutral-50 p-0.5 transition-colors hover:border-mustard-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-mustard-500 [&::-moz-color-swatch]:rounded-full [&::-moz-color-swatch]:border-0 [&::-webkit-color-swatch]:rounded-full [&::-webkit-color-swatch]:border-0 [&::-webkit-color-swatch-wrapper]:p-0";
+  "size-10 shrink-0 cursor-pointer rounded-full border border-neutral-400 bg-neutral-50 p-0.5 transition-colors hover:border-neutral-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-500 [&::-moz-color-swatch]:rounded-full [&::-moz-color-swatch]:border-0 [&::-webkit-color-swatch]:rounded-full [&::-webkit-color-swatch]:border-0 [&::-webkit-color-swatch-wrapper]:p-0";
 
 /** A colour value as a hex: a palette role read from the palette. */
 function useSwatchHex(value: string): string {

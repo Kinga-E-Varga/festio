@@ -1,12 +1,12 @@
 "use client";
 
 import { useTranslations } from "next-intl";
+import { BTN_GHOST_LIGHT } from "@/components/dashboard/event-editor/styles";
 import {
-  BTN_GHOST_LIGHT,
-  BTN_PRIMARY,
-} from "@/components/dashboard/event-editor/styles";
-import { HEADER_BTN_WIDTH } from "@/components/dashboard/guest-list/styles";
-import { Icon } from "@/components/icons";
+  GUEST_BTN_PRIMARY,
+  HEADER_BTN_WIDTH,
+} from "@/components/dashboard/guest-list/styles";
+import { ButtonIcon } from "@/components/icons";
 
 interface GuestToolbarProps {
   useList: boolean;
@@ -22,25 +22,28 @@ export function GuestToolbar({
   const t = useTranslations("GuestList");
 
   return (
-    // Side by side; stacked only when even the two don't fit.
-    <div className="flex flex-wrap gap-2.5">
+    /*
+     * Equal columns as wide as the longer label, so the two always match.
+     * Small screens fill the line, halved; the narrowest stack them.
+     */
+    <div className="grid w-full gap-2.5 @min-[400px]:auto-cols-fr @min-[400px]:grid-flow-col @min-[560px]:inline-grid @min-[560px]:w-auto @min-[820px]:contents">
       {/* The list only has something to edit while it's in use. */}
       {useList ? (
         <button
           type="button"
           onClick={onAddNames}
-          className={`${HEADER_BTN_WIDTH} ${BTN_GHOST_LIGHT}`}
+          className={`${HEADER_BTN_WIDTH} ${BTN_GHOST_LIGHT} @min-[820px]:-col-end-1 @min-[820px]:row-start-1`}
         >
-          <Icon name="pencil" className="size-4" />
+          <ButtonIcon name="pencil" />
           {t("editList")}
         </button>
       ) : null}
       <button
         type="button"
         onClick={onAddGuest}
-        className={`${HEADER_BTN_WIDTH} ${BTN_PRIMARY}`}
+        className={`${HEADER_BTN_WIDTH} ${GUEST_BTN_PRIMARY} @min-[820px]:-col-end-1 @min-[820px]:row-start-2`}
       >
-        <Icon name="plus" className="size-[18px]" strokeWidth={2} />
+        <ButtonIcon name="plus" />
         {t("addReply")}
       </button>
     </div>

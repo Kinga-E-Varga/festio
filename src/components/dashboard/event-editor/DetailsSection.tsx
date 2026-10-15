@@ -1,5 +1,6 @@
 "use client";
 
+import { Select } from "@/components/dashboard/event-editor/Select";
 import { useTranslations } from "next-intl";
 import { ChangeWarning } from "@/components/dashboard/event-editor/ChangeWarning";
 import { EditorSection } from "@/components/dashboard/event-editor/EditorSection";
@@ -12,35 +13,9 @@ import {
 } from "@/components/dashboard/event-editor/styles";
 import { SummarySwitch } from "@/components/dashboard/event-editor/SummarySwitch";
 import type { EventForm } from "@/components/dashboard/event-editor/useEventForm";
-import { GUEST_DATA_RETENTION_DAYS } from "@/lib/config";
 import { LANGUAGES, LANGUAGE_NAMES, type Language } from "@/lib/language";
 import { EVENT_KINDS } from "@/mock/dashboard";
 import type { DashboardEvent, EventKind } from "@/types/dashboard";
-
-/** Dates the platform works out; they are never typed in. */
-function Derived({
-  items,
-}: {
-  items: { term: string; value: string; note: string }[];
-}) {
-  return (
-    <dl className="mt-[22px] grid grid-cols-1 gap-px border border-forest-500 border-l-[3px] bg-forest-500 @min-[820px]:grid-cols-3">
-      {items.map((item) => (
-        <div key={item.term} className="bg-forest-100 px-4 py-[13px]">
-          <dt className="text-[12.5px] leading-[1.3] font-semibold text-forest-500">
-            {item.term}
-          </dt>
-          <dd className="mt-[5px] text-base leading-[1.3] text-forest-600">
-            {item.value}
-            <small className="mt-1 block text-[11.5px] leading-[1.45]">
-              {item.note}
-            </small>
-          </dd>
-        </div>
-      ))}
-    </dl>
-  );
-}
 
 interface SectionProps {
   event: DashboardEvent;
@@ -50,7 +25,7 @@ interface SectionProps {
 export function DetailsSection({ event, form }: SectionProps) {
   const t = useTranslations("EventEditor");
   const tOccasions = useTranslations("Occasions");
-  const { values, set, derived, locked } = form;
+  const { values, set, derived } = form;
 
   return (
     <EditorSection title={t("details")} first>
@@ -64,7 +39,6 @@ export function DetailsSection({ event, form }: SectionProps) {
             id="event-name"
             type="text"
             maxLength={80}
-            disabled={locked}
             value={values.title}
             onChange={(control) => set.title(control.target.value)}
             className={INPUT}
@@ -76,19 +50,17 @@ export function DetailsSection({ event, form }: SectionProps) {
           label={t("occasion")}
           hint={t("occasionHint")}
         >
-          <select
+          <Select
             id="event-kind"
-            disabled={locked}
             value={values.kind}
             onChange={(control) => set.kind(control.target.value as EventKind)}
-            className={INPUT}
           >
             {EVENT_KINDS.map((id) => (
               <option key={id} value={id}>
                 {tOccasions(id)}
               </option>
             ))}
-          </select>
+          </Select>
         </Field>
 
         <Field
@@ -96,28 +68,30 @@ export function DetailsSection({ event, form }: SectionProps) {
           label={t("language")}
           hint={t("languageHint")}
         >
-          <select
+          <Select
             id="event-language"
-            disabled={locked}
             value={values.language}
             onChange={(control) =>
               set.language(control.target.value as Language)
             }
-            className={INPUT}
           >
             {LANGUAGES.map((code) => (
               <option key={code} value={code}>
                 {LANGUAGE_NAMES[code]}
               </option>
             ))}
-          </select>
+          </Select>
         </Field>
 
-        <Field htmlFor="event-date" label={t("date")} hint={t("dateHint")}>
+        <Field
+          htmlFor="event-date"
+          label={t("date")}
+          hint={t(form.dateLocked ? "dateLockedHint" : "dateHint")}
+        >
           <input
             id="event-date"
             type="date"
-            disabled={locked}
+            disabled={form.dateLocked}
             value={values.date}
             onChange={(control) => set.date(control.target.value)}
             className={INPUT}
@@ -145,7 +119,6 @@ export function DetailsSection({ event, form }: SectionProps) {
         icon="calendar"
         action={t(values.closeEarly ? "useDefault" : "closeEarlier")}
         onAction={() => set.closeEarly(!values.closeEarly)}
-        disabled={locked}
         hint={t("closeDefaultHint")}
         text={
           values.closeEarly
@@ -162,38 +135,16 @@ export function DetailsSection({ event, form }: SectionProps) {
             type="datetime-local"
             aria-label={t("closeAt")}
             max={derived.closeLimit}
-            disabled={locked}
             value={values.closeAt}
             onChange={(control) => set.closeAt(control.target.value)}
-            className={`${INPUT} @min-[460px]:max-w-max`}
+            /* In the sentence's own type, so the date reads as part of it. */
+            className={`${INPUT} text-[14px]! font-medium! text-neutral-800! @min-[460px]:max-w-max`}
           />
         ) : null}
       </SummarySwitch>
       {derived.closeTooLate ? (
         <p className={`mt-1.5 ${ERROR}`}>{t("closeTooLate")}</p>
       ) : null}
-
-      <Derived
-        items={[
-          {
-            term: t("repliesClose"),
-            value: derived.closeLabel,
-            note: t(
-              derived.closesEarly ? "closesEarlyNote" : "closesDefaultNote",
-            ),
-          },
-          {
-            term: t("editingFreezes"),
-            value: derived.freezeLabel,
-            note: t("freezeNote"),
-          },
-          {
-            term: t("dataDeleted"),
-            value: derived.deletionLabel,
-            note: `${event.dataDeleted ? `${t("alreadyDeleted")} ` : ""}${t("deletionNote", { days: GUEST_DATA_RETENTION_DAYS })}`,
-          },
-        ]}
-      />
     </EditorSection>
   );
 }

@@ -104,11 +104,11 @@ export function PalettePicker({
 }
 
 /**
- * A pattern's sample: drawn in the app's gold on the pale fill — the shape,
+ * A pattern's sample: drawn in the app's secondary colour on the pale fill — the shape,
  * not the colours, which the palette sets. Patterns draw in `--m-pattern`.
  */
 const PATTERN_SAMPLE =
-  "border border-mustard-300 bg-neutral-50 [--m-pattern:var(--color-mustard-400)]";
+  "border border-neutral-400 bg-neutral-50 [--m-pattern:var(--color-neutral-400)]";
 
 /**
  * Plain, or one of the patterns: the box with an icon and the pattern's
@@ -208,7 +208,7 @@ export function FontPairPicker({
             aria-label={option.name}
             onClick={() => onPick(option.id)}
             style={fontVars(option)}
-            className={`${OPTION_CARD} h-[60px] max-w-full flex-col items-center justify-center gap-0.5 border border-mustard-300 bg-neutral-50 px-3 py-1.5 text-center text-neutral-900 ${fontClasses(option)}`}
+            className={`${OPTION_CARD} h-[60px] max-w-full flex-col items-center justify-center gap-0.5 border border-neutral-400 bg-neutral-50 px-3 py-1.5 text-center text-neutral-950 ${fontClasses(option)}`}
           >
             <span
               aria-hidden="true"
@@ -270,7 +270,7 @@ export function CornersPicker({
             aria-label={t(`corner.${id}`)}
             onClick={() => onPick(id)}
             style={cornerVars(id)}
-            className={`${OPTION_CARD} size-[60px] rounded-(--m-corner)! border-2 border-mustard-400 bg-neutral-50`}
+            className={`${OPTION_CARD} size-[60px] rounded-(--m-corner)! border-2 border-neutral-400 bg-neutral-50`}
           />
         ))}
       </RollOut>

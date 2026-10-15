@@ -28,7 +28,7 @@ import {
   SMALL_BTN_WARN,
   SMALL_BTN_WARN_SOLID,
 } from "@/components/dashboard/guest-list/styles";
-import { Icon } from "@/components/icons";
+import { ButtonIcon, Icon } from "@/components/icons";
 import { NAME_LIMIT } from "@/components/invitation/useRsvpForm";
 import type { GuestQuestion, GuestReply, ReplyValues } from "@/types/guests";
 
@@ -107,7 +107,7 @@ export function ReplyEditor({
         </div>
         {going ? (
           <div
-            className={`${QUESTIONS} ${reply ? "border-t border-mustard-300 pt-4" : "pl-4"}`}
+            className={`${QUESTIONS} ${reply ? "border-t border-neutral-400 pt-4" : "pl-4"}`}
           >
             <PersonFields
               control={control}
@@ -164,8 +164,8 @@ export function ReplyEditor({
    */
   const sharedBlock = withShared ? (
     grouped ? (
-      <div className="flex flex-col gap-4 border-t border-mustard-300 pt-4">
-        <div className="flex flex-col gap-3 border-b border-mustard-300 pb-4">
+      <div className="flex flex-col gap-4 border-t border-neutral-400 pt-4">
+        <div className="flex flex-col gap-3 border-b border-neutral-400 pb-4">
           {separate ? null : (
             <p className={`text-justify ${HINT}`}>
               {t("sharedFor", { names: partyList })}
@@ -198,13 +198,14 @@ export function ReplyEditor({
     );
   }
 
+  /* A new reply opens in a dialog; an existing one is edited in its row. */
   return (
-    <RowEditor onSubmit={submit} onCancel={onCancel} pending={pending}>
+    <RowEditor onSubmit={submit} onCancel={onCancel} pending={pending} inDialog>
       <StatusField control={control} />
       {fields.map((field, index) => (
         <div
           key={field.id}
-          className="flex flex-col gap-3 border-t border-mustard-300 pt-4"
+          className="flex flex-col gap-3 border-t border-neutral-400 pt-4"
         >
           {fields.length > 1 ? (
             <div className="flex items-start gap-2">
@@ -227,14 +228,14 @@ export function ReplyEditor({
       ))}
       {/* Between lines: the one below is the buttons' own unless reply-wide questions come first. */}
       <div
-        className={`border-t border-mustard-300 pt-4 ${withShared ? "border-b pb-4" : ""}`}
+        className={`border-t border-neutral-400 pt-4 ${withShared ? "border-b pb-4" : ""}`}
       >
         <button
           type="button"
           onClick={() => append(personValues(null, questions))}
           className={SMALL_BTN_EDITOR}
         >
-          <Icon name="plus" className="size-3.5" />
+          <ButtonIcon name="plus" />
           {t("addPerson")}
         </button>
       </div>

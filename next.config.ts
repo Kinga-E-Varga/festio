@@ -8,6 +8,11 @@ const nextConfig: NextConfig = {
   /* config options here */
   reactCompiler: true,
   /**
+   * Dev only: lets a phone on the same Wi-Fi load the dev server by the PC's
+   * local address (home networks use 192.168.x.x or 10.x.x.x).
+   */
+  allowedDevOrigins: ["192.168.*.*", "10.*.*.*"],
+  /**
    * Guest invite links stay unprefixed (`festio.eu/maria-birthday`) — a
    * hard requirement — but `[invite]` can't sit next to `[locale]` at the
    * app root (Next.js disallows two differently-named dynamic siblings), so

@@ -4,7 +4,8 @@ import { useLocale, useTranslations } from "next-intl";
 import { useState } from "react";
 import { useForm, useWatch } from "react-hook-form";
 import {
-  contentFreeze,
+  dateLocked,
+  defaultReplyClose,
   deletionDate,
   formatEventDate,
   formatDeadline,
@@ -106,12 +107,11 @@ export function useEventForm(
   const [acknowledged, setAcknowledged] =
     useState<Record<WarningId, boolean>>(NONE_ACKNOWLEDGED);
 
-  /** Nothing is editable once the content freeze has passed. */
-  const locked = event.locked;
+  /** From the event day on, the date stays put; the rest stays editable. */
+  const lockDate = dateLocked(event);
 
   function edit<K extends keyof EventFieldValues>(key: K) {
     return (value: EventFieldValues[K]) => {
-      if (locked) return;
       setValue(key, value as never, { shouldDirty: true });
       setJustSaved(false);
     };
@@ -129,12 +129,11 @@ export function useEventForm(
   const effectiveDate = isRealDate(new Date(`${date}T00:00`))
     ? date
     : event.date;
-  const freeze = contentFreeze(effectiveDate);
+  const cutoff = defaultReplyClose(effectiveDate);
   const deletion = deletionDate(effectiveDate);
-  const freezeLabel = formatDeadline(freeze, locale);
+  const cutoffLabel = formatDeadline(cutoff, locale);
   const chosenClose = new Date(closeAt);
   const chosenReal = closeEarly && isRealDate(chosenClose);
-  const closesEarly = chosenReal && chosenClose <= freeze;
 
   // Only a link someone is already holding can be broken by a change.
   const shared = event.rsvp.replied > 0;
@@ -192,14 +191,14 @@ export function useEventForm(
       : null;
 
   function save() {
-    if (!formState.isDirty || pending > 0 || locked) return;
+    if (!formState.isDirty || pending > 0) return;
     reset(getValues());
     setJustSaved(true);
     setAcknowledged(NONE_ACKNOWLEDGED);
   }
 
   return {
-    locked,
+    dateLocked: lockDate,
     values: {
       title,
       kind,
@@ -221,13 +220,14 @@ export function useEventForm(
         if (value === original.language) acknowledge("language", false);
       },
       date: (value: string) => {
+        if (lockDate) return;
         edit("date")(value);
         if (value === event.date) acknowledge("date", false);
       },
       closeEarly: (value: boolean) => {
         edit("closeEarly")(value);
         // Switching on starts from the cut-off, which is the latest it can be.
-        if (value && !closeAt) edit("closeAt")(toDateTimeLocal(freeze));
+        if (value && !closeAt) edit("closeAt")(toDateTimeLocal(cutoff));
       },
       closeAt: edit("closeAt"),
       slug: (value: string) => {
@@ -248,15 +248,10 @@ export function useEventForm(
       link: invitationLink({ slug: cleanSlug }),
       dateLabel: formatEventDate(new Date(`${effectiveDate}T00:00`), locale),
       /** The `max` a custom closing time cannot go past. */
-      closeLimit: toDateTimeLocal(freeze),
-      closeDefaultLabel: freezeLabel,
-      closeLabel: closesEarly
-        ? formatDeadline(chosenClose, locale)
-        : freezeLabel,
-      closesEarly,
+      closeLimit: toDateTimeLocal(cutoff),
+      closeDefaultLabel: cutoffLabel,
       /** Set while a chosen time sits past the cut-off, which cannot apply. */
-      closeTooLate: chosenReal && chosenClose > freeze,
-      freezeLabel,
+      closeTooLate: chosenReal && chosenClose > cutoff,
       deletionLabel: formatEventDate(deletion, locale),
       expectedValue,
       expectedError,
@@ -269,7 +264,7 @@ export function useEventForm(
       dirty: formState.isDirty,
       pending,
       justSaved,
-      canSave: formState.isDirty && pending === 0 && !locked,
+      canSave: formState.isDirty && pending === 0,
       submit: save,
     },
   };

@@ -11,7 +11,7 @@ export function HostToday() {
   const format = useFormatter();
 
   return (
-    <p className="text-[11px] font-semibold tracking-[0.16em] text-forest-500 uppercase">
+    <p className="eyebrow pl-1 text-primary-700">
       {format.dateTime(new Date(`${HOST.today}T00:00`), {
         weekday: "long",
         day: "numeric",

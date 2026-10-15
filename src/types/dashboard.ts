@@ -30,6 +30,7 @@ export type IconName =
   | "alert"
   | "globe"
   | "arrowUpRight"
+  | "quit"
   | "arrowLeft"
   | "arrowRight"
   | "calendar"
@@ -55,8 +56,6 @@ export interface NavItem {
   labelKey: string;
   href: string;
   icon: IconName;
-  /** Small count shown right-aligned, e.g. how many invitations are live. */
-  badge?: string;
 }
 
 export interface NavSection {
@@ -122,12 +121,6 @@ export interface TimeSpan {
   unit: "minute" | "hour" | "day" | "week";
 }
 
-/** Keys into the `EventNotes` message namespace. */
-export interface EventNote extends Message {
-  tone: "warning" | "neutral";
-  actionKey?: string;
-}
-
 export interface DashboardEvent {
   id: string;
   title: string;
@@ -159,8 +152,6 @@ export interface DashboardEvent {
   slug: string;
   /** Set only on Protected invitations; min 4 chars, letters or digits. */
   password?: string;
-  /** Replaces the copy row when there is nothing to share yet. A key into `EventNotes`. */
-  linkNoteKey?: string;
   rsvp: RsvpTally;
   /**
    * How many people the host expects. Replies are shown against it, and the
@@ -171,19 +162,8 @@ export interface DashboardEvent {
   needsAttention: number;
   preloaded: boolean;
   preloadedCount: number;
-  note?: EventNote;
-  /**
-   * Who is coming, beyond the head count — age groups, dietary needs and the
-   * like, as keys into `EventNotes`. Empty or absent means nothing worth
-   * calling out, not that nobody was asked.
-   */
-  attendeeNotes?: Message[];
   preview: StaticImageData;
   seatingAvailable: boolean;
-  /** True once the content freeze has passed; nothing is editable after it. */
-  locked: boolean;
-  /** How long until the freeze, while it is still ahead. */
-  locksIn?: TimeSpan;
   /**
    * The host's own reply-form closing time, `YYYY-MM-DDTHH:MM`. Absent means
    * the default: the day before the event at 00:00.
@@ -210,7 +190,7 @@ export interface DashboardStat {
 }
 
 export type NoticeTone =
-  "attention" | "deadline" | "expected" | "overExpected" | "paused" | "billing";
+  "attention" | "deadline" | "paused" | "billing" | "hidden" | "deletion";
 
 /**
  * A notice's title and body are the event editor's banner texts,
@@ -219,6 +199,8 @@ export type NoticeTone =
  */
 export interface AttentionNotice extends Message {
   id: string;
+  /** The event it is about; its card lists it as a to-do. */
+  eventId: string;
   /** Filled in as `{time}`, written out in the reader's language. */
   span?: TimeSpan;
   /** An event's ISO date; its editing cut-off is filled in as `{date}`. */
@@ -228,7 +210,7 @@ export interface AttentionNotice extends Message {
   /** Filled in as `{package}`, the package's own name in the reader's language. */
   package?: PackageId;
   tone: NoticeTone;
-  /** Set from 100% of expected guests: where the host reports a flood. */
+  /** Set once replies pause at the cap: where the host reports a flood. */
   reportHref?: string;
 }
 

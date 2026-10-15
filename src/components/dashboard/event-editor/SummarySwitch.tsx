@@ -1,13 +1,13 @@
 import type { ReactNode } from "react";
-import { GOLD_ACTION, HINT } from "@/components/dashboard/event-editor/styles";
+import { SOFT_ACTION, HINT } from "@/components/dashboard/event-editor/styles";
 import { Icon } from "@/components/icons";
 import type { IconName } from "@/types/dashboard";
 
-/** The row's look, without its size: gold edge, pale fill, type and side padding. */
+/** The row's look, without its size: neutral edge, pale fill, type and side padding. */
 export const SUMMARY_SURFACE =
-  "border border-mustard-300 bg-neutral-50 pr-4 pl-5 font-medium text-neutral-800";
+  "rounded-ui border border-neutral-400 bg-neutral-50 pr-4 pl-5 font-medium text-neutral-800";
 /** The event editor's row: the surface at its full height. */
-const SUMMARY_BOX = `${SUMMARY_SURFACE} min-h-[72px] py-3.5`;
+const SUMMARY_BOX = `${SUMMARY_SURFACE} min-h-[60px] py-3`;
 
 interface SummarySwitchProps {
   icon: IconName;
@@ -18,7 +18,6 @@ interface SummarySwitchProps {
   /** Switches between the default and the host's own choice. */
   action: string;
   onAction: () => void;
-  disabled?: boolean;
   hint: ReactNode;
 }
 
@@ -33,7 +32,6 @@ export function SummarySwitch({
   children,
   action,
   onAction,
-  disabled = false,
   hint,
 }: SummarySwitchProps) {
   return (
@@ -43,7 +41,11 @@ export function SummarySwitch({
       >
         <div className="flex min-w-0 flex-1 flex-col gap-3 @min-[680px]:flex-row @min-[680px]:items-center @min-[680px]:gap-4">
           <div className="flex min-w-0 items-center gap-4">
-            <Icon name={icon} className="size-[22px] text-mustard-500" />
+            <Icon
+              name={icon}
+              className="size-[22px] text-neutral-500"
+              strokeWidth={1.75}
+            />
             <span className="min-w-0">{text}</span>
           </div>
           {children}
@@ -51,8 +53,7 @@ export function SummarySwitch({
         <button
           type="button"
           onClick={onAction}
-          disabled={disabled}
-          className={`w-full shrink-0 @min-[460px]:w-auto @min-[460px]:min-w-[145px] ${GOLD_ACTION}`}
+          className={`w-full shrink-0 @min-[460px]:w-auto @min-[460px]:min-w-[145px] ${SOFT_ACTION}`}
         >
           {action}
         </button>

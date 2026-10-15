@@ -1,79 +1,107 @@
 "use client";
 
 import { useTranslations } from "next-intl";
+import { EditorSection } from "@/components/dashboard/event-editor/EditorSection";
 import { BTN_DANGER } from "@/components/dashboard/event-editor/styles";
+import { DANGER_DARK } from "@/components/dashboard/styles";
 import type { ToastTone } from "@/components/dashboard/Toast";
-import { Icon } from "@/components/icons";
+import { ButtonIcon } from "@/components/icons";
+import type { ReactNode } from "react";
 import { GUEST_DATA_RETENTION_DAYS } from "@/lib/config";
 import { isPast } from "@/lib/event";
-import type { DashboardEvent } from "@/types/dashboard";
+import type { DashboardEvent, IconName } from "@/types/dashboard";
 
 interface DangerZoneProps {
   event: DashboardEvent;
   onAction: (message: string, tone: ToastTone) => void;
 }
 
+interface RowProps {
+  title: string;
+  children: ReactNode;
+  /** The row's button; a row without one only explains. */
+  action?: { icon: IconName; label: string; onClick: () => void };
+}
+
+/** One choice in its own box: what it does, and the button that does it. */
+function Row({ title, children, action }: RowProps) {
+  return (
+    <div
+      className={`flex flex-col gap-3 rounded-ui border px-5 py-[18px] @min-[640px]:flex-row @min-[640px]:items-center @min-[640px]:gap-5 ${DANGER_DARK}`}
+    >
+      <div className="flex-1">
+        <b className="mb-1 block font-semibold">{title}</b>
+        <p className="text-[12.5px] leading-[1.5]">{children}</p>
+      </div>
+      {action ? (
+        <button type="button" className={BTN_DANGER} onClick={action.onClick}>
+          <ButtonIcon name={action.icon} />
+          {action.label}
+        </button>
+      ) : null}
+    </div>
+  );
+}
+
 export function DangerZone({ event, onAction }: DangerZoneProps) {
   const t = useTranslations("EventEditor");
   const replied = event.rsvp.replied;
-  /* An unpaid draft was never reachable, so there is nothing to cancel. */
-  const explained = isPast(event) || event.paid;
+  /* TEMPORARY preview: every row shows, whatever the event's state. Set to false to restore. */
+  const PREVIEW_ALL = true;
+  /* A past draft was never paid for, so it shows only the delete row. */
+  const showPast = PREVIEW_ALL || (isPast(event) && event.paid);
+  /* A live paid event explains why it has no delete, under its cancel row. */
+  const showCancel = PREVIEW_ALL || (!isPast(event) && event.paid);
+  const showDraft = PREVIEW_ALL || !event.paid;
 
   return (
-    <section className="mt-[58px] border border-rust-300 bg-rust-100">
-      <h2 className="bg-rust-500 px-5 py-3.5 text-[10px] font-semibold tracking-[0.18em] text-mustard-50 uppercase">
-        {t("danger")}
-      </h2>
+    <EditorSection title={t("dangerSection")}>
+      <div className="flex flex-col gap-3">
+        {showPast ? (
+          <Row
+            title={t("pastTitle")}
+            action={{
+              icon: "trash",
+              label: t("deleteNow"),
+              onClick: () => onAction(t("pastDeleted"), "neutral"),
+            }}
+          >
+            {t("pastBody")}
+          </Row>
+        ) : null}
 
-      {isPast(event) ? (
-        <div className="flex items-center gap-5 px-5 py-[18px]">
-          <div className="flex-1 text-rust-500">
-            <b className="mb-1 block font-semibold">{t("pastTitle")}</b>
-            <p className="text-[12.5px] leading-[1.5]">{t("pastBody")}</p>
-          </div>
-        </div>
-      ) : event.paid ? (
-        <div className="flex flex-col gap-3 px-5 py-[18px] @min-[640px]:flex-row @min-[640px]:items-center @min-[640px]:gap-5">
-          <div className="flex-1 text-rust-500">
-            <b className="mb-1 block font-semibold">{t("cancelTitle")}</b>
-            <p className="text-[12.5px] leading-[1.5]">
+        {showCancel ? (
+          <>
+            <Row
+              title={t("cancelTitle")}
+              action={{
+                icon: "ban",
+                label: t("cancelButton"),
+                onClick: () => onAction(t("cancelled"), "neutral"),
+              }}
+            >
               {t("cancelBody", {
                 count: replied,
                 days: GUEST_DATA_RETENTION_DAYS,
               })}
-            </p>
-          </div>
-          <button
-            type="button"
-            className={BTN_DANGER}
-            onClick={() => onAction(t("cancelled"), "neutral")}
-          >
-            <Icon name="ban" className="size-[15px]" />
-            {t("cancelButton")}
-          </button>
-        </div>
-      ) : null}
+            </Row>
+            <Row title={t("paidDeleteTitle")}>{t("paidDeleteBody")}</Row>
+          </>
+        ) : null}
 
-      {event.paid ? null : (
-        <div
-          className={`flex flex-col gap-3 px-5 py-[18px] @min-[640px]:flex-row @min-[640px]:items-center @min-[640px]:gap-5 ${
-            explained ? "border-t border-rust-300" : ""
-          }`}
-        >
-          <div className="flex-1 text-rust-500">
-            <b className="mb-1 block font-semibold">{t("draftTitle")}</b>
-            <p className="text-[12.5px] leading-[1.5]">{t("draftBody")}</p>
-          </div>
-          <button
-            type="button"
-            className={BTN_DANGER}
-            onClick={() => onAction(t("draftDeleted"), "neutral")}
+        {showDraft ? (
+          <Row
+            title={t("draftTitle")}
+            action={{
+              icon: "trash",
+              label: t("deleteDraft"),
+              onClick: () => onAction(t("draftDeleted"), "neutral"),
+            }}
           >
-            <Icon name="trash" className="size-[15px]" />
-            {t("deleteDraft")}
-          </button>
-        </div>
-      )}
-    </section>
+            {t("draftBody")}
+          </Row>
+        ) : null}
+      </div>
+    </EditorSection>
   );
 }

@@ -10,6 +10,7 @@ import { LinkSection } from "@/components/dashboard/event-editor/LinkSection";
 import { RetentionSection } from "@/components/dashboard/event-editor/RetentionSection";
 import { SaveBar } from "@/components/dashboard/event-editor/SaveBar";
 import { useEventForm } from "@/components/dashboard/event-editor/useEventForm";
+import { useLeaveWarning } from "@/lib/leave-warning";
 import type { DashboardEvent } from "@/types/dashboard";
 
 /**
@@ -26,6 +27,7 @@ export function EventEditor({ event, takenSlugs }: EventEditorProps) {
   const t = useTranslations("EventEditor");
   const form = useEventForm(event, takenSlugs);
   const toast = useToast();
+  useLeaveWarning(form.save.dirty, t("leaveUnsaved"));
 
   function save() {
     if (!form.save.canSave) return;

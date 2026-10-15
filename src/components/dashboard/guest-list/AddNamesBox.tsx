@@ -28,7 +28,7 @@ interface AddNamesBoxProps {
   /** Whether anything is waiting to be saved: a draft change or names still in the box. */
   onDirty: (dirty: boolean) => void;
   /** A change to the table was asked for with changes waiting here: the discard prompt asks, and Discard lets it through. */
-  ask: { onDiscard: () => void; onKeep: () => void } | null;
+  ask: { onDiscard: () => void; onKeep: () => void; asked: number } | null;
 }
 
 /** What stops a Save or Cancel until the host answers it. */
@@ -63,12 +63,12 @@ export function AddNamesBox({
 
   /* Asked from the table or the switch: bring the prompt into view and onto its first button. */
   const discardPrompt = useRef<HTMLDivElement>(null);
-  const asking = ask !== null;
+  const asked = ask?.asked ?? null;
   useEffect(() => {
-    if (!asking) return;
+    if (asked === null) return;
     discardPrompt.current?.scrollIntoView({ block: "nearest" });
     discardPrompt.current?.querySelector("button")?.focus();
-  }, [asking]);
+  }, [asked]);
 
   const dirty = draft.changed || names.length > 0;
   useEffect(() => onDirty(dirty), [onDirty, dirty]);
@@ -117,9 +117,13 @@ export function AddNamesBox({
   }
 
   return (
-    <div ref={box} id="list" className={`scroll-mt-24 ${SUBBOX}`}>
+    <div
+      ref={box}
+      id="list"
+      className={`scroll-mt-24 ${SUBBOX} border-neutral-400! bg-neutral-50`}
+    >
       <div className="flex flex-wrap items-center gap-x-4 gap-y-3">
-        <h3 className="mr-auto font-serif text-[17px] tracking-[0.14em] text-neutral-900 uppercase">
+        <h3 className="mr-auto font-serif text-[15px] tracking-[0.1em] text-neutral-950 uppercase">
           {t("listTitle")}
         </h3>
         <div className="flex gap-2.5">
@@ -152,7 +156,7 @@ export function AddNamesBox({
         <div
           ref={discardPrompt}
           role="alert"
-          className={`mt-3 ${ALERT} flex flex-wrap items-center gap-2.5`}
+          className={`mt-3 ${ALERT} flex scroll-mt-[88px] scroll-mb-4 flex-wrap items-center gap-2.5`}
         >
           <span className="mr-auto">{t("discardTitle")}</span>
           <div className="flex shrink-0 gap-2.5">

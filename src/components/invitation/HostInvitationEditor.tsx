@@ -14,7 +14,7 @@ import type { Language } from "@/lib/language";
 import { TemplateCard } from "@/templates/TemplateCard";
 import type { InvitationTemplate, TemplateValues } from "@/types/invitation";
 import { EditPanel } from "./EditPanel";
-import { EditorFrame, type EditorStatus } from "./EditorTopBar";
+import { EditorFrame } from "./EditorTopBar";
 import { Invitation } from "./Invitation";
 
 interface HostInvitationEditorProps {
@@ -29,7 +29,6 @@ interface HostInvitationEditorProps {
   guestMessages?: AbstractIntlMessages;
   /** The top bar's title — the event's, or the template's on a preview. */
   title: string;
-  status?: EditorStatus;
 }
 
 /**
@@ -43,7 +42,6 @@ export function HostInvitationEditor({
   language,
   guestMessages,
   title,
-  status,
 }: HostInvitationEditorProps) {
   const t = useTranslations("HostEditor");
   const hostLocale = useLocale();
@@ -111,7 +109,6 @@ export function HostInvitationEditor({
   return (
     <EditorFrame
       title={title}
-      status={status}
       editing={editing}
       onToggleEdit={() => setEditing(!editing)}
       action={{ kind: "save", dirty, justSaved, onSave: save }}

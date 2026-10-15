@@ -10,7 +10,7 @@ import {
   replaceAt,
 } from "@/modular/fields";
 import type { ListField, ListItem } from "@/types/modular";
-import { GOLD_BTN } from "@/components/dashboard/event-editor/styles";
+import { SOFT_BTN } from "@/components/dashboard/event-editor/styles";
 import { Icon } from "@/components/icons";
 import { ColorWell } from "./ColorWell";
 
@@ -56,7 +56,7 @@ export function SwatchRow({
             type="button"
             aria-label={`${t("remove")}: ${name(index + 1)}`}
             onClick={() => onItems(removeAt(items, index))}
-            className="absolute -top-1 -right-1 grid size-5 cursor-pointer place-items-center rounded-full border border-mustard-300 bg-neutral-50 text-neutral-800 transition-colors before:absolute before:-inset-2 before:content-[''] hover:border-rust-500 hover:bg-rust-500 hover:text-neutral-50 focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-mustard-500"
+            className="absolute -top-1 -right-1 grid size-5 cursor-pointer place-items-center rounded-full border border-neutral-400 bg-neutral-50 text-neutral-800 transition-colors before:absolute before:-inset-2 before:content-[''] hover:border-danger-600 hover:bg-danger-600 hover:text-neutral-50 focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-neutral-500"
           >
             <Icon name="close" className="size-3" strokeWidth={2} />
           </button>
@@ -76,7 +76,7 @@ export function SwatchRow({
               { ...emptyItem(field.item), [color]: NEW_COLOUR },
             ])
           }
-          className={`grid size-10 cursor-pointer place-items-center rounded-full border transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-mustard-500 ${GOLD_BTN}`}
+          className={`grid size-10 cursor-pointer place-items-center rounded-full border transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-500 ${SOFT_BTN}`}
         >
           <Icon name="plus" className="size-4" strokeWidth={2} />
         </button>

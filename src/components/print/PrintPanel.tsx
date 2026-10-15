@@ -5,8 +5,11 @@ import {
   BANNER_TONE,
   LABEL,
   INPUT,
-  PANEL_CHOICE,
 } from "@/components/dashboard/event-editor/styles";
+import {
+  CHOICE_OFF,
+  CHOICE_ON,
+} from "@/components/dashboard/guest-list/styles";
 import { PanelSwitch } from "@/components/invitation/PanelSwitch";
 import { PanelViewButton, SidePanel } from "@/components/invitation/SidePanel";
 import type { PrintSettings, PrintShape } from "@/types/print";
@@ -57,14 +60,15 @@ export function PrintPanel({
       <div className="flex flex-col w-full max-w-[640px] mx-auto">
         <fieldset className="flex flex-col mb-6">
           <legend className={`${LABEL} mb-2`}>{t("cardStyle")}</legend>
-          <div className="flex gap-1.5">
+          {/* Equal columns, each as wide as the longer label. */}
+          <div className="grid w-fit grid-cols-2 gap-1.5">
             {SHAPES.map((shape) => (
               <button
                 key={shape}
                 type="button"
                 aria-pressed={settings.shape === shape}
                 onClick={() => onChange("shape", shape)}
-                className={PANEL_CHOICE}
+                className={settings.shape === shape ? CHOICE_ON : CHOICE_OFF}
               >
                 {t(shape)}
               </button>
@@ -79,6 +83,12 @@ export function PrintPanel({
             label={t("tinted")}
             checked={settings.tinted}
             onChange={(on) => onChange("tinted", on)}
+            // The guest list's "Use an invite list" switch: a sentence, not a label.
+            heading={
+              <span className="text-[12.5px] font-medium text-neutral-800">
+                {t("tinted")}
+              </span>
+            }
           />
         </fieldset>
 
@@ -99,8 +109,10 @@ export function PrintPanel({
         />
 
         {/* The event editor's teal info banner. */}
-        <div className={`flex flex-col border p-4 ${BANNER_TONE.info}`}>
-          <p className="mb-3 border-b border-steel-400 pb-2 text-center text-[12.5px] font-semibold">
+        <div
+          className={`flex flex-col rounded-ui border p-4 ${BANNER_TONE.info}`}
+        >
+          <p className="mb-3 border-b border-info-500 pb-2 text-center text-[12.5px] font-semibold">
             {t("instructions")}
           </p>
           {/*

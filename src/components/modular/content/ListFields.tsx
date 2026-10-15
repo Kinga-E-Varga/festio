@@ -3,7 +3,7 @@
 import { useLocale, useTranslations } from "next-intl";
 import { memo, useLayoutEffect, useMemo, useRef, type ReactNode } from "react";
 import {
-  GOLD_BTN,
+  SOFT_BTN,
   INPUT,
   LABEL,
 } from "@/components/dashboard/event-editor/styles";
@@ -34,7 +34,7 @@ const HEAD_BAR = "flex items-center gap-3 px-3 py-2";
 /** A list's box. */
 const LIST = "flex flex-col gap-4";
 const REMOVE =
-  "cursor-pointer text-[11.5px] font-medium text-neutral-800 transition-colors hover:text-rust-600 disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:text-neutral-800";
+  "cursor-pointer text-[11.5px] font-medium text-neutral-800 transition-colors hover:text-danger-800 disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:text-neutral-800";
 
 /** An item's numbered name, with Remove at the right — or `end` in its place. */
 export function ItemHead({
@@ -52,8 +52,8 @@ export function ItemHead({
   const t = useTranslations("ContentTab");
   return (
     // Filled with the inputs' border colour: the bar that heads each item.
-    <div className={`${HEAD_BAR} w-full justify-between bg-mustard-300`}>
-      <span className={`${LABEL} text-neutral-900!`}>{title}</span>
+    <div className={`${HEAD_BAR} w-full justify-between bg-neutral-300`}>
+      <span className={`${LABEL} text-neutral-950!`}>{title}</span>
       {end ?? (
         <button
           type="button"
@@ -69,7 +69,7 @@ export function ItemHead({
   );
 }
 
-/** Add, an item head's bar and type in the gold action's colours; greyed out once the list is full. */
+/** Add, an item head's bar and type in the soft action's colours; greyed out once the list is full. */
 function AddButton({
   label,
   text,
@@ -91,7 +91,7 @@ function AddButton({
       // Its own words already say what it adds.
       aria-label={text ? undefined : `${t("add")}: ${label}`}
       onClick={onAdd}
-      className={`${HEAD_BAR} ${LABEL} cursor-pointer border text-mustard-600! transition-colors disabled:cursor-not-allowed disabled:opacity-50 ${GOLD_BTN} w-full`}
+      className={`${HEAD_BAR} ${LABEL} cursor-pointer border transition-colors disabled:cursor-not-allowed disabled:opacity-50 ${SOFT_BTN} w-full`}
     >
       <Icon name="plus" className="size-3.5" strokeWidth={2} />
       {text ?? t("add")}

@@ -1,14 +1,14 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { GOLD_PICK } from "@/components/dashboard/event-editor/styles";
+import { SOFT_PICK } from "@/components/dashboard/event-editor/styles";
 import { ICON_NAMES, Icon } from "@/modular/icons";
 
 /**
  * One icon's button, a circle: the inputs' fill, Add's fill when picked,
  * Add's hover fill on hover — picked or not.
  */
-const CHOICE = `grid size-10 cursor-pointer place-items-center rounded-full border transition-colors ${GOLD_PICK} focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-mustard-500`;
+const CHOICE = `grid size-10 cursor-pointer place-items-center rounded-full border transition-colors ${SOFT_PICK} focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-500`;
 
 /** The icon library as a grid of buttons, "No icon" first; the picked one pressed. */
 export function IconPicker({

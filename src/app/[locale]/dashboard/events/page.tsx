@@ -2,11 +2,11 @@ import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import { CentreOnHash } from "@/components/dashboard/CentreOnHash";
 import { HostToday } from "@/components/dashboard/HostToday";
+import { NewEventButton } from "@/components/dashboard/NewEventButton";
 import { EventGroups } from "@/components/dashboard/EventGroups";
 import { EventRow } from "@/components/dashboard/EventRow";
 import { EventTabs, type EventTab } from "@/components/dashboard/EventTabs";
 import { FocusView } from "@/components/dashboard/FocusView";
-import { Icon } from "@/components/icons";
 import { eventStatus } from "@/lib/event";
 import { EVENTS, findEvent } from "@/mock/dashboard";
 import type { EventStatus } from "@/types/dashboard";
@@ -79,27 +79,19 @@ export default async function EventsPage({
       {/* Arriving from a dashboard card, on that card rather than under the bar. */}
       <CentreOnHash />
 
-      {/* The title block and the one primary action share a row. */}
-      <header className="flex items-center gap-6">
-        <div className="min-w-0 flex-1">
-          <HostToday />
-          <h1 className="mt-1.5 font-serif text-[34px] leading-[1.05] text-neutral-900 @min-[720px]:text-[46px]">
+      {/*
+       * The title and the one primary action share a row under the date; on a
+       * narrow page the action folds to a plus, as on the dashboard.
+       */}
+      <header className="mb-8">
+        <HostToday />
+        <div className="mt-4 flex items-center justify-between gap-4">
+          <h1 className="min-w-0 font-serif text-[32px] leading-[1.05] text-neutral-950 @min-[720px]:text-[40px]">
             {t("title")}
           </h1>
+          <NewEventButton label={t("newEvent")} />
         </div>
-
-        {/* Below 560 the label goes and the plus stands on its own. */}
-        <button
-          type="button"
-          aria-label={t("newEvent")}
-          className="flex shrink-0 items-center gap-2 rounded-md border border-forest-500 bg-forest-500 px-4 py-2.5 font-medium text-neutral-50 transition-colors hover:border-forest-600 hover:bg-forest-600 @max-[560px]:gap-0 @max-[560px]:p-[11px]"
-        >
-          <Icon name="plus" className="size-[18px]" strokeWidth={2} />
-          <span className="@max-[560px]:hidden">{t("newEvent")}</span>
-        </button>
       </header>
-
-      <p className="mt-3.5 mb-[26px] text-neutral-700">{t("lede")}</p>
 
       <EventTabs
         tabs={tabs}

@@ -201,6 +201,13 @@ const PATHS: Record<IconName, ReactNode> = {
       <path d="M9.25 7H17v7.75" />
     </>
   ),
+  /* The nav's way out: arrowUpRight with a longer head, drawn square-ended where it is used. */
+  quit: (
+    <>
+      <path d="M7 17 17 7" />
+      <path d="M8 7h9v9" />
+    </>
+  ),
   arrowLeft: (
     <>
       <path d="M19.25 12H4.75" />
@@ -304,4 +311,11 @@ export function Icon({
       {PATHS[name]}
     </svg>
   );
+}
+
+/** The icon beside a button's label: one size and line for every button. */
+export function ButtonIcon({ name }: { name: IconName }) {
+  /* The plus is two bare strokes, so it reads thin at the common line. */
+  const strokeWidth = name === "plus" ? 2.25 : 1.75;
+  return <Icon name={name} className="size-4" strokeWidth={strokeWidth} />;
 }

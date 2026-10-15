@@ -3,12 +3,12 @@
 import { useTranslations } from "next-intl";
 
 /*
- * The editor's tabs in warm neutral: each hangs a pixel below the row so its
- * 3px edge sits on the row's line rather than doubling it. The open tab
- * shows only that edge; the others take a pale fill and the edge on hover.
+ * The editor's tabs, the Save button's size and type, joined in one row:
+ * only the outer corners round. Every tab takes the top bar's fill and ink;
+ * the open one primary-800 at 90%, a closed one primary-800 on hover.
  */
 const TAB =
-  "-mb-px h-10 flex-1 rounded-t-xs border-b-3 border-transparent text-[14px] font-[500] text-neutral-900 transition-colors not-aria-selected:hover:border-neutral-800 not-aria-selected:hover:bg-mustard-200 aria-selected:text-mustard-100 aria-selected:bg-neutral-900 aria-selected:border-neutral-900 aria-selected:font-[500] focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-steel-500";
+  "h-btn flex-1 first:rounded-l-ui last:rounded-r-ui text-[12.5px] font-medium bg-primary-900 text-secondary-100 transition-colors not-aria-selected:hover:bg-primary-800 aria-selected:bg-primary-800/90 focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-info-600";
 
 /**
  * The editor's tabs, in the order the host meets them: the design first,
@@ -40,7 +40,7 @@ export function PanelTabs({
   const t = useTranslations("HostEditor");
 
   return (
-    <div role="tablist" className="flex flex-1 gap-1">
+    <div role="tablist" className="flex flex-1">
       {TABS.map((each) => (
         <button
           key={each.id}

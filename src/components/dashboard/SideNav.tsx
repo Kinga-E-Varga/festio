@@ -2,6 +2,7 @@ import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { Icon } from "@/components/icons";
 import { NavLink } from "@/components/dashboard/NavLink";
+import { SIDE_CARD_TITLE } from "@/components/dashboard/styles";
 import { NAV_SECTIONS } from "@/mock/dashboard";
 
 export function SideNav() {
@@ -10,15 +11,17 @@ export function SideNav() {
   return (
     <nav
       aria-label={t("aria")}
-      className="flex h-full flex-col bg-mustard-100 pb-4 text-neutral-900"
+      className="flex h-full flex-col bg-neutral-200 pb-5 text-neutral-900 min-[1800px]:pb-7"
     >
-      <div className="min-h-0 flex-1 overflow-y-auto pt-[22px] pb-3">
+      <div className="min-h-0 flex-1 overflow-y-auto pt-5 pb-3 min-[1800px]:pt-7">
         {NAV_SECTIONS.map((section) => (
-          <div key={section.labelKey} className="pb-[22px] last:pb-0">
-            <h2 className="px-6 pb-2 text-[10px] font-semibold tracking-[0.18em] text-mustard-500 uppercase">
+          <div key={section.labelKey} className="pb-5 last:pb-0">
+            <h2
+              className={`px-5 pb-4 min-[1800px]:px-[30px] ${SIDE_CARD_TITLE}`}
+            >
               {t(section.labelKey)}
             </h2>
-            <ul>
+            <ul className="flex flex-col gap-1">
               {section.items.map((item) => (
                 <li key={item.href}>
                   <NavLink item={item} />
@@ -29,13 +32,20 @@ export function SideNav() {
         ))}
       </div>
 
-      <Link
-        href="/"
-        className="mx-4 flex items-center justify-center gap-3 rounded-sm bg-mustard-400 px-4 py-[13px] font-semibold text-neutral-900 transition-colors hover:bg-mustard-500"
-      >
-        <Icon name="arrowUpRight" className="size-[17px] shrink-0" />
-        <span>{t("quit")}</span>
-      </Link>
+      {/* Leaving is rare, so it reads as a nav item, set apart by a rule. */}
+      <div className="mx-4 border-t border-neutral-400 pt-3 min-[1800px]:mx-6">
+        <Link
+          href="/"
+          className="flex h-btn items-center gap-3 rounded-ui px-3 text-[13.5px] min-[1800px]:px-4 min-[1800px]:text-[14px] transition-colors hover:bg-secondary-400/30 hover:text-neutral-950"
+        >
+          <Icon
+            name="quit"
+            strokeWidth={1.75}
+            className="size-4 shrink-0 [stroke-linecap:square] [stroke-linejoin:miter]"
+          />
+          <span>{t("quit")}</span>
+        </Link>
+      </div>
     </nav>
   );
 }

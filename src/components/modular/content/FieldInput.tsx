@@ -1,11 +1,12 @@
 "use client";
 
+import { Select } from "@/components/dashboard/event-editor/Select";
 import Image from "next/image";
 import { useLocale, useTranslations } from "next-intl";
 import { useState } from "react";
 import {
   ERROR,
-  GOLD_ACTION,
+  SOFT_ACTION,
   HINT,
   INPUT,
   LABEL,
@@ -66,18 +67,17 @@ export function FieldInput({
         <label htmlFor={id} className={LABEL}>
           {label}
         </label>
-        <select
+        <Select
           id={id}
           value={current}
           onChange={(event) => onChange(event.target.value)}
-          className={INPUT}
         >
           {field.options.map((option) => (
             <option key={option.id} value={option.id}>
               {localized(option.label, host)}
             </option>
           ))}
-        </select>
+        </Select>
       </div>
     );
   }
@@ -153,7 +153,7 @@ function ImageField({ id, value }: { id: string; value: string }) {
           id={id}
           type="button"
           disabled
-          className={`${GOLD_ACTION} self-start`}
+          className={`${SOFT_ACTION} self-start`}
         >
           {t("changePhoto")}
         </button>

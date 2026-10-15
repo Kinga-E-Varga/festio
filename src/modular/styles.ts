@@ -152,9 +152,9 @@ export const GROUND: Record<SectionGround, string> = {
 /** A section's side padding: tighter on a phone, wide on a wide page. */
 export const PAD_X = "px-6 @3xl:px-14 @5xl:px-30";
 
-/** A section's top and bottom padding, apart so a section may drop one. */
-export const PAD_TOP = "pt-16 @3xl:pt-20 @5xl:pt-25";
-export const PAD_BOTTOM = "pb-16 @3xl:pb-20 @5xl:pb-25";
+/** A section's top and bottom padding, apart so a section may drop one. 80px at most, so a laptop's short screen still shows a fair part of a section. */
+export const PAD_TOP = "pt-16 @3xl:pt-20";
+export const PAD_BOTTOM = "pb-16 @3xl:pb-20";
 
 /** A section's padding. */
 export const PAD = `${PAD_X} ${PAD_TOP} ${PAD_BOTTOM}`;

@@ -62,7 +62,8 @@ export function EventTabs({
 
   return (
     <div>
-      <div className="border-b border-forest-500">
+      {/* Plain buttons over the homepage's divider: the same line, 12px under. */}
+      <div className="border-b border-neutral-400 pb-3">
         <div
           role="tablist"
           aria-label={label}
@@ -94,21 +95,19 @@ export function EventTabs({
                     selectByOffset(index, -1);
                   }
                 }}
-                // The active tab hangs a pixel below the list so its own bottom
-                // border sits on the divider rather than doubling it.
-                // Colour lives in both branches rather than on the base: two
+                // Shaped and coloured like the nav's buttons. Colour lives in both branches rather than on the base: two
                 // text-colour utilities on one element resolve by stylesheet
                 // order, not by the order they are written.
-                className={`-mb-px flex items-center justify-center gap-1 rounded-t-xs border-b-3 px-3 pt-[9px] pb-[7px] text-[14px] whitespace-nowrap transition-colors sm:gap-1.5 sm:px-4 ${
+                className={`flex h-btn items-center justify-center gap-1.5 rounded-ui px-3 text-[14px] whitespace-nowrap transition-colors sm:px-4 ${
                   isActive
-                    ? "border-forest-500 bg-forest-500 font-[500] text-mustard-50"
-                    : "border-transparent text-forest-600 hover:border-forest-500 hover:bg-forest-200"
+                    ? "bg-primary-800 font-medium text-neutral-50"
+                    : "text-neutral-900 hover:bg-secondary-400/30 hover:text-neutral-950"
                 }`}
               >
                 {tab.label}
                 <span
                   className={`text-[12.5px] tabular-nums ${
-                    isActive ? "text-mustard-50" : "text-forest-500"
+                    isActive ? "text-neutral-50/70" : "text-neutral-700"
                   }`}
                 >
                   {tab.count}
@@ -120,7 +119,7 @@ export function EventTabs({
       </div>
 
       {activeId === null ? (
-        <div className="pt-5">{fallback}</div>
+        <div className="pt-4">{fallback}</div>
       ) : (
         tabs.map((tab) => (
           <div
@@ -129,7 +128,7 @@ export function EventTabs({
             role="tabpanel"
             aria-labelledby={`tab-${tab.id}`}
             hidden={tab.id !== activeId}
-            className="pt-5"
+            className="pt-4"
           >
             {tab.panel}
           </div>

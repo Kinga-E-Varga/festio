@@ -1,3 +1,5 @@
+import { INFO_DARK, WARNING_DARK } from "@/components/dashboard/styles";
+
 /**
  * Shared form presentation for the event editor. Kept in one place so a
  * change to the way inputs look lands on every field at once.
@@ -9,82 +11,92 @@ export const FIELD_GRID =
 
 /** One fixed height for every single-line field (dates and selects otherwise size themselves); textareas keep growing. */
 export const FIELD =
-  "w-full border px-3 [&:not(textarea)]:h-10 py-[9px] text-[13.5px] text-neutral-900 transition-colors focus:outline-2 focus:-outline-offset-1 disabled:cursor-not-allowed disabled:bg-neutral-300 disabled:text-neutral-800";
-export const INPUT = `${FIELD} border-mustard-300 bg-neutral-50 outline-mustard-400 hover:border-mustard-500 focus:border-mustard-400 disabled:border-mustard-300`;
+  "w-full rounded-ui border px-3 [&:not(textarea)]:h-input py-[9px] text-[13.5px] text-neutral-950 transition-colors focus:outline-2 focus:-outline-offset-1 disabled:cursor-not-allowed disabled:bg-neutral-300 disabled:text-neutral-800";
+export const INPUT = `${FIELD} font-normal border-neutral-400 bg-neutral-50 outline-neutral-500 hover:border-neutral-600 focus:border-neutral-500 disabled:border-neutral-400 date-icon`;
 
 /** Field labels and the standalone legends above a group of controls. */
-export const LABEL =
-  "text-[10px] font-semibold tracking-[0.14em] text-neutral-800 uppercase";
+export const LABEL = "label-caps";
 
 /** The explanatory line under a field. */
 export const HINT = "text-[11.5px] leading-[1.45] text-neutral-700";
 
-export const ERROR = "text-[11.5px] font-medium text-rust-600";
+export const ERROR = "text-[11.5px] font-medium text-danger-800";
 
-/** The gold action's colours ("Stop using the list", "Different person", the list box's Save), at any size. Hovered, the fill takes the border's shade. */
-export const GOLD_BTN =
-  "border-mustard-300 bg-mustard-200 text-mustard-600 hover:bg-mustard-300";
-/** The gold action as a button ("Close earlier", the Content tab's Change photo). Callers add its width. */
-export const GOLD_ACTION = `cursor-pointer rounded-sm border px-2.5 py-[12px] text-center text-sm leading-[1.3] font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-50 ${GOLD_BTN}`;
-/** The gold action's outline pair: a pale fill, and on hover the same fill as the gold action's hover. */
-export const GOLD_OUTLINE =
-  "border-mustard-300 bg-neutral-50 text-mustard-600 hover:bg-mustard-300";
-/** A pick among gold outline buttons: the gold action's fill once picked (`aria-pressed`). */
-export const GOLD_PICK = `${GOLD_OUTLINE} aria-pressed:bg-mustard-200 aria-pressed:hover:bg-mustard-300`;
-/**
- * A side panel's choice buttons (Flat / Folded): the gold outline pair,
- * a gold fill once picked (`aria-pressed`). As tall as a text field beside
- * them — its 9px padding, its 13.5px type and its 1px border.
- */
-export const PANEL_CHOICE = `inline-flex cursor-pointer items-center justify-center border px-4 py-[9px] text-[13.5px] font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-mustard-500 ${GOLD_PICK}`;
+/** The soft action's colours ("Stop using the list", "Different person", the list box's Save), at any size. Hovered, the fill darkens two steps. */
+export const SOFT_BTN =
+  "border-neutral-400 bg-neutral-200 text-neutral-700 hover:bg-neutral-400 hover:text-neutral-800";
+/** The soft action's shape and type, without colours. */
+export const SOFT_ACTION_SHAPE =
+  "inline-flex min-h-btn cursor-pointer items-center justify-center rounded-ui border px-2.5 py-2 text-center text-[12.5px] leading-[1.3] font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-50";
+/** The soft action as a button ("Close earlier", the Content tab's Change photo). Callers add its width. */
+export const SOFT_ACTION = `${SOFT_ACTION_SHAPE} ${SOFT_BTN}`;
+/** The soft action's outline pair: a pale fill, and on hover the same fill as the soft action's hover. */
+export const SOFT_OUTLINE =
+  "border-neutral-400 bg-neutral-50 text-neutral-700 hover:bg-neutral-400 hover:text-neutral-800";
+/** A pick among soft outline buttons: the soft action's fill once picked (`aria-pressed`). */
+export const SOFT_PICK = `${SOFT_OUTLINE} aria-pressed:bg-neutral-200 aria-pressed:hover:bg-neutral-400`;
 
 /** The big buttons' shape, without colours: every variant below builds on it. */
 export const BUTTON =
-  "inline-flex items-center justify-center gap-2 rounded-md border px-4 py-2.5 font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-50";
+  "inline-flex h-btn items-center justify-center gap-2 rounded-ui border px-4 text-[12.5px] font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-50";
 
-export const BTN_PRIMARY = `${BUTTON} border-forest-500 bg-forest-500 text-neutral-50 hover:border-forest-600 hover:bg-forest-600`;
+export const BTN_PRIMARY = `${BUTTON} border-primary-700 bg-primary-700 text-neutral-50 hover:border-primary-900 hover:bg-primary-900`;
 /* The outlined action borrows the solid one's fill for its edge. */
-const OUTLINE = `${BUTTON} border-forest-500 text-forest-500 hover:border-forest-600 hover:bg-forest-200 hover:text-forest-600`;
-export const BTN_GHOST = `${OUTLINE} bg-mustard-50`;
+const OUTLINE = `${BUTTON} border-primary-700 text-primary-700 hover:border-primary-900 hover:bg-primary-200 hover:text-primary-900`;
+export const BTN_GHOST = `${OUTLINE} bg-secondary-100`;
 /** The same outline on the inputs' lighter fill, to sit in a row with them. */
 export const BTN_GHOST_LIGHT = `${OUTLINE} bg-neutral-50`;
-/** The top bar's own dark, for a page action that should read apart from the forest ones. */
-export const BTN_DARK = `${BUTTON} border-neutral-900 bg-neutral-900 text-neutral-50 hover:border-neutral-800 hover:bg-neutral-800`;
-export const BTN_DANGER = `${BUTTON} border-rust-500 bg-rust-100 text-rust-500 hover:bg-rust-500 hover:text-neutral-50`;
+/** The dashboard's "New event" colour, for a page action that should read apart from the primary ones. */
+export const BTN_ACCENT = `${BUTTON} border-accent-800 bg-accent-800 text-neutral-50 hover:border-accent-900 hover:bg-accent-900`;
+export const BTN_DANGER = `${BUTTON} border-danger-800 bg-danger-800 text-neutral-50 hover:border-danger-900 hover:bg-danger-900`;
 
 /** A borderless input inside a framed box that carries the border (the link address, the password). */
 export const INSET_INPUT =
-  "min-w-0 flex-1 self-stretch border-0 bg-transparent px-3 text-[13.5px] text-neutral-900 focus:outline-2 focus:-outline-offset-2 focus:outline-mustard-400 disabled:cursor-not-allowed";
+  "min-w-0 flex-1 self-stretch border-0 bg-transparent px-3 text-[13.5px] text-neutral-950 focus:outline-2 focus:-outline-offset-2 focus:outline-neutral-500 disabled:cursor-not-allowed";
 
 /** The small icon-only control that sits inside a field. */
 export const MINI =
-  "grid place-items-center text-neutral-700 transition-colors hover:text-forest-500";
+  "grid place-items-center text-neutral-700 transition-colors hover:text-primary-700";
 
 /** A panel that hangs off the control above it, sharing its edge. */
-export const SUBBOX = "-mt-px border border-mustard-300 p-4";
+export const SUBBOX = "-mt-px rounded-b-ui border border-secondary-300 p-4";
 
-/** Frozen states are grey, deadlines amber, explanations teal, notices gold. */
-export type BannerTone = "frozen" | "warn" | "info" | "gold";
+/** Deadlines, explanations and plain notices, each in its own tone. */
+export type BannerTone = "warn" | "info" | "notice";
+
+/** A banner's title, in the banner's own small type: also the info and warning boxes' titles. */
+export const BANNER_TITLE =
+  "mb-[3px] block text-[12.5px] leading-[1.5] font-semibold";
 
 /** A banner's colours, also worn by the print panel's instructions. */
 export const BANNER_TONE: Record<BannerTone, string> = {
-  frozen: "border-neutral-500 bg-neutral-300 text-neutral-800",
-  warn: "border-terracotta-400 bg-terracotta-200 text-terracotta-600",
-  info: "border-steel-400 bg-steel-200 text-steel-600",
-  gold: "border-mustard-500 bg-mustard-200 text-mustard-600",
+  warn: WARNING_DARK,
+  info: INFO_DARK,
+  notice: "border-secondary-500 bg-secondary-200 text-secondary-600",
+};
+
+/** The solid square an info box leads with: the banners and the package boxes. Colours come from the tone. */
+export const ICON_SQUARE =
+  "grid size-[34px] shrink-0 place-items-center rounded-ui border";
+
+/** Each banner tone's icon square: its text colour as a solid fill, a pale icon. */
+export const BANNER_ICON: Record<BannerTone, string> = {
+  warn: "border-warning-700 bg-warning-700 text-warning-50",
+  info: "border-info-700 bg-info-700 text-info-50",
+  notice: "border-secondary-600 bg-secondary-600 text-secondary-100",
 };
 
 const BAR_BUTTON =
-  "inline-flex items-center justify-center rounded-md border px-4 py-2.5 font-medium transition-colors";
+  "inline-flex h-btn items-center justify-center rounded-ui border px-4 text-[12.5px] font-medium transition-colors";
 
 /** The save bar's buttons, also worn by the invitation editors' top bar. */
-export const BAR_OUTLINE = `${BAR_BUTTON} border-mustard-400 bg-transparent text-mustard-400 hover:bg-mustard-50/10`;
-export const BAR_SOLID = `${BAR_BUTTON} border-mustard-400 bg-mustard-400 font-semibold text-neutral-900 hover:border-mustard-300 hover:bg-mustard-300`;
-/** The side panel's View, in the open tab's colours: dark fill, pale type. */
-export const BAR_DARK = `${BAR_BUTTON} border-neutral-900 bg-neutral-900 font-semibold text-mustard-100 hover:border-neutral-800 hover:bg-neutral-800`;
-export const BAR_DISABLED = `${BAR_BUTTON} cursor-not-allowed border-neutral-800 bg-transparent text-neutral-700`;
+export const BAR_OUTLINE = `${BAR_BUTTON} border-secondary-400 bg-transparent text-secondary-400 hover:bg-secondary-100/10`;
+const BAR_SOLID_FILL = "border-secondary-400 bg-secondary-400 text-neutral-950";
+export const BAR_SOLID = `${BAR_BUTTON} ${BAR_SOLID_FILL} hover:border-secondary-300 hover:bg-secondary-300`;
+/** The solid action, faded to 40% while there is nothing to save. */
+export const BAR_DISABLED = `${BAR_BUTTON} ${BAR_SOLID_FILL} cursor-not-allowed opacity-40`;
 
-/** The status dot: terracotta while there is something to save, green once there isn't. */
+/** The status dot: warning while there is something to save, primary once there isn't. */
 export function stateDot(dirty: boolean) {
-  return `size-[7px] shrink-0 rounded-full ${dirty ? "bg-terracotta-400" : "bg-forest-400"}`;
+  return `size-[7px] shrink-0 rounded-full ${dirty ? "bg-warning-400" : "bg-primary-400"}`;
 }

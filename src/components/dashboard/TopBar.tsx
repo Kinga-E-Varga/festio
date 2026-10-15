@@ -11,11 +11,11 @@ interface TopBarProps {
 }
 
 const ICON_BUTTON =
-  "relative grid size-[38px] place-items-center rounded-full text-mustard-50 transition-colors hover:bg-neutral-800";
+  "relative grid size-[34px] place-items-center rounded-full text-neutral-100 transition-colors hover:bg-primary-800";
 
 /** Count bubbles on the bell and the cart share everything but their colour. */
 const BADGE =
-  "absolute top-0.5 right-0.5 grid h-4 min-w-4 place-items-center rounded-full px-1 text-[10px] font-semibold text-mustard-50";
+  "absolute top-0.5 right-0.5 grid h-4 min-w-4 place-items-center rounded-full px-1 text-[10px] font-bold text-primary-900";
 
 export function TopBar({
   navOpen,
@@ -29,9 +29,9 @@ export function TopBar({
   const awaitingPayment = EVENTS.filter((event) => !event.paid).length;
 
   return (
-    <header className="sticky top-0 z-40 flex h-topbar shrink-0 items-center gap-3.5 border-b border-mustard-400 bg-neutral-900 px-6">
+    <header className="sticky top-0 z-40 flex h-topbar shrink-0 items-center gap-3.5 bg-primary-900 px-6">
       {/*
-       * Pulled out by the 8px the glyph is inset inside its 38px hit area, so
+       * Pulled out by the 7px the glyph is inset inside its 34px hit area, so
        * the menu mark sits the same 24px off the edge as the avatar circle
        * does on the other side.
        */}
@@ -40,32 +40,37 @@ export function TopBar({
         onClick={onToggleNav}
         aria-expanded={navOpen}
         aria-label={t("openMenu")}
-        className={`${ICON_BUTTON} -ml-2 nav:hidden`}
+        className={`${ICON_BUTTON} -ml-[7px] nav:hidden`}
       >
-        <Icon name="menu" className="size-[22px]" />
+        <Icon name="menu" className="size-5" />
       </button>
 
-      {/* The menu mark takes the corner once the nav collapses into it. */}
+      {/*
+       * The menu mark takes the corner once the nav collapses into it.
+       * Docked, the lettering lines up with the nav's section headings: the
+       * column's 20px margin and 1px border, the heading's 24px padding, less
+       * this bar's own 24px padding.
+       */}
       <Link
         href="/dashboard"
         aria-label="Festio"
-        className="hidden items-center nav:flex"
+        className="hidden items-center nav:ml-[21px] nav:flex"
       >
         {/*
-         * One-colour artwork, used as a mask and filled with the icons'
-         * `mustard-50` — a second, recoloured file would drift from the
-         * original.
+         * One-colour artwork, used as a mask and filled with the current
+         * nav item's `secondary-400` — a second, recoloured file would drift from
+         * the original.
          */}
         <span
           aria-hidden="true"
-          className="block aspect-[148/32] h-7 bg-mustard-50 mask-[url(/festio-lockup.svg)] mask-contain mask-center mask-no-repeat"
+          className="block aspect-[148/32] h-6 bg-secondary-400 mask-[url(/festio-lockup-alt.svg)] mask-contain mask-center mask-no-repeat"
         />
       </Link>
 
       {/*
        * Bell and cart pair up tightly. The gap looks smaller than it reads:
-       * each 22px glyph carries 8px of hit area either side, so 4px here is
-       * 20px of visible space between the two marks.
+       * each 20px glyph carries 7px of hit area either side, so 4px here is
+       * 18px of visible space between the two marks.
        */}
       <div className="ml-auto flex items-center gap-1">
         <button
@@ -75,8 +80,8 @@ export function TopBar({
           aria-label={t("activityCount", { count: ATTENTION_NOTICES.length })}
           className={`${ICON_BUTTON} rail:hidden`}
         >
-          <Icon name="bell" className="size-[22px]" />
-          <span aria-hidden="true" className={`${BADGE} bg-rust-500`}>
+          <Icon name="bell" className="size-5" />
+          <span aria-hidden="true" className={`${BADGE} bg-warning-400`}>
             {ATTENTION_NOTICES.length}
           </span>
         </button>
@@ -86,16 +91,17 @@ export function TopBar({
           aria-label={t("cart", { count: awaitingPayment })}
           className={ICON_BUTTON}
         >
-          <Icon name="cart" className="size-[22px]" />
-          <span aria-hidden="true" className={`${BADGE} bg-terracotta-500`}>
+          <Icon name="cart" className="size-5" />
+          <span aria-hidden="true" className={`${BADGE} bg-secondary-400`}>
             {awaitingPayment}
           </span>
         </button>
 
+        {/* Docked, held as far off the right edge as the lockup is off the left. */}
         <button
           type="button"
           aria-label={t("account")}
-          className="ml-2.5 grid size-[34px] place-items-center rounded-full bg-mustard-500 text-xs font-semibold tracking-[0.06em] text-neutral-950 transition-colors hover:bg-mustard-400"
+          className="ml-2.5 grid size-[30px] nav:mr-[21px] place-items-center rounded-full bg-secondary-400 text-xs font-semibold tracking-[0.06em] text-neutral-950 transition-colors hover:bg-secondary-300"
         >
           {HOST.initials}
         </button>

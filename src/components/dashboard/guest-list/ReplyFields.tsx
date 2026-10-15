@@ -1,5 +1,6 @@
 "use client";
 
+import { Select } from "@/components/dashboard/event-editor/Select";
 import { useTranslations } from "next-intl";
 import {
   type Control,
@@ -101,10 +102,12 @@ function SelectField({
   return (
     <label className="block min-w-0">
       <span className={`mb-1.5 block ${LABEL}`}>{label}</span>
-      <select
+      <Select
         value={value}
         onChange={(event) => onChange(event.target.value)}
-        className={`${INPUT} cursor-pointer ${value === "" ? "text-neutral-600" : ""}`}
+        className={
+          value === "" ? "text-neutral-600! [&_option]:text-neutral-950" : ""
+        }
       >
         <option value="">{t("choose")}</option>
         {options.map((option) => (
@@ -112,7 +115,7 @@ function SelectField({
             {option.label}
           </option>
         ))}
-      </select>
+      </Select>
       {error ? <span className={`mt-1 block ${ERROR}`}>{error}</span> : null}
     </label>
   );

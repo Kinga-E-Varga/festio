@@ -1,54 +1,39 @@
 import { useLocale, useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import type { ReactNode } from "react";
-import { GUEST_DATA_RETENTION_DAYS } from "@/lib/config";
-import {
-  contentFreeze,
-  formatDeadline,
-  replyClose,
-  formatDuration,
-  formatRelative,
-} from "@/lib/event";
+import { formatRelative } from "@/lib/event";
 import { TAG } from "@/components/dashboard/guest-list/styles";
-import { ATTENTION_NOTICES, PACKAGES, RECENT_RSVPS } from "@/mock/dashboard";
-import type { NoticeTone } from "@/types/dashboard";
+import { NoticeAction } from "@/components/dashboard/NoticeAction";
+import { NOTICES, useNoticeValues } from "@/components/dashboard/notices";
+import {
+  DANGER_DARK,
+  SIDE_CARD_TITLE,
+  STRONG_TEXT,
+  SUCCESS_DARK,
+  TEXT_LINK,
+} from "@/components/dashboard/styles";
+import { RECENT_RSVPS } from "@/mock/dashboard";
 
-/** Each notice's edge colour carries through to its call to action. */
-const TONE: Record<NoticeTone, string> = {
-  attention: "border-rust-500 text-rust-600",
-  deadline: "border-mustard-500 text-mustard-600",
-  expected: "border-terracotta-500 text-terracotta-600",
-  overExpected: "border-rust-500 text-rust-600",
-  paused: "border-rust-500 text-rust-600",
-  billing: "border-steel-500 text-steel-600",
-};
-
-/** Most urgent first; notices of one tone keep their own order. */
-const TONE_ORDER: Record<NoticeTone, number> = {
-  attention: 0,
-  paused: 0,
-  overExpected: 0,
-  expected: 1,
-  deadline: 2,
-  billing: 3,
-};
-
-const NOTICES = [...ATTENTION_NOTICES].sort(
-  (first, second) => TONE_ORDER[first.tone] - TONE_ORDER[second.tone],
-);
-
-const PANEL_LABEL =
-  "mb-3.5 text-[10px] font-semibold tracking-[0.18em] text-mustard-500 uppercase";
+/** As much room under the title as above it. */
+const PANEL_LABEL = `mb-4 min-[1800px]:mb-[22px] ${SIDE_CARD_TITLE}`;
 
 /** A notice's call to action and its report link read as one pair. */
-const ACTION =
-  "text-[12.5px] font-semibold text-current underline underline-offset-[3px] transition-colors hover:text-neutral-900";
+const ACTION = `text-[11.5px] min-[1800px]:text-[12.5px] ${TEXT_LINK}`;
 
+/**
+ * A card each once the rail docks; in the drawer, one line between them.
+ * Docked, the two cards share the column's height: each keeps its own size
+ * until together they would overflow, then both shrink and scroll their list
+ * under a fixed title. The list is pulled 16px into the card's padding so its
+ * scrollbar sits near the edge instead of against the text.
+ */
 function Panel({ label, children }: { label: string; children: ReactNode }) {
   return (
-    <section className="mb-[22px] border-b border-mustard-300 pb-[22px] last:mb-0 last:border-b-0 last:pb-0">
+    <section className="max-rail:py-5 max-rail:first:pt-0 max-rail:last:pb-0 rail:side-card rail:flex rail:min-h-0 rail:flex-col rail:px-4 rail:py-5 min-[1800px]:px-6 min-[1800px]:py-7">
       <h2 className={PANEL_LABEL}>{label}</h2>
-      {children}
+      <div className="rail:-mr-4 rail:min-h-0 rail:overflow-y-auto rail:pr-4 rail:side-scroll">
+        {children}
+      </div>
     </section>
   );
 }
@@ -56,68 +41,44 @@ function Panel({ label, children }: { label: string; children: ReactNode }) {
 export function NotificationsRail() {
   const t = useTranslations("Rail");
   const tNotices = useTranslations("Notices");
-  /* Titles and bodies are the event editor's banners, word for word. */
+  /*
+   * Titles are the cards' to-dos, word for word, so the rail reads as their
+   * index; bodies are the event editor's banners.
+   */
   const tBanner = useTranslations("EventPage");
   const tEvent = useTranslations("Event");
   const tActivity = useTranslations("Activity");
-  const tPackages = useTranslations("Packages");
   const locale = useLocale();
+  const noticeValues = useNoticeValues();
 
   return (
-    <div>
+    <div className="flex flex-col max-rail:divide-y max-rail:divide-neutral-400 rail:h-full rail:gap-5">
       <Panel label={t("needsAttention")}>
         <ul>
           {NOTICES.map((notice) => {
-            /* Title, body, action and context all read the same values. */
-            const values = {
-              ...notice.values,
-              ...(notice.span
-                ? { time: formatDuration(notice.span, locale) }
-                : {}),
-              ...(notice.eventDate
-                ? {
-                    date: formatDeadline(
-                      notice.key.startsWith("replies")
-                        ? replyClose({
-                            date: notice.eventDate,
-                            repliesCloseAt: notice.closesAt,
-                          })
-                        : contentFreeze(notice.eventDate),
-                      locale,
-                    ),
-                  }
-                : {}),
-              ...(notice.package
-                ? {
-                    package: tPackages(`${notice.package}.name`),
-                    price: tPackages("price", {
-                      amount: PACKAGES[notice.package].price,
-                    }),
-                  }
-                : {}),
-            };
+            const values = noticeValues(notice);
             const contextKey = `${notice.key}.context`;
 
             return (
               <li
                 key={notice.id}
-                className={`mb-3.5 border-l-4 pb-3.5 pl-3.5 last:mb-0 last:pb-0 ${TONE[notice.tone]}`}
+                className="border-t border-neutral-400 py-3 first:border-t-0 first:pt-0 last:pb-0 min-[1800px]:py-3.5"
               >
-                <p className="mb-[3px] font-semibold text-neutral-900">
-                  {tBanner(`${notice.key}Title`, values)}
+                <p className="mb-1 text-[13.5px] font-semibold text-neutral-950 min-[1800px]:mb-1.5 min-[1800px]:text-[14px]">
+                  {tNotices(`${notice.key}.task`, values)}
                   {tNotices.has(contextKey) ? (
-                    <span className="font-normal">
+                    <span className="font-normal text-neutral-700">
                       {" "}
                       {tNotices(contextKey, values)}
                     </span>
                   ) : null}
                 </p>
-                <p className="mb-1.5 text-[12.5px] leading-[1.45] text-neutral-700">
+                <p className="mb-1 text-[11.5px] leading-[1.45] text-neutral-900 min-[1800px]:mb-1.5 min-[1800px]:text-[12.5px]">
                   {tBanner(`${notice.key}Body`, values)}
                 </p>
-                <button type="button" className={ACTION}>
+                <NoticeAction notice={notice} className={ACTION}>
                   {tNotices(`${notice.key}.action`, values)}
-                </button>
+                </NoticeAction>
                 {notice.reportHref ? (
                   <Link href={notice.reportHref} className={`ml-4 ${ACTION}`}>
                     {tEvent("reportFlood")}
@@ -134,42 +95,38 @@ export function NotificationsRail() {
           {RECENT_RSVPS.map((entry) => (
             <li
               key={entry.id}
-              className="flex gap-[11px] border-t border-dotted border-mustard-300 py-3 first:border-t-0 first:pt-0"
+              className="flex gap-2.5 border-t border-neutral-400 py-2.5 first:border-t-0 first:pt-0 last:pb-0 min-[1800px]:gap-[11px] min-[1800px]:py-3"
             >
               <span
                 aria-hidden="true"
-                className={`grid size-7 shrink-0 place-items-center rounded-full text-[10px] font-semibold ${
-                  entry.tag
-                    ? "bg-terracotta-200 text-terracotta-600"
-                    : "bg-forest-200 text-forest-600"
+                className={`grid size-6 shrink-0 place-items-center min-[1800px]:size-7 rounded-full border text-[10px] font-semibold ${
+                  entry.tag ? DANGER_DARK : SUCCESS_DARK
                 }`}
               >
                 {entry.initials}
               </span>
-              <div className="min-w-0 text-[12.5px] leading-[1.45] text-neutral-700">
+              <div className="min-w-0 text-[11.5px] leading-[1.45] text-neutral-900 min-[1800px]:text-[12.5px]">
                 <p>
                   {/* The sentence places the names; which word comes first is the language's business. */}
                   {tActivity.rich(entry.action.key, {
                     ...entry.action.values,
                     actor: entry.actor ?? "",
                     b: (chunks) => (
-                      <span className="font-semibold text-neutral-900">
-                        {chunks}
-                      </span>
+                      <span className={STRONG_TEXT}>{chunks}</span>
                     ),
                   })}
                   {entry.tag ? (
                     <>
                       {" "}
                       <span
-                        className={`${TAG} inline-block border-terracotta-400 bg-terracotta-200 align-[1px] text-terracotta-600`}
+                        className={`${TAG} ${DANGER_DARK} inline-block align-[1px]`}
                       >
                         {t("unknownTag")}
                       </span>
                     </>
                   ) : null}
                 </p>
-                <p className="mt-0.5 text-[11.5px]">
+                <p className="mt-0.5 text-[11px] text-neutral-700 min-[1800px]:text-[11.5px]">
                   {[
                     entry.event,
                     ...(entry.details?.length
@@ -189,38 +146,6 @@ export function NotificationsRail() {
           ))}
         </ul>
       </Panel>
-
-      <section className="border border-terracotta-400 bg-terracotta-200 p-5 text-terracotta-600">
-        <h2 className={`${PANEL_LABEL} text-terracotta-600`}>
-          {t("dataRetention")}
-        </h2>
-        {/*
-         * Rich text rather than three glued fragments: the number sits mid
-         * sentence, and where "mid" falls is the language's business.
-         */}
-        <p className="mb-3 text-[12.5px] leading-[1.5]">
-          {t.rich("retention", {
-            days: GUEST_DATA_RETENTION_DAYS,
-            big: (chunks) => (
-              <span className="font-serif text-[22px] align-[-2px]">
-                {chunks}
-              </span>
-            ),
-          })}
-        </p>
-        <p className="text-[12.5px] leading-[1.5]">
-          {t.rich("controller", {
-            link: (chunks) => (
-              <Link
-                href="/legal/terms"
-                className="font-semibold underline underline-offset-[3px]"
-              >
-                {chunks}
-              </Link>
-            ),
-          })}
-        </p>
-      </section>
     </div>
   );
 }

@@ -116,7 +116,7 @@ export function ContentTab({
                 {open ? (
                   <div
                     id={panelId}
-                    className={`${SUBBOX} flex flex-col gap-4 border-t-0 bg-neutral-50`}
+                    className={`${SUBBOX} flex flex-col gap-4 rounded-none! border-t-0 border-neutral-400! bg-neutral-50`}
                   >
                     <SectionFields
                       library={library}

@@ -49,7 +49,6 @@ export default async function HostInvitationPage({ params }: Props) {
       language={language}
       guestMessages={await loadMessages(language)}
       title={event.title}
-      status={{ visibility: event.visibility, replies: event.rsvp.replied }}
     />
   );
 }

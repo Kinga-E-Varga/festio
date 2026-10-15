@@ -2,10 +2,7 @@
 
 import { useLocale, useTranslations } from "next-intl";
 import { type MouseEvent, useState } from "react";
-import {
-  BTN_DANGER,
-  BTN_GHOST,
-} from "@/components/dashboard/event-editor/styles";
+import { SUCCESS_DARK, WARNING_DARK } from "@/components/dashboard/styles";
 import {
   AGE_KEY,
   DIET_KEY,
@@ -17,6 +14,8 @@ import {
   BADGE_TEXT,
   BOX_BADGE,
   fold,
+  GUEST_BTN_DANGER,
+  GUEST_BTN_PRIMARY,
   ICON_BTN,
   ICON_BTN_DANGER,
 } from "@/components/dashboard/guest-list/styles";
@@ -47,13 +46,13 @@ interface RowViewProps {
 }
 
 const STATUS_TONE = {
-  going: "border-forest-300 bg-forest-100 text-forest-600",
-  not_going: "border-terracotta-300 bg-terracotta-100 text-terracotta-600",
+  going: SUCCESS_DARK,
+  not_going: WARNING_DARK,
 } as const;
 
 /** Sent or not, the invite badge looks the same; only its words and the box change. */
 const INVITE_BADGE =
-  "cursor-pointer border-neutral-300 bg-neutral-100 text-neutral-700 transition-colors hover:border-neutral-500";
+  "cursor-pointer border-neutral-400 bg-neutral-100 text-neutral-700 transition-colors hover:border-neutral-600";
 
 /*
  * Where the badge joins the name's line: at the table's own breakpoint, or
@@ -126,7 +125,7 @@ export function RowView({
       {/* The fold's button is there for the keyboard; a mouse can use the whole row. */}
       <div
         onClick={toggle}
-        className={`grid min-h-11 grid-cols-[minmax(0,1fr)_auto] items-center gap-x-4 gap-y-1 py-1 ${layout.grid} ${
+        className={`grid min-h-10 grid-cols-[minmax(0,1fr)_auto] items-center gap-x-4 gap-y-1 py-1 ${layout.grid} ${
           hasDetails ? "cursor-pointer" : ""
         }`}
       >
@@ -140,7 +139,7 @@ export function RowView({
         >
           {/* The name and its arrow never part: a long name is cut short instead. */}
           <span className="flex min-h-8 max-w-full min-w-0 items-center gap-1">
-            <span className="min-w-0 truncate text-[14px] font-medium text-neutral-900">
+            <span className="min-w-0 truncate text-[14px] font-medium text-neutral-950">
               {name}
             </span>
             {hasDetails ? (
@@ -217,9 +216,12 @@ export function RowView({
             type="button"
             onClick={() => guard(() => setConfirming(true))}
             aria-label={t("deleteLabel", { name })}
-            className={ICON_BTN_DANGER}
+            className={`group ${ICON_BTN_DANGER}`}
           >
-            <Icon name="trash" className="size-[18px]" />
+            <Icon
+              name="trash"
+              className="size-[18px] group-hover:stroke-[1.85]"
+            />
           </button>
         </div>
       </div>
@@ -250,19 +252,19 @@ export function RowView({
       {confirming ? (
         <div
           role="alert"
-          className="flex flex-wrap items-center gap-2.5 pb-2 text-[12.5px] text-rust-600"
+          className="flex flex-wrap items-center gap-2.5 pb-2 text-[12.5px] text-danger-800"
         >
           <span className="mr-auto">{t("deleteConfirm", { name })}</span>
           <div className="flex shrink-0 gap-2.5">
-            <button type="button" onClick={remove} className={BTN_DANGER}>
-              {t("delete")}
-            </button>
             <button
               type="button"
               onClick={() => setConfirming(false)}
-              className={BTN_GHOST}
+              className={GUEST_BTN_PRIMARY}
             >
               {t("cancel")}
+            </button>
+            <button type="button" onClick={remove} className={GUEST_BTN_DANGER}>
+              {t("delete")}
             </button>
           </div>
         </div>
@@ -343,7 +345,7 @@ function ReplyDetails({ reply, questions, spaced }: ReplyDetailsProps) {
       {answers.map((answer) => (
         <div key={answer.key} className="flex gap-1">
           <dt className="text-neutral-700">{answer.label}:</dt>
-          <dd className="min-w-0 font-medium text-neutral-900">
+          <dd className="min-w-0 font-medium text-neutral-950">
             {answer.value}
           </dd>
         </div>

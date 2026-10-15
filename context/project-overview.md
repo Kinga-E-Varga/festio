@@ -75,7 +75,7 @@ Full spec in `context/features/print.md`.
 
 ## Lifecycle
 
-- Invitations can be saved at any time, public or not. Content and template are editable until **24h before the event**.
+- Invitations can be saved at any time, public or not. Event details, content and template stay editable; only the **event date** is locked, from the start of the event day.
 - Visibility per invitation: **Hidden / Public / Protected**. Protected reveals a password field (min 4 chars, letters or digits). The password is printed on the physical card, directly below the link.
 - Saving changes while not Hidden requires acknowledging a blocking warning that guests won't be notified (shows current RSVP count); host must agree or cancel.
 - **Cancel event:** detailed confirmation + host re-enters password. RSVP form closes; invitation page is replaced with a header plus a short custom host message.
@@ -117,9 +117,14 @@ Desktop-first, fully mobile responsive. Nav collapses to a drawer on mobile. Smo
 Base app fonts — for the app's UI use the combination of Work Sans and Libre Baskerville google fonts.
 **Invitations have their own independent fonts and are not bound by this.**
 
-Base app palette — the `@theme` tokens in `src/app/globals.css`: neutral, steel teal,
-terracotta, mustard, forest green, rust red. Use token names (`bg-steel-500`), never raw hex.
+Base app palette — the `@theme` tokens in `src/app/globals.css`, named by role, not hue, so a
+colour can change without renaming: neutral, primary, secondary, accent, info, warning,
+danger, white. Use token names (`bg-primary-700`), never raw hex.
 **Invitations have their own palettes and are not bound by this.**
+
+Base app corners — one token, `--radius-ui` in `src/app/globals.css`. Use `rounded-ui`
+(`rounded-t-ui`, …) for every box, button, field and tab, never a fixed radius; `rounded-full`
+only for circles. **Invitations keep their own corners.**
 
 ## Out of scope for v1
 

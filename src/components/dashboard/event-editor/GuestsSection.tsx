@@ -20,15 +20,15 @@ interface SectionProps {
 
 export function GuestsSection({ event, form }: SectionProps) {
   const t = useTranslations("EventEditor");
-  const { values, set, derived, locked } = form;
+  const { values, set, derived } = form;
 
   return (
-    <EditorSection title={t("guests")}>
+    <EditorSection id="guests" title={t("guests")}>
       <label htmlFor="event-expected" className={`mb-2.5 block ${LABEL}`}>
         {t("expected")}
       </label>
 
-      <div className="flex flex-wrap items-center gap-x-6 gap-y-3.5">
+      <div className="flex flex-wrap items-end gap-x-6 gap-y-3.5">
         <input
           id="event-expected"
           type="number"
@@ -36,13 +36,12 @@ export function GuestsSection({ event, form }: SectionProps) {
           min={1}
           max={1000}
           step={1}
-          disabled={locked}
           value={values.expected}
           onChange={(control) => set.expected(control.target.value)}
           className={`${INPUT} basis-[180px]`}
         />
 
-        {/* The count sits over the bar, the pair centred on the input beside it. */}
+        {/* The count sits over the bar; the bar lines up with the input's bottom edge beside it. */}
         <div className="flex-1 basis-[320px]">
           <RepliesMeter
             replied={event.rsvp.replied}
@@ -50,10 +49,11 @@ export function GuestsSection({ event, form }: SectionProps) {
           />
         </div>
 
+        {/* Pulled up from the row gap to a field's own 6px, as under every other input. */}
         {derived.expectedError ? (
-          <p className={`basis-full ${ERROR}`}>{derived.expectedError}</p>
+          <p className={`-mt-2 basis-full ${ERROR}`}>{derived.expectedError}</p>
         ) : null}
-        <p className={`basis-full ${HINT}`}>{t("expectedHint")}</p>
+        <p className={`-mt-2 basis-full ${HINT}`}>{t("expectedHint")}</p>
       </div>
 
       <div className="mt-[22px]">
@@ -63,7 +63,6 @@ export function GuestsSection({ event, form }: SectionProps) {
           icon="guests"
           action={t(values.preloaded ? "stopList" : "useList")}
           onAction={() => set.preloaded(!values.preloaded)}
-          disabled={locked}
           hint={t("noListHint")}
           text={
             values.preloaded ? (

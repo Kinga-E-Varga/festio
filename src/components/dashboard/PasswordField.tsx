@@ -3,6 +3,11 @@
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { CopyButton } from "@/components/dashboard/CopyButton";
+import {
+  SHARE_LABEL,
+  SHARE_LINE,
+  SHARE_VALUE,
+} from "@/components/dashboard/ShareFields";
 import { Icon } from "@/components/icons";
 
 export function PasswordField({ password }: { password: string }) {
@@ -10,20 +15,27 @@ export function PasswordField({ password }: { password: string }) {
   const [revealed, setRevealed] = useState(false);
 
   return (
-    <div className="flex items-center gap-[9px] border border-mustard-300 bg-mustard-50/60 px-3 py-2 text-[13.5px] text-neutral-900">
-      <Icon name="lock" className="size-3.5 shrink-0 text-neutral-700" />
-      <span className="flex-1 truncate font-mono tracking-wider">
-        {revealed ? password : "•".repeat(password.length)}
+    <p className={SHARE_LINE}>
+      <span className={SHARE_LABEL}>{t("passwordLabel")}:</span>
+      <span className={SHARE_VALUE}>
+        <span className="min-w-0 truncate">
+          {revealed ? password : "•".repeat(password.length)}
+        </span>
+        <button
+          type="button"
+          onClick={() => setRevealed((shown) => !shown)}
+          aria-label={revealed ? t("hidePassword") : t("showPassword")}
+          className="text-neutral-600 transition-colors hover:text-primary-800"
+        >
+          <Icon name={revealed ? "eyeOff" : "eye"} className="size-4" />
+        </button>
+        <CopyButton
+          value={password}
+          label={t("copyPassword")}
+          tone="text-neutral-600 hover:text-primary-800"
+          copiedLabel={t("passwordCopied")}
+        />
       </span>
-      <button
-        type="button"
-        onClick={() => setRevealed((shown) => !shown)}
-        aria-label={revealed ? t("hidePassword") : t("showPassword")}
-        className="text-neutral-700 transition-colors hover:text-forest-500"
-      >
-        <Icon name={revealed ? "eyeOff" : "eye"} className="size-[15px]" />
-      </button>
-      <CopyButton value={password} label={t("copyPassword")} />
-    </div>
+    </p>
   );
 }

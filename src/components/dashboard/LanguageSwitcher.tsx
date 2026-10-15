@@ -19,7 +19,7 @@ export function LanguageSwitcher() {
     <div
       role="group"
       aria-label={t("label")}
-      className="flex border border-neutral-300/25 text-[11px] tracking-[0.06em]"
+      className="flex overflow-hidden rounded-ui border border-secondary-500 text-[11px] tracking-[0.06em]"
     >
       {routing.locales.map((code) => {
         const isCurrent = code === locale;
@@ -31,8 +31,8 @@ export function LanguageSwitcher() {
             onClick={() => router.replace(pathname, { locale: code })}
             className={
               isCurrent
-                ? "bg-neutral-50 px-2.5 py-1 font-semibold text-neutral-900"
-                : "px-2.5 py-1 text-neutral-300/70 transition-colors hover:text-neutral-50"
+                ? "bg-primary-900 px-2.5 py-1 font-semibold text-neutral-100"
+                : "px-2.5 py-1 text-neutral-950 transition-colors hover:text-primary-900"
             }
           >
             {t(code)}

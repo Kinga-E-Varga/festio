@@ -26,10 +26,13 @@ export function useRowEditor(
   const [dirty, setDirty] = useState(false);
   /* Wrapped in a function when set: a bare function would be taken as an updater. */
   const [pending, setPending] = useState<(() => void) | null>(null);
+  /* Counts the held-back clicks, so each one brings the prompt back into view. */
+  const [asked, setAsked] = useState(0);
 
   function guard(action: () => void) {
     if (editing !== null && dirty) {
       setPending(() => action);
+      setAsked((n) => n + 1);
       return;
     }
     hold(action);
@@ -67,7 +70,7 @@ export function useRowEditor(
     pendingPrompt:
       pending === null
         ? null
-        : { onDiscard: discard, onKeep: () => setPending(null) },
+        : { onDiscard: discard, onKeep: () => setPending(null), asked },
   };
 }
 

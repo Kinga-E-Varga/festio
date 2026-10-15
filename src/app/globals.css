@@ -8,7 +8,13 @@
   --breakpoint-nav: 820px;
   /* Where the RSVP moves from a bottom bar to a panel beside the card. */
   --breakpoint-invite: 1000px;
-  --breakpoint-rail: 1400px;
+  --breakpoint-rail: 1600px;
+
+  /*
+   * The one corner of Festio's own UI: every box, button, field and tab
+   * (`rounded-ui`, `rounded-t-ui`, …). Invitations keep their own corners.
+   */
+  --radius-ui: 2px;
 
   /*
    * The reply surface's width, edge included — the card's slot is whatever
@@ -18,9 +24,13 @@
    */
   --spacing-invite-panel: clamp(400px, 33.333vw, 700px);
 
-  --spacing-side: 242px;
-  --spacing-rail: 368px;
-  --spacing-topbar: 64px;
+  --spacing-side: 220px;
+  --spacing-rail: 290px;
+  --spacing-topbar: 56px;
+  /* The everyday button's height (`h-btn`): Save, Cancel, New event, the bars' actions. */
+  --spacing-btn: 36px;
+  /* The everyday single-line field's height (`h-input`): text, date, select. */
+  --spacing-input: 36px;
 
   /*
    * Drop Tailwind's stock colours so the app can only reach for the palette
@@ -32,63 +42,118 @@
   --color-current: currentColor;
   --color-inherit: inherit;
 
-  /* Neutral — surfaces, ink, and the dark chrome. */
-  --color-neutral-50: #faf7f3;
-  --color-neutral-100: #f5f0eb;
-  --color-neutral-200: #ece5dd;
-  --color-neutral-300: #dcd3c7;
-  --color-neutral-400: #cabdae;
-  --color-neutral-500: #ae9f8c;
-  --color-neutral-600: #8d7d6a;
-  --color-neutral-700: #6b5e4e;
-  --color-neutral-800: #4c4236;
-  --color-neutral-900: #2f281f;
-  --color-neutral-950: #17130e;
+  /* Primary — the brand colour: focus ring, links, dark actions. Now deep green. */
+  --color-primary-50: #f6f9f7;
+  --color-primary-100: #eef3ef;
+  --color-primary-150: #e6ede7;
+  --color-primary-200: #d8e3da;
+  --color-primary-300: #c7d5ca;
+  --color-primary-400: #acc1b2;
+  --color-primary-500: #87a392;
+  --color-primary-600: #638773;
+  --color-primary-700: #3c6854;
+  --color-primary-800: #2e5745;
+  --color-primary-900: #1a3d2e;
+  --color-primary-950: #0f2a21;
 
-  /* Steel teal — informational accents. */
-  --color-steel-50: #f3f7f9;
-  --color-steel-100: #edf6f8;
-  --color-steel-200: #daecf0;
-  --color-steel-300: #adccd4;
-  --color-steel-400: #7cadba;
-  --color-steel-500: #478797;
-  --color-steel-600: #275d6a;
+  /* Neutral — page, text and most borders. Now warm linen. */
+  --color-neutral-50: #fbfaf5;
+  --color-neutral-100: #f4f2e9;
+  --color-neutral-150: #efebe0;
+  --color-neutral-200: #e5e0d1;
+  --color-neutral-300: #dad3be;
+  --color-neutral-400: #c5bda4;
+  --color-neutral-500: #a29b85;
+  --color-neutral-600: #827d6e;
+  --color-neutral-700: #666359;
+  --color-neutral-800: #4f4d46;
+  --color-neutral-900: #3a3832;
+  --color-neutral-950: #26241f;
 
-  /* Terracotta — deadlines, countdowns, retention notice. */
-  --color-terracotta-50: #fdf2eb;
-  --color-terracotta-100: #fceee4;
-  --color-terracotta-200: #f6dbc7;
-  --color-terracotta-300: #eec09e;
-  --color-terracotta-400: #e4a372;
-  --color-terracotta-500: #c8711f;
-  --color-terracotta-600: #924c00;
+  /*
+   * Shadow — mixed from the page ground (neutral-100): same hue, much darker
+   * and more saturated, so a shadow reads as the ground in shade, not grey.
+   */
+  --color-shadow: oklch(from var(--color-neutral-100) 0.4 0.05 h);
 
-  /* Mustard — brand gold; nav section labels and the logo mark. */
-  --color-mustard-50: #f9f5ea;
-  --color-mustard-100: #f8f2e0;
-  --color-mustard-200: #f0e6c9;
-  --color-mustard-300: #dbcda1;
-  --color-mustard-400: #c6b379;
-  --color-mustard-500: #af974b;
-  --color-mustard-600: #7c682a;
+  /* The dashboard's cards, at rest and lifted on hover. */
+  --shadow-card: 0 3px 5px 0
+    color-mix(in oklab, var(--color-shadow) 15%, transparent);
+  --shadow-card-hover: 0 5px 7px 0
+    color-mix(in oklab, var(--color-shadow) 15%, transparent);
 
-  /* Forest green — primary accent: active nav, stats, positive progress. */
-  --color-forest-50: #f2f7f0;
-  --color-forest-100: #eaf1e7;
-  --color-forest-200: #d6e2d2;
-  --color-forest-300: #aabaa4;
-  --color-forest-400: #7e9277;
-  --color-forest-500: #51644a;
-  --color-forest-600: #2f402a;
+  /* Accent — what should stand out: the main button, dates that matter. Now burgundy. */
+  --color-accent-50: #fff6f7;
+  --color-accent-100: #fdedf0;
+  --color-accent-150: #fae5e9;
+  --color-accent-200: #f5d7dc;
+  --color-accent-300: #ecc5cc;
+  --color-accent-400: #deabb4;
+  --color-accent-500: #c78692;
+  --color-accent-600: #af6371;
+  --color-accent-700: #994355;
+  --color-accent-800: #84253d;
+  --color-accent-900: #63172f;
+  --color-accent-950: #430b20;
 
-  /* Rust red — warnings and unmatched-guest flags. */
-  --color-rust-50: #fcf0f0;
-  --color-rust-100: #fbeae9;
-  --color-rust-200: #f6dbda;
-  --color-rust-300: #e1aead;
-  --color-rust-400: #cd8080;
-  --color-rust-500: #b75759;
-  --color-rust-600: #7b2c30;
+  /* Secondary — quiet surfaces and borders: nav, panels, switches. Now olive. */
+  --color-secondary-50: #faf9f1;
+  --color-secondary-100: #f5f2e5;
+  --color-secondary-150: #efecdb;
+  --color-secondary-200: #e4e1c8;
+  --color-secondary-300: #d6d3b2;
+  --color-secondary-400: #bdba8d;
+  --color-secondary-500: #a29d75;
+  --color-secondary-600: #847e5a;
+  --color-secondary-700: #6a6444;
+  --color-secondary-800: #544d31;
+  --color-secondary-900: #3f381f;
+  --color-secondary-950: #2a230e;
+
+  /* Info — neutral notices like billing and tips. Now slate blue. */
+  --color-info-50: #f6f9fb;
+  --color-info-100: #edf3f6;
+  --color-info-150: #e5ecf2;
+  --color-info-200: #d7e1e9;
+  --color-info-300: #c5d3dd;
+  --color-info-400: #abbdcb;
+  --color-info-500: #889fb1;
+  --color-info-600: #668197;
+  --color-info-700: #405e78;
+  --color-info-800: #365067;
+  --color-info-900: #263a4e;
+  --color-info-950: #172535;
+
+  /* Warning — deadlines, unsaved changes, the top bar's alert dot. Now antique gold. */
+  --color-warning-50: #fef8e9;
+  --color-warning-100: #fbf1d7;
+  --color-warning-150: #f8eac7;
+  --color-warning-200: #f2deac;
+  --color-warning-300: #ebce8a;
+  --color-warning-400: #deb453;
+  --color-warning-500: #bb963d;
+  --color-warning-600: #987826;
+  --color-warning-700: #7b5f0f;
+  --color-warning-800: #604904;
+  --color-warning-900: #473502;
+  --color-warning-950: #2f2200;
+
+  /* Danger — errors, deletes, urgent items and unknown guests. Now brick. */
+  --color-danger-50: #fff7f1;
+  --color-danger-100: #feeee4;
+  --color-danger-150: #fce6d9;
+  --color-danger-200: #f7d9c7;
+  --color-danger-300: #f0c7b1;
+  --color-danger-400: #e3ad90;
+  --color-danger-500: #cf8766;
+  --color-danger-600: #b9613e;
+  --color-danger-700: #ae4e2a;
+  --color-danger-800: #7f3119;
+  --color-danger-900: #611f0e;
+  --color-danger-950: #440e04;
+
+  /* White — text on the main button and on urgent badges. */
+  --color-white: #ffffff;
 
   /*
    * A slow float up and down — the cover's circle. It moves `translate`, not
@@ -118,9 +183,18 @@
     overflow-x: hidden;
   }
 
+  /*
+   * An open drawer stops the page under it scrolling. The scrollbar's room is
+   * kept, so the page does not shift sideways as it locks.
+   */
+  html:has([data-scroll-lock]) {
+    overflow: hidden;
+    scrollbar-gutter: stable;
+  }
+
   body {
-    background-color: var(--color-mustard-50);
-    color: var(--color-neutral-900);
+    background-color: var(--color-neutral-100);
+    color: var(--color-neutral-950);
     font-family: var(--font-sans);
   }
 
@@ -136,7 +210,7 @@
 
   /* Keyboard focus stays visible everywhere in the app shell. */
   :focus-visible {
-    outline: 2px solid var(--color-forest-500);
+    outline: 2px solid var(--color-primary-700);
     outline-offset: 2px;
   }
 
@@ -150,7 +224,100 @@
   *,
   ::before,
   ::after {
-    outline-color: var(--color-forest-500);
+    outline-color: var(--color-primary-700);
+  }
+}
+
+/*
+ * The small caps label: section headings in the nav and footer, stat and
+ * tally names, panel titles, field labels. Spacing stays with each use.
+ */
+@utility label-caps {
+  @apply text-[10px] font-semibold tracking-[0.14em] text-neutral-700 uppercase;
+}
+
+/*
+ * The date picker's icon in the dropdown arrow's colour: the browser's icon
+ * is swapped for the app's calendar, cut out of a neutral fill. The icon's
+ * button is stretched over the whole field, so a click anywhere on it opens
+ * the picker; the mask keeps only the calendar visible, 12px in from the
+ * right. Chrome, Edge and Safari only; Firefox draws its own and lets no one
+ * restyle it.
+ */
+@utility date-icon {
+  position: relative;
+
+  /* Room for the icon, now that it no longer takes its own space. */
+  &[type^="date"] {
+    padding-right: 40px;
+  }
+
+  &::-webkit-calendar-picker-indicator {
+    position: absolute;
+    inset: 0;
+    width: auto;
+    height: auto;
+    margin: 0;
+    padding: 0;
+    cursor: pointer;
+    background: var(--color-neutral-700);
+    mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.5' stroke-linecap='round'%3E%3Crect x='3.25' y='4.75' width='17.5' height='15.5' rx='2'/%3E%3Cpath d='M3.25 9.5h17.5M8 2.75v4M16 2.75v4'/%3E%3C/svg%3E")
+      right 12px center / 16px 16px no-repeat;
+  }
+
+  &:disabled::-webkit-calendar-picker-indicator {
+    cursor: not-allowed;
+  }
+}
+
+/*
+ * The larger caps line: the date over the dashboard, the BACK buttons and
+ * the print page's caption under the card.
+ * Colour stays with each use.
+ */
+@utility eyebrow {
+  @apply text-[11.5px] font-semibold tracking-[0.12em] uppercase;
+}
+
+/*
+ * A page section's serif title: Active events on the dashboard, the side
+ * cards' titles (fixed at 20px there). Colour included. 22px on phones,
+ * 24px once the nav docks, 26px once the rail docks.
+ */
+@utility section-title {
+  @apply font-serif text-[22px] leading-[1.2] text-neutral-950 nav:text-[24px] rail:text-[26px];
+}
+
+/*
+ * The dashboard's side cards: the docked nav, and each notifications panel
+ * once the rail docks (in the drawer they are plain sections).
+ */
+@utility side-card {
+  @apply rounded-ui border border-neutral-400 bg-neutral-200 shadow-card;
+}
+
+/*
+ * A side card's own scrollbar, in its colours: thin, a `neutral-400` thumb (the
+ * card's border) on the card's `neutral-200`; a box on another fill sets it as
+ * `--scroll-track`. `scrollbar-color` for Chrome and Firefox; the
+ * `::-webkit-scrollbar` rules for Safari, as `.invite-scroll`.
+ */
+@utility side-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-neutral-400)
+    var(--scroll-track, var(--color-neutral-200));
+
+  &::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: var(--scroll-track, var(--color-neutral-200));
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: var(--color-neutral-400);
+    border-radius: 4px;
   }
 }
 
@@ -167,15 +334,15 @@
   /*
    * Replies bar: replies that said yes, then replies that said no, both
    * measured against expected guests. Every colour and dimension lives here,
-   * so the component hands over only the two percentages and a `data-level`,
-   * and no presentation ends up in an inline style.
+   * so the component hands over only the two percentages and no
+   * presentation ends up in an inline style.
    */
   .replies-bar {
     display: flex;
     block-size: 6px;
     overflow: hidden;
     border-radius: 9999px;
-    background-color: var(--color-mustard-200);
+    background-color: var(--color-neutral-200);
   }
 
   .replies-bar span {
@@ -185,18 +352,12 @@
 
   .replies-bar .attending {
     inline-size: var(--attending);
-    background-color: var(--color-forest-400);
+    background-color: var(--color-primary-700);
   }
 
   .replies-bar .declined {
     inline-size: var(--declined);
-    background-color: var(--color-terracotta-400);
-  }
-
-  /* At or past expected guests the bar is full, yes and no in one red. */
-  .replies-bar[data-level="over"] .attending,
-  .replies-bar[data-level="over"] .declined {
-    background-color: var(--color-rust-400);
+    background-color: var(--color-warning-400);
   }
 
   /*
@@ -209,22 +370,18 @@
     block-size: 9px;
     overflow: hidden;
     border-radius: 9999px;
-    background-color: var(--color-mustard-200);
+    background-color: var(--color-secondary-200);
   }
 
   .meter span {
     display: block;
     block-size: 100%;
     inline-size: var(--fill);
-    background-color: var(--color-forest-400);
-  }
-
-  .meter[data-level="warn"] span {
-    background-color: var(--color-terracotta-400);
+    background-color: var(--color-primary-600);
   }
 
   .meter[data-level="over"] span {
-    background-color: var(--color-rust-400);
+    background-color: var(--color-danger-500);
   }
 
   /*

@@ -1,6 +1,5 @@
 import type { CSSProperties } from "react";
 import {
-  EXPECTED_WARNING_PERCENT,
   GUEST_DATA_RETENTION_DAYS,
   REPLIES_CLOSING_SOON_DAYS,
   REPLY_CAP_MARGIN,
@@ -77,11 +76,6 @@ export function repliesPaused(event: ReplyCounts): boolean {
   return event.rsvp.replied >= replyCap(event.expectedGuests);
 }
 
-/** From 100% of expected guests, a host can report the replies as a flood. */
-export function canReportFlood(event: ReplyCounts): boolean {
-  return event.rsvp.replied > 0 && event.rsvp.replied >= event.expectedGuests;
-}
-
 export function floodReportPath(event: { id: string }): string {
   return `/dashboard/events/${event.id}/report`;
 }
@@ -96,13 +90,11 @@ export function expectedPercent(
     : 100;
 }
 
-export type ExpectedLevel = "ok" | "warn" | "over";
+export type ExpectedLevel = "ok" | "over";
 
-/** How the replies bars are coloured: normal, nearing expected, at or past it. */
+/** How the replies bars are coloured: normal, or at or past expected. */
 export function expectedLevel(percent: number): ExpectedLevel {
-  if (percent >= 100) return "over";
-  if (percent >= EXPECTED_WARNING_PERCENT) return "warn";
-  return "ok";
+  return percent >= 100 ? "over" : "ok";
 }
 
 /**
@@ -141,11 +133,22 @@ export const SHORT_DATE_PARTS: Intl.DateTimeFormatOptions = {
 };
 
 /**
- * Editing and the reply form both stop at midnight on the day before the
- * event — the project's 24h freeze, expressed as a wall-clock cut-off.
+ * The reply form's default close: midnight on the day before the event —
+ * the project's 24h rule, expressed as a wall-clock cut-off.
  */
-export function contentFreeze(date: string): Date {
+export function defaultReplyClose(date: string): Date {
   return new Date(new Date(`${date}T00:00`).getTime() - DAY_MS);
+}
+
+/**
+ * True from the start of the event day on: the date can no longer move.
+ * Everything else about the event and its invitation stays editable.
+ */
+export function dateLocked(event: {
+  date: string;
+  countdown: TimeSpan;
+}): boolean {
+  return countdownNow(event) >= new Date(`${event.date}T00:00`);
 }
 
 /** When the whole record goes, per the configurable retention window. */
@@ -162,7 +165,21 @@ export function replyClose(event: {
 }): Date {
   return event.repliesCloseAt
     ? new Date(event.repliesCloseAt)
-    : contentFreeze(event.date);
+    : defaultReplyClose(event.date);
+}
+
+/**
+ * The moment an event's countdown is counted from — "now", the way its cards
+ * say "in 2 days".
+ */
+export function countdownNow(event: {
+  date: string;
+  countdown: TimeSpan;
+}): Date {
+  const { value, unit } = event.countdown;
+  return new Date(
+    new Date(`${event.date}T00:00`).getTime() - value * SPAN_MS[unit],
+  );
 }
 
 export type ReplyWindow = "open" | "soon" | "closed";

@@ -1,6 +1,12 @@
 import type { RsvpSkin } from "./RsvpForm";
 
 /**
+ * The reply form's fields, Coming / Not coming and Send, in both the simple
+ * and the modular form: 44px for a finger, 40px with a mouse.
+ */
+export const REPLY_CONTROL_HEIGHT = "min-h-11 pointer-fine:min-h-10";
+
+/**
  * Guest-facing chrome, styled entirely from the template's palette. Festio's
  * own colours and faces must never reach an invitation, so every value here
  * is a `var()` the template supplies.
@@ -23,7 +29,7 @@ const REPLY_TYPE = "font-[family-name:var(--font-primary)] font-[350]";
  * buttons — which name the same line — stand exactly as tall. In the
  * invitation's primary face; the reply's buttons stay in Work Sans.
  */
-export const BOXED_INPUT = `${FIELD_SHAPE} ${REPLY_TYPE} leading-[24px] border-1 border-[var(--c4)] bg-[color-mix(in_oklab,var(--c4)_5%,transparent)] px-3 text-[color:var(--c3)] placeholder:text-[color:color-mix(in_oklab,var(--c4)_60%,transparent)]`;
+export const BOXED_INPUT = `${FIELD_SHAPE} ${REPLY_CONTROL_HEIGHT} ${REPLY_TYPE} leading-[24px] border-1 border-[var(--c4)] bg-[color-mix(in_oklab,var(--c4)_5%,transparent)] px-3 text-[color:var(--c3)] placeholder:text-[color:color-mix(in_oklab,var(--c4)_60%,transparent)]`;
 
 const LABEL_CORE = "text-[11px] font-semibold tracking-[0.16em] uppercase";
 
@@ -52,10 +58,10 @@ export const PRIVACY_HINT = `${HINT_CORE} text-[color:var(--c3)]`;
 const BUTTON_CORE =
   "inline-flex items-center justify-center gap-2 text-[12px] font-semibold tracking-[0.1em] uppercase transition-all duration-200 disabled:cursor-not-allowed disabled:opacity-40";
 
-const BUTTON = `${BUTTON_CORE} rounded-sm border-1 px-5 py-3`;
+const SEND_BUTTON = `${BUTTON_CORE} ${REPLY_CONTROL_HEIGHT} rounded-sm border-1 px-5 py-2`;
 
 /** The reply's Send — solid `--c2`, easing to the palette's hover colour `--c5`. */
-export const SOLID = `${BUTTON} border-[var(--c2)] bg-[var(--c2)] text-[var(--c1)] hover:bg-[var(--c5)] hover:border-[var(--c5)]`;
+export const SOLID = `${SEND_BUTTON} border-[var(--c2)] bg-[var(--c2)] text-[var(--c1)] hover:bg-[var(--c5)] hover:border-[var(--c5)]`;
 
 /*
  * The reply's Coming / Not coming: in `--c3`, square, only as wide as
@@ -64,7 +70,7 @@ export const SOLID = `${BUTTON} border-[var(--c2)] bg-[var(--c2)] text-[var(--c1
  * uppercase: 550 when picked, 450 when not. `transition-all` because the
  * hover is an opacity.
  */
-const ATTEND = `inline-flex cursor-pointer items-center justify-center border-1 border-[var(--c3)] px-5 py-[6px] font-sans text-[12px] leading-[24px] tracking-[0.1em] uppercase transition-all duration-200`;
+const ATTEND = `inline-flex ${REPLY_CONTROL_HEIGHT} cursor-pointer items-center justify-center border-1 border-[var(--c3)] px-5 py-[6px] font-sans text-[12px] leading-[24px] tracking-[0.1em] uppercase transition-all duration-200`;
 export const ATTEND_SOLID = `${ATTEND} font-[550] bg-[var(--c3)] text-[color:var(--c1)]`;
 export const ATTEND_OUTLINE = `${ATTEND} font-[450] text-[color:var(--c3)] hover:text-[color:var(--c1)] hover:bg-[var(--c3)] hover:opacity-60`;
 

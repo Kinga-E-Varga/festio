@@ -29,13 +29,12 @@ function PasswordBox({ form }: { form: EventForm }) {
   return (
     <div className="px-3.5 pb-3.5">
       {/* One field with its two actions sitting inside it, as the link box has. */}
-      <div className="flex h-10 items-center gap-1.5 border border-mustard-400 bg-neutral-50 pr-[9px] transition-colors hover:border-mustard-500 has-[:focus]:border-mustard-400">
+      <div className="flex h-input items-center gap-1.5 rounded-ui border border-neutral-400 bg-neutral-50 pr-[9px] transition-colors hover:border-neutral-600 has-[:focus]:border-neutral-500">
         <input
           type={revealed ? "text" : "password"}
           maxLength={24}
           placeholder={t("password")}
           aria-label={t("passwordAria")}
-          disabled={form.locked}
           value={form.values.password}
           onChange={(control) => form.set.password(control.target.value)}
           className={INSET_INPUT}
@@ -46,7 +45,7 @@ function PasswordBox({ form }: { form: EventForm }) {
           aria-label={revealed ? t("hidePassword") : t("showPassword")}
           className={MINI}
         >
-          <Icon name={revealed ? "eyeOff" : "eye"} className="size-[15px]" />
+          <Icon name={revealed ? "eyeOff" : "eye"} className="size-4" />
         </button>
         <CopyButton value={form.values.password} label={t("copyPassword")} />
       </div>
@@ -66,7 +65,7 @@ export function LinkSection({ event, form }: SectionProps) {
   /* The visibility options are shared with the event cards, so is their copy. */
   const tEvent = useTranslations("Event");
   const t = useTranslations("EventEditor");
-  const { values, set, derived, locked } = form;
+  const { values, set, derived } = form;
 
   return (
     <EditorSection title={t("link")}>
@@ -78,15 +77,14 @@ export function LinkSection({ event, form }: SectionProps) {
           error={derived.slugError}
           hint={t("addressHint")}
         >
-          <div className="flex h-10 items-stretch border border-mustard-300 bg-neutral-50 transition-colors hover:border-mustard-500 has-[:focus]:border-mustard-400">
-            <span className="grid place-items-center bg-mustard-200 px-3 text-[13.5px] whitespace-nowrap text-neutral-800">
+          <div className="flex h-input items-stretch rounded-ui border border-neutral-400 bg-neutral-50 transition-colors hover:border-neutral-600 has-[:focus]:border-neutral-500">
+            <span className="grid place-items-center bg-neutral-200 px-3 text-[13.5px] whitespace-nowrap text-neutral-800">
               festio.eu/
             </span>
             <input
               id="event-slug"
               type="text"
               maxLength={32}
-              disabled={locked}
               value={values.slug}
               onChange={(control) => set.slug(control.target.value)}
               className={INSET_INPUT}
@@ -100,7 +98,7 @@ export function LinkSection({ event, form }: SectionProps) {
                   key={option}
                   type="button"
                   onClick={() => set.slug(option)}
-                  className="rounded-sm border border-forest-500 bg-mustard-50 px-2 py-0.5 font-medium text-forest-500 transition-colors hover:bg-forest-200"
+                  className="rounded-ui border border-primary-700 bg-secondary-100 px-2 py-0.5 font-medium text-primary-700 transition-colors hover:bg-primary-200"
                 >
                   {option}
                 </button>
@@ -110,8 +108,8 @@ export function LinkSection({ event, form }: SectionProps) {
         </Field>
 
         <Field label={t("guestLink")}>
-          <span className="flex h-10 items-center gap-[9px] border border-mustard-300 bg-neutral-50 px-3 text-[13.5px] text-neutral-900">
-            <Icon name="link" className="size-3.5 shrink-0 text-forest-500" />
+          <span className="flex h-input items-center gap-[9px] rounded-ui border border-neutral-400 bg-neutral-50 px-3 text-[13.5px] text-neutral-950">
+            <Icon name="link" className="size-4 shrink-0 text-neutral-700" />
             <span className="flex-1 truncate">{derived.link}</span>
             <CopyButton
               value={`https://${derived.link}`}
@@ -141,10 +139,10 @@ export function LinkSection({ event, form }: SectionProps) {
           return (
             <div
               key={id}
-              className={`flex min-w-0 flex-col border transition-colors has-[[name=visibility]:focus-visible]:outline-2 has-[[name=visibility]:focus-visible]:outline-offset-2 ${
+              className={`flex min-w-0 flex-col rounded-ui border transition-colors has-[[name=visibility]:focus-visible]:outline-2 has-[[name=visibility]:focus-visible]:outline-offset-2 ${
                 selected
-                  ? "border-mustard-500 bg-mustard-200 outline-mustard-500"
-                  : "border-mustard-300 bg-neutral-50 outline-mustard-300 hover:bg-mustard-100"
+                  ? "border-neutral-500 bg-neutral-200 outline-neutral-500"
+                  : "border-neutral-400 bg-neutral-50 outline-neutral-400 hover:bg-neutral-150"
               }`}
             >
               <label className="flex cursor-pointer flex-col gap-1.5 p-3.5">
@@ -152,11 +150,11 @@ export function LinkSection({ event, form }: SectionProps) {
                   <span
                     aria-hidden="true"
                     className={`grid size-[14px] shrink-0 place-items-center rounded-full border ${
-                      selected ? "border-mustard-500" : "border-neutral-500"
+                      selected ? "border-neutral-700" : "border-neutral-500"
                     }`}
                   >
                     {selected ? (
-                      <span className="size-1.5 rounded-full bg-mustard-500" />
+                      <span className="size-1.5 rounded-full bg-neutral-700" />
                     ) : null}
                   </span>
                   {tEvent(option.labelKey)}
@@ -166,7 +164,6 @@ export function LinkSection({ event, form }: SectionProps) {
                   name="visibility"
                   value={id}
                   checked={selected}
-                  disabled={locked}
                   onChange={() => set.visibility(id)}
                   className="sr-only"
                 />

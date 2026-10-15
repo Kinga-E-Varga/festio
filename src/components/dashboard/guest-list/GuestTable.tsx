@@ -8,6 +8,7 @@ import {
   fold,
   SMALL_BTN,
 } from "@/components/dashboard/guest-list/styles";
+import { Dialog } from "@/components/dashboard/guest-list/Dialog";
 import { NameEditor } from "@/components/dashboard/guest-list/NameEditor";
 import { ReplyEditor } from "@/components/dashboard/guest-list/ReplyEditor";
 import { RowView } from "@/components/dashboard/guest-list/RowView";
@@ -18,6 +19,7 @@ import {
   type RowEditorState,
 } from "@/components/dashboard/guest-list/useRowEditor";
 import { Icon } from "@/components/icons";
+import { STRONG_TEXT, TEXT_LINK } from "@/components/dashboard/styles";
 import { attentionItems, CATEGORIES, groupCategory } from "@/lib/guests";
 import type {
   AttentionItem,
@@ -28,50 +30,50 @@ import type {
 
 const CATEGORY = {
   /*
-   * `band` fills the title's band (200) and inks its text (600, the darkest);
-   * `hover` is one shade darker while its button is hovered; `ink`, with
-   * `fill`, draws the status dots; `line`, `dashed` and `split` draw the
-   * groups' threads and their marks.
+   * `band` fills the title's band (200) and inks its text; `hover` makes
+   * both one shade darker while its button is hovered; `ink`, with `fill`,
+   * draws the status dots; `line`, `dashed` and `split` draw the groups'
+   * threads and their marks.
    */
   attention: {
     title: "categoryAttention",
-    band: "bg-rust-200 text-rust-600",
-    ink: "border-rust-400",
-    fill: "bg-rust-400",
-    hover: "has-[>button:hover]:bg-rust-300",
-    line: "bg-rust-300",
-    dashed: "border-rust-300",
-    split: "border-rust-400",
+    band: "bg-danger-200 text-danger-800",
+    ink: "border-danger-600",
+    fill: "bg-danger-600",
+    hover: "hover:bg-danger-400 hover:text-danger-900",
+    line: "bg-danger-500",
+    dashed: "border-danger-500",
+    split: "border-danger-600",
   },
   going: {
     title: "categoryGoing",
-    band: "bg-forest-200 text-forest-600",
-    ink: "border-forest-400",
-    fill: "bg-forest-400",
-    hover: "has-[>button:hover]:bg-forest-300",
-    line: "bg-forest-300",
-    dashed: "border-forest-300",
-    split: "border-forest-400",
+    band: "bg-primary-200 text-primary-900",
+    ink: "border-primary-700",
+    fill: "bg-primary-700",
+    hover: "hover:bg-primary-400 hover:text-primary-950",
+    line: "bg-primary-500",
+    dashed: "border-primary-500",
+    split: "border-primary-700",
   },
   notGoing: {
     title: "categoryNotGoing",
-    band: "bg-terracotta-200 text-terracotta-600",
-    ink: "border-terracotta-400",
-    fill: "bg-terracotta-400",
-    hover: "has-[>button:hover]:bg-terracotta-300",
-    line: "bg-terracotta-300",
-    dashed: "border-terracotta-300",
-    split: "border-terracotta-400",
+    band: "bg-warning-200 text-warning-700",
+    ink: "border-warning-500",
+    fill: "bg-warning-500",
+    hover: "hover:bg-warning-300 hover:text-warning-800",
+    line: "bg-warning-400",
+    dashed: "border-warning-400",
+    split: "border-warning-500",
   },
   waiting: {
     title: "categoryWaiting",
-    band: "bg-mustard-200 text-mustard-600",
-    ink: "border-mustard-500",
-    fill: "bg-mustard-500",
-    hover: "has-[>button:hover]:bg-mustard-300",
-    line: "bg-mustard-300",
-    dashed: "border-mustard-300",
-    split: "border-mustard-400",
+    band: "bg-neutral-200 text-neutral-700",
+    ink: "border-neutral-500",
+    fill: "bg-neutral-500",
+    hover: "hover:bg-neutral-300 hover:text-neutral-800",
+    line: "bg-neutral-300",
+    dashed: "border-neutral-300",
+    split: "border-neutral-400",
   },
 } as const satisfies Record<
   GuestCategory,
@@ -103,66 +105,73 @@ export function GuestTable({
   const t = useTranslations("GuestList");
   const adding = editor.editing === NEW_ROW;
 
-  if (list.rows.length === 0 && !adding) {
+  /* In a dialog over the page: a new reply has no place in the list yet. */
+  const newReply = adding ? (
+    <Dialog title={t("addReply")} onDismiss={() => editor.guard(editor.close)}>
+      <ReplyEditor
+        reply={null}
+        questions={list.guests.questions}
+        party={[]}
+        onSave={(values) => {
+          actions.saveReply(null, values);
+          editor.close();
+        }}
+        onCancel={editor.close}
+        onDirty={editor.reportDirty}
+        pending={editor.pendingPrompt}
+      />
+    </Dialog>
+  ) : null;
+
+  if (list.rows.length === 0) {
     return (
-      <div className="border border-dashed border-mustard-400 px-6 py-10 text-center">
-        <p className="font-serif text-[17px] text-neutral-900">
-          {t("emptyTitle")}
-        </p>
-        {list.useList ? null : (
-          <button
-            type="button"
-            onClick={onStartList}
-            className="mx-auto mt-3 block cursor-pointer text-[12.5px] font-semibold text-forest-500 underline underline-offset-[3px] transition-colors hover:text-forest-600"
-          >
-            {t("emptyList")}
-          </button>
-        )}
-      </div>
+      <>
+        {newReply}
+        <div className="rounded-ui border border-dashed border-neutral-400 px-6 py-10 text-center">
+          <p className="font-serif text-[17px] text-neutral-950">
+            {t("emptyTitle")}
+          </p>
+          {list.useList ? null : (
+            <button
+              type="button"
+              onClick={onStartList}
+              className={`mx-auto mt-3 block cursor-pointer text-[12.5px] ${TEXT_LINK}`}
+            >
+              {t("emptyList")}
+            </button>
+          )}
+        </div>
+      </>
     );
   }
 
   /* The table's sides and bottom, padded so nothing inside touches them. */
   return (
-    <div className="border border-mustard-300 bg-neutral-50 px-4 py-4 @min-[720px]:px-5">
-      {adding ? (
-        <div className="border-b border-mustard-300 py-2">
-          <ReplyEditor
-            reply={null}
-            questions={list.guests.questions}
-            party={[]}
-            onSave={(values) => {
-              actions.saveReply(null, values);
-              editor.close();
-            }}
-            onCancel={editor.close}
-            onDirty={editor.reportDirty}
-            pending={editor.pendingPrompt}
-          />
-        </div>
-      ) : null}
-
-      {list.groups.length === 0 ? (
-        <p className="py-8 text-center text-[12.5px] text-neutral-700">
-          {t("noResults")}
-        </p>
-      ) : (
-        <div className="flex flex-col gap-4">
-          {CATEGORIES.map((category) => (
-            <Category
-              key={category}
-              category={category}
-              groups={list.groups.filter(
-                (group) => groupCategory(group) === category,
-              )}
-              list={list}
-              actions={actions}
-              editor={editor}
-            />
-          ))}
-        </div>
-      )}
-    </div>
+    <>
+      {newReply}
+      <div className="rounded-ui border border-neutral-400 bg-neutral-50 px-4 py-4 @min-[720px]:px-5">
+        {list.groups.length === 0 ? (
+          <p className="py-8 text-center text-[12.5px] text-neutral-700">
+            {t("noResults")}
+          </p>
+        ) : (
+          <div className="flex flex-col gap-4">
+            {CATEGORIES.map((category) => (
+              <Category
+                key={category}
+                category={category}
+                groups={list.groups.filter(
+                  (group) => groupCategory(group) === category,
+                )}
+                list={list}
+                actions={actions}
+                editor={editor}
+              />
+            ))}
+          </div>
+        )}
+      </div>
+    </>
   );
 }
 
@@ -177,7 +186,8 @@ interface CategoryProps {
 /** A named block of the table. Hidden when it has nothing to show. */
 function Category({ category, groups, list, actions, editor }: CategoryProps) {
   const t = useTranslations("GuestList");
-  const [open, setOpen] = useState(true);
+  /* Folded on arrival, so the page opens on the counts; what needs sorting out stays open. */
+  const [open, setOpen] = useState(category === "attention");
   const body = useId();
   if (groups.length === 0) return null;
   const people = groups.reduce((total, group) => total + group.rows.length, 0);
@@ -185,35 +195,29 @@ function Category({ category, groups, list, actions, editor }: CategoryProps) {
 
   return (
     <section>
-      <div
-        className={`relative flex flex-wrap items-baseline gap-x-3 gap-y-1 py-2.5 pr-14 pl-4 transition-colors ${band} ${hover}`}
-      >
-        <h2 className="flex items-baseline gap-1.5 text-[14px] font-semibold">
-          {t(title)}
-          <span className="tabular-nums">{people}</span>
-        </h2>
-        {/*
-         * Stretched over the whole band, so a click anywhere on it folds the
-         * category away and back; the title names it for screen readers.
-         */}
+      {/* The whole band is the button, so a click anywhere folds the category. */}
+      <h2 className="text-[14px] font-medium">
         <button
           type="button"
           aria-expanded={open}
           aria-controls={body}
-          aria-label={t(title)}
           onClick={() => setOpen(!open)}
-          className="absolute inset-0 flex cursor-pointer items-center justify-end pr-4"
+          className={`flex w-full cursor-pointer items-center gap-3 px-4 py-2.5 text-left transition-colors ${band} ${hover}`}
         >
+          <span className="flex items-baseline gap-1.5">
+            {t(title)}
+            <span className="tabular-nums">{people}</span>
+          </span>
           <Icon
             name="chevron"
-            className={`size-5 transition-transform ${open ? "rotate-180" : ""}`}
+            className={`ml-auto size-5 shrink-0 transition-transform ${open ? "rotate-180" : ""}`}
             strokeWidth={2}
           />
         </button>
-      </div>
+      </h2>
       {/* Grows from and shrinks to nothing; `inert` keeps a folded category out of reach. */}
       <div id={body} inert={!open} className={fold(open)}>
-        <div className="min-h-0 divide-y divide-mustard-300 overflow-hidden">
+        <div className="min-h-0 divide-y divide-neutral-400 overflow-hidden">
           {category === "attention"
             ? attentionItems(groups).map((item) => (
                 <AttentionCard
@@ -261,26 +265,31 @@ function AttentionCard({ item, list, actions, editor }: AttentionCardProps) {
   }
 
   return (
-    <div className="px-4 pt-1.5 pb-5 @min-[720px]:px-5">
-      {/*
-       * Reads like a person row, and sits like one: the same top gap and row
-       * height, so the name and its dot line up with the other groups'.
-       */}
-      <div className="relative flex flex-wrap items-center gap-2 py-1 pl-6 @min-[720px]:min-h-11 @min-[720px]:pl-8">
-        <span
-          aria-hidden
-          className={`absolute top-1/2 -left-0.5 size-3 -translate-y-1/2 rounded-full border-2 ${CATEGORY.attention.ink} ${CATEGORY.attention.fill}`}
-        />
-        <span className="min-w-0 truncate text-[14px] font-medium text-neutral-900">
-          {item.name}
-        </span>
-        <span className={ATTENTION_TAG}>{t("duplicateTag")}</span>
-      </div>
-      {/* Under the name, like an unknown row's fix line. */}
-      <p className="pb-2 pl-6 text-[12.5px] text-neutral-700 @min-[720px]:pl-8">
+    <div className={GROUP}>
+      {/* Laid out like a person row, so the name and its dot line up with theirs. */}
+      <Strand
+        joined={false}
+        first
+        last
+        category="attention"
+        at="person"
+        mark={
+          <span
+            className={`${DOT} ${CATEGORY.attention.ink} ${CATEGORY.attention.fill}`}
+          />
+        }
+      >
+        <div className="flex min-h-10 flex-wrap items-center gap-2 py-1">
+          <span className="min-w-0 truncate text-[14px] font-medium text-neutral-950">
+            {item.name}
+          </span>
+          <span className={ATTENTION_TAG}>{t("duplicateTag")}</span>
+        </div>
+      </Strand>
+      <p className="pb-2 text-[12.5px] text-neutral-700">
         {t("sameName", { count: item.entries.length })}
       </p>
-      <div className="grid gap-3 @min-[720px]:grid-cols-2">
+      <div className="grid gap-3 pb-3.5 @min-[720px]:grid-cols-2">
         {item.entries.map((row) => (
           <SameNameReply
             key={row.id}
@@ -320,7 +329,7 @@ function SameNameReply({ row, list, actions, editor }: SameNameReplyProps) {
   }).format(new Date(row.reply.repliedAt));
 
   return (
-    <div className="@container border border-mustard-300 bg-neutral-50 px-3 py-2">
+    <div className="@container rounded-ui border border-neutral-400 bg-neutral-50 px-3 py-2">
       <p className="text-[11.5px] text-neutral-700">
         {t("repliedOn", { date })}
       </p>
@@ -349,11 +358,14 @@ function RepliedWith({ names }: { names: string[] }) {
   const locale = useLocale();
   return t.rich("repliedWith", {
     names: new Intl.ListFormat(locale).format(names),
-    b: (chunks) => <b className="font-semibold text-neutral-900">{chunks}</b>,
+    b: (chunks) => <b className={STRONG_TEXT}>{chunks}</b>,
   });
 }
 
 const DOT = "size-3 -translate-y-1/2 rounded-full border-2";
+
+/** A group's padding: the room on the left holds its thread and dots. */
+const GROUP = "py-1.5 pr-3 pl-10 @min-[720px]:pr-5 @min-[720px]:pl-13";
 
 /** Filled once there's something to show for it — a reply, or an invite sent; dashed while the invite isn't. */
 function statusDot(row: GuestRow, category: GuestCategory): string {
@@ -381,7 +393,7 @@ function GroupView({ group, list, actions, editor }: GroupViewProps) {
   });
 
   return (
-    <div className="py-1.5 pr-3 pl-10 @min-[720px]:pr-5 @min-[720px]:pl-13">
+    <div className={GROUP}>
       {group.rows.map((row, at) => (
         <Strand
           key={row.id}
@@ -423,19 +435,17 @@ function GroupView({ group, list, actions, editor }: GroupViewProps) {
  */
 const STRAND = {
   /*
-   * The name line's middle: 20px down while the badge sits under it (the
-   * line is as tall as its buttons), 22px once they share a row.
+   * The name line's middle, 20px down: while the badge sits under it the
+   * line is as tall as its buttons, and once they share a row the row is
+   * 40px tall.
    */
-  person: {
-    mark: "top-[20px] @min-[720px]:top-[22px]",
-    above: "h-[20px] @min-[720px]:h-[22px]",
-    below: "top-[20px] @min-[720px]:top-[22px]",
-  },
+  person: { mark: "top-[20px]", above: "h-[20px]", below: "top-[20px]" },
   with: { mark: "top-1/2", above: "h-1/2", below: "top-1/2" },
 } as const;
 
-/** The thread's line, centred 20px (wide: 24px) in from the group's edge. */
-const LINE = "absolute -left-[20.5px] w-px @min-[720px]:-left-[28.5px]";
+/** The thread's x, 20px (wide: 28px) left of the rows; the line and every mark centre on it. */
+const THREAD_X = "-left-5 -translate-x-1/2 @min-[720px]:-left-7";
+const LINE = `absolute w-px ${THREAD_X}`;
 
 interface StrandProps {
   category: GuestCategory;
@@ -469,10 +479,7 @@ function Strand({
       {joined && !last ? (
         <span aria-hidden className={`${LINE} bottom-0 ${y.below} ${line}`} />
       ) : null}
-      <span
-        aria-hidden
-        className={`absolute -left-[26px] flex @min-[720px]:-left-[34px] ${y.mark}`}
-      >
+      <span aria-hidden className={`absolute flex ${THREAD_X} ${y.mark}`}>
         {mark}
       </span>
       {children}

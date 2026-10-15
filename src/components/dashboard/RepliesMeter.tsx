@@ -20,13 +20,13 @@ export function RepliesMeter({ replied, expected }: RepliesMeterProps) {
   return (
     <div className="min-w-0">
       {/* Rich text: the count is emphasised where the sentence puts it. */}
-      <p className="mb-[5px] text-[12.5px] leading-[1.45] text-neutral-700">
+      <p className="mb-2 text-[12.5px] leading-none text-neutral-700">
         {t.rich("meter", {
           replied,
           expected,
           percent,
           big: (chunks) => (
-            <span className="align-[-1px] font-serif text-[22px] text-neutral-900 tabular-nums">
+            <span className="align-[-1px] font-serif text-[22px] text-neutral-950 tabular-nums">
               {chunks}
             </span>
           ),

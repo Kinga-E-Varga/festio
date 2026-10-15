@@ -2,6 +2,10 @@ import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import type { ReactNode } from "react";
 import { EditorSection } from "@/components/dashboard/event-editor/EditorSection";
+import {
+  BANNER_TITLE,
+  BANNER_TONE,
+} from "@/components/dashboard/event-editor/styles";
 import { GUEST_DATA_RETENTION_DAYS } from "@/lib/config";
 import type { DashboardEvent } from "@/types/dashboard";
 
@@ -15,7 +19,7 @@ interface RetentionSectionProps {
 function Row({ title, children }: { title: string; children: ReactNode }) {
   return (
     <div className="px-[18px] py-[15px]">
-      <h4 className="mb-1 text-sm font-semibold">{title}</h4>
+      <h4 className={BANNER_TITLE}>{title}</h4>
       <p className="text-[12.5px] leading-[1.5]">{children}</p>
     </div>
   );
@@ -31,8 +35,8 @@ export function RetentionSection({
 
   return (
     <EditorSection title={t("retention")}>
-      {/* Four labelled rows, with the deletion date lifted out as the thing to remember. */}
-      <div className="border border-terracotta-400 bg-terracotta-200 text-terracotta-600">
+      {/* Four labelled rows, with the deletion date lifted out as the thing to remember, in the info banners' colours. */}
+      <div className={`rounded-ui border ${BANNER_TONE.info}`}>
         <Row
           title={t(gone ? "deletedOnPast" : "deletedOn", {
             date: deletionLabel,
@@ -53,7 +57,7 @@ export function RetentionSection({
             link: (chunks) => (
               <Link
                 href="/legal/terms"
-                className="underline underline-offset-[3px] hover:text-neutral-900"
+                className="underline underline-offset-[3px] hover:text-neutral-950"
               >
                 {chunks}
               </Link>
