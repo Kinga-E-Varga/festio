@@ -76,6 +76,10 @@
     "dressCode": "Dress code",
     "gifts": "Gifts"
   },
+  "Envelope": {
+    "tag": "Open\nme",
+    "open": "Open the invitation"
+  },
   "Nav": {
     "aria": "Dashboard sections",
     "quit": "Quit dashboard",
@@ -357,7 +361,6 @@
     "tabContent": "Content",
     "tabReplies": "Replies",
     "tabDesign": "Design",
-    "designSoon": "Design options are coming soon.",
     "dateHint": "Set with your event details — edit it there to change the date itself.",
     "rsvpMessageHint": "Shown above the reply button, beside the invitation — on larger screens only. On phones, guests see just the button.",
     "testReply": "Nothing saved — this is a test",
@@ -382,7 +385,8 @@
       "round": "Round"
     },
     "sections": "Sections",
-    "reveal": "Go to {section}"
+    "reveal": "Go to {section}",
+    "envelope": "Use envelope"
   },
   "ContentTab": {
     "sections": "Sections",

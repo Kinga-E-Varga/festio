@@ -18,9 +18,10 @@ import {
   type PanelTabId,
 } from "./PanelTabs";
 import { HINT, LABEL, INPUT } from "@/components/dashboard/event-editor/styles";
+import { PanelSwitch } from "./PanelSwitch";
 import { PanelViewButton, SidePanel } from "./SidePanel";
 
-/** Content and Replies each show the fields of one scope; Design has nothing to edit yet. */
+/** Content and Replies each show the fields of one scope; Design has the envelope switch. */
 const SCOPE: Record<PanelTabId, FieldScope | null> = {
   content: "card",
   replies: "rsvp",
@@ -36,6 +37,9 @@ interface EditPanelProps {
   open: boolean;
   onChange: (id: string, value: string) => void;
   onClose: () => void;
+  /** The Design tab's switch: guests open an envelope first. */
+  envelope: boolean;
+  onEnvelope: (on: boolean) => void;
 }
 
 /**
@@ -58,8 +62,10 @@ export function EditPanel({
   open,
   onChange,
   onClose,
+  envelope,
+  onEnvelope,
 }: EditPanelProps) {
-  const t = useTranslations("HostEditor");
+  const tDesign = useTranslations("DesignTab");
   const [tab, setTab] = useState<PanelTabId>("content");
   const scope = SCOPE[tab];
   const fields = scope
@@ -97,7 +103,13 @@ export function EditPanel({
             />
           ))
         ) : (
-          <p className={`${HINT} mb-6`}>{t("designSoon")}</p>
+          <PanelSwitch
+            id="envelope-switch"
+            label={tDesign("envelope")}
+            checked={envelope}
+            onChange={onEnvelope}
+            className="mb-6"
+          />
         )}
 
         <PanelViewButton onClose={onClose} />

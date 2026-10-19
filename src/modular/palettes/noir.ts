@@ -22,4 +22,12 @@ export const palette: ModularPalette = {
     "tertiary-ink": "#ece5d6",
     error: "#f08a7e",
   },
+  envelope: {
+    paper: "#c8a86b",
+    liner: "#14161a",
+    string: "#35475b",
+    seal: "liner",
+    tag: "#f0ebe1",
+    shadow: "#5b564c",
+  },
 };

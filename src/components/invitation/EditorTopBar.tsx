@@ -7,6 +7,7 @@ import {
   BAR_SOLID,
   stateDot,
 } from "@/components/dashboard/event-editor/styles";
+import { TOP_BAR } from "@/components/dashboard/styles";
 import { Toast, type ToastTone } from "@/components/dashboard/Toast";
 import { ButtonIcon } from "@/components/icons";
 
@@ -54,7 +55,7 @@ export function EditorTopBar({
   const disabled = action.kind === "save" && !action.dirty;
 
   return (
-    <header className="flex h-topbar shrink-0 items-center gap-3.5 border-b border-secondary-400 bg-primary-900 px-4 font-sans text-secondary-100 sm:px-6">
+    <header className={TOP_BAR}>
       <div className="flex shrink-0">
         <BackButton tone="dark" />
       </div>

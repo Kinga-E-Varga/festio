@@ -76,8 +76,23 @@ export const palette: ModularPalette = {
   name: "<Name>",
   mood: "<subtle|balanced|vivid>",
   colors: {/* all 15 roles */},
+  envelope: {
+    paper: "<hex>",
+    liner: "<hex>",
+    string: "<hex>",
+    seal: "liner",
+    tag: "<hex>",
+    shadow: "<hex or liner>",
+  },
 };
 ```
+
+- **Envelope:** the envelope guests open first, on the `canvas` ground. Propose its six
+  colours with the palette: `paper` (the envelope, a mid colour from the palette), `liner`
+  (inside lining, also the tag's text: darker, contrasting with paper), `string`, `seal`
+  (often `"liner"`), `tag` (a pale card), `shadow` (cast shadow, multiplied on canvas: a
+  dark, muted colour or `"liner"`). A role is a 6-digit hex or another envelope role's
+  name. Ask the user to check it on `/templates/<a modular template>` with that palette.
 
 - **Name:** a fun, evocative name that fits the feel — a place, thing, moment or
   era, like Sunbaked, Linen, Coastal, Noir, Orchard, Peony, Thistle, Y2K, Flint.

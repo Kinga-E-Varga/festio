@@ -50,6 +50,8 @@ export function HostInvitationEditor({
   const [saved, setSaved] = useState(initial);
   const [justSaved, setJustSaved] = useState(false);
   const [editing, setEditing] = useState(true);
+  const [envelope, setEnvelope] = useState(true);
+  const [savedEnvelope, setSavedEnvelope] = useState(true);
   const toast = useToast();
 
   function change(id: string, value: string) {
@@ -57,13 +59,21 @@ export function HostInvitationEditor({
     setJustSaved(false);
   }
 
+  function switchEnvelope(on: boolean) {
+    setEnvelope(on);
+    setJustSaved(false);
+  }
+
   function save() {
     setSaved(values);
+    setSavedEnvelope(envelope);
     setJustSaved(true);
     toast.show(t("saved"));
   }
 
-  const dirty = Object.keys(values).some((id) => values[id] !== saved[id]);
+  const dirty =
+    envelope !== savedEnvelope ||
+    Object.keys(values).some((id) => values[id] !== saved[id]);
 
   /*
    * The edit panel is drawn inside the invitation, so under its language.
@@ -83,6 +93,7 @@ export function HostInvitationEditor({
       values={values}
       fill
       replyInert={editing}
+      envelope={envelope}
       /*
        * The host can try the form out, every check included, but the editor
        * never saves a reply — only the guest page will.
@@ -95,6 +106,8 @@ export function HostInvitationEditor({
           language={language}
           open={editing}
           onChange={change}
+          envelope={envelope}
+          onEnvelope={switchEnvelope}
           onClose={() => setEditing(false)}
         />,
       )}

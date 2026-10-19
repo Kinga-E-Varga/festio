@@ -1,6 +1,7 @@
-# Current Feature: Dashboard polish
+# Current Feature: Envelope animation
 
-Festio's own UI tightened and restyled, sized for laptops; the invitations checked for laptops too.
+The guest's first sight of an invitation: a closed envelope in the invitation's colours that
+opens on click to show the page. Moves the envelope prototype into the app.
 
 ## Status
 
@@ -8,20 +9,46 @@ Completed
 
 ## Goals
 
-- Palette tokens named by role (primary, secondary, accent, …) and one corner token, `rounded-ui`
-- Smaller sizes for laptops: nav, rail, top bar, 36px buttons and fields, headings
-- Events list cards and rows reworked; shared dashboard styles; nav, top bar, footer and rail touch-ups
-- Only the event date locks, from the event day (was: all content 24h before)
-- Invitations on laptops: the cover fits the first screen, 80px section spacing at most, reply form 40px with a mouse / 44px on touch (simple and modular), 36px section edit buttons
+- Envelope on simple and modular invitations, every package, on every visit of the guest page
+- No envelope on cancelled events or the print page and its preview; on Protected
+  invitations it shows only after the password (the password input is not part of this feature)
+- Editors' previews show the envelope like the guest page; the host opens it to see the
+  invitation; no Replay button
+- **Use envelope** switch in the Design tab, on by default — modular: before the section
+  options; simple: first thing in the (now empty) Design tab. Off then on brings the closed
+  envelope back
+- Six envelope colour roles — paper, liner (also the tag's stitching and text), string, seal,
+  tag, shadow (cast shadows, used as they are) — each a hex value or another envelope role's name
+- Every modular palette gets envelope colours (Orchard from the prototype's Olive Garden
+  mapping, the rest picked to suit, for the user to review); simple templates carry theirs in
+  their own file (Wolf Dance from the prototype)
+- The `palette` skill asks for envelope colours on every new palette
+- Shading fixed at Hue + Vivid: shadows 10° colder, highlights 15° warmer, then the Vivid
+  boost; constants, no options or sliders
+- Closed envelope on the invitation's ground (canvas and pattern); hover (mouse only) lifts
+  and grows it and drops the tag; click opens the flap, then the envelope fades into the page;
+  reduced motion: a quick fade
+- Tag text in the invitation's language — EN "Open / me", RO "Deschide-mă" (split
+  "Deschide- / mă" if two lines), HU "Nyiss / ki" — in the invitation's body font (font pair
+  primary / template primary), ink in the liner colour
+- `envelope.py` gets a build target writing the drawing's layers and constants into the app as
+  a generated file; the `envelope` skill maintains the app instead of the prototype page
 
 ## Notes
 
-- Built on two local checkpoint commits; fold them into one commit at the end
+- Spec: `context/features/envelope-animation.md`
+- Plan: `context/plans/envelope-animation.md`
+- The drawing stays editable in Inkscape: `.claude/skills/envelope/drawing/envelope-edit.svg`.
+- The switch is saved with the event; until Firestore is wired, it lives in the editor's
+  state (`ModularState` for modular).
+- Out of scope: card / page strip coming out of the envelope, Replay button, the Protected
+  password input, seal / string motion.
 
 ## History
 
 <!-- Keep this updated latest to earliest -->
 
+- Dashboard polish — Festio's own UI restyled and sized for laptops: palette tokens named by role, one corner token (`rounded-ui`), smaller nav, rail, top bar, 36px buttons and fields, smaller headings; events list cards and rows reworked with shared dashboard styles; only the event date locks, from the event day; invitations on laptops: the modular cover fits the first screen, section spacing at most 80px, the reply form 40px with a mouse and 44px on touch (simple and modular), 36px section edit buttons
 - Modular invitations 5 — Content tab — the editor's Text tab renamed Content in every editor; the modular Content tab lists the sections that are on as numbered cards, one open at a time, scrolling the preview to it; Design and Content buttons on a hovered preview section; each variant lists the fields it shows; inputs for text, long text, time, toggle, image (photo upload coming soon), icon (grid picker), lists and groups with Add / Remove; Date shows only the date, read from the event details, with the Calendar card, Accent & big date and Tear-off variants; Helpful notes edits the Dress code / Gifts fields; times in the invitation language's style; required fields checked on blur and on Save, which jumps to the first empty one; one working state, Save and leave-page warning for Content and Design
 - Modular invitations 4 — Section variants & palettes — a second variant for most sections (header, cover, title, date & time, countdown, location, schedule, travel, stays, menu, Helpful notes, FAQ, reply, footer), numbered by id, with shared pieces (`HeaderBar`, `TitleNames`, `CoverPhoto`, `WashedPhoto`, `IconHeading`, `Mark`) and `top-bar` renamed `header`; every sample in `defaults.ts`, templates keeping only their changes; the Coastal Fun template; box corners (Sharp / Slight / Soft / Round); section styles rolling out as bands in the Design tab; new palettes (Coastal, Linen, Noir, Peony, Thistle, Y2K, Flint, Sunset), Dark Olive renamed Orchard, a `mood` (subtle / balanced / vivid) on every palette and readability fixes; the `/palette` skill with a contrast checker and swatch page; reply form ids from `useId` and a wrapping diet dropdown
 - Modular invitations 3 — Design editor — the modular editor's Design tab: template, palette, ground pattern and font pair pickers that roll out like the palettes; section switches with a variant picker under each section that is on; Helpful notes switches for Dress code, Gifts and custom notes, never on twice with the standalone sections; live preview; Save in memory with a leave-page warning; the Sunbaked palette and the Fraunces & Space Grotesk pair; the playlist record's disc, rings, hole and shadow mixed from its band

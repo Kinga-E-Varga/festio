@@ -1,6 +1,8 @@
 "use client";
 
 import type { ReactNode } from "react";
+import { Envelope } from "@/components/envelope/Envelope";
+import { useSealed } from "@/components/envelope/useSealed";
 import { pageBackground, templateVars } from "@/lib/invitation";
 import type {
   InvitationTemplate,
@@ -34,6 +36,8 @@ interface InvitationProps {
   /** The hidden reply cap is reached; the panel says so instead of taking replies. */
   repliesPaused?: boolean;
   onSubmit?: (payload: RsvpPayload) => void;
+  /** The closed envelope over the invitation until the guest opens it. */
+  envelope?: boolean;
 }
 
 /**
@@ -61,9 +65,11 @@ export function Invitation({
   replyInert,
   repliesPaused,
   onSubmit,
+  envelope = false,
 }: InvitationProps) {
   const { width, height, minScale, maxScale, shadow } = template.design;
   const ground = pageBackground(template);
+  const [sealed, unseal, page] = useSealed<HTMLDivElement>(envelope);
 
   return (
     <div
@@ -75,7 +81,12 @@ export function Invitation({
        * counts padding, so a padded stage would measure a slot it does not
        * have and paint the card slightly too large.
        */}
-      <div className="relative flex min-h-0 min-w-0 flex-1 flex-col">
+      <div
+        ref={page}
+        tabIndex={-1}
+        inert={sealed}
+        className="relative flex min-h-0 min-w-0 flex-1 flex-col outline-none"
+      >
         <div className="relative flex min-h-0 min-w-0 flex-1 p-1">
           <ScaledStage
             width={width}
@@ -93,9 +104,20 @@ export function Invitation({
         template={template}
         values={values}
         onSubmit={onSubmit}
-        inert={replyInert}
+        inert={replyInert || sealed}
         paused={repliesPaused}
       />
+
+      {/* Over card and reply, under the host's edit panel (z-50). `replyInert` is the editor's open panel. */}
+      {sealed ? (
+        <Envelope
+          colors={template.envelope}
+          ground={ground}
+          fontKey={template.id}
+          besidePanel={replyInert}
+          onOpened={unseal}
+        />
+      ) : null}
 
       {host}
     </div>

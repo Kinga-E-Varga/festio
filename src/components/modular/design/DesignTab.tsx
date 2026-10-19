@@ -1,5 +1,7 @@
 "use client";
 
+import { useTranslations } from "next-intl";
+import { PanelSwitch } from "@/components/invitation/PanelSwitch";
 import type { Language } from "@/lib/language";
 import { DEFAULT_CORNERS, isCornersId } from "@/modular/corners";
 import type { ModularLibrary, ModularState } from "@/types/modular";
@@ -31,7 +33,7 @@ interface DesignTabProps {
 
 /**
  * The Design tab, top to bottom: template, palette, pattern, fonts,
- * corners and sections.
+ * corners, envelope and sections.
  */
 export function DesignTab({
   library,
@@ -44,6 +46,7 @@ export function DesignTab({
   onOpenStyles,
   onStylePicked,
 }: DesignTabProps) {
+  const t = useTranslations("DesignTab");
   return (
     <div className="flex flex-col">
       <TemplatePicker
@@ -70,6 +73,13 @@ export function DesignTab({
       <CornersPicker
         current={isCornersId(state.corners) ? state.corners : DEFAULT_CORNERS}
         onPick={(id) => onChange({ ...state, corners: id })}
+      />
+      <PanelSwitch
+        id="envelope-switch"
+        label={t("envelope")}
+        checked={state.envelope}
+        onChange={(on) => onChange({ ...state, envelope: on })}
+        className="mb-8"
       />
       <SectionsList
         library={library}

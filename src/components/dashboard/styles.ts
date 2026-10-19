@@ -28,3 +28,7 @@ export const TEXT_LINK =
 
 /** A quiet link to a full list, e.g. "See all events"; followed by an arrow. */
 export const SEE_ALL_LINK = `flex items-center gap-1 text-[12.5px] ${TEXT_LINK}`;
+
+/** The dark bar across the top: the app's and the editors' (simple, modular, print). Position is the caller's. */
+export const TOP_BAR =
+  "flex h-topbar shrink-0 items-center gap-3.5 bg-primary-900 px-4 font-sans text-secondary-100 sm:px-6";

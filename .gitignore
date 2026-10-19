@@ -43,5 +43,8 @@ next-env.d.ts
 # implementation plans — never committed
 /context/plans/
 
-# archived features — kept locally, never committed
-/archived/
+# market research and background notes — never committed
+/context/research/
+
+# session handoff notes — never committed
+/context/handoffs/

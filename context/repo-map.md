@@ -46,7 +46,7 @@ Lives in `app/` because `beforeInteractive` scripts belong to a root layout.
 - `src/i18n/request.ts` — per-request message loading, for the host app's own locale.
 - `src/i18n/messages.ts` — `loadMessages(language)`, the only place the path to `messages/` is written. Guest pages call it directly: an invitation's language is its own, not the request's.
 - `src/proxy.ts` — the locale-routing proxy (Next.js 16 renamed `middleware.ts`). Explicit route allowlist — must never match invite-link paths.
-- `messages/{en,ro,hu}.json` — message catalogs. `Rsvp`, `Print` and `Sections` are guest-facing and follow the invitation's `language`; `Nav`, `TopBar`, `Footer`, `Dashboard`, `Stats` and `Rail` follow the host's locale. Nav, footer and stat wording lives here, not in `src/mock/dashboard.ts` — that file carries only the keys.
+- `messages/{en,ro,hu}.json` — message catalogs. `Rsvp`, `Print`, `Sections` and `Envelope` are guest-facing and follow the invitation's `language`; `Nav`, `TopBar`, `Footer`, `Dashboard`, `Stats` and `Rail` follow the host's locale. Nav, footer and stat wording lives here, not in `src/mock/dashboard.ts` — that file carries only the keys.
 
 ## Templates — `src/templates/`
 
@@ -66,7 +66,7 @@ Shared by every modular template, listed with Turbopack's `import.meta.glob` —
 - `sections/<id>/index.ts` — the section: permanent id, name, required, `order`, optional menu label, its `variants` (numbered id and name; the first is the default; an id is never renamed or reused; `shows` — the fields the variant draws, as paths like `venues.label`), its fields (a field may be `required`; a list may set `minItems`) (no sample values — those are in `defaults.ts`). `sections/<id>/<variant id>.tsx` — one file per variant, named by its id (`1.tsx`, `2.tsx`), exporting `Variant`. Parts two variants share sit in their own named file beside them (`menu/Dishes.tsx`, `faq/FaqList.tsx`, `accommodation/StayList.tsx`, `rsvp/reply.tsx`, `countdown/Done.tsx`, `date-time/Calendar.tsx`); a variant never imports another variant. `header` is a section too (required, first), drawn apart from the others so it stays sticky; `footer` is required and last. A section may list `reads` — other sections whose values it shows (notes ← dress-code, gifts; footer ← header; countdown ← date-time).
 - `palettes/<id>.ts` (15 named roles — `canvas`, `surface`(-alt), `ink`(-muted), `line`, `accent`(-ink, -soft), `secondary`(-ink, -soft), `tertiary`(-ink), `error` — and a `mood`: `subtle`, `balanced` or `vivid`; new ones via the `palette` skill in `.claude/skills/palette/`), `font-pairs/<id>.ts` (`primary` body, `secondary` headings), `patterns/<id>.ts` (the ground's pattern as Tailwind classes, e.g. `dots`). `corners.ts` — the four corner steps (`sharp`, `slight`, `soft`, `round`; ids permanent) as `--m-corner` (boxes, via `CORNER` in `styles.ts`) `--m-corner-pill` (buttons and small labels, via `PILL`) and `--m-corner-field` (form fields and their dropdown lists, via `FIELD_CORNER`: as the box, but `round` stays at `soft`); a template may set one, `sharp` otherwise.
 - `index.ts` — `loadLibrary` (server): every palette, font pair, pattern, section and modular template. `variants.ts` — `loadVariant` (browser only; kept apart so variants never enter the server graph).
-- `state.ts` — `ModularState` (ids, every section's on/off + variant, every section's values) and its helpers: `initialState`, `applyTemplate`, `setSectionOn`, `setVariant`, `setNoteSwitch` / `noteSwitchOn`, `resolveDesign`, `sameState`.
+- `state.ts` — `ModularState` (ids, the envelope switch, every section's on/off + variant, every section's values) and its helpers: `initialState`, `applyTemplate`, `setSectionOn`, `setVariant`, `setNoteSwitch` / `noteSwitchOn`, `resolveDesign`, `sameState`.
 - `vars.ts` — the roles as `--m-<role>` (`paletteVars`; the pair's faces `fontVars`), the `shadow` (the ground darkened, one oklab `color-mix`), the `pattern` ink (the ground a little darkened) the `inverse`/`inverse-ink` pair, the bands' muted inks (`accent-ink-muted`, `tertiary-ink-muted`) and the `page-*` copies of ink, muted ink, secondary and accent that `GROUND` in `styles.ts` switches between (the accent band points those roles at its ink; a surface sets them back; `ON_ACCENT` alone for a variant's own accent fill), and the one mapping onto the shared `--c1`–`--c6`. `INVITE_COLUMN` — the column's widest (1440px), as `--invite-column` and in photos' `sizes`. `content.ts` — values (`text`, `list`, `groups`), basics, date and countdown helpers, `formatTime` (EN 3:30 pm, RO/HU 15:30), `imageSrc`, `safeLink`, `mapsQuery`. `samples.ts` — editor-only, so `DEFAULTS` stays out of the guest bundle: `sectionValues` reads a template's samples over `DEFAULTS`, `customNoteSample`. `defaults.ts` — every modular sample in one file: `DEFAULT_BASICS` (the date) and `DEFAULTS` (every section's fields, by section id, then field id). `fields.ts` — the Content tab's helpers: `variantShows`, `fieldShown`, `shownItems`, `setValue`, `fieldId`, `emptyItem`, `firstMissing` (the first empty required field). `nav.ts` — `HEADER_ID`, `SECTIONS_TRIGGER_ID`. `countdown.ts` — `useCountdown` (time left, and before / on / after the day), `COUNTDOWN_DONE` (the fixed texts on and after the day) and `UNITS`, shared by the countdown's variants. `ground.ts` — `sectionGrounds` (each section's ground by its variant's rule or its own: surfaces taking turns, restarting after an `own` or `accent` section; `joined` ones match the section right before) and `otherGround` (a card's). `styles.ts` (the type scale and shared classes, incl. `groundClasses`), `labels.ts`, `MapsLink.tsx`.
 - `icons.tsx` — the hand-drawn icon library (`ICONS`, one entry per icon a host can pick) and `Icon`. `heading.ts` + `SectionHeading.tsx` — every section heading's four optional fields and how they draw. `HeaderBar.tsx` — the header's bar, shared by its variants (they differ only in the mark, the links and the Reply button, in `LOOKS`). `TitleNames.tsx` — the title's names, shared by its variants (Diamonds and Plain differ only in the diamonds above and the eyebrow, in `LOOKS`). `CoverPhoto.tsx` — the cover's full photo, shared by its variants; each draws its own content over it. `WashedPhoto.tsx` — a mood photo with a ground washed over it (cover, location). `IconHeading.tsx` — a large icon disc over the section heading, eyebrow left out. `Mark.tsx` — a line written in three parts (first, middle, last; empty parts left out): the header's mark, drawn by the header and the footer, and the title's names. `clock.ts` (`useNow`), `notes.ts` (`noteItems`, `MAX_NOTES` (6), `NOTE_SWITCH` — Helpful notes' Dress code / Gifts / Custom toggles). `cards/` — `NoteCard` and the Dress code / Gifts cards, shared by those sections and Helpful notes.
 
@@ -87,6 +87,15 @@ Shared by every modular template, listed with Turbopack's `import.meta.glob` —
 - `PanelTabs.tsx` — the Text / Replies / Design tabs, shared by both edit panels.
 - `PanelSwitch.tsx` — the side panel's on/off switch; `Switch`, the switch alone (`md`, or `sm` on Content's head bars).
 - `styles.ts`, `icons.tsx` — local to invitations.
+
+## Envelope — `src/components/envelope/`
+
+The closed envelope over an invitation (simple and modular, guest page and editors) until it is opened. Maintained with the `envelope` skill.
+
+- `Envelope.tsx` — the drawing's layers, the hover lift and tag swing, the flap's turn on click, then the fade into the page; used by `Invitation` and `ModularInvitation`. `useSealed.ts` — whether the page is still sealed (the page stays `inert` until then; the editors' Use envelope switch seals it again).
+- `colors.ts` — an `envelope` (each palette's, each simple template's: six roles, hex or another role) as `--env-*` vars, with the fixed Hue + Vivid shading. `motion.ts` — timings, flap keyframes, the shading fades. `tag.ts` — the tag's words, fitted along it.
+- `drawing.generated.ts` — the drawing as markup, every id, class and colour `env-` prefixed. Built by `envelope.py build-app` from `.claude/skills/envelope/drawing/envelope-edit.svg`; never edited.
+- The CSS is the envelope block at the end of `@layer components` in `globals.css`.
 
 ## Print — `src/components/print/`
 
@@ -126,12 +135,10 @@ Event pages: `EventHeader.tsx` (BACK + title + date), `BackButton.tsx`, `Replies
 
 ## Other
 
-- `src/types/` — `invitation.ts` (incl. `TemplateModule`, a union of simple and modular), `modular.ts` (sections, palettes, pairs, modular templates), `dashboard.ts`, `print.ts`, `guests.ts` (mock-only)
+- `src/types/` — `envelope.ts` (the envelope's colour roles), `invitation.ts` (incl. `TemplateModule`, a union of simple and modular), `modular.ts` (sections, palettes, pairs, modular templates), `dashboard.ts`, `print.ts`, `guests.ts` (mock-only)
 - `src/mock/dashboard.ts` — mock data; **no Firestore wiring yet**
 - `src/mock/guests.ts` — `findGuests(eventId)`, mock guest lists
 - `src/components/icons.tsx` — app-wide icons
 - Config: `next.config.ts`, `tsconfig.json`, `eslint.config.mjs`, `postcss.config.mjs`
 
 No `firestore.rules` / `firestore.indexes.json` in the repo yet.
-
-`archived/` — git-ignored, removed features kept for restoring. Don't read it unless asked.

@@ -1,5 +1,6 @@
 import type { LocalizedText } from "@/lib/language";
 import type { PackageId, EventKind } from "@/types/dashboard";
+import type { EnvelopeColors } from "@/types/envelope";
 import type { AgeGroup, DietNeed } from "@/types/guests";
 import type { ModularTemplateModule } from "@/types/modular";
 
@@ -161,6 +162,8 @@ export interface InvitationTemplate {
   printSize: string;
   print: TemplatePrint;
   palette: Palette;
+  /** The envelope guests open first: which colour plays each of its parts. */
+  envelope: EnvelopeColors;
   fonts: TemplateFonts;
   edge: EdgeShape;
   background: TemplateBackground;

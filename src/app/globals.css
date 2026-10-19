@@ -947,10 +947,163 @@
     background: var(--m-line);
     border-radius: 4px;
   }
+
+  /*
+   * The envelope over an invitation (`src/components/envelope/`): layers that
+   * share the drawing's viewBox, stacked back to front. Each scales on its
+   * own, so the shadows multiply straight onto the invitation's ground.
+   * `data-state`: closed → opening (the flap turns) → open; `data-fading`
+   * fades the whole envelope out.
+   */
+  .env-stage {
+    position: absolute;
+    inset: 0;
+    z-index: 40;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    isolation: isolate;
+    container-type: size;
+    /* The padding beside the simple editor's panel slides with the panel. */
+    transition:
+      opacity var(--env-fade, 600ms) ease,
+      padding-right 620ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .env-stage[data-state="closed"] {
+    cursor: pointer;
+  }
+  .env-stage[data-fading] {
+    opacity: 0;
+    pointer-events: none;
+  }
+  .env {
+    position: relative;
+    flex: none;
+    width: min(88cqw, 600px, calc((100cqh - 120px) * var(--env-ratio)));
+    aspect-ratio: var(--env-ratio);
+  }
+  .env-layer {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+    transform-origin: 50% var(--env-centre-y);
+    transition: transform 0.45s cubic-bezier(0.2, 0.7, 0.2, 1);
+  }
+  .env-layer.env-cast,
+  .env-layer.env-inside-shade,
+  .env-layer.env-deco-shade {
+    mix-blend-mode: multiply;
+  }
+  .env-layer.env-tag-shade {
+    transition:
+      transform 0.45s cubic-bezier(0.2, 0.7, 0.2, 1),
+      filter 0.45s ease;
+  }
+  /*
+   * Hover lifts the envelope: it grows and rises; its cast shadow rises less
+   * and spreads; the tag's shadow softens. Mouse only — on touch it would
+   * stick — and never with reduced motion.
+   */
+  @media (hover: hover) and (prefers-reduced-motion: no-preference) {
+    .env-stage[data-state="closed"]
+      .env:has(.env-hit:hover, .env-hit-tag:hover)
+      > .env-layer {
+      transform: translateY(-3%) scale(1.04);
+    }
+    .env-stage[data-state="closed"]
+      .env:has(.env-hit:hover, .env-hit-tag:hover)
+      > .env-layer.env-cast {
+      transform: translateY(-2%) scale(1.055);
+    }
+    .env-stage[data-state="closed"]
+      .env:has(.env-hit:hover, .env-hit-tag:hover)
+      > .env-layer.env-tag-shade {
+      transform: translateY(-2%) scale(1.04);
+      filter: blur(6px);
+    }
+  }
+  /* The tag's handwriting, in the liner's colour, soaked into the tag. */
+  .env-tag-text {
+    fill: var(--env-text);
+    opacity: 0.85;
+    mix-blend-mode: multiply;
+    font-family: var(--font-primary);
+    font-size: 5.5px;
+    text-anchor: middle;
+    dominant-baseline: central;
+  }
+  .env-swing {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+    transform-origin: var(--env-hole-x) var(--env-hole-y);
+  }
+  .env-stage[data-state="closed"] .env-v-open,
+  .env-stage[data-state="open"] .env-v-closed {
+    opacity: 0;
+  }
+  .env-stage[data-state="closed"] .env-inside {
+    visibility: hidden;
+  }
+  .env-rot {
+    position: absolute;
+    inset: 0;
+    transform-origin: 50% var(--env-fold-y);
+    transform-style: preserve-3d;
+  }
+  .env-face {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+    backface-visibility: hidden;
+  }
+  .env-face.env-back {
+    transform-origin: 50% var(--env-fold-y);
+    transform: rotateX(180deg);
+  }
+  /* Open and settled: flat again, so nothing stays on a 3D layer. */
+  .env-stage[data-state="open"] .env-front {
+    display: none;
+  }
+  .env-stage[data-state="open"] .env-back {
+    transform: none;
+  }
+  .env-hit {
+    position: absolute;
+    left: var(--env-hit-x);
+    top: var(--env-hit-y);
+    width: var(--env-hit-w);
+    height: var(--env-hit-h);
+    z-index: 2;
+    cursor: pointer;
+    border-radius: 4px;
+  }
+  .env-hit-tag {
+    position: absolute;
+    left: var(--env-tag-x);
+    top: var(--env-tag-y);
+    width: var(--env-tag-w);
+    height: var(--env-tag-h);
+    z-index: 2;
+  }
+  .env-stage:not([data-state="closed"]) :is(.env-hit, .env-hit-tag) {
+    pointer-events: none;
+  }
+  .env-hit:focus-visible {
+    outline: 2px solid var(--env-text);
+    outline-offset: 10px;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  i *,
+  *,
   *::before,
   *::after {
     transition-duration: 0.01ms !important;

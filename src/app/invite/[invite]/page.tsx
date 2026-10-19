@@ -36,6 +36,11 @@ export default async function InvitationPage({
       template={template}
       values={values}
       repliesPaused={repliesPaused(event)}
+      /*
+       * Always on until the switch is saved with the event. A cancelled
+       * event will pass false; a Protected one shows it after the password.
+       */
+      envelope
     >
       <Card values={cardValues(values, language)} />
     </Invitation>

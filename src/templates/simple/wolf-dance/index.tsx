@@ -61,6 +61,16 @@ export const template: InvitationTemplate = {
     color10: null,
   },
 
+  /* The prototype's Wolf Dance envelope; the seal is color5. */
+  envelope: {
+    paper: "#c8b9a2",
+    liner: "#715855",
+    string: "liner",
+    seal: "#788a5c",
+    tag: "#fef4e5",
+    shadow: "#676444",
+  },
+
   fonts: {
     primary: fonts.notoSerif,
     secondary: fonts.kapakana,

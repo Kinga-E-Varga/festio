@@ -12,8 +12,9 @@
 
 ## Archived specs — do not read unless asked
 
-`context/features/`, `context/fixes/` (including `pending/`), `context/plans/` and
-`context/reviews/` are completed work. The code is the source of truth.
+`context/features/`, `context/fixes/` (including `pending/`), `context/plans/`,
+`context/reviews/`, `context/research/` and `context/handoffs/` are completed work. The code
+is the source of truth.
 
 - **Never read a file there on your own initiative** — only when the user names it, or the
   `feature` skill resolves a name to it.
@@ -23,17 +24,14 @@
 - **Reviews are written, not read:** `context/reviews/[date].md` holds plain-language
   write-ups of a cleanup run, one section per commit, for the user's review. Only the
   workflow agents of that run append to that day's file. Read one only when the user names it.
+- **Research is background, not spec:** `context/research/` holds market research (other
+  platforms, ideas). An idea there is not a decision. Read one only when the user names it.
+- **Handoffs are history:** `context/handoffs/` holds notes written to carry work between
+  sessions. Once a skill or the code takes the work over, they are kept only as history —
+  never update one. Read one only when the user names it.
 - **Exclude these folders from every Grep and Glob.** They produce false matches.
 - A match there is not evidence about current behaviour. Check the code or
   @context/project-overview.md.
-
-## Archived code — do not read unless asked
-
-`archived/` (repo root, git-ignored) holds removed features, kept so they can be restored.
-Each has its own folder with a `README.md` and the original file paths under it.
-
-- **Never read, list or search it** unless the user asks for a specific archived feature.
-- Exclude it from every Grep and Glob. It is not part of the app and is not built.
 
 @context/current-feature.md is the only spec file to consult by default.
 

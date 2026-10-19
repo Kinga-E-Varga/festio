@@ -1,6 +1,8 @@
 "use client";
 
 import { memo, Suspense, useState } from "react";
+import { Envelope } from "@/components/envelope/Envelope";
+import { useSealed } from "@/components/envelope/useSealed";
 import { Icon } from "@/components/icons";
 import { localized, type Language, type LocalizedText } from "@/lib/language";
 import { cornerVars } from "@/modular/corners";
@@ -88,6 +90,7 @@ export const ModularInvitation = memo(function ModularInvitation({
   edit,
 }: ModularInvitationProps) {
   const [menuOpen, setMenuOpen] = useState(false);
+  const [sealed, unseal, page] = useSealed<HTMLDivElement>(design.envelope);
   const links = menuLinks(design.sections, language);
   /*
    * The header is a section, but drawn straight in the column rather than
@@ -107,8 +110,13 @@ export const ModularInvitation = memo(function ModularInvitation({
       }}
       className={`invite relative flex h-full flex-col overflow-clip bg-[var(--m-surface)] ${framed ? "elevation-band mx-auto max-w-(--invite-column)" : ""} font-[family-name:var(--font-primary)] text-[color:var(--m-ink)] ${fontClasses(design.fontPair)}`}
     >
-      {/* While the drawer covers the page, everything under it is out of the tab order. */}
-      <div inert={menuOpen} className="flex min-h-0 flex-1 flex-col">
+      {/* While the drawer or the envelope covers the page, everything under it is out of the tab order. */}
+      <div
+        ref={page}
+        tabIndex={-1}
+        inert={menuOpen || sealed}
+        className="flex min-h-0 flex-1 flex-col outline-none"
+      >
         {/* The page scrolls in here, not the window, so the header stays put. */}
         <div
           className={`invite-scroll min-h-0 flex-1 overflow-y-auto scroll-smooth ${framed ? "" : groundClasses(design.pattern)}`}
@@ -176,6 +184,15 @@ export const ModularInvitation = memo(function ModularInvitation({
           </div>
         </div>
       </div>
+
+      {sealed ? (
+        <Envelope
+          colors={design.palette.envelope}
+          ground={{ className: groundClasses(design.pattern) }}
+          fontKey={design.fontPair.id}
+          onOpened={unseal}
+        />
+      ) : null}
 
       <SectionsDrawer
         open={menuOpen}

@@ -76,6 +76,10 @@
     "dressCode": "Ținută",
     "gifts": "Cadouri"
   },
+  "Envelope": {
+    "tag": "Deschide-\nmă",
+    "open": "Deschide invitația"
+  },
   "Nav": {
     "aria": "Secțiuni meniu",
     "quit": "Ieși din panou",
@@ -357,7 +361,6 @@
     "tabContent": "Conținut",
     "tabReplies": "Răspunsuri",
     "tabDesign": "Design",
-    "designSoon": "Opțiunile de design vin în curând.",
     "dateHint": "Setat în detaliile evenimentului — schimbă-o acolo ca să modifici data.",
     "rsvpMessageHint": "Apare deasupra butonului de răspuns, lângă invitație — doar pe ecrane mai mari. Pe telefon, invitații văd doar butonul.",
     "testReply": "Nimic salvat — acesta este un test",
@@ -382,7 +385,8 @@
       "round": "Rotunde"
     },
     "sections": "Secțiuni",
-    "reveal": "Mergi la {section}"
+    "reveal": "Mergi la {section}",
+    "envelope": "Folosește plicul"
   },
   "ContentTab": {
     "sections": "Secțiuni",

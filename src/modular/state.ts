@@ -38,6 +38,7 @@ export function initialState(
     fontPair: template.fontPair,
     pattern: template.pattern ?? null,
     corners: template.corners ?? DEFAULT_CORNERS,
+    envelope: true,
     sections: library.sections.map((definition) => {
       const wanted = picked.get(definition.id);
       const known = definition.variants.some(({ id }) => id === wanted);
@@ -58,7 +59,7 @@ export function initialState(
 
 /**
  * A template's look over the state: palette, pattern, corners and pair
- * only. Sections and values stay as they are — a template's samples are
+ * only. Sections, values and the envelope stay as they are — a template's samples are
  * copied once, by `initialState`, and after that only the host changes them.
  */
 export function applyTemplate(
@@ -206,6 +207,7 @@ export function resolveDesign(
     fontPair,
     pattern,
     corners,
+    envelope: state.envelope,
     sections: sectionsOn(state, library),
     values: state.values,
   };

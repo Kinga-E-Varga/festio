@@ -76,6 +76,10 @@
     "dressCode": "Öltözet",
     "gifts": "Ajándékok"
   },
+  "Envelope": {
+    "tag": "Nyiss\nki",
+    "open": "Nyisd ki a meghívót"
+  },
   "Nav": {
     "aria": "Vezérlőpult szakaszai",
     "quit": "Vezérlő elhagyása",
@@ -357,7 +361,6 @@
     "tabContent": "Tartalom",
     "tabReplies": "Válaszok",
     "tabDesign": "Dizájn",
-    "designSoon": "A dizájn beállításai hamarosan érkeznek.",
     "dateHint": "Az esemény részleteinél állítható — ott módosítsd, ha magát a dátumot akarod megváltoztatni.",
     "rsvpMessageHint": "A válasz gomb fölött jelenik meg, a meghívó mellett — csak nagyobb képernyőn. Telefonon a vendégek csak a gombot látják.",
     "testReply": "Semmi nincs mentve — ez csak próba",
@@ -382,7 +385,8 @@
       "round": "Kerek"
     },
     "sections": "Szakaszok",
-    "reveal": "Ugrás ide: {section}"
+    "reveal": "Ugrás ide: {section}",
+    "envelope": "Boríték használata"
   },
   "ContentTab": {
     "sections": "Szakaszok",

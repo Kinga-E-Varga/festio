@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import type { Language, LocalizedText } from "@/lib/language";
 import type { CornersId } from "@/modular/corners";
+import type { EnvelopeColors } from "@/types/envelope";
 import type { EventKind } from "@/types/dashboard";
 import type { RsvpPayload, TemplateFonts } from "@/types/invitation";
 
@@ -60,6 +61,8 @@ export interface ModularPalette {
   name: string;
   mood: PaletteMood;
   colors: Record<ColorRole, string>;
+  /** The envelope guests open first: which colour plays each of its parts. */
+  envelope: EnvelopeColors;
 }
 
 /**
@@ -409,6 +412,8 @@ export interface ModularState {
   pattern: string | null;
   /** A `CORNERS` id. */
   corners: string;
+  /** Guests open an envelope first. On for a new invitation. */
+  envelope: boolean;
   /**
    * Every section in the library, in the fixed order. Kept as a list, with
    * its order, so rearranging can come later.
@@ -444,6 +449,7 @@ export interface ModularDesign {
   fontPair: FontPair;
   pattern: ModularPattern | null;
   corners: CornersId;
+  envelope: boolean;
   /** Only the sections that are on, in order. */
   sections: { definition: SectionDefinition; variant: string }[];
   /** Every section's values, on or off — a section may read one that is off. */

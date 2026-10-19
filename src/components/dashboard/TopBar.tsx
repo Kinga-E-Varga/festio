@@ -1,6 +1,7 @@
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { Icon } from "@/components/icons";
+import { TOP_BAR } from "@/components/dashboard/styles";
 import { ATTENTION_NOTICES, EVENTS, HOST } from "@/mock/dashboard";
 
 interface TopBarProps {
@@ -29,7 +30,7 @@ export function TopBar({
   const awaitingPayment = EVENTS.filter((event) => !event.paid).length;
 
   return (
-    <header className="sticky top-0 z-40 flex h-topbar shrink-0 items-center gap-3.5 bg-primary-900 px-6">
+    <header className={`sticky top-0 z-40 ${TOP_BAR}`}>
       {/*
        * Pulled out by the 7px the glyph is inset inside its 34px hit area, so
        * the menu mark sits the same 24px off the edge as the avatar circle
