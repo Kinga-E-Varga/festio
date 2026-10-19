@@ -17,7 +17,14 @@ import {
   tabElementId,
   type PanelTabId,
 } from "./PanelTabs";
-import { HINT, LABEL, INPUT } from "@/components/dashboard/event-editor/styles";
+import {
+  HINT,
+  LABEL,
+  INPUT,
+  SOFT_ACTION_SHAPE,
+  SOFT_PICK,
+} from "@/components/dashboard/event-editor/styles";
+import { CARD_OPENINGS, type CardOpening } from "@/components/envelope/card";
 import { PanelSwitch } from "./PanelSwitch";
 import { PanelViewButton, SidePanel } from "./SidePanel";
 
@@ -40,6 +47,9 @@ interface EditPanelProps {
   /** The Design tab's switch: guests open an envelope first. */
   envelope: boolean;
   onEnvelope: (on: boolean) => void;
+  /** How the card comes out of the envelope, to compare the two. */
+  opening: CardOpening;
+  onOpening: (opening: CardOpening) => void;
 }
 
 /**
@@ -64,6 +74,8 @@ export function EditPanel({
   onClose,
   envelope,
   onEnvelope,
+  opening,
+  onOpening,
 }: EditPanelProps) {
   const tDesign = useTranslations("DesignTab");
   const [tab, setTab] = useState<PanelTabId>("content");
@@ -103,13 +115,39 @@ export function EditPanel({
             />
           ))
         ) : (
-          <PanelSwitch
-            id="envelope-switch"
-            label={tDesign("envelope")}
-            checked={envelope}
-            onChange={onEnvelope}
-            className="mb-6"
-          />
+          <>
+            <PanelSwitch
+              id="envelope-switch"
+              label={tDesign("envelope")}
+              checked={envelope}
+              onChange={onEnvelope}
+              className="mb-6"
+            />
+            {envelope ? (
+              <div
+                role="group"
+                aria-labelledby="envelope-opening"
+                className="mb-6 flex flex-col gap-2"
+              >
+                <span id="envelope-opening" className={LABEL}>
+                  {tDesign("opening")}
+                </span>
+                <div className="flex gap-2">
+                  {CARD_OPENINGS.map((way) => (
+                    <button
+                      key={way}
+                      type="button"
+                      aria-pressed={opening === way}
+                      onClick={() => onOpening(way)}
+                      className={`${SOFT_ACTION_SHAPE} ${SOFT_PICK} flex-1`}
+                    >
+                      {tDesign(`openings.${way}`)}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            ) : null}
+          </>
         )}
 
         <PanelViewButton onClose={onClose} />

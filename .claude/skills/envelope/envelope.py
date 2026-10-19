@@ -66,6 +66,9 @@ DECO_GROUPS = [TAG_SHADOW, TAG_SWINGS, ENV_SHADOWS, ON_ENV]
 # body (the hover and click area, and the centre the hover grows from).
 FOLD = 214.514
 BODY = {"x0": 103, "x1": 197, "y0": FOLD, "y1": 274}
+# How far below the fold the inside stays masked while the flap lies nearly flat: past
+# the closed paper's rounded top corners (0.6), where the inside is square.
+EDGE = 0.75
 
 
 def local(tag):
@@ -164,7 +167,10 @@ def check():
             cast |= tag_hard_shapes(g)
         for el in g.iter():
             where = label(el) or local(el.tag)
-            for c in colours(el) - allowed:
+            # The inside's shadow keeps the colour it is drawn in: it falls on the card or
+            # page in the pocket too, so it stays neutral, whatever the palette.
+            own = colours(el) if label(el) == INSIDE_SHADOW else set()
+            for c in colours(el) - allowed - own:
                 problems.append(f'New colour {c} in "{name}" › {where}: not one of the roles')
             if CAST in colours(el) and el not in cast:
                 problems.append(f'{CAST} in "{name}" › {where}: only cast shadows use it')
@@ -392,7 +398,16 @@ def split_decoration(g):
 
         def copy(el):
             if local(el.tag) != "g":
-                return ET.fromstring(ET.tostring(el)) if id(el) in kept else None
+                if id(el) not in kept:
+                    return None
+                out = ET.fromstring(ET.tostring(el))
+                if label(el) != "tag soft shadow":
+                    return out
+                # Like the cast's tight shadow (drawing_parts): scaled on its own,
+                # blurring more than the rest.
+                wrap = ET.Element(f"{{{SVG}}}g", {"class": "cast-tight blur-more"})
+                wrap.append(out)
+                return wrap
             kids = [k for k in (copy(c) for c in el) if k is not None]
             if not kids:
                 return None
@@ -688,6 +703,18 @@ def drawing_parts():
         f'<clipPath id="e-below" clipPathUnits="userSpaceOnUse"><rect x="{vb[0] - 50}" y="{FOLD}" width="{vb[2] + 100}" height="{vb[3]}"/></clipPath>'
         f'<clipPath id="e-above" clipPathUnits="userSpaceOnUse"><rect x="{vb[0] - 50}" y="{vb[1] - 50}" width="{vb[2] + 100}" height="{FOLD - vb[1] + 50.25}"/></clipPath>'
     )
+    # While the flap lies nearly flat, a strip along the fold hides the inside's top: the
+    # square corners past the paper's rounded ones, and the edge the turning flap (its
+    # own 3D layer, a fraction of a pixel off) would show as a line. It reaches past
+    # the sides so no edge of it lines up with the paper's, and fades out by the flap's
+    # angle (`openingFades`).
+    x0, x1, o = BODY["x0"], BODY["x1"], 0.1
+    defs += (
+        f'<mask id="e-inside" maskUnits="userSpaceOnUse" x="{vb[0] - 50}" y="{vb[1] - 50}" width="{vb[2] + 100}" height="{vb[3] + 100}">'
+        f'<rect x="{vb[0] - 50}" y="{vb[1] - 50}" width="{vb[2] + 100}" height="{vb[3] + 100}" fill="#fff"/>'
+        f'<rect class="v-closed inside-edge" fill="#000" x="{x0 - o}" y="{FOLD - o}" width="{x1 - x0 + 2 * o}" height="{EDGE + o}"/>'
+        "</mask>"
+    )
 
     def state_class(name):
         return "v-open" if name.endswith("· open") else "v-closed" if name.endswith("· closed") else None
@@ -699,6 +726,19 @@ def drawing_parts():
     front = by_label(flap, "closed flap")
     pocket += "".join(ser(c, cls="v-closed flap-shadow") for c in flap if c is not front)
     deco = split_decoration(L["Decoration · shared"])
+    # The cast's tight and soft shadows, each in a marked group of its own: the page
+    # scales them on their own as the envelope grows, about the group's box (on the path
+    # itself, that origin would move the path's own transform). Found first, then
+    # wrapped: wrapping while walking the tree would find each one again, endlessly.
+    casts = [by_label(L[n], "cast shadow") for n in ("Back · open", "Back · closed")]
+    found = [(g, i, c) for cast in casts for g in cast.iter() for i, c in enumerate(g) if label(c) in ("tight shadow", "soft shadow")]
+    for grp, i, c in found:
+        # The tight one is marked to blur more than the rest.
+        more = " blur-more" if label(c) == "tight shadow" else ""
+        wrap = ET.Element(f"{{{SVG}}}g", {"class": "cast-tight" + more})
+        grp.remove(c)
+        wrap.append(c)
+        grp.insert(i, wrap)
 
     return {
         "vb": vb,
@@ -706,8 +746,8 @@ def drawing_parts():
         "defs": defs,
         "castOpen": ser(by_label(L["Back · open"], "cast shadow"), cls="v-open"),
         "castClosed": ser(by_label(L["Back · closed"], "cast shadow"), cls="v-closed"),
-        "inside": f'<g clip-path="url(#e-below)">{inside}</g>',
-        "insideShade": f'<g clip-path="url(#e-below)">{inside_shade}</g>',
+        "inside": f'<g clip-path="url(#e-below)"><g mask="url(#e-inside)">{inside}</g></g>',
+        "insideShade": f'<g clip-path="url(#e-below)"><g mask="url(#e-inside)">{inside_shade}</g></g>',
         "flapBack": f'<g clip-path="url(#e-above)">{back}</g>',
         "flapFront": ser(front),
         "pocket": pocket,
@@ -722,6 +762,9 @@ APP_CLASSES = {
     "v-open": "env-v-open",
     "v-closed": "env-v-closed",
     "flap-shadow": "env-flap-shadow",
+    "inside-edge": "env-inside-edge",
+    "cast-tight": "env-cast-tight",
+    "blur-more": "env-blur-more",
     "tag-paper": "env-tag-paper",
     "tag-hole": "env-tag-hole",
     "tag-text": "env-tag-text",

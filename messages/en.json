@@ -386,7 +386,13 @@
     },
     "sections": "Sections",
     "reveal": "Go to {section}",
-    "envelope": "Use envelope"
+    "envelopeHeading": "Envelope",
+    "envelope": "Use envelope",
+    "opening": "Card coming out",
+    "openings": {
+      "rise": "Rises",
+      "slide": "Slides out"
+    }
   },
   "ContentTab": {
     "sections": "Sections",

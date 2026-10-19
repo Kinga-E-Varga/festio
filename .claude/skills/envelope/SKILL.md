@@ -16,16 +16,16 @@ seal / string motion.
 
 ## Where things are
 
-| What                 | Where                                                                                                                                                                      |
-| -------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| The drawing (master) | `.claude/skills/envelope/drawing/envelope-edit.svg` — the user edits it in Inkscape                                                                                        |
-| Last built drawing   | `.claude/skills/envelope/drawing/envelope-built.svg` — what the app was last built from (`diff` compares against it)                                                       |
-| Built drawing (app)  | `src/components/envelope/drawing.generated.ts` — written by `build-app`, never edited by hand                                                                              |
-| Layers + motion      | `src/components/envelope/Envelope.tsx` — the layers, hover, click, fade; `motion.ts` — timings, flap keyframes, fades; `tag.ts` — the tag's words                          |
-| Colours              | `src/components/envelope/colors.ts` — roles → `--env-*` vars, the fixed shading; each palette's `envelope` (`src/modular/palettes/`) and each simple template's `envelope` |
-| CSS                  | the envelope block at the end of `@layer components` in `src/app/globals.css`                                                                                              |
-| Tools                | `.claude/skills/envelope/envelope.py` — `check`, `diff`, `build-app`, `mark-built`; `hover-click.mjs` — hover, click and screenshot in headless Chromium                   |
-| History              | `context/handoffs/envelope-handoff.md` (git-ignored; read only when the user names it) — earlier decisions. History only, don't update it                                  |
+| What                 | Where                                                                                                                                                                                    |
+| -------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| The drawing (master) | `.claude/skills/envelope/drawing/envelope-edit.svg` — the user edits it in Inkscape                                                                                                      |
+| Last built drawing   | `.claude/skills/envelope/drawing/envelope-built.svg` — what the app was last built from (`diff` compares against it)                                                                     |
+| Built drawing (app)  | `src/components/envelope/drawing.generated.ts` — written by `build-app`, never edited by hand                                                                                            |
+| Layers + motion      | `src/components/envelope/Envelope.tsx` — the layers, hover, click, fade; `motion.ts` — timings, flap keyframes, fades; `card.ts` — the simple card's way out; `tag.ts` — the tag's words |
+| Colours              | `src/components/envelope/colors.ts` — roles → `--env-*` vars, the fixed shading; each palette's `envelope` (`src/modular/palettes/`) and each simple template's `envelope`               |
+| CSS                  | the envelope block at the end of `@layer components` in `src/app/globals.css`                                                                                                            |
+| Tools                | `.claude/skills/envelope/envelope.py` — `check`, `diff`, `build-app`, `mark-built`; `hover-click.mjs` — hover, click and screenshot in headless Chromium                                 |
+| History              | `context/handoffs/envelope-handoff.md` (git-ignored; read only when the user names it) — earlier decisions. History only, don't update it                                                |
 
 Rounded corners in `envelope-edit.svg` are plain curves: the original drawing's live
 Inkscape corner effects were flattened. Reshaping a rounded edge means editing its path.
@@ -146,10 +146,18 @@ variable.
 | `#a02c2c`   | Seal        |                                                                                                                                                  |
 | `#847246`   | Cast shadow | the shadow role as it is. Only in `cast shadow` groups, the tag shadow group and beside `tag` in `tag · swings` — `check` flags it anywhere else |
 
+The one exception: the `inside shadow` keeps the colour it is drawn in (now `#776755`), not a
+role. It falls on the card or page in the pocket too, so it stays neutral in every palette;
+`check` allows any colour on that shape only. Its fill and its outline (stroke) are both
+`#776755`: a role colour left on either still turns into that role, so `check` won't catch it.
+
 Each modular palette (`src/modular/palettes/<id>.ts`) and each simple template carries an
 `envelope`: `paper`, `liner`, `string`, `seal`, `tag`, `shadow`, each a 6-digit hex or
-another envelope role's name (`seal: "liner"` follows the liner) — never a palette
-colour's name. A loop or a bad hex throws, naming the role (`roleColor` in `colors.ts`).
+another envelope role's name (`seal: "liner"` follows the liner). A palette's may also name
+one of its own colours (`seal: "secondary"`), so it follows the palette; `paletteEnvelope` in
+`colors.ts` swaps those for their hex, an envelope role winning a shared name. A simple
+template has no palette, so only hex or envelope roles. A loop, a bad hex or an unknown name
+throws, naming the role (`roleColor`, `paletteEnvelope`).
 The tag's font is the invitation's `--font-primary` (a font pair's body face).
 
 **Shading.** In the drawing, a shadow is its role colour multiplied onto itself and a
@@ -178,25 +186,40 @@ tag stays on top, so nothing changes there.
 
 The envelope covers the invitation (`env-stage`, z-40, under the simple editor's panel at
 z-50) on the invitation's own ground. Until it has faded, the page under it is `inert`
-(`useSealed`); turning the Design tab's switch off and on seals it again.
+(`useSealed`); turning the Design tab's switch off and on seals it again. In the modular
+editor it covers the whole padded ground beside the column, with no ground of its own (the
+editor's shows through, one pattern, no seam); the column, shadow and all, stays hidden
+under it and fades in while it fades out (`onFade`).
 
 - **Hover** (mouse only, closed only, over the body or the tag — one hover, moving between
-  them is no new turn; never with reduced motion): every layer grows 4% from the body's
-  centre and rises 3%; the cast shadow grows 5.5% and rises only 2%, so a little more of it
-  shows below, as if lifted. The tag's shadow rises 2%, grows 4% and blurs 6px. CSS, in
-  `@media (hover: hover) and (prefers-reduced-motion: no-preference)`.
+  them is no new turn; never with reduced motion): the lifted pose. Every layer grows 4%
+  from the body's centre and rises 3%; the cast shadow grows 5.5% and rises only 2%, so a
+  little more of it shows below; the tag's shadow rises 2%, grows 4% and blurs 6px. The
+  numbers are `LIFTED` in `motion.ts`, read by the CSS as `--env-lift-*`; `--env-up` (0 or
+  1. turns the pose on, in `@media (hover: hover) and (prefers-reduced-motion:
+no-preference)`.
+- **Stays lifted from the click** (`data-lifted` on the stage): the opening starts from the
+  lifted pose, so nothing drops back. A tap, a key or a click that came before the hover
+  eases into it (0.45 s), the tag dropping too, as the flap starts; whether it is already lifted is the hover
+  itself, never a guess at the device. The card's motion goes on top of it: `--env-move`
+  (and `--env-out`, each layer's fade) set on `.env` frame by frame, and `card.ts` places
+  the card from the lifted envelope.
 - **Tag drop:** on hover the tag and its shadows turn −25° around the hole, with a slight
-  overshoot (0.55 s), and stay there while hovered; on leaving or on the click they turn
-  back to 0 (0.45 s) (`SWING` in `motion.ts`). Each turn starts from where the tag is.
+  overshoot (0.55 s), and stay there while hovered; on leaving they turn back to 0 (0.45 s)
+  (`SWING` in `motion.ts`). Each turn starts from where the tag is. Once clicked the tag
+  stays turned; a tap or a key turns it as part of easing into the lifted pose. As the
+  envelope slides down and off (modular, and the simple card's `slide`), the tag turns back
+  past its drawn angle to +8°, over the slide (`SWING.slide`, `SLIDE_MS`).
 - **Tag text:** the `Envelope.tag` message in the invitation's language (`\n` splits the
-  lines: EN "Open / me", RO "Deschide- / mă", HU "Nyiss / ki"), written along the tag from
+  lines: EN "Open / me", RO "Pentru / tine", HU "Nyiss / ki"), written along the tag from
   its bottom up toward the hole, ink in the liner colour, multiplied into the tag. The build
   puts an empty `<text class="env-tag-text">` in the tag group, over the paper and `darken`,
   under the highlights, in the paper's coordinates (`tag_text`), and marks the paper and
   `hole shadow`. `placeTag` finds the tag's direction from them (hole → the paper's centre),
   so a tag drawn at any angle works; the words sit at 0.53 of the tag's length from the
   hole and shrink to fit inside the stitching, again once the fonts load and when the font
-  pair changes. A paper drawn scaled would shrink the text: `placeTag` undoes its scale.
+  pair changes. Never above 28px on screen (`TAG_MAX_PX`), fitted again when the envelope
+  resizes. A paper drawn scaled would shrink the text: `placeTag` undoes its scale.
 - **Click** (anywhere on the envelope, or Enter / Space on `env-hit`): the flap turns
   0° → 180° on the fold, toward the viewer, then settles with a small bounce
   (180° → 173° → 180°): 1.3 s (`FLAP_MS`). Past 90° the front face hides and the back face
@@ -205,9 +228,64 @@ z-50) on the invitation's own ground. Until it has faded, the page under it is `
   pocket spreads and fades as the flap lifts — its blur grows to 4× its own as its opacity
   goes to 0, both read from the flap's angle, done as it stands up at 90°. Each closed /
   open pair (pocket shading, cast shadow) cross-fades together, so the shading never goes
-  missing.
-- **Into the page:** open and still for 0.15 s (`SETTLE_MS`), then the whole envelope
-  fades out (0.6 s, `FADE_MS`) and unmounts; the page stops being inert.
+  missing. Two half-faded shadows over each other are lighter than one, so the closed
+  cast shadow fades out on `castOut`, staying a little stronger, and the hard shadow
+  (drawn at 0.5, `CAST_ALPHA`) keeps its strength through the cross-fade. While the flap lies nearly flat, the mask `e-inside` (from `FOLD`, `BODY` and
+  `EDGE` in `envelope.py`) hides a 0.75 strip along the top of the inside: its square
+  corners, past the closed paper's 0.6 rounding, and its top edge, which the turning flap
+  (its own 3D layer, a fraction of a pixel off) shows as a line. The strip fades out as
+  the flap goes from 55° to 90° (`INSIDE_EDGE_DEG`), when the flap's back face takes
+  over the fold.
+- **Into the page (no card or page measured, e.g. not laid out):** open and still for 0.15 s (`SETTLE_MS`), then the whole
+  envelope fades out (0.6 s, `FADE_MS`) and unmounts; the page stops being inert.
+- **The card coming out (simple), two ways to compare** (`CardOpening` in `card.ts`; the
+  simple editor's Design tab picks one, not saved; the guest page takes `rise`). A copy of
+  the page's card (`card` prop, the same children) lies landscape in the pocket, between
+  the inside and the pocket, cut off below the envelope (`env-card-pocket`); once clear of
+  the pocket a second copy in front of the stage (`env-card-front`) takes over.
+  - `rise`: after the flap it rises out (0.9 s), the envelope sinking just enough to keep
+    it on the stage; then it turns upright, growing to the page card's size, centred, its
+    shadow coming in, while each envelope layer shrinks to 0.6 and fades (1.0 s).
+  - `slide`: after the flap the card grows on one curve to the page card's size, rising
+    toward the centre on the way (a little higher, then back; `OUT_MS`, `OUT_LIFT`). The
+    envelope grows with it while it holds the card, then eases to a stop as the card
+    clears (`softCap`), sliding down and off the stage all along (1.4 s). Once clear, the
+    card turns upright (1.0 s).
+  - Then, either way, the page's own reply panel slides in over the stage — from the right,
+    or up from the bottom on a phone — and the card moves to where the page draws it
+    (0.8 s); the envelope unmounts and the page takes over in place. Where the page draws
+    its card and panel is measured on the click. Each layer moves and fades on its own:
+    one fading wrapper would cut the shadows off the ground. Settled open, the flap drops
+    behind the card (every layer but the cast, the inside and the flap is raised).
+- **The page coming out (modular)** (`strip.ts`, the `strip` prop): copies of the page's
+  sections and header, drawn by `ModularInvitation` (no anchors, no edit buttons, its own
+  vars and fonts). The sections, laid out at the column's real width, stand upright in the
+  pocket, scaled to 5 units in from the body's sides and cut off below the envelope. After
+  the click, three steps: while the flap turns, the envelope grows a little, the strip with
+  it, a quarter of the strip's growth (`CAP`, over `FLAP_MS`); then, at that size, the envelope slides
+  down and off the stage (1.4 s, `SLIDE_MS`) while the strip moves up out of the pocket to
+  where the page draws its sections, just under the header (`MOVE_EASE`, steady, there as
+  the envelope leaves). Once the body's top (the fold) is past the stage's bottom
+  (`growAt`: only the open flap still shows, mostly behind the strip), the strip grows to
+  full size from its top centre (0.9 s, `FINAL_MS`), while the envelope slides on; the
+  envelope's top is held against that growth, so it never rises back. The copy is always tall enough to reach the scroller's bottom at its size, so
+  no edge shows once the envelope is gone. At full size the header shows above it (0.15 s, `HEADER_MS`), and
+  the page takes over in place. The envelope's growth and drop go on the layers' own `scale` and
+  `translate` (`--env-grow`, `--env-drop`), never transitioned, so a tap's ease into the
+  lift doesn't smooth them. On a tap (not
+  hovered first) the lift itself runs on that first growth's clock and curve
+  (`LIFT_WITH_GROWTH` → `--env-lift-time`), so lift and growth read as one; it is set
+  after measuring, as a style update in between would start the lift on its own 0.45 s. After a hover
+  and a click (not a tap), over the first growth every shadow grows with the envelope and all but the tag's hard
+  one blur more (the envelope's hard one and the tag's soft one, marked `env-blur-more`,
+  by `MORE_BLUR`, the rest by `CAST_BLUR`; every shadow, the tag's hard one too, fades to
+  half its own opacity (`SHADOW_OPACITY`, on the shapes, not their group, so they still
+  multiply)
+  times their own, on their `feGaussianBlur`s, set back at the end). The cast's tight and
+  soft shadows and the tag's soft one sit in groups the build marks `env-cast-tight`, which
+  can scale them on their own about their centres (`--env-cast-tight`, now 1). All in
+  `castShadows` (`card.ts`), shared with the simple card's `slide`. The column, its header (its first child)
+  and the scroller's bottom are measured on the click.
 - **Reduced motion:** no flap, no swing, no lift: the closed envelope fades straight out
   (0.3 s, `REDUCED_FADE_MS`).
 

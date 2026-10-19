@@ -104,7 +104,7 @@ export const DEFAULTS: Record<string, SectionSamples> = {
           ro: "O ceremonie scurtă, apoi un transfer pe drumul de coastă",
           hu: "Rövid szertartás, aztán transzfer a part menti úton",
         },
-        photo: "/modular/samples/tuscany-church.png",
+        photo: "/modular/samples/church.jpg",
       },
       {
         label: {
@@ -119,7 +119,7 @@ export const DEFAULTS: Record<string, SectionSamples> = {
           ro: "Aperitiv, cină și dans deasupra mării",
           hu: "Aperitif, vacsora és tánc a tenger fölött",
         },
-        photo: "/modular/samples/tuscany-venue.png",
+        photo: "/modular/samples/venue.jpg",
       },
     ],
   },

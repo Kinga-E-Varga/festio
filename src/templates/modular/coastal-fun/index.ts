@@ -68,7 +68,7 @@ export const template: ModularTemplate = {
             ro: "Ceremonia și cina, în același loc",
             hu: "Szertartás és vacsora, egy helyen",
           },
-          photo: "/modular/samples/location.jpg",
+          photo: "/modular/samples/venue.jpg",
         },
       ],
     },
@@ -204,7 +204,7 @@ export const template: ModularTemplate = {
       ],
     },
     cover: {
-      photo: "/modular/samples/couple-ava-mateo.jpg",
+      photo: "/modular/samples/coastal-fun.jpg",
       kicker: { en: "You're invited", ro: "Te invităm", hu: "Meghívunk" },
     },
   },

@@ -23,11 +23,11 @@ export const palette: ModularPalette = {
     error: "#b8322a",
   },
   envelope: {
-    paper: "#3d5c60",
-    liner: "#934329",
-    string: "#dcc38e",
-    seal: "liner",
-    tag: "#f5f1ea",
-    shadow: "#5a5048",
+    paper: "#cab6a3",
+    liner: "accent",
+    string: "#7a6653",
+    seal: "accent",
+    tag: "#f7f0e5",
+    shadow: "ink-muted",
   },
 };

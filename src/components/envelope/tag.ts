@@ -3,12 +3,15 @@ const SVG_NS = "http://www.w3.org/2000/svg";
 const TAG_AT = 0.53;
 /** The words' size before fitting, in the drawing's units (as `.env-tag-text`). */
 const TAG_SIZE = 5.5;
+/** The words' largest size on screen, in CSS px: big envelopes don't need them bigger. */
+const TAG_MAX_PX = 28;
 
 /**
  * The tag's words, written along the tag from its bottom up toward the hole,
- * shrunk to fit inside it. The tag's direction comes from its shape (hole →
- * the paper's centre), so a tag drawn at any angle works. Then, unless
- * `measureHover` is off, the tag's hover area: its paper's box at rest.
+ * shrunk to fit inside it and never above `TAG_MAX_PX` on screen. The tag's
+ * direction comes from its shape (hole → the paper's centre), so a tag drawn
+ * at any angle works. Then, unless `measureHover` is off, the tag's hover
+ * area: its paper's box at rest.
  */
 export function placeTag(
   root: HTMLElement,
@@ -87,7 +90,14 @@ export function placeTag(
       (long * (1 - TAG_AT) * 2 * 0.9) / bb.width,
       (wide * 2 * 0.8) / bb.height,
     );
-    if (fit < 1) text.style.fontSize = `${TAG_SIZE * fit * unscale}px`;
+    /* On screen: the CTM runs to the drawing's viewport, so the layers' own moves are left out. */
+    const ctm = text.getCTM();
+    const perUnit = ctm
+      ? Math.sqrt(Math.abs(ctm.a * ctm.d - ctm.b * ctm.c))
+      : 0;
+    const size = TAG_SIZE * Math.min(fit, 1) * unscale;
+    const cap = perUnit ? TAG_MAX_PX / perUnit : size;
+    text.style.fontSize = `${Math.min(size, cap)}px`;
   }
   if (!measureHover) return;
   const env = root.querySelector<HTMLElement>(".env");

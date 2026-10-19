@@ -386,7 +386,13 @@
     },
     "sections": "Szakaszok",
     "reveal": "Ugrás ide: {section}",
-    "envelope": "Boríték használata"
+    "envelopeHeading": "Boríték",
+    "envelope": "Boríték használata",
+    "opening": "A kártya kijövetele",
+    "openings": {
+      "rise": "Felemelkedik",
+      "slide": "Kicsúszik"
+    }
   },
   "ContentTab": {
     "sections": "Szakaszok",

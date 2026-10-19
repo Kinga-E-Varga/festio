@@ -8,7 +8,8 @@ import type {
 
 /*
  * The few colours a palette does not set, mixed once here in oklab: the
- * shadow, the page ground darkened; the pattern's ink, the page ground a
+ * shadow, the page ground darkened; the column's shadow, the surface darkened
+ * and given more colour (in oklch); the pattern's ink, the page ground a
  * little darkened; the inverse pair, the page's own two colours swapped;
  * and the muted inks on the accent and tertiary bands, each band's ink a
  * fifth of the way to the band. A mix reads other custom properties where
@@ -22,6 +23,7 @@ import type {
  */
 const MIXES: Record<MixedColor, string> = {
   shadow: "color-mix(in oklab, var(--m-canvas), black 80%)",
+  "column-shadow": "oklch(from var(--m-surface) calc(l * 0.35) calc(c * 4) h)",
   pattern: "color-mix(in oklab, var(--m-canvas), black 10%)",
   inverse: "var(--m-ink)",
   "inverse-ink": "var(--m-surface)",

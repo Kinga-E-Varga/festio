@@ -1,6 +1,7 @@
 "use client";
 
 import { useTranslations } from "next-intl";
+import { EditorHeading } from "@/components/dashboard/event-editor/EditorSection";
 import { PanelSwitch } from "@/components/invitation/PanelSwitch";
 import type { Language } from "@/lib/language";
 import { DEFAULT_CORNERS, isCornersId } from "@/modular/corners";
@@ -12,6 +13,7 @@ import {
   PatternPicker,
 } from "./LookPickers";
 import { SectionsList } from "./SectionsList";
+import { SECTION_CARD as CARD, SECTION_NAME as NAME } from "./styles";
 import { TemplatePicker } from "./TemplatePicker";
 
 interface DesignTabProps {
@@ -74,13 +76,30 @@ export function DesignTab({
         current={isCornersId(state.corners) ? state.corners : DEFAULT_CORNERS}
         onPick={(id) => onChange({ ...state, corners: id })}
       />
-      <PanelSwitch
-        id="envelope-switch"
-        label={t("envelope")}
-        checked={state.envelope}
-        onChange={(on) => onChange({ ...state, envelope: on })}
-        className="mb-8"
-      />
+      <div
+        role="group"
+        aria-labelledby="design-heading-envelope"
+        className="mb-8 flex flex-col"
+      >
+        <EditorHeading
+          id="design-heading-envelope"
+          title={t("envelopeHeading")}
+          className="mb-[18px]"
+        />
+        {/* As a section's card in Sections, its switch set the same way. */}
+        <div className={CARD}>
+          <PanelSwitch
+            className="-ml-[9px]"
+            gap="gap-[11px]"
+            tone="light"
+            id="envelope-switch"
+            label={t("envelope")}
+            checked={state.envelope}
+            onChange={(on) => onChange({ ...state, envelope: on })}
+            heading={<span className={NAME}>{t("envelope")}</span>}
+          />
+        </div>
+      </div>
       <SectionsList
         library={library}
         state={state}

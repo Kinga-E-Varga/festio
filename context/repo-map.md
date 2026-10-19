@@ -93,7 +93,7 @@ Shared by every modular template, listed with Turbopack's `import.meta.glob` —
 The closed envelope over an invitation (simple and modular, guest page and editors) until it is opened. Maintained with the `envelope` skill.
 
 - `Envelope.tsx` — the drawing's layers, the hover lift and tag swing, the flap's turn on click, then the fade into the page; used by `Invitation` and `ModularInvitation`. `useSealed.ts` — whether the page is still sealed (the page stays `inert` until then; the editors' Use envelope switch seals it again).
-- `colors.ts` — an `envelope` (each palette's, each simple template's: six roles, hex or another role) as `--env-*` vars, with the fixed Hue + Vivid shading. `motion.ts` — timings, flap keyframes, the shading fades. `tag.ts` — the tag's words, fitted along it.
+- `colors.ts` — an `envelope` (each palette's, each simple template's: six roles, hex or another role; a palette's may also name its own colours, `paletteEnvelope`) as `--env-*` vars, with the fixed Hue + Vivid shading. `motion.ts` — timings, flap keyframes, the shading fades. `tag.ts` — the tag's words, fitted along it. `card.ts` — the simple card's way out of the pocket (Rises / Slides out); `strip.ts` — the modular page's way out.
 - `drawing.generated.ts` — the drawing as markup, every id, class and colour `env-` prefixed. Built by `envelope.py build-app` from `.claude/skills/envelope/drawing/envelope-edit.svg`; never edited.
 - The CSS is the envelope block at the end of `@layer components` in `globals.css`.
 

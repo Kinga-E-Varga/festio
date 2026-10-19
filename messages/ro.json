@@ -77,7 +77,7 @@
     "gifts": "Cadouri"
   },
   "Envelope": {
-    "tag": "Deschide-\nmă",
+    "tag": "Pentru\ntine",
     "open": "Deschide invitația"
   },
   "Nav": {
@@ -386,7 +386,13 @@
     },
     "sections": "Secțiuni",
     "reveal": "Mergi la {section}",
-    "envelope": "Folosește plicul"
+    "envelopeHeading": "Plic",
+    "envelope": "Folosește plicul",
+    "opening": "Ieșirea cardului",
+    "openings": {
+      "rise": "Se ridică",
+      "slide": "Alunecă afară"
+    }
   },
   "ContentTab": {
     "sections": "Secțiuni",

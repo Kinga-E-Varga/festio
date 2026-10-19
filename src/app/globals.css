@@ -439,11 +439,13 @@
    * The card's own shadow, in design px — the transform shrinks it with the
    * card. The stage's `--shadow-space` strip is what keeps it from clipping.
    */
-  .stage[data-shadow="light"] > .frame > .card {
+  .stage[data-shadow="light"] > .frame > .card,
+  .env-card[data-shadow="light"]::after {
     box-shadow: 0px 5px 20px #2f281fad;
   }
 
-  .stage[data-shadow="dark"] > .frame > .card {
+  .stage[data-shadow="dark"] > .frame > .card,
+  .env-card[data-shadow="dark"]::after {
     box-shadow: 0px 6px 22px #2f281fe0;
   }
 
@@ -916,12 +918,12 @@
 
   /*
    * The modular invitation's column on its ground, in the palette's
-   * mixed `--m-shadow` (the ground, darkened). On the guest page, narrower
+   * mixed `--m-column-shadow` (the surface, darker and more colourful). On the guest page, narrower
    * than that the column fills the scroller, which clips the shadow away.
    */
   .elevation-band {
     box-shadow: 0px 0px 14px
-      color-mix(in srgb, var(--m-shadow) 70%, transparent);
+      color-mix(in srgb, var(--m-column-shadow) 0%, transparent);
   }
 
   /*
@@ -980,50 +982,75 @@
   .env {
     position: relative;
     flex: none;
-    width: min(88cqw, 600px, calc((100cqh - 120px) * var(--env-ratio)));
+    width: min(88cqw, 720px, calc((100cqh - 80px) * var(--env-ratio)));
     aspect-ratio: var(--env-ratio);
   }
+  /*
+   * One transform per layer: the opening's move (`--env-move`, set frame by
+   * frame on `.env`) over the lifted pose, which `--env-up` turns on (0 or
+   * 1). Each part lifts by its own `--env-lift-*` (`LIFTED` in `motion.ts`).
+   * Each layer fades on its own (`--env-out`): one fading wrapper would cut
+   * the shadows off the ground they multiply onto. The modular page's way
+   * out drops and grows the envelope on their own properties (`--env-drop`,
+   * `--env-grow`), applied before the transform and never transitioned.
+   */
   .env-layer {
+    --lift-y: var(--env-lift-body-y);
+    --lift-s: var(--env-lift-body-s);
     position: absolute;
     inset: 0;
     width: 100%;
     height: 100%;
     overflow: visible;
     transform-origin: 50% var(--env-centre-y);
-    transition: transform 0.45s cubic-bezier(0.2, 0.7, 0.2, 1);
+    translate: 0 var(--env-drop, 0);
+    scale: var(--env-grow, 1);
+    transform: var(--env-move, translate(0))
+      translateY(calc(var(--lift-y) * var(--env-up, 0)))
+      scale(calc(1 + (var(--lift-s) - 1) * var(--env-up, 0)));
+    opacity: var(--env-out, 1);
+    transition: transform
+      var(--env-lift-time, 0.45s cubic-bezier(0.2, 0.7, 0.2, 1));
+  }
+  /* The cast's shadows and the tag's soft one, scaled on their own as the envelope grows. */
+  .env-cast-tight {
+    transform-box: fill-box;
+    transform-origin: center;
+    scale: var(--env-cast-tight, 1);
+  }
+  .env-layer.env-cast {
+    --lift-y: var(--env-lift-cast-y);
+    --lift-s: var(--env-lift-cast-s);
   }
   .env-layer.env-cast,
   .env-layer.env-inside-shade,
   .env-layer.env-deco-shade {
     mix-blend-mode: multiply;
   }
+  /* Lifted, the tag's shadow softens too. */
   .env-layer.env-tag-shade {
+    --lift-y: var(--env-lift-tagShade-y);
+    --lift-s: var(--env-lift-tagShade-s);
+    filter: blur(calc(6px * var(--env-up, 0)));
     transition:
-      transform 0.45s cubic-bezier(0.2, 0.7, 0.2, 1),
-      filter 0.45s ease;
+      transform var(--env-lift-time, 0.45s cubic-bezier(0.2, 0.7, 0.2, 1)),
+      filter var(--env-lift-time, 0.45s ease);
   }
   /*
    * Hover lifts the envelope: it grows and rises; its cast shadow rises less
    * and spreads; the tag's shadow softens. Mouse only — on touch it would
-   * stick — and never with reduced motion.
+   * stick — and never with reduced motion. From the click on it stays
+   * lifted (`data-lifted`); a tap eases into it as the opening starts (on
+   * the modular page, over the first growth's `--env-lift-time`).
    */
   @media (hover: hover) and (prefers-reduced-motion: no-preference) {
     .env-stage[data-state="closed"]
-      .env:has(.env-hit:hover, .env-hit-tag:hover)
-      > .env-layer {
-      transform: translateY(-3%) scale(1.04);
+      .env:has(.env-hit:hover, .env-hit-tag:hover) {
+      --env-up: 1;
     }
-    .env-stage[data-state="closed"]
-      .env:has(.env-hit:hover, .env-hit-tag:hover)
-      > .env-layer.env-cast {
-      transform: translateY(-2%) scale(1.055);
-    }
-    .env-stage[data-state="closed"]
-      .env:has(.env-hit:hover, .env-hit-tag:hover)
-      > .env-layer.env-tag-shade {
-      transform: translateY(-2%) scale(1.04);
-      filter: blur(6px);
-    }
+  }
+  .env-stage[data-lifted] .env {
+    --env-up: 1;
   }
   /* The tag's handwriting, in the liner's colour, soaked into the tag. */
   .env-tag-text {
@@ -1099,6 +1126,83 @@
   .env-hit:focus-visible {
     outline: 2px solid var(--env-text);
     outline-offset: 10px;
+  }
+  /*
+   * A simple invitation's card: in the pocket, between the inside and the
+   * pocket, cut off below the envelope; out of it, in front of the whole
+   * stage. Each copy is placed by one transform, frame by frame, and only
+   * one shows at a time (`data-card`, set by the script).
+   */
+  .env-card-pocket {
+    pointer-events: none;
+    clip-path: polygon(
+      -500% -500%,
+      600% -500%,
+      600% var(--env-body-bottom),
+      -500% var(--env-body-bottom)
+    );
+  }
+  /* Over the envelope's layers, which are raised once it is open (below). */
+  .env-card-front {
+    position: absolute;
+    inset: 0;
+    z-index: 3;
+    pointer-events: none;
+  }
+  .env-stage:not([data-card="pocket"]) .env-card-pocket,
+  .env-stage:not([data-card="front"]) .env-card-front {
+    visibility: hidden;
+  }
+  .env-card {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: var(--design-w);
+    height: var(--design-h);
+    transform-origin: 0 0;
+  }
+  /* A modular page's sections, at the column's width, and its header's box over the column's top. */
+  .env-strip {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: var(--strip-w);
+    height: var(--strip-h);
+    transform-origin: 0 0;
+  }
+  .env-strip-head {
+    position: absolute;
+    left: var(--head-x);
+    top: var(--head-y);
+    width: var(--head-w);
+    height: var(--head-h);
+    z-index: 3;
+    overflow: hidden;
+    pointer-events: none;
+  }
+  /* Hidden until it shows (frame by frame). */
+  .env-strip-head > * {
+    opacity: 0;
+  }
+  .env-stage:not([data-card]) .env-strip-head {
+    visibility: hidden;
+  }
+  /* The page card's own shadow (above), coming in as the card turns upright. */
+  .env-card::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    opacity: var(--env-card-shadow, 0);
+  }
+  /* Settled open, the flap lies behind the card, which rises in front of it. */
+  .env-stage[data-state="open"]
+    .env
+    > :not(.env-cast, .env-inside:not(.env-inside-shade), .env-flap) {
+    z-index: 1;
+  }
+  /* From here the layers are placed frame by frame. */
+  .env-stage[data-state="open"] .env-layer {
+    transition: none;
   }
 }
 

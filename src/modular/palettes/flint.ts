@@ -6,7 +6,7 @@ export const palette: ModularPalette = {
   name: "Flint",
   mood: "subtle",
   colors: {
-    canvas: "#d8d4cb",
+    canvas: "#efece5",
     surface: "#efece5",
     "surface-alt": "#dfd9cd",
     ink: "#252b33",
@@ -23,11 +23,11 @@ export const palette: ModularPalette = {
     error: "#b3261e",
   },
   envelope: {
-    paper: "#455669",
-    liner: "#7c4632",
-    string: "#b9c4a6",
-    seal: "liner",
+    paper: "#c0b197",
+    liner: "accent",
+    string: "#857556",
+    seal: "accent",
     tag: "#efece5",
-    shadow: "#4a4740",
+    shadow: "#7e7256",
   },
 };

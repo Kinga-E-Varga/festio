@@ -9,6 +9,7 @@ import {
 } from "next-intl";
 import { type ReactNode, Suspense, useState } from "react";
 import { useToast } from "@/components/dashboard/Toast";
+import type { CardOpening } from "@/components/envelope/card";
 import { cardValues } from "@/lib/invitation";
 import type { Language } from "@/lib/language";
 import { TemplateCard } from "@/templates/TemplateCard";
@@ -52,6 +53,8 @@ export function HostInvitationEditor({
   const [editing, setEditing] = useState(true);
   const [envelope, setEnvelope] = useState(true);
   const [savedEnvelope, setSavedEnvelope] = useState(true);
+  /* Not saved: only to compare the two ways out while they are tried. */
+  const [opening, setOpening] = useState<CardOpening>("rise");
   const toast = useToast();
 
   function change(id: string, value: string) {
@@ -94,6 +97,7 @@ export function HostInvitationEditor({
       fill
       replyInert={editing}
       envelope={envelope}
+      opening={opening}
       /*
        * The host can try the form out, every check included, but the editor
        * never saves a reply — only the guest page will.
@@ -108,6 +112,8 @@ export function HostInvitationEditor({
           onChange={change}
           envelope={envelope}
           onEnvelope={switchEnvelope}
+          opening={opening}
+          onOpening={setOpening}
           onClose={() => setEditing(false)}
         />,
       )}

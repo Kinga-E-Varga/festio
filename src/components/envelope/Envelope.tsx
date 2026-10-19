@@ -4,15 +4,30 @@ import { useTranslations } from "next-intl";
 import {
   type CSSProperties,
   type PointerEvent,
+  type ReactNode,
+  type RefObject,
   useEffect,
   useMemo,
   useRef,
   useState,
 } from "react";
+import { flushSync } from "react-dom";
 import type { EnvelopeColors } from "@/types/envelope";
+import type { CardShadow } from "@/types/invitation";
+import {
+  type CardOpening,
+  type CardPlaces,
+  cardFrame,
+  cardPlaces,
+  castShadows,
+  PANEL_EASING,
+  PANEL_MS,
+} from "./card";
 import { envelopeVars } from "./colors";
 import { DRAWING } from "./drawing.generated";
 import {
+  type Blur,
+  blursIn,
   clearFades,
   FADE_MS,
   type Fade,
@@ -23,8 +38,15 @@ import {
   reducedMotion,
   setFades,
   SETTLE_MS,
+  LIFTED_VARS,
   SWING,
 } from "./motion";
+import {
+  LIFT_WITH_GROWTH,
+  type StripPlaces,
+  stripFrame,
+  stripPlaces,
+} from "./strip";
 import { placeTag } from "./tag";
 
 interface EnvelopeProps {
@@ -35,8 +57,46 @@ interface EnvelopeProps {
   fontKey: string;
   /** The simple editor's panel is open beside it: the envelope centres in what is left. */
   besidePanel?: boolean;
+  /** A simple invitation's card, which comes out of the envelope once it is open. */
+  card?: EnvelopeCard;
+  /** A modular invitation's page, which comes out of the envelope once it is open. */
+  strip?: EnvelopeStrip;
+  /** The fade into the page has started, taking `ms`. */
+  onFade?: (ms: number) => void;
   /** The envelope is open and faded: the page is the guest's. */
   onOpened: () => void;
+}
+
+/**
+ * The card and where the page draws it: `page` is the invitation's root,
+ * holding the page's own card (`.stage .card`) and reply panel (`.reply`).
+ */
+export interface EnvelopeCard {
+  node: ReactNode;
+  width: number;
+  height: number;
+  shadow: CardShadow;
+  page: RefObject<HTMLElement | null>;
+  /** Which way it comes out. */
+  opening: CardOpening;
+}
+
+/**
+ * A modular page's copies: its sections and its header, each in its own
+ * vars and fonts, filling the box the envelope gives it. `column` is the
+ * page's column (`@container`): its box, its first child the header, its
+ * parent the scroller, whose bottom is the page's.
+ */
+export interface EnvelopeStrip {
+  body: ReactNode;
+  header: ReactNode;
+  column: RefObject<HTMLElement | null>;
+}
+
+/** The card's way out, measured on the click; `panel` slides in last. */
+interface Reveal {
+  places: CardPlaces;
+  panel: HTMLElement | null;
 }
 
 const { vb, fold, body, hole } = DRAWING;
@@ -52,6 +112,8 @@ const GEOMETRY = {
   "--env-hit-y": pctY(body.y0),
   "--env-hit-w": `${((body.x1 - body.x0) / vb.w) * 100}%`,
   "--env-hit-h": `${((body.y1 - body.y0) / vb.h) * 100}%`,
+  "--env-body-bottom": pctY(body.y1),
+  ...LIFTED_VARS,
   "--env-hole-x": pctX(hole.x),
   "--env-hole-y": pctY(hole.y),
 } as CSSProperties;
@@ -82,12 +144,38 @@ function Swing({ className, markup }: { className: string; markup: string }) {
   );
 }
 
+/** A copy of the card at its design size, placed by one transform. */
+function CardCopy({
+  card,
+  ref,
+}: {
+  card: EnvelopeCard;
+  ref: RefObject<HTMLDivElement | null>;
+}) {
+  return (
+    <div
+      ref={ref}
+      className="env-card"
+      data-shadow={card.shadow ?? undefined}
+      style={
+        {
+          "--design-w": `${card.width}px`,
+          "--design-h": `${card.height}px`,
+        } as CSSProperties
+      }
+    >
+      {card.node}
+    </div>
+  );
+}
+
 type Phase = "closed" | "opening" | "open";
 
 /** Everything running, so a click, a leave or an unmount can stop it. */
 interface Work {
   flap: Animation | null;
   swings: Animation[];
+  panel: Animation | null;
   fades: Fade[];
   frame: number;
   timers: number[];
@@ -112,6 +200,9 @@ export function Envelope({
   ground,
   fontKey,
   besidePanel = false,
+  card,
+  strip,
+  onFade,
   onOpened,
 }: EnvelopeProps) {
   const t = useTranslations("Envelope");
@@ -125,9 +216,19 @@ export function Envelope({
   const rot = useRef<HTMLDivElement>(null);
   const hit = useRef<HTMLButtonElement>(null);
   const hitTag = useRef<HTMLDivElement>(null);
+  const pocketCard = useRef<HTMLDivElement>(null);
+  const frontCard = useRef<HTMLDivElement>(null);
+  const stripCopy = useRef<HTMLDivElement>(null);
+  /* After a hover and a click: the cast's shadows' blurs, widened as the envelope grows. Empty otherwise. */
+  const castBlurs = useRef<(Blur & { more: boolean })[]>([]);
+  /* And every shadow shape, with its own opacity: they fade as the envelope grows. */
+  const castFades = useRef<{ el: SVGElement; base: number }[]>([]);
+  const headBox = useRef<HTMLDivElement>(null);
+  const headCopy = useRef<HTMLDivElement>(null);
   const work = useRef<Work>({
     flap: null,
     swings: [],
+    panel: null,
     fades: [],
     frame: 0,
     timers: [],
@@ -145,8 +246,13 @@ export function Envelope({
     };
     place();
     document.fonts.ready.then(place);
+    /* Capped on screen, so a new envelope size fits them again. */
+    const env = root.querySelector(".env");
+    const resized = new ResizeObserver(place);
+    if (env) resized.observe(env);
     return () => {
       live = false;
+      resized.disconnect();
     };
   }, [words, fontKey]);
 
@@ -158,6 +264,7 @@ export function Envelope({
       running.timers.forEach(clearTimeout);
       running.flap?.cancel();
       running.swings.forEach((animation) => animation.cancel());
+      running.panel?.cancel();
       clearFades(running.fades);
     };
   }, []);
@@ -166,9 +273,9 @@ export function Envelope({
     work.current.timers.push(window.setTimeout(run, ms));
   }
 
-  function swing(kind: "enter" | "leave") {
+  function swing(kind: keyof typeof SWING) {
     const running = work.current;
-    running.lifted = kind === "enter";
+    if (kind !== "slide") running.lifted = kind === "enter";
     const root = stage.current;
     if (!root || reducedMotion()) return;
     const swingers = Array.from(
@@ -194,50 +301,244 @@ export function Envelope({
     if (event.pointerType !== "mouse" || isHover(event.relatedTarget)) return;
     if (phase === "closed" && fade === null) swing("enter");
   }
+  /* Once clicked, the tag stays where the hover turned it. */
   function leave(event: PointerEvent<HTMLElement>) {
-    if (isHover(event.relatedTarget)) return;
+    if (isHover(event.relatedTarget) || phase !== "closed") return;
     if (work.current.lifted) swing("leave");
   }
 
   function fadeOut(ms: number) {
     setFade(ms);
+    onFade?.(ms);
     later(ms, onOpened);
+  }
+
+  /* Where the page draws its card; null without a card, or before the page has laid it out. */
+  function measureCard(root: HTMLElement, env: Element): Reveal | null {
+    const page = card?.page.current;
+    const target = page?.querySelector(".stage .card")?.getBoundingClientRect();
+    if (!card || !page || !target?.width) return null;
+    return {
+      places: cardPlaces(
+        card.opening,
+        root.getBoundingClientRect(),
+        env.getBoundingClientRect(),
+        target,
+        card.width,
+        card.height,
+      ),
+      panel: page.querySelector<HTMLElement>(".reply"),
+    };
+  }
+
+  /*
+   * After the flap, frame by frame: the card out of the pocket and upright
+   * as the envelope leaves (`card.ts`, either way), then beside the reply
+   * panel as it slides in; it ends where the page draws it, and the page
+   * takes over. Each layer moves and fades on its own: one fading wrapper
+   * would cut the shadows off the ground they multiply onto.
+   */
+  function revealCard(root: HTMLElement, reveal: Reveal, from: number) {
+    const running = work.current;
+    const env = root.querySelector<HTMLElement>(".env");
+    const { panelAt, total } = reveal.places;
+    later(panelAt, () => slidePanel(reveal.panel));
+    const tick = (now: number) => {
+      const t = Math.min(now - from, total);
+      const frame = cardFrame(reveal.places, t);
+      root.dataset.card = frame.inPocket ? "pocket" : "front";
+      const copy = (frame.inPocket ? pocketCard : frontCard).current;
+      if (copy) copy.style.transform = frame.card;
+      frontCard.current?.style.setProperty(
+        "--env-card-shadow",
+        String(frame.shadow),
+      );
+      env?.style.setProperty("--env-move", frame.envelope.transform);
+      env?.style.setProperty("--env-out", String(frame.envelope.opacity));
+      setCastShadows(env, frame.envelope.held);
+      if (t < total) running.frame = requestAnimationFrame(tick);
+      else {
+        setCastBlur(1);
+        setCastFade(1);
+        onOpened();
+      }
+    };
+    running.frame = requestAnimationFrame(tick);
+  }
+
+  /* Where the page draws its column and header; null without a strip, or before it is laid out. */
+  function measureStrip(root: HTMLElement, env: Element): StripPlaces | null {
+    const column = strip?.column.current;
+    const scroller = column?.parentElement;
+    if (!strip || !column || !scroller) return null;
+    const box = column.getBoundingClientRect();
+    if (!box.width) return null;
+    const head = column.firstElementChild?.getBoundingClientRect().height ?? 0;
+    const places = stripPlaces(
+      root.getBoundingClientRect(),
+      env.getBoundingClientRect(),
+      box,
+      head,
+      scroller.getBoundingClientRect().bottom,
+    );
+    stripCopy.current?.style.setProperty("--strip-w", `${places.width}px`);
+    stripCopy.current?.style.setProperty("--strip-h", `${places.height}px`);
+    headBox.current?.style.setProperty("--head-x", `${places.column.x}px`);
+    headBox.current?.style.setProperty("--head-y", `${places.column.y}px`);
+    headBox.current?.style.setProperty("--head-w", `${places.column.w}px`);
+    headBox.current?.style.setProperty("--head-h", `${head}px`);
+    return places;
+  }
+
+  /* One frame of the page coming out (`strip.ts`), `t` ms after the click. */
+  function setStrip(env: HTMLElement | null, places: StripPlaces, t: number) {
+    const frame = stripFrame(places, t);
+    if (stripCopy.current) {
+      stripCopy.current.style.transform = frame.strip;
+      stripCopy.current.style.setProperty("--strip-h", `${frame.height}px`);
+    }
+    if (headCopy.current) headCopy.current.style.opacity = String(frame.header);
+    env?.style.setProperty("--env-grow", String(frame.grow));
+    env?.style.setProperty("--env-drop", `${frame.drop}px`);
+    setCastShadows(env, frame.held);
+  }
+
+  /* The cast's shadows as the envelope grows (`castShadows`), after a hover and a click only. */
+  function setCastShadows(env: HTMLElement | null, held: number) {
+    if (!castBlurs.current.length) return;
+    const shadows = castShadows(held);
+    env?.style.setProperty("--env-cast-tight", String(shadows.tight));
+    setCastBlur(shadows.blur, shadows.moreBlur);
+    setCastFade(shadows.opacity);
+  }
+
+  /* Never cleared: each shape's drawn opacity is in its own style, and clearing it showed the shadow at full strength. */
+  function setCastFade(times: number) {
+    for (const fade of castFades.current)
+      fade.el.style.opacity = String(fade.base * times);
+  }
+
+  /* Each blur as a multiple of its own: those marked to blur more by `more`, the rest by `times`. */
+  function setCastBlur(times: number, more = times) {
+    for (const blur of castBlurs.current)
+      blur.node.setAttribute(
+        "stdDeviation",
+        String(blur.base * (blur.more ? more : times)),
+      );
+  }
+
+  /* After the flap, frame by frame: the page out of the pocket as the envelope leaves, its header showing as it arrives. */
+  function revealStrip(root: HTMLElement, places: StripPlaces, from: number) {
+    const running = work.current;
+    const env = root.querySelector<HTMLElement>(".env");
+    const tick = (now: number) => {
+      const t = Math.min(now - from, places.total);
+      setStrip(env, places, t);
+      if (t < places.total) running.frame = requestAnimationFrame(tick);
+      else {
+        setCastBlur(1);
+        setCastFade(1);
+        onOpened();
+      }
+    };
+    running.frame = requestAnimationFrame(tick);
+  }
+
+  /* The page's own reply panel, over the stage: in from the right, or up from the bottom on a phone. */
+  function slidePanel(panel: HTMLElement | null) {
+    if (!panel) return;
+    const style = getComputedStyle(panel);
+    const from =
+      style.position === "fixed" ? "translateY(100%)" : "translateX(100%)";
+    work.current.panel = panel.animate(
+      [
+        { transform: from, zIndex: 45 },
+        { transform: style.transform, zIndex: 45 },
+      ],
+      { duration: PANEL_MS, easing: PANEL_EASING, fill: "forwards" },
+    );
   }
 
   /* Click anywhere: the flap turns open, settles, then the envelope fades into the page. */
   function open() {
     if (phase !== "closed" || fade !== null) return;
     const running = work.current;
-    if (running.lifted) swing("leave");
     const root = stage.current;
     const flap = rot.current;
-    const env = root?.querySelector(".env");
+    const env = root?.querySelector<HTMLElement>(".env");
     if (!root || !flap || !env) return;
     /* Reduced motion: the closed envelope fades straight out, never jumping open. */
     if (reducedMotion()) {
       fadeOut(REDUCED_FADE_MS);
       return;
     }
+    /*
+     * Lifted from here on, the tag turned: after a hover both are already
+     * there; a tap or a key eases into them as the flap starts.
+     */
+    const reveal = measureCard(root, env);
+    const page = reveal ? null : measureStrip(root, env);
+    if (reveal || page) root.dataset.card = "pocket";
+    const shadows = root.querySelectorAll(".env-cast, .env-tag-shade");
+    const more = new Set(
+      Array.from(root.querySelectorAll(".env-blur-more"))
+        .flatMap(blursIn)
+        .map((blur) => blur.node),
+    );
+    castBlurs.current =
+      (page || reveal) && running.lifted
+        ? Array.from(shadows)
+            .flatMap(blursIn)
+            .map((blur) => ({ ...blur, more: more.has(blur.node) }))
+        : [];
+    castFades.current = castBlurs.current.length
+      ? Array.from(
+          root.querySelectorAll<SVGElement>(
+            ":is(.env-cast, .env-tag-shade, .env-tag-hard) [style*='filter']",
+          ),
+        ).map((el) => ({ el, base: Number(getComputedStyle(el).opacity) }))
+      : [];
+    /* A tap: the page grows as the flap turns, so the lift goes with it. */
+    if (page && !running.lifted)
+      root.style.setProperty("--env-lift-time", LIFT_WITH_GROWTH);
+    /* After measuring: a style update in between would start the lift on its own clock. */
+    root.dataset.lifted = "";
+    if (!running.lifted) swing("enter");
+    if (reveal && pocketCard.current)
+      pocketCard.current.style.transform = cardFrame(reveal.places, 0).card;
+    if (page) setStrip(env, page, 0);
     setPhase("opening");
     running.flap = flap.animate(flapFrames(env.getBoundingClientRect().width), {
       duration: FLAP_MS,
       fill: "both",
     });
     running.fades = openingFades(root);
+    /* Before the first frame: nothing shows at full strength for one. */
+    setFades(running.fades, 0);
     const start = performance.now();
     const tick = (now: number) => {
       const time = Math.min(now - start, FLAP_MS);
       setFades(running.fades, time);
+      /* The page and the envelope grow a little while the flap turns. */
+      if (page) setStrip(env, page, time);
       if (time < FLAP_MS) {
         running.frame = requestAnimationFrame(tick);
         return;
       }
+      /*
+       * Open first, in this same frame: stopping the turn and the fades a
+       * frame before the open state lands showed the closed flap for a frame.
+       */
+      flushSync(() => setPhase("open"));
       running.flap?.cancel();
       running.flap = null;
       clearFades(running.fades);
       running.fades = [];
-      setPhase("open");
-      later(SETTLE_MS, () => fadeOut(FADE_MS));
+      root.style.removeProperty("--env-lift-time");
+      if (page || reveal?.places.opening === "slide") swing("slide");
+      if (reveal) revealCard(root, reveal, start + FLAP_MS);
+      else if (page) revealStrip(root, page, start);
+      else later(SETTLE_MS, () => fadeOut(FADE_MS));
     };
     running.frame = requestAnimationFrame(tick);
   }
@@ -269,6 +570,18 @@ export function Envelope({
           markup={DRAWING.castClosed + DRAWING.castOpen}
         />
         <Layer className="env-inside" markup={DRAWING.inside} />
+        {card ? (
+          <div className="env-layer env-card-pocket" aria-hidden="true" inert>
+            <CardCopy card={card} ref={pocketCard} />
+          </div>
+        ) : null}
+        {strip ? (
+          <div className="env-layer env-card-pocket" aria-hidden="true" inert>
+            <div ref={stripCopy} className="env-strip">
+              {strip.body}
+            </div>
+          </div>
+        ) : null}
         <Layer
           className="env-inside env-inside-shade"
           markup={DRAWING.insideShade}
@@ -317,6 +630,18 @@ export function Envelope({
           onPointerLeave={leave}
         />
       </div>
+      {strip ? (
+        <div ref={headBox} className="env-strip-head" aria-hidden="true" inert>
+          <div ref={headCopy} className="h-full">
+            {strip.header}
+          </div>
+        </div>
+      ) : null}
+      {card ? (
+        <div className="env-card-front" aria-hidden="true" inert>
+          <CardCopy card={card} ref={frontCard} />
+        </div>
+      ) : null}
     </div>
   );
 }

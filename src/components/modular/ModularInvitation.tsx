@@ -1,7 +1,15 @@
 "use client";
 
-import { memo, Suspense, useState } from "react";
+import {
+  type CSSProperties,
+  memo,
+  type ReactNode,
+  Suspense,
+  useRef,
+  useState,
+} from "react";
 import { Envelope } from "@/components/envelope/Envelope";
+import { paletteEnvelope } from "@/components/envelope/colors";
 import { useSealed } from "@/components/envelope/useSealed";
 import { Icon } from "@/components/icons";
 import { localized, type Language, type LocalizedText } from "@/lib/language";
@@ -28,7 +36,9 @@ interface ModularInvitationProps {
   language: Language;
   /**
    * In the editor: the invitation is the column itself, shadowed on
-   * the editor's ground, so its scrollbar sits at the column's edge.
+   * the editor's ground, so its scrollbar sits at the column's edge. The
+   * envelope is drawn beside it, over its parent: that parent must be
+   * positioned.
    */
   framed?: boolean;
   onRsvp?: (payload: RsvpPayload) => void;
@@ -90,7 +100,9 @@ export const ModularInvitation = memo(function ModularInvitation({
   edit,
 }: ModularInvitationProps) {
   const [menuOpen, setMenuOpen] = useState(false);
-  const [sealed, unseal, page] = useSealed<HTMLDivElement>(design.envelope);
+  const [sealed, unseal, page, fade, onFade] = useSealed<HTMLDivElement>(
+    design.envelope,
+  );
   const links = menuLinks(design.sections, language);
   /*
    * The header is a section, but drawn straight in the column rather than
@@ -101,14 +113,114 @@ export const ModularInvitation = memo(function ModularInvitation({
   );
   const body = design.sections.filter((choice) => choice !== bar);
   const grounds = sectionGrounds(body);
+  const columnRef = useRef<HTMLDivElement>(null);
+  const vars = {
+    ...modularVars(design.palette, design.fontPair),
+    ...cornerVars(design.corners),
+  };
+  const face = `invite font-[family-name:var(--font-primary)] text-[color:var(--m-ink)] ${fontClasses(design.fontPair)}`;
 
-  return (
+  /*
+   * The header and the sections, drawn here and again as the envelope's
+   * copies (`copy`): those have no anchors, no edit buttons and no menu.
+   */
+  function header(copy: boolean) {
+    return bar ? (
+      <Suspense fallback={<BarSkeleton />}>
+        <SectionView
+          section={bar.definition}
+          variant={bar.variant}
+          values={design.values[bar.definition.id] ?? {}}
+          related={relatedValues(bar.definition, design)}
+          basics={basics}
+          language={language}
+          ground="surface"
+          nav={{
+            links,
+            menuOpen: copy ? false : menuOpen,
+            onOpenMenu: () => setMenuOpen(!copy),
+            edit:
+              edit && !copy ? (
+                <EditButtons
+                  edit={edit}
+                  id={bar.definition.id}
+                  content={hasContent(bar.definition)}
+                />
+              ) : undefined,
+          }}
+        />
+      </Suspense>
+    ) : null;
+  }
+  function sections(copy: boolean) {
+    return body.map(({ definition, variant }, index) => (
+      <section
+        key={definition.id}
+        id={copy ? undefined : definition.id}
+        className="group/edit relative scroll-mt-14 @5xl:scroll-mt-16"
+      >
+        {edit && !copy ? (
+          <EditButtons
+            edit={edit}
+            id={definition.id}
+            content={hasContent(definition)}
+          />
+        ) : null}
+        <Suspense fallback={<SectionSkeleton />}>
+          <SectionView
+            section={definition}
+            variant={variant}
+            values={design.values[definition.id] ?? {}}
+            related={relatedValues(definition, design)}
+            basics={basics}
+            language={language}
+            ground={grounds[index]}
+            onRsvp={copy ? undefined : onRsvp}
+          />
+        </Suspense>
+      </section>
+    ));
+  }
+  /* A copy for the envelope, in the page's own vars and fonts, filling the box it is given. */
+  const copyOf = (node: ReactNode, className: string) => (
     <div
-      style={{
-        ...modularVars(design.palette, design.fontPair),
-        ...cornerVars(design.corners),
+      style={vars}
+      className={`${face} @container h-full w-full bg-[var(--m-surface)] ${className}`}
+    >
+      {node}
+    </div>
+  );
+  /*
+   * In the editor the envelope covers the whole padded ground, not just the
+   * column, and draws no ground of its own: the editor's shows through, one
+   * pattern with no seam. The column, shadow and all, stays hidden under it
+   * while its copies come out of the envelope (`strip.ts`), and takes over
+   * once they are in place; with reduced motion it fades in instead.
+   */
+  const hidden = framed && sealed && fade === null;
+  const envelope = sealed ? (
+    <Envelope
+      colors={paletteEnvelope(design.palette)}
+      ground={{
+        className: framed
+          ? fontClasses(design.fontPair)
+          : groundClasses(design.pattern),
       }}
-      className={`invite relative flex h-full flex-col overflow-clip bg-[var(--m-surface)] ${framed ? "elevation-band mx-auto max-w-(--invite-column)" : ""} font-[family-name:var(--font-primary)] text-[color:var(--m-ink)] ${fontClasses(design.fontPair)}`}
+      fontKey={design.fontPair.id}
+      strip={{
+        body: copyOf(sections(true), "elevation-band overflow-hidden"),
+        header: copyOf(header(true), ""),
+        column: columnRef,
+      }}
+      onFade={onFade}
+      onOpened={unseal}
+    />
+  ) : null;
+
+  const column = (
+    <div
+      style={{ ...vars, "--reveal": `${fade ?? 0}ms` } as CSSProperties}
+      className={`${face} relative flex h-full flex-col overflow-clip bg-[var(--m-surface)] ${framed ? "elevation-band mx-auto max-w-(--invite-column)" : ""} ${hidden ? "opacity-0" : "transition-opacity duration-(--reveal)"}`}
     >
       {/* While the drawer or the envelope covers the page, everything under it is out of the tab order. */}
       <div
@@ -127,72 +239,16 @@ export const ModularInvitation = memo(function ModularInvitation({
            * The column is the container the sections size themselves by.
            */}
           <div
+            ref={columnRef}
             className={`@container mx-auto max-w-(--invite-column) bg-[var(--m-surface)] ${framed ? "" : "elevation-band"}`}
           >
-            {bar ? (
-              <Suspense fallback={<BarSkeleton />}>
-                <SectionView
-                  section={bar.definition}
-                  variant={bar.variant}
-                  values={design.values[bar.definition.id] ?? {}}
-                  related={relatedValues(bar.definition, design)}
-                  basics={basics}
-                  language={language}
-                  ground="surface"
-                  nav={{
-                    links,
-                    menuOpen,
-                    onOpenMenu: () => setMenuOpen(true),
-                    edit: edit ? (
-                      <EditButtons
-                        edit={edit}
-                        id={bar.definition.id}
-                        content={hasContent(bar.definition)}
-                      />
-                    ) : undefined,
-                  }}
-                />
-              </Suspense>
-            ) : null}
-            {body.map(({ definition, variant }, index) => (
-              <section
-                key={definition.id}
-                id={definition.id}
-                className="group/edit relative scroll-mt-14 @5xl:scroll-mt-16"
-              >
-                {edit ? (
-                  <EditButtons
-                    edit={edit}
-                    id={definition.id}
-                    content={hasContent(definition)}
-                  />
-                ) : null}
-                <Suspense fallback={<SectionSkeleton />}>
-                  <SectionView
-                    section={definition}
-                    variant={variant}
-                    values={design.values[definition.id] ?? {}}
-                    related={relatedValues(definition, design)}
-                    basics={basics}
-                    language={language}
-                    ground={grounds[index]}
-                    onRsvp={onRsvp}
-                  />
-                </Suspense>
-              </section>
-            ))}
+            {header(false)}
+            {sections(false)}
           </div>
         </div>
       </div>
 
-      {sealed ? (
-        <Envelope
-          colors={design.palette.envelope}
-          ground={{ className: groundClasses(design.pattern) }}
-          fontKey={design.fontPair.id}
-          onOpened={unseal}
-        />
-      ) : null}
+      {framed ? null : envelope}
 
       <SectionsDrawer
         open={menuOpen}
@@ -200,6 +256,15 @@ export const ModularInvitation = memo(function ModularInvitation({
         onClose={() => setMenuOpen(false)}
       />
     </div>
+  );
+
+  return framed ? (
+    <>
+      {column}
+      {envelope}
+    </>
+  ) : (
+    column
   );
 });
 

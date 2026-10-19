@@ -31,6 +31,6 @@ export const template: ModularTemplate = {
     { section: "footer", variant: "1" }, // monogram
   ],
   values: {
-    cover: { photo: "/modular/samples/couple-ava-mateo.jpg" },
+    cover: { photo: "/modular/samples/olive-garden.jpg" },
   },
 };

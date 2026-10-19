@@ -1,7 +1,7 @@
-# Current Feature: Envelope animation
+# Current Feature: Envelope adjustments
 
-The guest's first sight of an invitation: a closed envelope in the invitation's colours that
-opens on click to show the page. Moves the envelope prototype into the app.
+The card or page now comes out of the envelope instead of the envelope just fading, plus
+colour, photo and sizing fixes found along the way.
 
 ## Status
 
@@ -9,45 +9,35 @@ Completed
 
 ## Goals
 
-- Envelope on simple and modular invitations, every package, on every visit of the guest page
-- No envelope on cancelled events or the print page and its preview; on Protected
-  invitations it shows only after the password (the password input is not part of this feature)
-- Editors' previews show the envelope like the guest page; the host opens it to see the
-  invitation; no Replay button
-- **Use envelope** switch in the Design tab, on by default — modular: before the section
-  options; simple: first thing in the (now empty) Design tab. Off then on brings the closed
-  envelope back
-- Six envelope colour roles — paper, liner (also the tag's stitching and text), string, seal,
-  tag, shadow (cast shadows, used as they are) — each a hex value or another envelope role's name
-- Every modular palette gets envelope colours (Orchard from the prototype's Olive Garden
-  mapping, the rest picked to suit, for the user to review); simple templates carry theirs in
-  their own file (Wolf Dance from the prototype)
-- The `palette` skill asks for envelope colours on every new palette
-- Shading fixed at Hue + Vivid: shadows 10° colder, highlights 15° warmer, then the Vivid
-  boost; constants, no options or sliders
-- Closed envelope on the invitation's ground (canvas and pattern); hover (mouse only) lifts
-  and grows it and drops the tag; click opens the flap, then the envelope fades into the page;
-  reduced motion: a quick fade
-- Tag text in the invitation's language — EN "Open / me", RO "Deschide-mă" (split
-  "Deschide- / mă" if two lines), HU "Nyiss / ki" — in the invitation's body font (font pair
-  primary / template primary), ink in the liner colour
-- `envelope.py` gets a build target writing the drawing's layers and constants into the app as
-  a generated file; the `envelope` skill maintains the app instead of the prototype page
+- Simple: the card comes out of the pocket and becomes the page's card, then the reply panel
+  slides in. Two openings to compare, Rises and Slides out, picked in the simple editor's
+  Design tab (not saved); the guest page uses Rises
+- Modular: a copy of the page stands in the pocket, grows with the envelope, rises to where
+  the page draws it as the envelope slides off, grows to full size, then the header shows
+- The envelope stays lifted from the click; a tap or key eases into the lift; the tag swings
+  back as the envelope slides away
+- Card and page in the pocket: 3 units in from the body's sides, 2 below the fold
+  (`CARD_SIDE`, `CARD_TOP`), the same for simple and modular
+- The inside shadow is neutral brown (`#776755`), fill and outline, in every palette
+- A palette's envelope colours may name its own palette colours (`seal: "secondary"`);
+  Coastal and Flint use them
+- RO tag text "Pentru / tine"
+- Sample photos: Coastal Fun and Olive Garden covers, the default church and venue photos;
+  unused samples removed
+- Modular column shadow mixed from the surface (`--m-column-shadow`), now at 0% while being
+  tried
 
 ## Notes
 
-- Spec: `context/features/envelope-animation.md`
-- Plan: `context/plans/envelope-animation.md`
-- The drawing stays editable in Inkscape: `.claude/skills/envelope/drawing/envelope-edit.svg`.
-- The switch is saved with the event; until Firestore is wired, it lives in the editor's
-  state (`ModularState` for modular).
-- Out of scope: card / page strip coming out of the envelope, Replay button, the Protected
-  password input, seal / string motion.
+- Tried and dropped: full-width section colours with no column
+- Open: the default cover photo in `defaults.ts` points to `tuscany.png`, which doesn't exist
+- Photos are large (up to 7000px wide); scaling them down is still open
 
 ## History
 
 <!-- Keep this updated latest to earliest -->
 
+- Envelope animation — a closed envelope in the invitation's colours over every simple and modular invitation (guest page and both editors): hover lifts it and drops the tag, a click turns the flap open, then it fades into the page, reduced motion fades it straight out; a Use envelope switch in the Design tab, on by default; six envelope colour roles on every palette and Wolf Dance with fixed Hue + Vivid shading; the tag in EN / RO / HU; the page inert until opened, focus handed to it after; `envelope.py build-app` writes the Inkscape drawing into `drawing.generated.ts` (`env-` prefixed), the drawing moved beside the skill and the prototype files removed; the global reduced-motion rule fixed (`i *` → `*`)
 - Dashboard polish — Festio's own UI restyled and sized for laptops: palette tokens named by role, one corner token (`rounded-ui`), smaller nav, rail, top bar, 36px buttons and fields, smaller headings; events list cards and rows reworked with shared dashboard styles; only the event date locks, from the event day; invitations on laptops: the modular cover fits the first screen, section spacing at most 80px, the reply form 40px with a mouse and 44px on touch (simple and modular), 36px section edit buttons
 - Modular invitations 5 — Content tab — the editor's Text tab renamed Content in every editor; the modular Content tab lists the sections that are on as numbered cards, one open at a time, scrolling the preview to it; Design and Content buttons on a hovered preview section; each variant lists the fields it shows; inputs for text, long text, time, toggle, image (photo upload coming soon), icon (grid picker), lists and groups with Add / Remove; Date shows only the date, read from the event details, with the Calendar card, Accent & big date and Tear-off variants; Helpful notes edits the Dress code / Gifts fields; times in the invitation language's style; required fields checked on blur and on Save, which jumps to the first empty one; one working state, Save and leave-page warning for Content and Design
 - Modular invitations 4 — Section variants & palettes — a second variant for most sections (header, cover, title, date & time, countdown, location, schedule, travel, stays, menu, Helpful notes, FAQ, reply, footer), numbered by id, with shared pieces (`HeaderBar`, `TitleNames`, `CoverPhoto`, `WashedPhoto`, `IconHeading`, `Mark`) and `top-bar` renamed `header`; every sample in `defaults.ts`, templates keeping only their changes; the Coastal Fun template; box corners (Sharp / Slight / Soft / Round); section styles rolling out as bands in the Design tab; new palettes (Coastal, Linen, Noir, Peony, Thistle, Y2K, Flint, Sunset), Dark Olive renamed Orchard, a `mood` (subtle / balanced / vivid) on every palette and readability fixes; the `/palette` skill with a contrast checker and swatch page; reply form ids from `useId` and a wrapping diet dropdown

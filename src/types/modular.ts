@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 import type { Language, LocalizedText } from "@/lib/language";
 import type { CornersId } from "@/modular/corners";
-import type { EnvelopeColors } from "@/types/envelope";
+import type { EnvelopeColor, EnvelopeRole } from "@/types/envelope";
 import type { EventKind } from "@/types/dashboard";
 import type { RsvpPayload, TemplateFonts } from "@/types/invitation";
 
@@ -38,6 +38,7 @@ export type ColorRole =
  */
 export type MixedColor =
   | "shadow"
+  | "column-shadow"
   | "pattern"
   | "inverse"
   | "inverse-ink"
@@ -61,8 +62,11 @@ export interface ModularPalette {
   name: string;
   mood: PaletteMood;
   colors: Record<ColorRole, string>;
-  /** The envelope guests open first: which colour plays each of its parts. */
-  envelope: EnvelopeColors;
+  /**
+   * The envelope guests open first: which colour plays each of its parts. A
+   * part may also name one of this palette's colours ("secondary").
+   */
+  envelope: Record<EnvelopeRole, EnvelopeColor | ColorRole>;
 }
 
 /**

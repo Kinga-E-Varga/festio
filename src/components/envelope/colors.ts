@@ -1,5 +1,6 @@
 import type { CSSProperties } from "react";
 import type { EnvelopeColors, EnvelopeRole } from "@/types/envelope";
+import type { ModularPalette } from "@/types/modular";
 
 /* Hue + Vivid, fixed: shadows turn toward cold, highlights toward warm (OKLCH degrees). */
 const SHADOW_TURN = 10;
@@ -32,6 +33,21 @@ export function roleColor(
   if (seen.includes(role))
     throw new Error(`Envelope colours loop: ${[...seen, role].join(" → ")}`);
   return roleColor(colors, value as EnvelopeRole, [...seen, role]);
+}
+
+/** A palette's envelope with its palette colour names ("secondary") swapped for their hex; envelope roles win. */
+export function paletteEnvelope(palette: ModularPalette): EnvelopeColors {
+  const own = palette.envelope;
+  const out = { ...own } as EnvelopeColors;
+  for (const role of Object.keys(own) as EnvelopeRole[]) {
+    const value = own[role];
+    if (value.startsWith("#") || value in own) continue;
+    const hex = palette.colors[value as keyof ModularPalette["colors"]];
+    if (!hex)
+      throw new Error(`Envelope colour "${role}" names no colour: ${value}`);
+    out[role] = hex as EnvelopeColors[EnvelopeRole];
+  }
+  return out;
 }
 
 type Triple = [number, number, number];

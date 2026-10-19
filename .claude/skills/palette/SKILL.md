@@ -91,8 +91,9 @@ export const palette: ModularPalette = {
   colours with the palette: `paper` (the envelope, a mid colour from the palette), `liner`
   (inside lining, also the tag's text: darker, contrasting with paper), `string`, `seal`
   (often `"liner"`), `tag` (a pale card), `shadow` (cast shadow, multiplied on canvas: a
-  dark, muted colour or `"liner"`). A role is a 6-digit hex or another envelope role's
-  name. Ask the user to check it on `/templates/<a modular template>` with that palette.
+  dark, muted colour or `"liner"`). A role is a 6-digit hex, another envelope role's
+  name, or one of the palette's own colours (`"secondary"`) — prefer the name when the
+  envelope uses a palette colour as it is, so it follows the palette. Ask the user to check it on `/templates/<a modular template>` with that palette.
 
 - **Name:** a fun, evocative name that fits the feel — a place, thing, moment or
   era, like Sunbaked, Linen, Coastal, Noir, Orchard, Peony, Thistle, Y2K, Flint.

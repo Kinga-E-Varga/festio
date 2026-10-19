@@ -1,6 +1,7 @@
 "use client";
 
-import type { ReactNode } from "react";
+import { type ReactNode, useRef } from "react";
+import type { CardOpening } from "@/components/envelope/card";
 import { Envelope } from "@/components/envelope/Envelope";
 import { useSealed } from "@/components/envelope/useSealed";
 import { pageBackground, templateVars } from "@/lib/invitation";
@@ -38,6 +39,8 @@ interface InvitationProps {
   onSubmit?: (payload: RsvpPayload) => void;
   /** The closed envelope over the invitation until the guest opens it. */
   envelope?: boolean;
+  /** How the card comes out of it; a new one seals it again. */
+  opening?: CardOpening;
 }
 
 /**
@@ -66,13 +69,16 @@ export function Invitation({
   repliesPaused,
   onSubmit,
   envelope = false,
+  opening = "rise",
 }: InvitationProps) {
   const { width, height, minScale, maxScale, shadow } = template.design;
   const ground = pageBackground(template);
-  const [sealed, unseal, page] = useSealed<HTMLDivElement>(envelope);
+  const [sealed, unseal, page] = useSealed<HTMLDivElement>(envelope, opening);
+  const root = useRef<HTMLDivElement>(null);
 
   return (
     <div
+      ref={root}
       style={{ ...templateVars(template), ...ground.style }}
       className={`invite relative overflow-hidden ${template.fonts.primary.className} ${template.fonts.secondary.className} ${ground.className} flex ${fill ? "h-full" : "h-dvh"} flex-col invite:flex-row`}
     >
@@ -115,6 +121,7 @@ export function Invitation({
           ground={ground}
           fontKey={template.id}
           besidePanel={replyInert}
+          card={{ node: children, width, height, shadow, page: root, opening }}
           onOpened={unseal}
         />
       ) : null}
