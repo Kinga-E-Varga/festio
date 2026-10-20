@@ -7,12 +7,12 @@ import { noteItems } from "@/modular/notes";
 import { IconHeading } from "@/modular/IconHeading";
 import {
   BODY_SM,
-  GROUND,
   INNER_EYEBROW,
   ITEM_TITLE,
   MUTED,
   PAD,
   SPLIT,
+  SECTION_GROUND,
 } from "@/modular/styles";
 import type { VariantProps } from "@/types/modular";
 
@@ -29,7 +29,7 @@ export function Variant({ values, related, ground }: VariantProps) {
   const gifts = related.gifts ?? {};
 
   return (
-    <div className={`${SPLIT} items-start ${GROUND[ground]} ${PAD}`}>
+    <div className={`${SPLIT} items-start ${SECTION_GROUND[ground]} ${PAD}`}>
       <IconHeading icon="compass" values={values} />
       {items.length > 0 ? (
         <ul className="border-t-1 border-[var(--m-line)]">

@@ -4,10 +4,10 @@ import { IconHeading } from "@/modular/IconHeading";
 import { SectionHeading } from "@/modular/SectionHeading";
 import {
   ARROW_NUDGE,
-  GROUND,
   PAD,
   SPLIT,
   UNDERLINE_LINK,
+  SECTION_GROUND,
 } from "@/modular/styles";
 import type { VariantProps } from "@/types/modular";
 import { otherGround } from "@/modular/ground";
@@ -22,7 +22,7 @@ export function Variant({ values, ground }: VariantProps) {
   const linkLabel = text(values, "linkLabel");
 
   return (
-    <div className={`${SPLIT} ${GROUND[ground]} ${PAD}`}>
+    <div className={`${SPLIT} ${SECTION_GROUND[ground]} ${PAD}`}>
       <IconHeading icon="question" values={values}>
         <div className="flex flex-col items-center gap-2 @3xl:items-start">
           <SectionHeading values={values} align="start" />

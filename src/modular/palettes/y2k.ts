@@ -6,7 +6,6 @@ export const palette: ModularPalette = {
   name: "Y2K",
   mood: "vivid",
   colors: {
-    canvas: "#d6d8e3",
     surface: "#14162a",
     "surface-alt": "#272b48",
     ink: "#eef0fa",
@@ -23,11 +22,12 @@ export const palette: ModularPalette = {
     error: "#f2837a",
   },
   envelope: {
-    paper: "#a9aef0",
-    liner: "#14162a",
-    string: "#f08fb0",
-    seal: "string",
-    tag: "#eef0fa",
-    shadow: "#565870",
+    paper: "#ac8f88",
+    liner: "#2f3154",
+    string: "#45476c",
+    seal: "#25785a",
+    tag: "ink",
+    shadow: "#49549a",
+    ground: "#d1d3ec",
   },
 };

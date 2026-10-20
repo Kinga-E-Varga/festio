@@ -4,13 +4,13 @@ import { SectionHeading } from "@/modular/SectionHeading";
 import {
   BODY_SM,
   EYEBROW,
-  GROUND,
   H3,
   HEADING,
   MUTED,
   PAD,
   STACK,
   columnsFor,
+  SECTION_GROUND,
 } from "@/modular/styles";
 import type { VariantProps } from "@/types/modular";
 
@@ -27,7 +27,7 @@ export function Variant({ values, ground }: VariantProps) {
   const courses = list(values, "courses").slice(0, 6);
 
   return (
-    <div className={`${STACK} ${GROUND[ground]} ${PAD}`}>
+    <div className={`${STACK} ${SECTION_GROUND[ground]} ${PAD}`}>
       <SectionHeading values={values} />
       {courses.length > 0 ? (
         <ol
@@ -36,7 +36,7 @@ export function Variant({ values, ground }: VariantProps) {
           {courses.map((course, index) => (
             <li
               key={index}
-              className={`relative -mt-px -ml-px flex flex-col items-center justify-start border-t-1 border-[var(--m-line)] ${GROUND[ground]} before:absolute before:inset-y-6 before:left-0 before:w-px before:bg-[var(--m-line)] px-5 py-8 text-center @3xl:py-10`}
+              className={`relative -mt-px -ml-px flex flex-col items-center justify-start border-t-1 border-[var(--m-line)] ${SECTION_GROUND[ground]} before:absolute before:inset-y-6 before:left-0 before:w-px before:bg-[var(--m-line)] px-5 py-8 text-center @3xl:py-10`}
             >
               <span
                 className={`${HEADING} text-[18px] leading-[1.4] italic text-[color:var(--m-secondary)] @3xl:text-[20px]`}

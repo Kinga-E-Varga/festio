@@ -1,14 +1,13 @@
 import type { ReactNode } from "react";
 import type { Language, LocalizedText } from "@/lib/language";
 import type { CornersId } from "@/modular/corners";
-import type { EnvelopeColor, EnvelopeRole } from "@/types/envelope";
+import type { EnvelopeColor, PaletteEnvelopeRole } from "@/types/envelope";
 import type { EventKind } from "@/types/dashboard";
 import type { RsvpPayload, TemplateFonts } from "@/types/invitation";
 
 /**
  * The colours a palette sets, by name. On the page each is `--m-<role>`.
- * `canvas` is the ground around the invitation's column, `surface` the
- * page itself, `ink` its text; each accent has an `-ink` to write on it.
+ * `surface` is the page itself, `ink` its text; each accent has an `-ink` to write on it.
  * `surface-alt`, `ink-muted`, `line` and the two `-soft` tints are set too:
  * no mix matched the hand-picked colours, and they show everywhere.
  * `error` is the form's warnings, kept apart from the decorative accents so
@@ -16,7 +15,6 @@ import type { RsvpPayload, TemplateFonts } from "@/types/invitation";
  * More roles may come when a variant needs a colour no mix gives.
  */
 export type ColorRole =
-  | "canvas"
   | "surface"
   | "surface-alt"
   | "ink"
@@ -38,7 +36,6 @@ export type ColorRole =
  */
 export type MixedColor =
   | "shadow"
-  | "column-shadow"
   | "pattern"
   | "inverse"
   | "inverse-ink"
@@ -63,14 +60,15 @@ export interface ModularPalette {
   mood: PaletteMood;
   colors: Record<ColorRole, string>;
   /**
-   * The envelope guests open first: which colour plays each of its parts. A
-   * part may also name one of this palette's colours ("secondary").
+   * The envelope guests open first: which colour plays each of its parts,
+   * and the ground it sits on. A part may also name one of this palette's
+   * colours ("secondary").
    */
-  envelope: Record<EnvelopeRole, EnvelopeColor | ColorRole>;
+  envelope: Record<PaletteEnvelopeRole, EnvelopeColor | ColorRole>;
 }
 
 /**
- * A pattern drawn on the invitation's ground (`--m-canvas`), in palette roles
+ * A pattern drawn on the invitation's ground (`--m-surface`), in palette roles
  * only. `className` holds the Tailwind classes that draw it.
  */
 export interface ModularPattern {
@@ -219,6 +217,11 @@ export interface VariantInfo {
   name: LocalizedText;
   /** This variant's own ground rule, over the section's. */
   ground?: GroundRule;
+  /**
+   * An `own` variant's colour: the page paints it across the whole width,
+   * behind the variant's column. Left out, the page's surface.
+   */
+  band?: ColorRole;
   /**
    * The fields this variant draws, as paths: a field's id, `list.item` for a
    * list's item field, `groups.field` and `groups.items.field` for a groups

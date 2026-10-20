@@ -20,11 +20,13 @@ export const section: SectionDefinition = {
     {
       id: "1",
       name: { en: "Soft band", ro: "Bandă discretă", hu: "Lágy sáv" },
+      band: "secondary-soft",
       shows: [...HEADING_SHOWS],
     },
     {
       id: "2",
       name: { en: "Bold band", ro: "Bandă intensă", hu: "Élénk sáv" },
+      band: "tertiary",
       // No italic second line under the heading.
       shows: ICON_HEADING_SHOWS.filter((id) => id !== "headingItalic"),
     },

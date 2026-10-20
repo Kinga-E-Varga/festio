@@ -1,7 +1,7 @@
-# Current Feature: Envelope adjustments
+# Current Feature: Full-width sections
 
-The card or page now comes out of the envelope instead of the envelope just fading, plus
-colour, photo and sizing fixes found along the way.
+Modular invitations drop the centred column on its ground: each section's colour spans the
+page, its content stays centred and stops growing at `INVITE_COLUMN` (1440px).
 
 ## Status
 
@@ -9,34 +9,31 @@ Completed
 
 ## Goals
 
-- Simple: the card comes out of the pocket and becomes the page's card, then the reply panel
-  slides in. Two openings to compare, Rises and Slides out, picked in the simple editor's
-  Design tab (not saved); the guest page uses Rises
-- Modular: a copy of the page stands in the pocket, grows with the envelope, rises to where
-  the page draws it as the envelope slides off, grows to full size, then the header shows
-- The envelope stays lifted from the click; a tap or key eases into the lift; the tag swings
-  back as the envelope slides away
-- Card and page in the pocket: 3 units in from the body's sides, 2 below the fold
-  (`CARD_SIDE`, `CARD_TOP`), the same for simple and modular
-- The inside shadow is neutral brown (`#776755`), fill and outline, in every palette
-- A palette's envelope colours may name its own palette colours (`seal: "secondary"`);
-  Coastal and Flint use them
-- RO tag text "Pentru / tine"
-- Sample photos: Coastal Fun and Olive Garden covers, the default church and venue photos;
-  unused samples removed
-- Modular column shadow mixed from the surface (`--m-column-shadow`), now at 0% while being
-  tried
+- Every section's ground (surface, surface-alt, accent) spans the full width; the content
+  stays centred, capped at 1440px
+- Sections that draw their own colour (reply, playlist) name it as their variant's `band`;
+  the page paints it across the whole width
+- The cover and the split sections' photos stay in the 1440px column
+- The header bar and its line span the page; its names, links and Reply stay in the column
+- The editor's preview fills its area: no padded ground or shadow around the invitation
+- The envelope's page copy still comes out and lands where the page draws it
+- The column shadow (`elevation-band`, `--m-column-shadow`) removed
+- Past 1440px the cover photo stays in the column, a section's top padding below the header
+- Header and cover fill the first screen up to 1440px wide, the title below; past it header, cover
+  and title do, when they fit; the cover photo takes the spare height but is never wider than
+  2:1 unless the screen is too short, so the title joins the first screen only on tall screens
 
 ## Notes
 
-- Tried and dropped: full-width section colours with no column
-- Open: the default cover photo in `defaults.ts` points to `tuscany.png`, which doesn't exist
-- Photos are large (up to 7000px wide); scaling them down is still open
+- The background pattern picker stays, unused for now
+- The default cover photo fix (`olive-garden.jpg` in `defaults.ts`) rides along in this
+  commit
 
 ## History
 
 <!-- Keep this updated latest to earliest -->
 
+- Envelope adjustments — the simple card comes out of the envelope (Rises / Slides out, picked in the Design tab; the guest page rises), then the reply panel slides in; the modular page's copy rises out of the pocket as the envelope slides off, grows to full size and the header shows; the envelope stays lifted from the click, a tap or key eases into the lift, the tag swings back on the slide; card and page in the pocket 3 in from the sides and 2 below the fold (`CARD_SIDE`, `CARD_TOP`); the inside shadow neutral brown, fill and outline; palette envelope colours may name the palette's own colours (`paletteEnvelope`), used by Coastal and Flint; RO tag "Pentru / tine"; new Coastal Fun and Olive Garden covers and default church / venue photos, unused samples removed; the modular column's shadow mixed from the surface (`--m-column-shadow`), at 0% for now
 - Envelope animation — a closed envelope in the invitation's colours over every simple and modular invitation (guest page and both editors): hover lifts it and drops the tag, a click turns the flap open, then it fades into the page, reduced motion fades it straight out; a Use envelope switch in the Design tab, on by default; six envelope colour roles on every palette and Wolf Dance with fixed Hue + Vivid shading; the tag in EN / RO / HU; the page inert until opened, focus handed to it after; `envelope.py build-app` writes the Inkscape drawing into `drawing.generated.ts` (`env-` prefixed), the drawing moved beside the skill and the prototype files removed; the global reduced-motion rule fixed (`i *` → `*`)
 - Dashboard polish — Festio's own UI restyled and sized for laptops: palette tokens named by role, one corner token (`rounded-ui`), smaller nav, rail, top bar, 36px buttons and fields, smaller headings; events list cards and rows reworked with shared dashboard styles; only the event date locks, from the event day; invitations on laptops: the modular cover fits the first screen, section spacing at most 80px, the reply form 40px with a mouse and 44px on touch (simple and modular), 36px section edit buttons
 - Modular invitations 5 — Content tab — the editor's Text tab renamed Content in every editor; the modular Content tab lists the sections that are on as numbered cards, one open at a time, scrolling the preview to it; Design and Content buttons on a hovered preview section; each variant lists the fields it shows; inputs for text, long text, time, toggle, image (photo upload coming soon), icon (grid picker), lists and groups with Add / Remove; Date shows only the date, read from the event details, with the Calendar card, Accent & big date and Tear-off variants; Helpful notes edits the Dress code / Gifts fields; times in the invitation language's style; required fields checked on blur and on Save, which jumps to the first empty one; one working state, Save and leave-page warning for Content and Design

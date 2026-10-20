@@ -6,7 +6,6 @@ export const palette: ModularPalette = {
   name: "Linen",
   mood: "subtle",
   colors: {
-    canvas: "#d9d6ca",
     surface: "#f0ede4",
     "surface-alt": "#dfdbcc",
     ink: "#282a22",
@@ -23,11 +22,12 @@ export const palette: ModularPalette = {
     error: "#a8322a",
   },
   envelope: {
-    paper: "#c4a59b",
-    liner: "#4f5b30",
-    string: "#7a4d47",
+    paper: "#c1af8c",
+    liner: "accent",
+    string: "#7a604a",
     seal: "liner",
-    tag: "#f0ede4",
-    shadow: "#5a564a",
+    tag: "surface",
+    shadow: "#6f6647",
+    ground: "surface-alt",
   },
 };

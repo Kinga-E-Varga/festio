@@ -10,6 +10,7 @@ import {
   MUTED,
   PAD,
   SPLIT,
+  SECTION_GROUND,
 } from "@/modular/styles";
 import type { VariantProps } from "@/types/modular";
 
@@ -62,7 +63,7 @@ export function Calendar({
   const { card, strip, month: monthClass, weekday: weekdayClass } = LOOKS[look];
 
   return (
-    <div className={`${SPLIT} items-center ${GROUND[ground]} ${PAD}`}>
+    <div className={`${SPLIT} items-center ${SECTION_GROUND[ground]} ${PAD}`}>
       <div>
         <SectionHeading values={values} align="start" />
       </div>

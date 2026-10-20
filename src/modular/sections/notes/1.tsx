@@ -6,7 +6,7 @@ import { list } from "@/modular/content";
 import { isIconName } from "@/modular/icons";
 import { noteItems } from "@/modular/notes";
 import { SectionHeading } from "@/modular/SectionHeading";
-import { COLUMN, GROUND, PAD, STACK } from "@/modular/styles";
+import { COLUMN, PAD, STACK, SECTION_GROUND } from "@/modular/styles";
 import type { VariantProps } from "@/types/modular";
 import { otherGround } from "@/modular/ground";
 
@@ -17,7 +17,7 @@ export function Variant({ values, related, ground }: VariantProps) {
   const items = noteItems(list(values, "items"), values);
 
   return (
-    <div className={`${STACK} ${GROUND[ground]} ${PAD}`}>
+    <div className={`${STACK} ${SECTION_GROUND[ground]} ${PAD}`}>
       <SectionHeading values={values} />
       {/* With every subsection off, only the heading: an empty list would still take the stack's gap. */}
       {items.length > 0 ? (

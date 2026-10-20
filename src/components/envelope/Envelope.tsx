@@ -30,13 +30,12 @@ import {
   blursIn,
   clearFades,
   FADE_MS,
-  type Fade,
   FLAP_MS,
   flapFrames,
+  LIFT_END,
   openingFades,
   REDUCED_FADE_MS,
   reducedMotion,
-  setFades,
   SETTLE_MS,
   LIFTED_VARS,
   SWING,
@@ -100,6 +99,13 @@ interface Reveal {
 }
 
 const { vb, fold, body, hole } = DRAWING;
+
+/** Dev only: `?freeze=<ms>` holds the card or page coming out that long after the click, to style it in DevTools. */
+function freezeAt(): number {
+  if (process.env.NODE_ENV !== "development") return Infinity;
+  const ms = Number(new URLSearchParams(window.location.search).get("freeze"));
+  return ms > 0 ? ms : Infinity;
+}
 const pctX = (x: number) => `${((x - vb.x) / vb.w) * 100}%`;
 const pctY = (y: number) => `${((y - vb.y) / vb.h) * 100}%`;
 
@@ -176,7 +182,7 @@ interface Work {
   flap: Animation | null;
   swings: Animation[];
   panel: Animation | null;
-  fades: Fade[];
+  fades: Animation[];
   frame: number;
   timers: number[];
   lifted: boolean;
@@ -219,6 +225,8 @@ export function Envelope({
   const pocketCard = useRef<HTMLDivElement>(null);
   const frontCard = useRef<HTMLDivElement>(null);
   const stripCopy = useRef<HTMLDivElement>(null);
+  const stripBody = useRef<HTMLDivElement>(null);
+  const stripShade = useRef<HTMLDivElement>(null);
   /* After a hover and a click: the cast's shadows' blurs, widened as the envelope grows. Empty otherwise. */
   const castBlurs = useRef<(Blur & { more: boolean })[]>([]);
   /* And every shadow shape, with its own opacity: they fade as the envelope grows. */
@@ -326,6 +334,7 @@ export function Envelope({
         target,
         card.width,
         card.height,
+        !card.shadow,
       ),
       panel: page.querySelector<HTMLElement>(".reply"),
     };
@@ -342,20 +351,29 @@ export function Envelope({
     const running = work.current;
     const env = root.querySelector<HTMLElement>(".env");
     const { panelAt, total } = reveal.places;
-    later(panelAt, () => slidePanel(reveal.panel));
+    /* `from` is when the flap settled; the freeze counts from the click. */
+    const freeze = freezeAt() - FLAP_MS;
+    if (panelAt < freeze) later(panelAt, () => slidePanel(reveal.panel));
     const tick = (now: number) => {
-      const t = Math.min(now - from, total);
+      const t = Math.min(now - from, total, freeze);
       const frame = cardFrame(reveal.places, t);
       root.dataset.card = frame.inPocket ? "pocket" : "front";
       const copy = (frame.inPocket ? pocketCard : frontCard).current;
       if (copy) copy.style.transform = frame.card;
-      frontCard.current?.style.setProperty(
-        "--env-card-shadow",
-        String(frame.shadow),
-      );
+      for (const card of [pocketCard, frontCard]) {
+        card.current?.style.setProperty(
+          "--env-card-shadow",
+          String(frame.shadow.page),
+        );
+        card.current?.style.setProperty(
+          "--env-card-out",
+          String(frame.shadow.out),
+        );
+      }
       env?.style.setProperty("--env-move", frame.envelope.transform);
       env?.style.setProperty("--env-out", String(frame.envelope.opacity));
       setCastShadows(env, frame.envelope.held);
+      if (t >= freeze) return;
       if (t < total) running.frame = requestAnimationFrame(tick);
       else {
         setCastBlur(1);
@@ -374,15 +392,21 @@ export function Envelope({
     const box = column.getBoundingClientRect();
     if (!box.width) return null;
     const head = column.firstElementChild?.getBoundingClientRect().height ?? 0;
+    /* The gap above the cover (past INVITE_COLUMN), cut off in the pocket. */
+    const cover = column.querySelector("[data-cover]")?.getBoundingClientRect();
     const places = stripPlaces(
       root.getBoundingClientRect(),
       env.getBoundingClientRect(),
       box,
       head,
       scroller.getBoundingClientRect().bottom,
+      cover ? Math.max(0, cover.top - (box.top + head)) : 0,
     );
     stripCopy.current?.style.setProperty("--strip-w", `${places.width}px`);
-    stripCopy.current?.style.setProperty("--strip-h", `${places.height}px`);
+    if (stripCopy.current)
+      stripCopy.current.style.height = `${places.height}px`;
+    /* The page's hero height, held while the copy's own height changes. */
+    stripCopy.current?.style.setProperty("--strip-hero", `${places.height}px`);
     headBox.current?.style.setProperty("--head-x", `${places.column.x}px`);
     headBox.current?.style.setProperty("--head-y", `${places.column.y}px`);
     headBox.current?.style.setProperty("--head-w", `${places.column.w}px`);
@@ -390,16 +414,32 @@ export function Envelope({
     return places;
   }
 
-  /* One frame of the page coming out (`strip.ts`), `t` ms after the click. */
+  /*
+   * One frame of the page coming out (`strip.ts`), `t` ms after the click.
+   * Set straight on the parts that use them, never as inherited vars on what
+   * holds the page's copy: those would have the whole copy's style worked
+   * out again every frame, slow on a phone.
+   */
   function setStrip(env: HTMLElement | null, places: StripPlaces, t: number) {
     const frame = stripFrame(places, t);
     if (stripCopy.current) {
       stripCopy.current.style.transform = frame.strip;
-      stripCopy.current.style.setProperty("--strip-h", `${frame.height}px`);
+      stripCopy.current.style.height = `${frame.height}px`;
+    }
+    /* The side bands and the gap above the cover, cut off in the pocket. */
+    const cut = `${frame.clip.top}px ${frame.clip.side}px 0`;
+    if (stripBody.current) stripBody.current.style.clipPath = `inset(${cut})`;
+    if (stripShade.current) {
+      stripShade.current.style.inset = cut;
+      stripShade.current.style.opacity = String(frame.shade);
     }
     if (headCopy.current) headCopy.current.style.opacity = String(frame.header);
-    env?.style.setProperty("--env-grow", String(frame.grow));
-    env?.style.setProperty("--env-drop", `${frame.drop}px`);
+    for (const layer of env?.querySelectorAll<HTMLElement | SVGElement>(
+      ":scope > .env-layer",
+    ) ?? []) {
+      layer.style.scale = String(frame.grow);
+      layer.style.translate = `0 ${frame.drop}px`;
+    }
     setCastShadows(env, frame.held);
   }
 
@@ -431,9 +471,11 @@ export function Envelope({
   function revealStrip(root: HTMLElement, places: StripPlaces, from: number) {
     const running = work.current;
     const env = root.querySelector<HTMLElement>(".env");
+    const freeze = freezeAt();
     const tick = (now: number) => {
-      const t = Math.min(now - from, places.total);
+      const t = Math.min(now - from, places.total, freeze);
       setStrip(env, places, t);
+      if (t >= freeze) return;
       if (t < places.total) running.frame = requestAnimationFrame(tick);
       else {
         setCastBlur(1);
@@ -512,15 +554,18 @@ export function Envelope({
       duration: FLAP_MS,
       fill: "both",
     });
+    /* Started here, before the first frame: nothing shows at full strength for one. */
     running.fades = openingFades(root);
-    /* Before the first frame: nothing shows at full strength for one. */
-    setFades(running.fades, 0);
     const start = performance.now();
     const tick = (now: number) => {
       const time = Math.min(now - start, FLAP_MS);
-      setFades(running.fades, time);
       /* The page and the envelope grow a little while the flap turns. */
       if (page) setStrip(env, page, time);
+      /*
+       * Upright, the copy of the inside's top strip is fully in: the inside
+       * draws it itself again, in one piece (a copy beside it jogs its pattern).
+       */
+      if (time >= LIFT_END * FLAP_MS) root.dataset.upright = "";
       if (time < FLAP_MS) {
         running.frame = requestAnimationFrame(tick);
         return;
@@ -565,11 +610,23 @@ export function Envelope({
         dangerouslySetInnerHTML={{ __html: DRAWING.defs }}
       />
       <div className="env">
+        {/*
+         * Each part that fades while the flap turns is a layer of its own,
+         * faded whole (`openingFades`): the cast's closed and open shadows,
+         * the inside's top strip, the open pocket over the closed one, the
+         * flap's shadow and its spread copy.
+         */}
         <Layer
-          className="env-cast"
-          markup={DRAWING.castClosed + DRAWING.castOpen}
+          className="env-cast env-cast-closed"
+          markup={DRAWING.castClosed}
         />
+        <Layer className="env-cast env-cast-open" markup={DRAWING.castOpen} />
+        <Layer className="env-inside env-back-seam" markup={DRAWING.backSeam} />
         <Layer className="env-inside" markup={DRAWING.inside} />
+        <Layer
+          className="env-inside env-inside-edge env-v-closed"
+          markup={DRAWING.insideEdge}
+        />
         {card ? (
           <div className="env-layer env-card-pocket" aria-hidden="true" inert>
             <CardCopy card={card} ref={pocketCard} />
@@ -578,7 +635,10 @@ export function Envelope({
         {strip ? (
           <div className="env-layer env-card-pocket" aria-hidden="true" inert>
             <div ref={stripCopy} className="env-strip">
-              {strip.body}
+              <div ref={stripShade} className="env-strip-shade" />
+              <div ref={stripBody} className="env-strip-body">
+                {strip.body}
+              </div>
             </div>
           </div>
         ) : null}
@@ -586,7 +646,23 @@ export function Envelope({
           className="env-inside env-inside-shade"
           markup={DRAWING.insideShade}
         />
-        <Layer className="env-pocket" markup={DRAWING.pocket} />
+        <Layer
+          className="env-inside env-inside-shade env-inside-edge env-v-closed"
+          markup={DRAWING.insideShadeEdge}
+        />
+        <Layer
+          className="env-pocket env-v-closed"
+          markup={DRAWING.pocketClosed}
+        />
+        <Layer className="env-pocket env-v-open" markup={DRAWING.pocketOpen} />
+        <Layer
+          className="env-pocket env-flap-shadow env-v-closed"
+          markup={DRAWING.flapShadow}
+        />
+        <Layer
+          className="env-pocket env-flap-shadow env-flap-spread env-v-closed"
+          markup={DRAWING.flapSpread}
+        />
         <div className="env-layer env-flap">
           <div ref={rot} className="env-rot">
             <svg

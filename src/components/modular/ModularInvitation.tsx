@@ -9,15 +9,15 @@ import {
   useState,
 } from "react";
 import { Envelope } from "@/components/envelope/Envelope";
-import { paletteEnvelope } from "@/components/envelope/colors";
+import { envelopeGround, paletteEnvelope } from "@/components/envelope/colors";
 import { useSealed } from "@/components/envelope/useSealed";
 import { Icon } from "@/components/icons";
 import { localized, type Language, type LocalizedText } from "@/lib/language";
 import { cornerVars } from "@/modular/corners";
 import { hasContent } from "@/modular/fields";
-import { sectionGrounds } from "@/modular/ground";
+import { groundRule, sectionGrounds } from "@/modular/ground";
 import { HEADER_ID } from "@/modular/nav";
-import { groundClasses } from "@/modular/styles";
+import { GROUND_FILL } from "@/modular/styles";
 import { fontClasses, modularVars } from "@/modular/vars";
 import type { RsvpPayload } from "@/types/invitation";
 import type {
@@ -35,10 +35,8 @@ interface ModularInvitationProps {
   basics: InvitationBasics;
   language: Language;
   /**
-   * In the editor: the invitation is the column itself, shadowed on
-   * the editor's ground, so its scrollbar sits at the column's edge. The
-   * envelope is drawn beside it, over its parent: that parent must be
-   * positioned.
+   * In the editor: the envelope is drawn beside the invitation, over its
+   * parent (the panel's room too): that parent must be positioned.
    */
   framed?: boolean;
   onRsvp?: (payload: RsvpPayload) => void;
@@ -82,10 +80,12 @@ function menuLinks(
 }
 
 /**
- * A modular invitation: a sticky bar, the sections stacked full width (up
- * to `INVITE_COLUMN`), each at its own anchor, and the privacy footer. Laid out
+ * A modular invitation: a sticky bar, the sections stacked full width, each
+ * at its own anchor, and the privacy footer. Each section's colour spans the
+ * page (its ground's, or an `own` variant's `band`); its content stays in a
+ * centred column that stops growing at `INVITE_COLUMN`. Laid out
  * responsively, not scaled like the simple card. Fills its parent: the
- * screen on the guest page, the padded ground in the editor.
+ * screen on the guest page, the preview in the editor.
  *
  * Its root is `overflow-clip`, never `hidden`: a hidden box can still be
  * scrolled by an anchor jump (#rsvp), which shifted the whole editor up
@@ -117,7 +117,9 @@ export const ModularInvitation = memo(function ModularInvitation({
   const vars = {
     ...modularVars(design.palette, design.fontPair),
     ...cornerVars(design.corners),
-  };
+    /* The header's fill: the second surface once a pattern is on, so the bar stands apart from the dots. */
+    "--m-bar": design.pattern ? "var(--m-surface-alt)" : "var(--m-surface)",
+  } as CSSProperties;
   const face = `invite font-[family-name:var(--font-primary)] text-[color:var(--m-ink)] ${fontClasses(design.fontPair)}`;
 
   /*
@@ -153,62 +155,107 @@ export const ModularInvitation = memo(function ModularInvitation({
     ) : null;
   }
   function sections(copy: boolean) {
-    return body.map(({ definition, variant }, index) => (
-      <section
-        key={definition.id}
-        id={copy ? undefined : definition.id}
-        className="group/edit relative scroll-mt-14 @5xl:scroll-mt-16"
-      >
-        {edit && !copy ? (
-          <EditButtons
-            edit={edit}
-            id={definition.id}
-            content={hasContent(definition)}
-          />
-        ) : null}
-        <Suspense fallback={<SectionSkeleton />}>
-          <SectionView
-            section={definition}
-            variant={variant}
-            values={design.values[definition.id] ?? {}}
-            related={relatedValues(definition, design)}
-            basics={basics}
-            language={language}
-            ground={grounds[index]}
-            onRsvp={copy ? undefined : onRsvp}
-          />
-        </Suspense>
-      </section>
-    ));
+    const views = body.map(({ definition, variant }, index) => {
+      /* The cover takes up whatever the hero has to spare. */
+      const grow = definition.id === COVER_ID;
+      const band =
+        groundRule(definition, variant) === "own"
+          ? definition.variants.find(({ id }) => id === variant)?.band
+          : undefined;
+      return (
+        <section
+          key={definition.id}
+          id={copy ? undefined : definition.id}
+          style={
+            band
+              ? ({ "--band": `var(--m-${band})` } as CSSProperties)
+              : undefined
+          }
+          className={`group/edit relative scroll-mt-14 @5xl:scroll-mt-16 ${band ? "bg-(--band)" : GROUND_FILL[grounds[index]]} ${!band && grounds[index] === "surface" ? (design.pattern?.className ?? "") : ""} ${grow ? "flex flex-1 flex-col" : ""}`}
+        >
+          {/* At the page's edge, not the column's: past 1440px they sit clear of the content. */}
+          {edit && !copy ? (
+            <EditButtons
+              edit={edit}
+              id={definition.id}
+              content={hasContent(definition)}
+            />
+          ) : null}
+          {/* The column: the container the section sizes itself by. */}
+          <div
+            className={`@container relative mx-auto w-full max-w-(--invite-column) ${grow ? "flex flex-1 flex-col" : ""}`}
+          >
+            <Suspense fallback={<SectionSkeleton />}>
+              <SectionView
+                section={definition}
+                variant={variant}
+                values={design.values[definition.id] ?? {}}
+                related={relatedValues(definition, design)}
+                basics={basics}
+                language={language}
+                ground={grounds[index]}
+                onRsvp={copy ? undefined : onRsvp}
+              />
+            </Suspense>
+          </div>
+        </section>
+      );
+    });
+    /*
+     * The hero: the cover and the title, at least the screen less the
+     * header (56px, 64px from `@5xl`, and its 1px line), more when their
+     * content needs it; up to 1440px the cover fills that alone
+     * (`CoverPhoto`). The scroller is the screen; the envelope's copy is
+     * given the same height as `--strip-hero` (`Envelope.tsx`). Past the
+     * column, the cover's gap above the photo (`--cover-top`) matches the
+     * page's margin beside it, up to a section's top padding (80px).
+     */
+    const heroEnd = body.findIndex(
+      ({ definition }) => !HERO_IDS.includes(definition.id),
+    );
+    const split = heroEnd === -1 ? body.length : heroEnd;
+    return (
+      <>
+        <div
+          className={`flex min-h-(--hero) flex-col [--cover-top:clamp(0px,(100cqw-var(--invite-column))/2,80px)] ${copy ? "[--hero:var(--strip-hero)]" : "[--hero:calc(100cqh-57px)] @5xl:[--hero:calc(100cqh-65px)]"}`}
+        >
+          {views.slice(0, split)}
+        </div>
+        {views.slice(split)}
+      </>
+    );
   }
   /* A copy for the envelope, in the page's own vars and fonts, filling the box it is given. */
   const copyOf = (node: ReactNode, className: string) => (
     <div
       style={vars}
-      className={`${face} @container h-full w-full bg-[var(--m-surface)] ${className}`}
+      className={`${face} @container/page h-full w-full bg-[var(--m-surface)] ${className}`}
     >
       {node}
     </div>
   );
   /*
-   * In the editor the envelope covers the whole padded ground, not just the
-   * column, and draws no ground of its own: the editor's shows through, one
-   * pattern with no seam. The column, shadow and all, stays hidden under it
-   * while its copies come out of the envelope (`strip.ts`), and takes over
-   * once they are in place; with reduced motion it fades in instead.
+   * In the editor the envelope covers the editor's whole area, the panel's
+   * room too, and draws no ground of its own: the editor's shows through.
+   * The page stays hidden under it while its copies come out of the
+   * envelope (`strip.ts`), and takes over once they are in place; with
+   * reduced motion it fades in instead.
    */
   const hidden = framed && sealed && fade === null;
   const envelope = sealed ? (
     <Envelope
       colors={paletteEnvelope(design.palette)}
-      ground={{
-        className: framed
-          ? fontClasses(design.fontPair)
-          : groundClasses(design.pattern),
-      }}
+      ground={
+        framed
+          ? { className: fontClasses(design.fontPair) }
+          : {
+              className: "bg-(--env-ground)",
+              style: envelopeGround(design.palette),
+            }
+      }
       fontKey={design.fontPair.id}
       strip={{
-        body: copyOf(sections(true), "elevation-band overflow-hidden"),
+        body: copyOf(sections(true), "overflow-hidden"),
         header: copyOf(header(true), ""),
         column: columnRef,
       }}
@@ -220,7 +267,7 @@ export const ModularInvitation = memo(function ModularInvitation({
   const column = (
     <div
       style={{ ...vars, "--reveal": `${fade ?? 0}ms` } as CSSProperties}
-      className={`${face} relative flex h-full flex-col overflow-clip bg-[var(--m-surface)] ${framed ? "elevation-band mx-auto max-w-(--invite-column)" : ""} ${hidden ? "opacity-0" : "transition-opacity duration-(--reveal)"}`}
+      className={`${face} relative flex h-full flex-col overflow-clip bg-[var(--m-surface)] ${hidden ? "opacity-0" : "transition-opacity duration-(--reveal)"}`}
     >
       {/* While the drawer or the envelope covers the page, everything under it is out of the tab order. */}
       <div
@@ -230,17 +277,16 @@ export const ModularInvitation = memo(function ModularInvitation({
         className="flex min-h-0 flex-1 flex-col outline-none"
       >
         {/* The page scrolls in here, not the window, so the header stays put. */}
-        <div
-          className={`invite-scroll min-h-0 flex-1 overflow-y-auto scroll-smooth ${framed ? "" : groundClasses(design.pattern)}`}
-        >
+        {/* A size container, so the hero can read its height (`cqh`). */}
+        <div className="invite-scroll min-h-0 flex-1 overflow-y-auto scroll-smooth [container-type:size]">
           {/*
-           * Past `INVITE_COLUMN` the page stops growing: bar, sections and footer sit
-           * in a centred column, softly shadowed on a plain, darker ground.
-           * The column is the container the sections size themselves by.
+           * The page's whole width: the container the header sizes itself
+           * by, named so a section can still tell the page is wider than
+           * its column.
            */}
           <div
             ref={columnRef}
-            className={`@container mx-auto max-w-(--invite-column) bg-[var(--m-surface)] ${framed ? "" : "elevation-band"}`}
+            className="@container/page bg-[var(--m-surface)]"
           >
             {header(false)}
             {sections(false)}
@@ -328,12 +374,16 @@ function EditButton({
   );
 }
 
+/** The sections the hero holds, in page order: the cover takes its spare height. */
+const COVER_ID = "cover";
+const HERO_IDS = [COVER_ID, "title"];
+
 /** Stands in while the bar's variant loads, at the bar's own height. */
 function BarSkeleton() {
   return (
     <div
       aria-hidden="true"
-      className="h-14 border-b-1 border-[var(--m-line)] bg-[var(--m-surface)] @5xl:h-16"
+      className="h-14 border-b-1 border-[var(--m-line)] bg-(--m-bar) @5xl:h-16"
     />
   );
 }

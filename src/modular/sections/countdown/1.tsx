@@ -6,11 +6,11 @@ import { UNITS, useCountdown } from "@/modular/countdown";
 import { SectionHeading } from "@/modular/SectionHeading";
 import {
   CAPS,
-  GROUND,
   MUTED,
   PAD_BOTTOM,
   PAD_X,
   SERIF,
+  SECTION_GROUND,
 } from "@/modular/styles";
 import type { VariantProps } from "@/types/modular";
 import { Done } from "./Done";
@@ -31,7 +31,7 @@ export function Variant({ values, basics, ground }: VariantProps) {
 
   return (
     <div
-      className={`flex flex-col items-center gap-7 ${GROUND[ground]} ${PAD_X} ${PAD_BOTTOM}`}
+      className={`flex flex-col items-center gap-7 ${SECTION_GROUND[ground]} ${PAD_X} ${PAD_BOTTOM}`}
     >
       {done ? (
         <Done done={done} className={NUMBER} />

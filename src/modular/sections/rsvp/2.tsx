@@ -48,7 +48,7 @@ export function Variant({ values, onRsvp }: VariantProps) {
   const note = text(values, "note");
 
   return (
-    <div className={`${LAYOUT} bg-[var(--m-tertiary)] ${PAD}`}>
+    <div className={`${LAYOUT} ${PAD}`}>
       <div
         className={`flex flex-col items-center gap-5 ${HEADING_COLUMN} ${ON_BAND}`}
       >

@@ -158,6 +158,9 @@ one of its own colours (`seal: "secondary"`), so it follows the palette; `palett
 `colors.ts` swaps those for their hex, an envelope role winning a shared name. A simple
 template has no palette, so only hex or envelope roles. A loop, a bad hex or an unknown name
 throws, naming the role (`roleColor`, `paletteEnvelope`).
+A palette's envelope has a seventh colour, `ground`: what the envelope sits on (the guest
+page's stage and the modular editor's area), never shaded, as `--env-ground`
+(`envelopeGround`). A simple template has none: its envelope sits on the template's own page.
 The tag's font is the invitation's `--font-primary` (a font pair's body face).
 
 **Shading.** In the drawing, a shadow is its role colour multiplied onto itself and a
@@ -168,14 +171,22 @@ opacities stay as drawn. `colors.ts` fills them, fixed at **Hue + Vivid**: shado
 10° toward cold (OKLCH hue 235), highlights 15° toward warm (55), the short way round and
 stopping at the target; then highlights are mixed half with white and given chroma × 1.5,
 shadows chroma × 1.15. Lightness never changes, no role's colour reaches another's
-shading, and the cast shadows keep their own colour. The maths is in TypeScript, not CSS:
+shading, and the cast shadows keep their own colour. The tag's own shadows (`shadow` and
+`hole shadow` on its paper, `TAG_SHADES` in the build) take `var(--env-tag-shadow)`
+instead: a tag is mostly light, and its colour multiplied onto itself hardly shows, so
+it is the tag's colour darker (`TAG_SHADOW_DARKER`, 0.05 of OKLCH lightness), its chroma
+times `TAG_SHADOW_VIVID` (now 0: a neutral grey of that lightness), in its own hue: left
+out of the Hue + Vivid shading every other shadow gets. The maths is in TypeScript, not CSS:
 a colour the screen can't show, blurred and blended, came out as cyan specks in Chrome, so
 only its chroma gives way until it fits.
 
 ## The app
 
-Stacked layers sharing the viewBox, back to front: cast shadow, inside, inside shadow,
-pocket, flap (an HTML box turned in CSS 3D, with a front and a back face, each its own SVG),
+Stacked layers sharing the viewBox, back to front: the cast shadow (closed, open), the
+lining band under the fold's seam (`backSeam`), the inside and its top strip
+(`insideEdge`), the card or page in the pocket, the inside shadow and its top strip, the
+pocket (closed, then open over it, each whole), the flap's shadow and its spread copy
+(`flapSpread`), the flap (an HTML box turned in CSS 3D, with a front and a back face, each its own SVG),
 the tag's shadow, the tag's hard shadows, the tag, the other decoration shadows (string,
 seal — they shade the tag too), the string and seal, an invisible button over the closed
 body (`env-hit`) and a hover area over the tag (`env-hit-tag`). The tag sits under the
@@ -185,11 +196,11 @@ through the hole, plus everywhere off the tag paper (`trim_strings`). In the dra
 tag stays on top, so nothing changes there.
 
 The envelope covers the invitation (`env-stage`, z-40, under the simple editor's panel at
-z-50) on the invitation's own ground. Until it has faded, the page under it is `inert`
+z-50) on a ground: a simple template's own page, a palette's envelope `ground`. Until it has faded, the page under it is `inert`
 (`useSealed`); turning the Design tab's switch off and on seals it again. In the modular
-editor it covers the whole padded ground beside the column, with no ground of its own (the
-editor's shows through, one pattern, no seam); the column, shadow and all, stays hidden
-under it and fades in while it fades out (`onFade`).
+editor it covers the editor's whole area, the panel's room too, with no ground of its own
+(the editor's area, in the same `ground`, shows through); the page stays hidden under it and fades in while it fades
+out (`onFade`).
 
 - **Hover** (mouse only, closed only, over the body or the tag — one hover, moving between
   them is no new turn; never with reduced motion): the lifted pose. Every layer grows 4%
@@ -224,18 +235,39 @@ no-preference)`.
   0° → 180° on the fold, toward the viewer, then settles with a small bounce
   (180° → 173° → 180°): 1.3 s (`FLAP_MS`). Past 90° the front face hides and the back face
   shows. Then `data-state="open"` lays the flap flat again.
-- **Fades,** on the flap's clock, frame by frame (`openingFades`): the flap's shadow on the
-  pocket spreads and fades as the flap lifts — its blur grows to 4× its own as its opacity
-  goes to 0, both read from the flap's angle, done as it stands up at 90°. Each closed /
-  open pair (pocket shading, cast shadow) cross-fades together, so the shading never goes
-  missing. Two half-faded shadows over each other are lighter than one, so the closed
-  cast shadow fades out on `castOut`, staying a little stronger, and the hard shadow
-  (drawn at 0.5, `CAST_ALPHA`) keeps its strength through the cross-fade. While the flap lies nearly flat, the mask `e-inside` (from `FOLD`, `BODY` and
-  `EDGE` in `envelope.py`) hides a 0.75 strip along the top of the inside: its square
-  corners, past the closed paper's 0.6 rounding, and its top edge, which the turning flap
-  (its own 3D layer, a fraction of a pixel off) shows as a line. The strip fades out as
-  the flap goes from 55° to 90° (`INSIDE_EDGE_DEG`), when the flap's back face takes
-  over the fold.
+- **Fades,** on the flap's clock (`openingFades`). **Every fade is a whole layer's
+  opacity, run as a Web Animation** (keyframes sampled from its curve, `FADE_STEPS`), so
+  the graphics chip only blends layers it already has. Never change a part inside a
+  layer, a blur or a mask frame by frame: that redraws the whole layer every frame, and a
+  phone stutters (traced: rasterising went from about 1 s to 75 ms over the turn once
+  everything fading became its own layer). While opening, every layer is
+  `will-change: transform, opacity`.
+  - The flap's shadow on the pocket spreads and fades as the flap lifts: its copy with
+    the blur at 4× (`FLAP_BLUR`, `spread_copies` in the build) fades in as it fades out,
+    both to 0, read from the flap's angle, done as it stands up at 90°.
+  - The pocket is built twice, whole: closed (shared + closed parts) and open (shared +
+    open parts). The open one fades in over the closed one; inside each, the shading
+    blends onto that pocket's own paper.
+  - The cast's closed and open shadows cross-fade, each its own layer. Two half-faded
+    shadows over each other are lighter than one, so the closed one fades out on
+    `castOut`, staying a little stronger, and the hard shadow (drawn at 0.5, `CAST_ALPHA`)
+    keeps its strength through the cross-fade.
+  - While the flap lies nearly flat, the mask `e-inside` (from `FOLD`, `BODY` and `EDGE`
+    in `envelope.py`) hides a 0.75 strip along the top of the inside: its square corners,
+    past the closed paper's 0.6 rounding, and its top edge, which the turning flap (its
+    own 3D layer, a fraction of a pixel off) shows as a line. The mask never changes
+    while the flap turns: a copy of just that strip of the inside and of the inside
+    shadow (`insideEdge`, `insideShadeEdge`, clipped by `e-edge`) fades in as the flap
+    goes from 55° to 90° (`INSIDE_EDGE_DEG`), when its back face takes over the fold;
+    at 90° (`data-upright`, once, not frame by frame) the mask's strip goes and the
+    copies hide: a copy beside the inside, its own layer, jogged the pattern a
+    fraction of a pixel and left a light line where they met.
+  - From then on a band of liner, 1 unit either side of the fold and inset 0.6 from the
+    sides (`backSeam`), lies under the inside (its pattern stays whole), behind the seam
+    between the inside and the back face (which reaches only 0.25 past the fold): while
+    the flap turns, a phone draws its 3D layer softer and a little off, and the ground
+    showed through as a light line. It never shows frozen, as the phone then draws the
+    flap sharp; a screen recording catches it.
 - **Into the page (no card or page measured, e.g. not laid out):** open and still for 0.15 s (`SETTLE_MS`), then the whole
   envelope fades out (0.6 s, `FADE_MS`) and unmounts; the page stops being inert.
 - **The card coming out (simple), two ways to compare** (`CardOpening` in `card.ts`; the
@@ -244,13 +276,19 @@ no-preference)`.
   the inside and the pocket, cut off below the envelope (`env-card-pocket`); once clear of
   the pocket a second copy in front of the stage (`env-card-front`) takes over.
   - `rise`: after the flap it rises out (0.9 s), the envelope sinking just enough to keep
-    it on the stage; then it turns upright, growing to the page card's size, centred, its
-    shadow coming in, while each envelope layer shrinks to 0.6 and fades (1.0 s).
+    it on the stage; then it turns upright, growing to the page card's size, centred,
+    while each envelope layer shrinks to 0.6 and fades (1.0 s).
   - `slide`: after the flap the card grows on one curve to the page card's size, rising
     toward the centre on the way (a little higher, then back; `OUT_MS`, `OUT_LIFT`). The
     envelope grows with it while it holds the card, then eases to a stop as the card
     clears (`softCap`), sliding down and off the stage all along (1.4 s). Once clear, the
     card turns upright (1.0 s).
+  - Either way the card has a shadow of its own on the way out (`.env-card::before`): the
+    page card's colour and blur (`--card-shadow-*`, the light one's without a template
+    shadow), no offset, at 0.6 (`SHADE_OUT`). It comes in as the card starts out of the
+    pocket, right after the flap, on both copies (0.3 s, `SHADE_MS`, `cardShadow`), and gives
+    way to the page's own (`::after`) as the card moves beside the panel; none without a
+    template shadow (`shadowless`).
   - Then, either way, the page's own reply panel slides in over the stage — from the right,
     or up from the bottom on a phone — and the card moves to where the page draws it
     (0.8 s); the envelope unmounts and the page takes over in place. Where the page draws
@@ -260,7 +298,14 @@ no-preference)`.
 - **The page coming out (modular)** (`strip.ts`, the `strip` prop): copies of the page's
   sections and header, drawn by `ModularInvitation` (no anchors, no edit buttons, its own
   vars and fonts). The sections, laid out at the column's real width, stand upright in the
-  pocket, scaled to 5 units in from the body's sides and cut off below the envelope. After
+  pocket, scaled to 5 units in from the body's sides and cut off below the envelope. Past
+  `INVITE_COLUMN` (1440px) the content's width, not the column's, fits the pocket: the side
+  bands are clipped off (`clip`) and spread out to the edges over the final growth; so is
+  the gap above the cover (measured from the page's `[data-cover]`), the card moved up so
+  the cover starts at the pocket's top. The strip has a tight shadow and a small soft one in the envelope's
+  shadow colour (`env-strip-shade`, its own box beside the clipped `env-strip-body`, so the
+  cut never clips it): it comes in as the slide starts (0.3 s, `SHADE_MS`) and goes over the
+  final growth, as the page has none. After
   the click, three steps: while the flap turns, the envelope grows a little, the strip with
   it, a quarter of the strip's growth (`CAP`, over `FLAP_MS`); then, at that size, the envelope slides
   down and off the stage (1.4 s, `SLIDE_MS`) while the strip moves up out of the pocket to
@@ -270,9 +315,11 @@ no-preference)`.
   full size from its top centre (0.9 s, `FINAL_MS`), while the envelope slides on; the
   envelope's top is held against that growth, so it never rises back. The copy is always tall enough to reach the scroller's bottom at its size, so
   no edge shows once the envelope is gone. At full size the header shows above it (0.15 s, `HEADER_MS`), and
-  the page takes over in place. The envelope's growth and drop go on the layers' own `scale` and
-  `translate` (`--env-grow`, `--env-drop`), never transitioned, so a tap's ease into the
-  lift doesn't smooth them. On a tap (not
+  the page takes over in place. The envelope's growth and drop go on each layer's own `scale`
+  and `translate`, never transitioned, so a tap's ease into the lift doesn't smooth them.
+  Every value set frame by frame here goes straight onto the element that uses it, never
+  as an inherited var on what holds the page's copy: that had the whole copy's style
+  worked out again every frame (traced: about 0.8 s over the turn). On a tap (not
   hovered first) the lift itself runs on that first growth's clock and curve
   (`LIFT_WITH_GROWTH` → `--env-lift-time`), so lift and growth read as one; it is set
   after measuring, as a style update in between would start the lift on its own 0.45 s. After a hover
@@ -304,6 +351,13 @@ no-preference)`.
 - **A clipped group is drawn on its own,** so a multiply or screen inside it has nothing
   under it to blend with and vanishes. The blend goes on the clipped group itself. The build
   lifts it automatically when every child blends the same way; otherwise fix it in the file.
+- **Chrome on Android draws nothing of a group that is clipped and blended at once**
+  (desktop Chrome draws it). The build writes such a group as two: the blend (and the
+  class) outside, the clip inside (`split_clip_blend`).
+- **Nor of a blend with nothing drawn under it in its clipped group** (the inside
+  shadow, the string's shadows): on desktop it draws as if unblended. The build drops
+  that blend (`ser`, `clips`), keeping the shape's shading colour. A blend onto paper
+  inside the same clipped group (the flap's shading, the tag) works on Android.
 - **A fading group is drawn on its own too.** Fade each blended part, never a wrapper
   around it.
 - **Each layer with a transform is drawn on its own,** so shadows that fall on another layer

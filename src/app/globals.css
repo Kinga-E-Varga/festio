@@ -172,6 +172,17 @@
   }
 }
 
+/*
+ * The modular cover's gap above its photo (`CoverPhoto`), set on the hero
+ * from the page's width. Registered as a length so it is worked out there,
+ * against the page, not again inside the column, whose `cqw` is its own.
+ */
+@property --cover-top {
+  syntax: "<length>";
+  inherits: true;
+  initial-value: 0px;
+}
+
 @layer base {
   /*
    * The host's edit sheet slides to `translateX(100%)` while closed, which is
@@ -438,15 +449,27 @@
   /*
    * The card's own shadow, in design px — the transform shrinks it with the
    * card. The stage's `--shadow-space` strip is what keeps it from clipping.
+   * Set as vars: the envelope's card copy draws its way-out shadow from them
+   * too (`.env-card::before`); a card without one uses the light one there.
    */
-  .stage[data-shadow="light"] > .frame > .card,
-  .env-card[data-shadow="light"]::after {
-    box-shadow: 0px 5px 20px #2f281fad;
+  .stage[data-shadow="light"],
+  .env-card:is([data-shadow="light"], :not([data-shadow])) {
+    --card-shadow-y: 5px;
+    --card-shadow-blur: 20px;
+    --card-shadow-ink: #2f281fad;
   }
 
-  .stage[data-shadow="dark"] > .frame > .card,
-  .env-card[data-shadow="dark"]::after {
-    box-shadow: 0px 6px 22px #2f281fe0;
+  .stage[data-shadow="dark"],
+  .env-card[data-shadow="dark"] {
+    --card-shadow-y: 6px;
+    --card-shadow-blur: 22px;
+    --card-shadow-ink: #2f281fe0;
+  }
+
+  .stage[data-shadow] > .frame > .card,
+  .env-card::after {
+    box-shadow: 0 var(--card-shadow-y) var(--card-shadow-blur)
+      var(--card-shadow-ink);
   }
 
   /* The drawer's backdrop, mixed from the template's ink so no app colour shows. */
@@ -917,16 +940,6 @@
   }
 
   /*
-   * The modular invitation's column on its ground, in the palette's
-   * mixed `--m-column-shadow` (the surface, darker and more colourful). On the guest page, narrower
-   * than that the column fills the scroller, which clips the shadow away.
-   */
-  .elevation-band {
-    box-shadow: 0px 0px 14px
-      color-mix(in srgb, var(--m-column-shadow) 0%, transparent);
-  }
-
-  /*
    * A modular invitation's own scrollbar, in its palette: thin, a `--m-line`
    * thumb on the page's `--m-surface`. `scrollbar-color` for Chrome and
    * Firefox; the `::-webkit-scrollbar` rules for Safari, which Chrome
@@ -991,8 +1004,9 @@
    * 1). Each part lifts by its own `--env-lift-*` (`LIFTED` in `motion.ts`).
    * Each layer fades on its own (`--env-out`): one fading wrapper would cut
    * the shadows off the ground they multiply onto. The modular page's way
-   * out drops and grows the envelope on their own properties (`--env-drop`,
-   * `--env-grow`), applied before the transform and never transitioned.
+   * out drops and grows the envelope on each layer's own `translate` and
+   * `scale` (set frame by frame), applied before the transform and never
+   * transitioned.
    */
   .env-layer {
     --lift-y: var(--env-lift-body-y);
@@ -1003,8 +1017,6 @@
     height: 100%;
     overflow: visible;
     transform-origin: 50% var(--env-centre-y);
-    translate: 0 var(--env-drop, 0);
-    scale: var(--env-grow, 1);
     transform: var(--env-move, translate(0))
       translateY(calc(var(--lift-y) * var(--env-up, 0)))
       scale(calc(1 + (var(--lift-s) - 1) * var(--env-up, 0)));
@@ -1024,8 +1036,20 @@
   }
   .env-layer.env-cast,
   .env-layer.env-inside-shade,
+  .env-layer.env-flap-shadow,
   .env-layer.env-deco-shade {
     mix-blend-mode: multiply;
+  }
+  /* The flap's spread shadow shows only while the flap lifts (`openingFades`). */
+  .env-layer.env-flap-spread {
+    opacity: 0;
+  }
+  /*
+   * Opening, each layer is its own on the graphics chip: they move and fade
+   * frame by frame, and are then only placed and faded, not drawn again.
+   */
+  .env-stage:not([data-state="closed"]) .env-layer {
+    will-change: transform, opacity;
   }
   /* Lifted, the tag's shadow softens too. */
   .env-layer.env-tag-shade {
@@ -1075,6 +1099,10 @@
     opacity: 0;
   }
   .env-stage[data-state="closed"] .env-inside {
+    visibility: hidden;
+  }
+  /* Upright, the inside's top strip is its own again: the mask's strip and the copies go. */
+  .env-stage[data-upright] :is(mask .env-v-closed, .env-inside-edge) {
     visibility: hidden;
   }
   .env-rot {
@@ -1167,8 +1195,21 @@
     top: 0;
     left: 0;
     width: var(--strip-w);
-    height: var(--strip-h);
     transform-origin: 0 0;
+  }
+  /* The part that shows: the side bands and the gap above the cover cut off in the pocket (`strip.ts`, set frame by frame). */
+  .env-strip-body {
+    position: absolute;
+    inset: 0;
+  }
+  /* Its shadow, under what shows, in the envelope's shadow colour; its own box, so the cut never clips it. */
+  .env-strip-shade {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    box-shadow:
+      0 3px 5px color-mix(in oklab, var(--env-shadow) 75%, transparent),
+      0 0 20px color-mix(in oklab, var(--env-shadow) 35%, transparent);
   }
   .env-strip-head {
     position: absolute;
@@ -1187,12 +1228,20 @@
   .env-stage:not([data-card]) .env-strip-head {
     visibility: hidden;
   }
-  /* The page card's own shadow (above), coming in as the card turns upright. */
-  .env-card::after {
+  /* The page card's own shadow (above), as the card settles beside the panel. */
+  .env-card::after,
+  .env-card::before {
     content: "";
     position: absolute;
     inset: 0;
+  }
+  .env-card::after {
     opacity: var(--env-card-shadow, 0);
+  }
+  /* On the way out: the page card's shadow without its offset, all round. */
+  .env-card::before {
+    opacity: var(--env-card-out, 0);
+    box-shadow: 0 0 var(--card-shadow-blur) var(--card-shadow-ink);
   }
   /* Settled open, the flap lies behind the card, which rises in front of it. */
   .env-stage[data-state="open"]

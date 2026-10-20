@@ -1,6 +1,6 @@
 import { list } from "@/modular/content";
 import { SectionHeading } from "@/modular/SectionHeading";
-import { GROUND, PAD, SPLIT } from "@/modular/styles";
+import { PAD, SPLIT, SECTION_GROUND } from "@/modular/styles";
 import type { VariantProps } from "@/types/modular";
 import { StayList } from "./StayList";
 
@@ -14,7 +14,7 @@ export function Variant({ values, ground }: VariantProps) {
 
   return (
     <div
-      className={`${SPLIT} items-start ${GROUND[ground]} text-[color:var(--m-ink)] ${PAD}`}
+      className={`${SPLIT} items-start ${SECTION_GROUND[ground]} text-[color:var(--m-ink)] ${PAD}`}
     >
       <div>
         <SectionHeading values={values} align="start" />

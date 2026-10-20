@@ -2,13 +2,13 @@ import { formatTime, groups, scheduleDay } from "@/modular/content";
 import { IconHeading } from "@/modular/IconHeading";
 import {
   BODY_SM,
-  GROUND,
   INNER_EYEBROW,
   ITEM_TITLE,
   MUTED,
   PAD,
   SPLIT,
   TONE_TEXT,
+  SECTION_GROUND,
 } from "@/modular/styles";
 import type { VariantProps } from "@/types/modular";
 
@@ -23,7 +23,7 @@ export function Variant({ values, language, ground }: VariantProps) {
   const days = groups(values, "days");
 
   return (
-    <div className={`${SPLIT} ${GROUND[ground]} ${PAD}`}>
+    <div className={`${SPLIT} ${SECTION_GROUND[ground]} ${PAD}`}>
       <IconHeading icon="clock" values={values} />
       {days.length > 0 ? (
         <ol className="flex flex-col gap-10">

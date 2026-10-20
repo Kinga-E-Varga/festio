@@ -1,7 +1,7 @@
 import { useTranslations } from "next-intl";
 import { DressCodeCard } from "@/modular/cards/DressCodeCard";
 import { SectionHeading } from "@/modular/SectionHeading";
-import { COLUMN, GROUND, PAD, STACK } from "@/modular/styles";
+import { COLUMN, PAD, STACK, SECTION_GROUND } from "@/modular/styles";
 import type { VariantProps } from "@/types/modular";
 import { otherGround } from "@/modular/ground";
 
@@ -9,7 +9,7 @@ import { otherGround } from "@/modular/ground";
 export function Variant({ values, ground }: VariantProps) {
   const t = useTranslations("Sections");
   return (
-    <div className={`${STACK} ${GROUND[ground]} ${PAD}`}>
+    <div className={`${STACK} ${SECTION_GROUND[ground]} ${PAD}`}>
       <SectionHeading values={values} />
       <div className={COLUMN}>
         <DressCodeCard

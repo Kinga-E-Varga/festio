@@ -11,6 +11,7 @@ import {
   MUTED,
   PAD_SNUG,
   SERIF_BOLDER,
+  SECTION_GROUND,
 } from "@/modular/styles";
 import type { VariantProps } from "@/types/modular";
 import { Done } from "./Done";
@@ -32,7 +33,7 @@ export function Variant({ values, basics, ground }: VariantProps) {
 
   return (
     <div
-      className={`flex flex-col items-center gap-7 ${GROUND[ground]} ${PAD_SNUG}`}
+      className={`flex flex-col items-center gap-7 ${SECTION_GROUND[ground]} ${PAD_SNUG}`}
     >
       {done ? (
         <Done done={done} className={NUMBER} />

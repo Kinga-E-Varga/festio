@@ -8,6 +8,7 @@ import {
   MUTED,
   PAD,
   SPLIT,
+  SECTION_GROUND,
 } from "@/modular/styles";
 import type { VariantProps } from "@/types/modular";
 import { otherGround } from "@/modular/ground";
@@ -21,7 +22,7 @@ export function Variant({ values, ground }: VariantProps) {
   const ways = list(values, "ways").slice(0, 6);
 
   return (
-    <div className={`${SPLIT} ${GROUND[ground]} ${PAD}`}>
+    <div className={`${SPLIT} ${SECTION_GROUND[ground]} ${PAD}`}>
       <IconHeading icon="bus" values={values} />
       {ways.length > 0 ? (
         <ul className="flex flex-col gap-3 @3xl:gap-4">

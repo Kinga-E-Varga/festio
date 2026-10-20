@@ -1,7 +1,14 @@
 import { list } from "@/modular/content";
 import { otherGround } from "@/modular/ground";
 import { IconHeading } from "@/modular/IconHeading";
-import { CORNER, GROUND, INNER_EYEBROW, MUTED, PAD } from "@/modular/styles";
+import {
+  CORNER,
+  GROUND,
+  INNER_EYEBROW,
+  MUTED,
+  PAD,
+  SECTION_GROUND,
+} from "@/modular/styles";
 import type { VariantProps } from "@/types/modular";
 import { Dishes } from "./Dishes";
 
@@ -27,7 +34,7 @@ export function Variant({ values, ground }: VariantProps) {
   const courses = list(values, "courses");
 
   return (
-    <div className={`${LAYOUT} items-start ${GROUND[ground]} ${PAD}`}>
+    <div className={`${LAYOUT} items-start ${SECTION_GROUND[ground]} ${PAD}`}>
       <IconHeading icon="meal" values={values} align="start-late" />
       {courses.length > 0 ? (
         <div

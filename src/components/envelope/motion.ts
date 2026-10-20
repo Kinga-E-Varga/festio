@@ -9,10 +9,8 @@ export const SLIDE_MS = 1400;
 /** With reduced motion: the closed envelope fades straight out. */
 export const REDUCED_FADE_MS = 300;
 
-/** The flap's shadow on the pocket blurs to this many times its own as the flap lifts. */
-const FLAP_BLUR = 4;
 /* The flap's lift to 90°, done at LIFT_END of its turn, on this curve. */
-const LIFT_END = 0.42;
+export const LIFT_END = 0.42;
 const LIFT = [0.42, 0, 0.62, 0.32] as const;
 
 /**
@@ -124,16 +122,6 @@ export interface Blur {
   base: number;
 }
 
-/** One part's opacity (and its blurs) through the flap's turn, `at` its progress (0 to 1) at time t. */
-export interface Fade {
-  el: SVGElement;
-  from: number;
-  to: number;
-  at: (t: number) => number;
-  ease: (x: number) => number;
-  blurs: Blur[];
-}
-
 /* Each shape's own feGaussianBlur, its region widened once so the grown blur isn't cut off. */
 export function blursIn(el: Element): Blur[] {
   return Array.from(el.querySelectorAll("[style*='filter:url(#']")).flatMap(
@@ -154,83 +142,66 @@ export function blursIn(el: Element): Blur[] {
   );
 }
 
+/** Keyframes per fade: enough that straight steps between them follow its curve. */
+const FADE_STEPS = 48;
+
 /*
  * Closed-only shading leaves while the flap lifts and open-only shading
- * arrives as it lands; each closed / open pair cross-fades together, so the
- * shading never goes missing. The inside's top comes in once the flap is up
- * a little. The flap's own shadow spreads and fades with its angle.
+ * arrives as it lands: the open pocket fades in over the closed one, and the
+ * cast's closed and open shadows cross-fade. The inside's top comes in once
+ * the flap is up a little. The flap's own shadow spreads and fades with its
+ * angle: a copy blurred more (`flapSpread`) fades in as it fades out.
+ *
+ * Each is a layer of its own, faded by its opacity in an animation the
+ * graphics chip runs: a part changed inside a layer every frame redraws the
+ * whole layer every frame, slow on a phone. Each curve, `at` its progress (0
+ * to 1) at time t, is sampled into keyframes over the flap's turn.
  */
-export function openingFades(root: Element): Fade[] {
-  const all = (selector: string) =>
-    Array.from(root.querySelectorAll<SVGElement>(selector));
-  const timed = (
+export function openingFades(root: Element): Animation[] {
+  const fade = (
     selector: string,
     from: number,
     to: number,
-    delay: number,
-    length: number,
-    ease = easeInOut,
-  ): Fade[] =>
-    all(selector).map((el) => ({
-      el,
-      from,
-      to,
-      at: (t) => clamp01((t - delay * FLAP_MS) / (length * FLAP_MS)),
-      ease,
-      blurs: [],
-    }));
+    at: (t: number) => number,
+    ease: (x: number) => number,
+  ): Animation[] => {
+    const frames = Array.from({ length: FADE_STEPS + 1 }, (_, i) => {
+      const offset = i / FADE_STEPS;
+      return {
+        offset,
+        opacity: from + (to - from) * ease(at(offset * FLAP_MS)),
+      };
+    });
+    return Array.from(root.querySelectorAll(selector)).map((el) =>
+      el.animate(frames, { duration: FLAP_MS, fill: "both" }),
+    );
+  };
+  const timed = (delay: number, length: number) => (t: number) =>
+    clamp01((t - delay * FLAP_MS) / (length * FLAP_MS));
+  const lifted = (t: number) => liftDeg(t / FLAP_MS) / 90;
+  /* The inside's top strip: in once the flap is up a little. */
+  const edge = (t: number) =>
+    clamp01((liftDeg(t / FLAP_MS) - INSIDE_EDGE_DEG[0]) / INSIDE_EDGE_DEG[1]);
+  const linear = (x: number) => x;
   return [
-    ...all(".env-flap-shadow").map((el) => ({
-      el,
-      from: 1,
-      to: 0,
-      at: (t: number) => liftDeg(t / FLAP_MS) / 90,
-      ease: (x: number) => x,
-      blurs: blursIn(el),
-    })),
-    ...timed(
-      ".env-pocket .env-v-closed:not(.env-flap-shadow)",
+    /* Together (1 - x) of the shadow, x of it spread, as the flap goes from flat (x = 0) to upright (1). */
+    ...fade(
+      ".env-flap-shadow:not(.env-flap-spread)",
       1,
       0,
-      0.15,
-      0.6,
+      lifted,
+      (x) => 1 - (1 - x) ** 2,
     ),
-    ...timed(".env-pocket .env-v-open", 0, 1, 0.15, 0.6),
-    /* The inside's top strip: hidden while the flap lies nearly flat. */
-    ...all(".env-inside-edge").map((el) => ({
-      el,
-      from: 1,
-      to: 0,
-      at: (t: number) =>
-        clamp01(
-          (liftDeg(t / FLAP_MS) - INSIDE_EDGE_DEG[0]) / INSIDE_EDGE_DEG[1],
-        ),
-      ease: (x: number) => x,
-      blurs: [],
-    })),
-    ...timed(".env-cast .env-v-closed", 1, 0, 0.35, 0.55, castOut),
-    ...timed(".env-cast .env-v-open", 0, 1, 0.35, 0.55),
+    ...fade(".env-flap-spread", 0, 1, lifted, (x) => x * (1 - x)),
+    ...fade(".env-pocket.env-v-open", 0, 1, timed(0.15, 0.6), easeInOut),
+    ...fade(".env-inside-edge", 0, 1, edge, linear),
+    /* The lining under the fold's seam: in as the flap's back face takes over. */
+    ...fade(".env-back-seam", 0, 1, timed(LIFT_END, 0.04), easeInOut),
+    ...fade(".env-cast-closed", 1, 0, timed(0.35, 0.55), castOut),
+    ...fade(".env-cast-open", 0, 1, timed(0.35, 0.55), easeInOut),
   ];
 }
 
-export function setFades(fades: Fade[], t: number) {
-  for (const fade of fades) {
-    const x = fade.at(t);
-    fade.el.style.opacity = String(
-      fade.from + (fade.to - fade.from) * fade.ease(x),
-    );
-    for (const blur of fade.blurs)
-      blur.node.setAttribute(
-        "stdDeviation",
-        String(blur.base * (1 + (FLAP_BLUR - 1) * x)),
-      );
-  }
-}
-
-export function clearFades(fades: Fade[]) {
-  for (const fade of fades) {
-    fade.el.style.opacity = "";
-    for (const blur of fade.blurs)
-      blur.node.setAttribute("stdDeviation", String(blur.base));
-  }
+export function clearFades(fades: Animation[]) {
+  for (const fade of fades) fade.cancel();
 }

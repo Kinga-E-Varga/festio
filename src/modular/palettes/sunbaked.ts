@@ -6,7 +6,6 @@ export const palette: ModularPalette = {
   name: "Sunbaked",
   mood: "vivid",
   colors: {
-    canvas: "#ecdaba",
     surface: "#fdf5e2",
     "surface-alt": "#f4e9d1",
     ink: "#241B0F",
@@ -23,11 +22,12 @@ export const palette: ModularPalette = {
     error: "#b02a2c",
   },
   envelope: {
-    paper: "#cb4700",
-    liner: "#00967b",
-    string: "#fbcb21",
+    paper: "#b9926c",
+    liner: "#137765",
+    string: "#6e553c",
     seal: "liner",
-    tag: "#fdf5e2",
-    shadow: "#6b5a3e",
+    tag: "surface",
+    shadow: "#725f36",
+    ground: "surface-alt",
   },
 };

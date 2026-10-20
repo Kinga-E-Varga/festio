@@ -15,6 +15,7 @@ import {
   PAD,
   SPLIT_COLUMNS,
   STACK,
+  SECTION_GROUND,
 } from "@/modular/styles";
 import { otherGround } from "@/modular/ground";
 import { INVITE_COLUMN } from "@/modular/vars";
@@ -37,7 +38,7 @@ export function Variant({ values, ground }: VariantProps) {
   const venues = list(values, "venues");
 
   return (
-    <div className={`${STACK} ${GROUND[ground]} ${PAD}`}>
+    <div className={`${STACK} ${SECTION_GROUND[ground]} ${PAD}`}>
       {/* No italic heading here, even one kept from another variant. */}
       <SectionHeading values={values} />
       {venues.length > 0 ? (

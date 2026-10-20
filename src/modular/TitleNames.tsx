@@ -5,10 +5,10 @@ import {
   AMPERSAND_SIZE,
   DISPLAY,
   EYEBROW,
-  GROUND,
   ITALIC_LINE,
   MUTED,
   PAD_X,
+  SECTION_GROUND,
 } from "@/modular/styles";
 import type { VariantProps } from "@/types/modular";
 
@@ -67,7 +67,7 @@ export function TitleNames({ values, ground, look }: TitleNamesProps) {
 
   return (
     <div
-      className={`flex flex-col items-center justify-center ${GROUND[ground]} text-center ${PAD_X} py-16 @3xl:py-20`}
+      className={`flex flex-col items-center justify-center ${SECTION_GROUND[ground]} text-center ${PAD_X} py-16 @3xl:py-20`}
     >
       {text(values, "decoration") === "diamonds" ? <Ornament /> : null}
       {eyebrow ? (

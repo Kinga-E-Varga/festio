@@ -10,13 +10,13 @@ import {
   useState,
 } from "react";
 import { useToast } from "@/components/dashboard/Toast";
+import { envelopeGround } from "@/components/envelope/colors";
 import { EditorFrame } from "@/components/invitation/EditorTopBar";
 import type { PanelTabId } from "@/components/invitation/PanelTabs";
 import type { Language } from "@/lib/language";
 import { useLeaveWarning } from "@/lib/leave-warning";
 import { firstMissing } from "@/modular/fields";
 import { applyTemplate, resolveDesign, sameState } from "@/modular/state";
-import { groundClasses } from "@/modular/styles";
 import { modularVars } from "@/modular/vars";
 import type {
   InvitationBasics,
@@ -263,15 +263,20 @@ export function ModularEditor({
       toast={toast}
     >
       {/*
-       * The invitation's own ground, the same as around its column on a wide
-       * guest screen. It spans the whole area, under the panel too, so a
+       * The envelope's ground (the palette's `ground`), the same as under
+       * the guest page's envelope. It spans the whole area, under the panel too, so a
        * closing panel never drags the page behind it into view.
        */}
       <div
         style={
-          design ? modularVars(design.palette, design.fontPair) : undefined
+          design
+            ? {
+                ...modularVars(design.palette, design.fontPair),
+                ...envelopeGround(design.palette),
+              }
+            : undefined
         }
-        className={`relative h-full ${design ? groundClasses(design.pattern) : ""}`}
+        className={`relative h-full ${design ? "bg-(--env-ground)" : ""}`}
       >
         {/*
          * With the panel open above the breakpoint, the invitation gives up
@@ -280,7 +285,7 @@ export function ModularEditor({
          */}
         <div
           data-panel={editing ? "true" : undefined}
-          className="relative h-full px-3 pt-3 transition-[margin] duration-[620ms] ease-[cubic-bezier(0.22,1,0.36,1)] md:px-4.5 md:pt-4.5 invite:px-6 invite:pt-6 invite:data-[panel=true]:mr-invite-panel min-[1400px]:px-10 min-[1400px]:pt-10"
+          className="relative h-full transition-[margin] duration-[620ms] ease-[cubic-bezier(0.22,1,0.36,1)] invite:data-[panel=true]:mr-invite-panel"
         >
           {/* A state id that names nothing leaves the ground empty rather than failing the page. */}
           {design ? (

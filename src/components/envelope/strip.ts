@@ -1,3 +1,4 @@
+import { INVITE_COLUMN } from "@/modular/vars";
 import { CARD_SIDE, CARD_TOP, mix, SLIDE_EASE, SLIDE_PAST } from "./card";
 import { DRAWING } from "./drawing.generated";
 import { clamp01, cubic, easeInOut, FLAP_MS, LIFTED, SLIDE_MS } from "./motion";
@@ -6,7 +7,12 @@ import { clamp01, cubic, easeInOut, FLAP_MS, LIFTED, SLIDE_MS } from "./motion";
  * A modular invitation's page coming out of the envelope, once the flap is
  * open. A copy of its sections, laid out at the column's real width, stands
  * upright in the pocket, scaled to CARD_SIDE in from the body's sides, its top
- * CARD_TOP below the fold, cut off below the envelope. In three steps, all
+ * CARD_TOP below the fold, cut off below the envelope. Past INVITE_COLUMN
+ * only the content's width fits the pocket: the side bands are cut off, and
+ * so is the gap above the cover, the cover starting at the pocket's top;
+ * both come back as it grows to full size. Its shadow, in the envelope's
+ * shadow colour, comes in as the slide starts and goes as it
+ * grows to full size: the page has none. In three steps, all
  * from the lifted pose: while the flap turns, the envelope grows a little, the strip with it (to
  * CAP of the way); then, at that size, the envelope slides down and off the
  * stage (SLIDE_MS) while the strip moves up out of the pocket to where the
@@ -29,6 +35,8 @@ const MOVE_EASE = cubic(0.4, 0, 0.35, 1);
 const FINAL_MS = 900;
 /** The header coming in (ms), once the strip is full size. */
 const HEADER_MS = 150;
+/** The strip's shadow coming in (ms), as the slide starts. */
+const SHADE_MS = 300;
 
 const { vb, fold, body } = DRAWING;
 
@@ -36,6 +44,10 @@ const { vb, fold, body } = DRAWING;
 export interface StripPlaces {
   /** The copy of the sections: the column's width, the height it shows. */
   width: number;
+  /** The side bands past the content, each side (px, 0 up to INVITE_COLUMN). */
+  side: number;
+  /** The gap above the cover (px, 0 up to INVITE_COLUMN). */
+  gap: number;
   height: number;
   /** The column's box in the stage, its header's height and the scroller's bottom. */
   column: { x: number; y: number; w: number };
@@ -68,6 +80,10 @@ export interface StripPlaces {
 /** One frame: the strip's transform in the pocket, the envelope's move, the header's fade (0 to 1). */
 export interface StripFrame {
   strip: string;
+  /** The cut, in the copy's own px: the side bands' (each side) and the gap above the cover's; all of them in the pocket, none at full size. */
+  clip: { side: number; top: number };
+  /** The strip's shadow, 0 to 1. */
+  shade: number;
   /** The copy's height: down to the scroller's bottom at the size it is drawn, as it is still growing after the envelope has gone. */
   height: number;
   /** The envelope's growth and drop, as their own `scale` and `translate`: the lift's transition never smooths them. */
@@ -84,6 +100,7 @@ export function stripPlaces(
   column: DOMRect,
   headerHeight: number,
   bottom: number,
+  gap: number,
 ): StripPlaces {
   const k = env.width / vb.w;
   const lift = LIFTED.body.s;
@@ -93,7 +110,8 @@ export function stripPlaces(
   const originX = offX + env.width / 2;
   const originY = offY + ((body.y0 + body.y1) / 2 - vb.y) * k;
   const width = column.width;
-  const local = ((body.x1 - body.x0 - 2 * CARD_SIDE) * k) / width;
+  const content = Math.min(width, INVITE_COLUMN);
+  const local = ((body.x1 - body.x0 - 2 * CARD_SIDE) * k) / content;
   /* The growth on top of the lift that brings the strip to full size. */
   const grow = 1 / (local * lift);
   const top = (fold + CARD_TOP - vb.y) * k;
@@ -123,6 +141,8 @@ export function stripPlaces(
   const headerAt = Math.max(growAt + FINAL_MS, CAP_MS + SLIDE_MS);
   return {
     width,
+    side: (width - content) / 2,
+    gap,
     height: bottom - (column.top + headerHeight),
     column: {
       x: column.left - stage.left,
@@ -166,9 +186,15 @@ export function stripFrame(p: StripPlaces, t: number): StripFrame {
   const y = mix(p.originY + g * (p.start.y - p.originY), p.end.y, move);
   const left = p.originX + (x - p.originX) / (g * lift) - p.offX;
   const top = p.originY + ((y - p.originY - dy) / g - p.liftY) / lift - p.offY;
+  const cut = 1 - easeInOut(final);
+  /* Moved up by the cut gap, so what shows starts at `top`. */
+  const shown = top - p.gap * cut * p.local;
   return {
-    strip: `translate(${left - (p.width * p.local) / 2}px, ${top}px) scale(${p.local})`,
-    height: Math.max(p.height, (p.bottom - y) / (p.local * lift * g)),
+    strip: `translate(${left - (p.width * p.local) / 2}px, ${shown}px) scale(${p.local})`,
+    clip: { side: p.side * cut, top: p.gap * cut },
+    shade: easeInOut(clamp01((t - CAP_MS) / SHADE_MS)) * cut,
+    height:
+      Math.max(p.height, (p.bottom - y) / (p.local * lift * g)) + p.gap * cut,
     grow: g,
     drop: dy,
     held: (Math.min(g, p.cap) - 1) / (p.cap - 1),

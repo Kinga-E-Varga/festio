@@ -19,12 +19,20 @@ export function CoverPhoto({
 }) {
   return (
     /*
-     * From `@3xl` the cover never runs past the first screen, less the
-     * header (56px, 64px from `@5xl`), so a laptop's short screen still shows
-     * the date at its foot; never shorter than a phone's 440px.
+     * The cover grows to fill the hero (`ModularInvitation`, `--hero`): up
+     * to 1440px the header and the cover alone fill the first screen, the
+     * title below. Never shorter than a phone's 440px. Once the page is
+     * wider than `INVITE_COLUMN` (1440px), the photo stops at the column and
+     * drops below the header as far as the page's margin beside it, at most
+     * a section's top padding (`PAD_TOP`, 80px; `--cover-top`), so it sits
+     * on the band rather than looking cut off. There it is never
+     * wider than 2:1 (720px tall) unless the screen is too short for that,
+     * so the title joins the first screen only when the screen is tall
+     * enough to hold it below such a photo.
      */
     <div
-      className={`relative flex min-h-110 overflow-hidden bg-[var(--m-accent)] @3xl:min-h-[clamp(440px,calc(100svh_-_56px),560px)] @5xl:min-h-[clamp(440px,calc(100svh_-_64px),648px)] ${className}`}
+      data-cover
+      className={`relative flex min-h-110 grow overflow-hidden @max-[1441px]/page:min-h-[max(440px,var(--hero))] @min-[1441px]/page:mt-(--cover-top) @min-[1441px]/page:min-h-[max(440px,min(var(--hero)-var(--cover-top),var(--invite-column)/2))] bg-[var(--m-accent)] ${className}`}
     >
       {/*
        * The title's ground over the photo, as on the split location. The

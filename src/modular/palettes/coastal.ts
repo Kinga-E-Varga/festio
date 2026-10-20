@@ -6,7 +6,6 @@ export const palette: ModularPalette = {
   name: "Coastal",
   mood: "subtle",
   colors: {
-    canvas: "#f7eee5",
     surface: "#f5f1ea",
     "surface-alt": "#e8e0d4",
     ink: "#22303b",
@@ -23,11 +22,12 @@ export const palette: ModularPalette = {
     error: "#b8322a",
   },
   envelope: {
-    paper: "#cab6a3",
+    paper: "#bea590",
     liner: "accent",
-    string: "#7a6653",
-    seal: "accent",
-    tag: "#f7f0e5",
-    shadow: "ink-muted",
+    string: "#7c5c49",
+    seal: "liner",
+    tag: "#f5efe8",
+    shadow: "#7d694d",
+    ground: "surface-alt",
   },
 };

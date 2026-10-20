@@ -18,7 +18,9 @@ import { clamp01, cubic, easeInOut, LIFTED, SLIDE_MS } from "./motion";
  *   clear, the card turns upright.
  *
  * Last, either way, the reply panel slides in and the card moves to where the
- * page draws it. Both start from the lifted pose (`LIFTED.body`), and move the
+ * page draws it. A shadow of its own (the page's colour and blur, no offset)
+ * comes in as it starts out of the pocket and gives way to the page's as it
+ * settles; none, without the template's own. Both start from the lifted pose (`LIFTED.body`), and move the
  * envelope on top of it.
  */
 export type CardOpening = "rise" | "slide";
@@ -28,6 +30,10 @@ export const CARD_OPENINGS: CardOpening[] = ["rise", "slide"];
 const RISE_MS = 900;
 /** Upright and to its size. */
 const TURN_MS = 1000;
+/** The card's shadow coming in, as it starts out of the pocket. */
+const SHADE_MS = 300;
+/** The way-out shadow's strength; it gives way to the page's as the card settles. */
+const SHADE_OUT = 0.6;
 /** The reply panel sliding in, the card moving beside it. */
 export const PANEL_MS = 800;
 /** The panel's slide, the same curve as its own open and close. */
@@ -93,6 +99,8 @@ export interface CardPlaces {
   grow: number;
   slide: number;
   clear: number;
+  /** The template has no card shadow: the card's goes once it is beside the panel. */
+  shadowless: boolean;
   /** When the panel starts, and the whole way out. */
   panelAt: number;
   total: number;
@@ -106,8 +114,8 @@ export interface CardPlaces {
 export interface CardFrame {
   inPocket: boolean;
   card: string;
-  /** The card's shadow, 0 to 1. */
-  shadow: number;
+  /** The card's shadows, 0 to 1: the page's, and its own on the way out. */
+  shadow: { page: number; out: number };
   /** Its growth and how far that has come, 0 to 1 (`castShadows`). */
   envelope: { transform: string; opacity: number; grow: number; held: number };
 }
@@ -121,6 +129,7 @@ export function cardPlaces(
   page: DOMRect,
   width: number,
   height: number,
+  shadowless: boolean,
 ): CardPlaces {
   const k = env.width / vb.w;
   const wide = body.x1 - body.x0 - 2 * CARD_SIDE;
@@ -156,6 +165,7 @@ export function cardPlaces(
     grow: 1,
     slide: 0,
     clear: SLIDE_MS,
+    shadowless,
     panelAt: 0,
     total: 0,
     centre: { x: offX + env.width / 2, y: offY + env.height / 2, a: 0, s },
@@ -205,7 +215,15 @@ function transform(p: CardPlaces, { x, y, a, s }: Place) {
 
 /** The card at `t` ms after the flap has settled. */
 export function cardFrame(p: CardPlaces, t: number): CardFrame {
-  return p.opening === "slide" ? slideFrame(p, t) : riseFrame(p, t);
+  const frame = p.opening === "slide" ? slideFrame(p, t) : riseFrame(p, t);
+  return { ...frame, shadow: cardShadow(p, t) };
+}
+
+/** The card's shadows at `t`: its own, in as it starts out of the pocket; beside the panel, the page's (none without the template's own). */
+function cardShadow(p: CardPlaces, t: number) {
+  const shown = SHADE_OUT * easeInOut(clamp01(t / SHADE_MS));
+  const settle = PANEL_EASE(clamp01((t - p.panelAt) / PANEL_MS));
+  return { out: shown * (1 - settle), page: p.shadowless ? 0 : settle };
 }
 
 /** The card beside the panel as it slides in, from the centre to the page's card. */
@@ -221,7 +239,7 @@ function besidePanel(p: CardPlaces, t: number): Place | null {
     : null;
 }
 
-function riseFrame(p: CardPlaces, t: number): CardFrame {
+function riseFrame(p: CardPlaces, t: number): Omit<CardFrame, "shadow"> {
   const r = RISE_EASE(clamp01(t / RISE_MS));
   const sink = p.sink * r;
   const out = { ...p.inside, y: p.inside.y - p.rise * r };
@@ -229,7 +247,6 @@ function riseFrame(p: CardPlaces, t: number): CardFrame {
     return {
       inPocket: true,
       card: transform(p, out),
-      shadow: 0,
       envelope: {
         transform: `translateY(${sink}px)`,
         opacity: 1,
@@ -258,7 +275,6 @@ function riseFrame(p: CardPlaces, t: number): CardFrame {
   return {
     inPocket: false,
     card: transform(p, besidePanel(p, t) ?? upright),
-    shadow: turn,
     envelope: {
       transform: `translateY(${sink}px) scale(${shrink})`,
       opacity: 1 - easeInOut(fade),
@@ -326,7 +342,7 @@ export function castShadows(held: number) {
   };
 }
 
-function slideFrame(p: CardPlaces, t: number): CardFrame {
+function slideFrame(p: CardPlaces, t: number): Omit<CardFrame, "shadow"> {
   const { g, dy } = slideAt(p, t);
   const envelope = {
     transform: `translateY(${dy}px) scale(${g})`,
@@ -347,7 +363,6 @@ function slideFrame(p: CardPlaces, t: number): CardFrame {
         a: -90,
         s: card.s / (g * lift),
       }),
-      shadow: 0,
       envelope,
     };
   }
@@ -355,7 +370,6 @@ function slideFrame(p: CardPlaces, t: number): CardFrame {
   return {
     inPocket: false,
     card: transform(p, besidePanel(p, t) ?? { ...card, a: mix(-90, 0, turn) }),
-    shadow: turn,
     envelope,
   };
 }

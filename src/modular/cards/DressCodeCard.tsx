@@ -7,7 +7,6 @@ const HEX = /^#[0-9a-f]{6}$/i;
 
 /* The palette's roles a swatch may name in place of a hex colour, so it follows the palette. */
 const SWATCH_ROLES: ColorRole[] = [
-  "canvas",
   "surface",
   "ink",
   "accent",

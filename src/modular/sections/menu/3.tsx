@@ -9,6 +9,7 @@ import {
   MUTED,
   PAD,
   TONE_TEXT,
+  SECTION_GROUND,
 } from "@/modular/styles";
 import type { VariantProps } from "@/types/modular";
 import { Dishes } from "./Dishes";
@@ -35,7 +36,7 @@ export function Variant({ values, ground }: VariantProps) {
   const note = text(values, "note");
 
   return (
-    <div className={`${GROUND[ground]} ${PAD}`}>
+    <div className={`${SECTION_GROUND[ground]} ${PAD}`}>
       <div
         className={`mx-auto w-full max-w-140 p-2.5 shadow-lg shadow-(color:--m-shadow)/30 ${FRAME} ${GROUND[otherGround(ground)]}`}
       >

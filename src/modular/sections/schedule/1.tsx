@@ -4,13 +4,13 @@ import { SectionHeading } from "@/modular/SectionHeading";
 import {
   BODY_SM,
   INNER_EYEBROW,
-  GROUND,
   ITEM_TITLE,
   ICON_DISC,
   MUTED,
   PAD,
   SPLIT,
   TONES,
+  SECTION_GROUND,
 } from "@/modular/styles";
 import type { VariantProps } from "@/types/modular";
 
@@ -24,7 +24,7 @@ export function Variant({ values, language, ground }: VariantProps) {
   const days = groups(values, "days");
 
   return (
-    <div className={`${SPLIT} ${GROUND[ground]} ${PAD}`}>
+    <div className={`${SPLIT} ${SECTION_GROUND[ground]} ${PAD}`}>
       <div>
         <SectionHeading values={values} align="start" />
       </div>

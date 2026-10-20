@@ -50,7 +50,7 @@ values are estimates.
 ## 3. Propose 2–3 directions
 
 Write the drafts as one JSON array in the scratchpad (`[{ id, name, mood, colors }]`,
-all 15 roles each) and run:
+all 14 roles each) and run:
 
 ```bash
 node .claude/skills/palette/check.mjs <scratchpad>/drafts.json --out <scratchpad>/drafts.html
@@ -64,18 +64,18 @@ path as Windows sees it, for the browser's or File Explorer's address bar:
 
 ## 4. Write the palette
 
-Fill all 15 roles of the picked direction, run the checker on it again, then write
+Fill all 14 roles of the picked direction, run the checker on it again, then write
 `src/modular/palettes/<id>.ts` in the shape the others use:
 
 ```ts
 import type { ModularPalette } from "@/types/modular";
 
-/** <The real colours: accent with secondary and a <tertiary> band, on <surfaces> and a <canvas> ground.> */
+/** <The real colours: accent with secondary and a <tertiary> band, on <surfaces>.> */
 export const palette: ModularPalette = {
   id: "<id>",
   name: "<Name>",
   mood: "<subtle|balanced|vivid>",
-  colors: {/* all 15 roles */},
+  colors: {/* all 14 roles */},
   envelope: {
     paper: "<hex>",
     liner: "<hex>",
@@ -83,14 +83,17 @@ export const palette: ModularPalette = {
     seal: "liner",
     tag: "<hex>",
     shadow: "<hex or liner>",
+    ground: "<hex or a palette colour>",
   },
 };
 ```
 
-- **Envelope:** the envelope guests open first, on the `canvas` ground. Propose its six
-  colours with the palette: `paper` (the envelope, a mid colour from the palette), `liner`
+- **Envelope:** the envelope guests open first. Propose its seven colours with the
+  palette, `ground` first — what the envelope sits on, a palette colour (`"surface-alt"`,
+  `"accent"`) or a hex that sets the envelope off (on a dark palette, light enough for the
+  cast shadow to show) — then `paper` (the envelope, a mid colour from the palette), `liner`
   (inside lining, also the tag's text: darker, contrasting with paper), `string`, `seal`
-  (often `"liner"`), `tag` (a pale card), `shadow` (cast shadow, multiplied on canvas: a
+  (often `"liner"`), `tag` (a pale card), `shadow` (cast shadow, multiplied on the ground: a
   dark, muted colour or `"liner"`). A role is a 6-digit hex, another envelope role's
   name, or one of the palette's own colours (`"secondary"`) — prefer the name when the
   envelope uses a palette colour as it is, so it follows the palette. Ask the user to check it on `/templates/<a modular template>` with that palette.
@@ -112,7 +115,6 @@ After their feedback, change only what they named, re-run the checker, and repea
 
 | Role                        | Used for                                                          | Needs                                                     |
 | --------------------------- | ----------------------------------------------------------------- | --------------------------------------------------------- |
-| `canvas`                    | The ground around the invitation's column (it casts a shadow)     | Usually between `surface` and `surface-alt`; may be close |
 | `surface` / `surface-alt`   | Sections alternate between them                                   | A clear step between the two (≥1.15)                      |
 | `ink` / `ink-muted`         | Text; muted for notes and captions                                | 4.5:1 on both surfaces and on `secondary-soft`            |
 | `line`                      | Card borders, hairlines                                           | Visible on `surface-alt`                                  |
@@ -126,7 +128,7 @@ After their feedback, change only what they named, re-run the checker, and repea
 | `error`                     | Form warnings                                                     | 4.5:1 on both surfaces                                    |
 
 On a **dark** palette the surfaces are dark and the accent, secondary and their
-inks flip: light colours with dark text on them. The canvas usually stays light.
+inks flip: light colours with dark text on them.
 
 ## Moods
 

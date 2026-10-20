@@ -11,7 +11,7 @@ export function Variant({ basics, language, related }: VariantProps) {
   const mark = markParts(related.header ?? {}, "mark");
 
   return (
-    <div className="flex flex-col items-center justify-center bg-[var(--m-surface)] px-6 pt-11 pb-6 text-center @3xl:pt-12 @3xl:pb-7">
+    <div className="flex flex-col items-center justify-center px-6 pt-11 pb-6 text-center @3xl:pt-12 @3xl:pb-7">
       {mark.length > 0 ? (
         <p className={`${DISPLAY} mb-3.5 text-[28px]`}>
           <Mark parts={mark} />

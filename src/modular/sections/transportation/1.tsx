@@ -10,6 +10,7 @@ import {
   PAD,
   STACK,
   columnsFor,
+  SECTION_GROUND,
 } from "@/modular/styles";
 import type { VariantProps } from "@/types/modular";
 import { otherGround } from "@/modular/ground";
@@ -19,7 +20,7 @@ export function Variant({ values, ground }: VariantProps) {
   const ways = list(values, "ways").slice(0, 6);
 
   return (
-    <div className={`${STACK} ${GROUND[ground]} ${PAD}`}>
+    <div className={`${STACK} ${SECTION_GROUND[ground]} ${PAD}`}>
       <SectionHeading values={values} />
       {ways.length > 0 ? (
         <ul className={`grid gap-3 @3xl:gap-4 ${columnsFor(ways.length)}`}>

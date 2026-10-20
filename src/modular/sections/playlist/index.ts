@@ -11,6 +11,7 @@ export const section: SectionDefinition = {
     {
       id: "1",
       name: { en: "Record", ro: "Vinil", hu: "Bakelit" },
+      band: "accent",
       // No intro line and no italic second line: the heading and its note only.
       shows: HEADING_SHOWS.filter(
         (id) => id !== "eyebrow" && id !== "headingItalic",

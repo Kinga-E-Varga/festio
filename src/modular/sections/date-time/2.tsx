@@ -1,6 +1,6 @@
 import { formatInvitationDate } from "@/lib/invitation";
 import { text } from "@/modular/content";
-import { BAND_LINE, GROUND, LEAD, PAD_SNUG } from "@/modular/styles";
+import { BAND_LINE, LEAD, PAD_SNUG, SECTION_GROUND } from "@/modular/styles";
 import type { VariantProps } from "@/types/modular";
 
 /**
@@ -13,7 +13,7 @@ export function Variant({ values, basics, language, ground }: VariantProps) {
 
   return (
     <div
-      className={`flex flex-col items-center ${GROUND[ground]} text-center ${PAD_SNUG}`}
+      className={`flex flex-col items-center ${SECTION_GROUND[ground]} text-center ${PAD_SNUG}`}
     >
       <time dateTime={basics.date} className={`${BAND_LINE} max-w-4xl`}>
         {formatInvitationDate(

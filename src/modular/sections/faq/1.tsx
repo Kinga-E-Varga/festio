@@ -3,10 +3,10 @@ import { Icon } from "@/modular/icons";
 import { SectionHeading } from "@/modular/SectionHeading";
 import {
   ARROW_NUDGE,
-  GROUND,
   PAD,
   SPLIT,
   UNDERLINE_LINK,
+  SECTION_GROUND,
 } from "@/modular/styles";
 import type { VariantProps } from "@/types/modular";
 import { FaqList } from "./FaqList";
@@ -20,7 +20,7 @@ export function Variant({ values, ground }: VariantProps) {
   const items = list(values, "items");
 
   return (
-    <div className={`${SPLIT} ${GROUND[ground]} ${PAD}`}>
+    <div className={`${SPLIT} ${SECTION_GROUND[ground]} ${PAD}`}>
       <div className="flex flex-col items-center gap-2 @3xl:items-start">
         <SectionHeading values={values} align="start" />
         {linkLabel ? (

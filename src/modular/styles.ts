@@ -1,4 +1,4 @@
-import type { ModularPattern, SectionGround } from "@/types/modular";
+import type { SectionGround } from "@/types/modular";
 
 /*
  * The modular library's one scale. Variants build from these and from plain
@@ -140,11 +140,29 @@ const PAGE_ROLES =
 export const ON_ACCENT =
   "text-[color:var(--m-ink)] [--m-ink:var(--m-accent-ink)] [--m-ink-muted:var(--m-accent-ink-muted)] [--m-secondary:var(--m-accent-ink)] [--m-accent:var(--m-accent-ink)]";
 
-/** A section's or card's background, by its ground, with the roles that read on it. */
+/** A ground's fill alone: the page paints it across the whole width, behind a section's column. */
+export const GROUND_FILL: Record<SectionGround, string> = {
+  surface: "bg-[var(--m-surface)]",
+  "surface-alt": "bg-[var(--m-surface-alt)]",
+  accent: "bg-[var(--m-page-accent)]",
+};
+
+/** A card's background, by its ground, with the roles that read on it. */
 export const GROUND: Record<SectionGround, string> = {
-  surface: `bg-[var(--m-surface)] ${PAGE_ROLES}`,
-  "surface-alt": `bg-[var(--m-surface-alt)] ${PAGE_ROLES}`,
-  accent: `bg-[var(--m-page-accent)] ${ON_ACCENT}`,
+  surface: `${GROUND_FILL.surface} ${PAGE_ROLES}`,
+  "surface-alt": `${GROUND_FILL["surface-alt"]} ${PAGE_ROLES}`,
+  accent: `${GROUND_FILL.accent} ${ON_ACCENT}`,
+};
+
+/**
+ * A section's roles, by its ground, without the fill: the page paints that
+ * across the whole width (`GROUND_FILL`), the pattern over a surface, so a
+ * section's root leaves it showing.
+ */
+export const SECTION_GROUND: Record<SectionGround, string> = {
+  surface: PAGE_ROLES,
+  "surface-alt": PAGE_ROLES,
+  accent: ON_ACCENT,
 };
 
 /* ── Section layout ─────────────────────────────────────────────────── */
@@ -236,13 +254,4 @@ const COLUMNS = [
 
 export function columnsFor(count: number): string {
   return COLUMNS[Math.min(count, COLUMNS.length - 1)];
-}
-
-/**
- * The invitation's ground — around its column on a wide guest screen, and
- * the editor's viewing area: `--m-canvas`, with the template's pattern if it
- * has one, laid over the canvas in multiply so it darkens it like ink.
- */
-export function groundClasses(pattern: ModularPattern | null): string {
-  return `bg-[var(--m-canvas)] ${pattern ? `${pattern.className} bg-blend-multiply` : ""}`;
 }

@@ -6,7 +6,6 @@ export const palette: ModularPalette = {
   name: "Orchard",
   mood: "subtle",
   colors: {
-    canvas: "#e8e4d9",
     surface: "#22251f",
     "surface-alt": "#2c3028",
     ink: "#f0eee5",
@@ -23,11 +22,12 @@ export const palette: ModularPalette = {
     error: "#ef8a7e",
   },
   envelope: {
-    paper: "#d88d6d",
-    liner: "#5f4a40",
-    string: "#bea497",
-    seal: "liner",
-    tag: "#dbd4c0",
-    shadow: "liner",
+    paper: "#a9b489",
+    liner: "#42483b",
+    string: "liner",
+    seal: "#98533c",
+    tag: "#f3eedd",
+    shadow: "#434b35",
+    ground: "#dfd8c7",
   },
 };

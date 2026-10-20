@@ -6,7 +6,6 @@ export const palette: ModularPalette = {
   name: "Peony",
   mood: "balanced",
   colors: {
-    canvas: "#e2e4d2",
     surface: "#fbefe0",
     "surface-alt": "#f3d9d1",
     ink: "#3a272b",
@@ -23,11 +22,12 @@ export const palette: ModularPalette = {
     error: "#b3261e",
   },
   envelope: {
-    paper: "#82424e",
-    liner: "#4e6a30",
-    string: "#f0c9cb",
-    seal: "liner",
-    tag: "#fbefe0",
-    shadow: "#5d5d4a",
+    paper: "#b79681",
+    liner: "#694542",
+    string: "liner",
+    seal: "#4d612f",
+    tag: "surface",
+    shadow: "#6d4e44",
+    ground: "surface-alt",
   },
 };

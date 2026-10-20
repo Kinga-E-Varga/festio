@@ -3,12 +3,12 @@
 import { useTranslations } from "next-intl";
 
 /*
- * The editor's tabs, the Save button's size and type, joined in one row:
- * only the outer corners round. Every tab takes the top bar's fill and ink;
- * the open one primary-800 at 90%, a closed one primary-800 on hover.
+ * The editor's tabs, the Save button's size and type, side by side as
+ * separate buttons. Every tab takes the top bar's fill and ink; the open one
+ * primary-800 at 90%, and any one primary-800 on hover.
  */
 const TAB =
-  "h-btn flex-1 first:rounded-l-ui last:rounded-r-ui text-[12.5px] font-medium bg-primary-900 text-secondary-100 transition-colors not-aria-selected:hover:bg-primary-800 aria-selected:bg-primary-800/90 focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-info-600";
+  "h-btn flex-1 rounded-ui text-[12.5px] font-medium bg-primary-900 text-secondary-100 transition-colors aria-selected:bg-primary-800/90 hover:bg-primary-800 aria-selected:hover:bg-primary-800 focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-info-600";
 
 /**
  * The editor's tabs, in the order the host meets them: the design first,
@@ -40,7 +40,7 @@ export function PanelTabs({
   const t = useTranslations("HostEditor");
 
   return (
-    <div role="tablist" className="flex flex-1">
+    <div role="tablist" className="flex flex-1 gap-2">
       {TABS.map((each) => (
         <button
           key={each.id}

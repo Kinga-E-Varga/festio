@@ -14,6 +14,7 @@ import {
   TONES,
   VENUE,
   LINK,
+  SECTION_GROUND,
 } from "@/modular/styles";
 import { otherGround } from "@/modular/ground";
 import { INVITE_COLUMN } from "@/modular/vars";
@@ -37,7 +38,7 @@ export function Variant({ values, ground }: VariantProps) {
   if (venues.length === 0) return null;
 
   return (
-    <div className={`grid ${GROUND[ground]} @3xl:grid-cols-2`}>
+    <div className={`grid ${SECTION_GROUND[ground]} @3xl:grid-cols-2`}>
       <div className={`flex flex-col justify-center ${PAD_SNUG}`}>
         {venues.length === 1 ? (
           <div className="flex flex-col items-center text-center @3xl:items-start @3xl:text-left">

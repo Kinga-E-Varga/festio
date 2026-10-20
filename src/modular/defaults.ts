@@ -19,7 +19,7 @@ export const DEFAULTS: Record<string, SectionSamples> = {
     markEnd: "C",
   },
   cover: {
-    photo: "/modular/samples/tuscany.png",
+    photo: "/modular/samples/olive-garden.jpg",
     kicker: {
       en: "A weekend in Cassis",
       ro: "Un weekend la Cassis",

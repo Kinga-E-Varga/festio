@@ -19,7 +19,7 @@ export function Variant({ values, basics, language }: VariantProps) {
       className="flex-col items-end justify-between p-4 @3xl:p-10"
     >
       {kicker ? (
-        <div className="relative grid size-[110px] rotate-12 @3xl:size-[136px] place-items-center motion-safe:animate-bob rounded-full bg-[var(--m-tertiary)] shadow-md shadow-(color:--m-shadow)/20 px-3 text-center text-[color:var(--m-tertiary-ink)]">
+        <div className="relative grid size-[110px] rotate-12 @3xl:size-[136px] place-items-center rounded-full bg-[var(--m-tertiary)] shadow-md shadow-(color:--m-shadow)/20 px-3 text-center text-[color:var(--m-tertiary-ink)]">
           <p
             className={`${SERIF_BOLDEST} text-[color:var(--m-tertiary-ink-muted)] text-[14px] leading-[1.25] text-balance @3xl:text-[17px]`}
           >

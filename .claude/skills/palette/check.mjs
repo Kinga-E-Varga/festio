@@ -115,7 +115,6 @@ function readInput(path) {
 /* ── Checks ───────────────────────────────────────────────────────── */
 
 const ROLES = [
-  "canvas",
   "surface",
   "surface-alt",
   "ink",
@@ -159,10 +158,7 @@ const TEXT = [
   ["error", "surface-alt"],
 ];
 
-/*
- * Grounds that sit side by side and must not blend. Not the canvas: the
- * column casts a shadow on it, so it may sit close to the surfaces.
- */
+/* Grounds that sit side by side and must not blend. */
 const STEPS = [
   ["surface", "surface-alt", 1.15],
   ["line", "surface-alt", 1.15],
@@ -233,7 +229,7 @@ function swatch(palettes) {
     ).join("");
     return `<section>
   <h2>${p.name ?? p.id} <small>${p.id ?? ""} · ${p.mood ?? "no mood"}</small></h2>
-  <div class="preview" style="background:${v.canvas}">
+  <div class="preview" style="background:${v["surface-alt"]}">
     <div style="background:${v.surface};color:${v.ink}">
       <p style="color:${v.secondary}" class="eyebrow">Eyebrow in secondary</p>
       <h3>Heading in ink</h3>

@@ -11,7 +11,7 @@ import type { VariantProps } from "@/types/modular";
 export function Variant({ values }: VariantProps) {
   return (
     <div
-      className={`flex flex-col items-center gap-10 bg-[var(--m-accent)] text-[color:var(--m-accent-ink)] ${PAD} @3xl:flex-row @3xl:gap-20 @5xl:px-40`}
+      className={`flex flex-col items-center gap-10 text-[color:var(--m-accent-ink)] ${PAD} @3xl:flex-row @3xl:gap-20 @5xl:px-40`}
     >
       <svg
         viewBox="0 0 260 260"

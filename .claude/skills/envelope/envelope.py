@@ -320,13 +320,31 @@ def is_cast(el):
     return label(el) in ("cast shadow", TAG_SHADOW)
 
 
+# The tag's own shadows, on its paper.
+TAG_SHADES = ("shadow", "hole shadow")
+
+DRAWS = {"path", "rect", "circle", "ellipse", "polygon", "polyline", "line", "use", "text", "image"}
+
+# One entry per clipped or masked group being written, innermost last: whether anything
+# unblended has been drawn in it yet, for `ser`.
+clips = []
+
+
 def ser(el, cast=False, cls=None, blend=None):
     """An element as page markup: Inkscape's own attributes dropped, colours as roles."""
     tag = local(el.tag)
     cast = cast or is_cast(el)
     # Inkscape may write "normal" on a shape inside a blended group: it changes nothing.
     own = styles(el).get("mix-blend-mode")
-    blend = own if own and own != "normal" else blend
+    own = own if own and own != "normal" else None
+    # A clipped group is drawn on its own, so a blend with nothing drawn under it in that
+    # group blends onto nothing: on desktop it draws as if unblended, and Chrome on
+    # Android draws nothing at all. Dropped, it draws the same everywhere; its shading
+    # colour stays.
+    drop = bool(own and clips and not clips[-1]["drawn"])
+    if clips and not own and not clips[-1]["blended"] and tag in DRAWS:
+        clips[-1]["drawn"] = True
+    blend = own or blend
     blend = blend if blend in SHADING else None
     attrs = []
     if cls:
@@ -342,10 +360,47 @@ def ser(el, cast=False, cls=None, blend=None):
             v = recolour(v)
         if k == "style" and blend and not cast and tag != "g":
             v = shading(v, blend)
+            # The tag is mostly light: its own shadows take a colour of their own,
+            # darker and more saturated (`--env-tag-shadow` in colors.ts).
+            if label(el) in TAG_SHADES:
+                v = v.replace("var(--tag-mul)", "var(--tag-shadow)")
+        if k == "style" and drop:
+            v = ";".join(kv for kv in v.split(";") if not kv.startswith("mix-blend-mode:"))
         attrs.append(f'{k}="{v}"')
+    clipped = tag == "g" and (el.get("clip-path") or el.get("mask"))
+    if clipped:
+        clips.append({"drawn": False, "blended": False})
+    elif own and clips:
+        # What a blended group draws inside, it draws on its own surface, not the clip's.
+        outer, clips[-1]["blended"] = clips[-1]["blended"], True
     inner = "".join(ser(c, cast, blend=blend) for c in el)
+    if clipped:
+        clips.pop()
+    elif own and clips:
+        clips[-1]["blended"] = outer
+    if clipped and own and not drop:
+        return split_clip_blend(attrs, own, inner)
     a = (" " + " ".join(attrs)) if attrs else ""
     return f"<{tag}{a}>{inner}</{tag}>" if inner else f"<{tag}{a}/>"
+
+
+def split_clip_blend(attrs, blend, inner):
+    """A group's blend on a group of its own around the clipped one: Chrome on Android
+    draws nothing of a group that is clipped and blended at once. The outer group takes
+    the class, so a fade (`openingFades`) fades the blend with it."""
+    outer = [f'style="mix-blend-mode:{blend}"']
+    rest = []
+    for a in attrs:
+        if a.startswith("class="):
+            outer.insert(0, a)
+        elif a.startswith('style="'):
+            st = dict(kv.split(":", 1) for kv in a[7:-1].split(";") if ":" in kv)
+            st.pop("mix-blend-mode", None)
+            if st:
+                rest.append('style="' + ";".join(f"{k}:{v}" for k, v in st.items()) + '"')
+        else:
+            rest.append(a)
+    return f'<g {" ".join(outer)}><g {" ".join(rest)}>{inner}</g></g>'
 
 
 def by_label(g, name):
@@ -668,9 +723,43 @@ def seal_tag_edge(root):
 
 
 MARKUP = [
-    "defs", "castOpen", "castClosed", "inside", "insideShade", "flapBack", "flapFront",
-    "pocket", "tagShade", "tagHard", "tag", "decoShade", "deco",
+    "defs", "castOpen", "castClosed", "backSeam", "inside", "insideEdge", "insideShade",
+    "insideShadeEdge", "flapBack", "flapFront", "pocketClosed", "pocketOpen", "flapShadow",
+    "flapSpread", "tagShade", "tagHard", "tag", "decoShade", "deco",
 ]
+
+# The flap's shadow on the pocket spreads as the flap lifts: a copy blurred this many
+# times as much fades in as it fades out (`openingFades`).
+FLAP_BLUR = 4
+
+
+def spread_copies(root, shapes):
+    """Copies of the flap's shadow, each blurred shape on a filter of its own blurred
+    FLAP_BLUR times as much, its region widened to match: fading between them reads as
+    the shadow spreading, and only the two layers' opacities change frame by frame."""
+    defs = next(root.iter(f"{{{SVG}}}defs"))
+    filters = {f.get("id"): f for f in root.iter(f"{{{SVG}}}filter")}
+    copies = [copy.deepcopy(c) for c in shapes]
+    for c in copies:
+        for el in c.iter():
+            st = styles(el)
+            m = re.match(r"url\(#([^)]+)\)", st.get("filter", ""))
+            if not m or m.group(1) not in filters:
+                continue
+            spread = copy.deepcopy(filters[m.group(1)])
+            spread.set("id", f"{m.group(1)}-spread")
+            for blur in spread.iter(f"{{{SVG}}}feGaussianBlur"):
+                blur.set("stdDeviation", f"{float(blur.get('stdDeviation')) * FLAP_BLUR:g}")
+                blur.attrib.pop("id", None)
+            # The region's margin grows with the blur: x and y outward, width and height past 1.
+            for edge, size in (("x", "width"), ("y", "height")):
+                at = float(spread.get(edge, "-0.1")) * FLAP_BLUR
+                spread.set(edge, f"{at:g}")
+                spread.set(size, f"{1 - 2 * at:g}")
+            defs.append(spread)
+            st["filter"] = f"url(#{spread.get('id')})"
+            el.set("style", ";".join(f"{a}:{b}" for a, b in st.items()))
+    return copies
 
 
 def drawing_parts():
@@ -685,6 +774,11 @@ def drawing_parts():
     tag_text(root)
     seal_tag_edge(root)
     L = layers(root)
+    flap = L["Flap · closed"]
+    front = by_label(flap, "closed flap")
+    flap_shadow = [c for c in flap if c is not front]
+    # Before the definitions are written: the copies add their own filters.
+    flap_spread = spread_copies(root, flap_shadow)
     vb = [float(v) for v in root.get("viewBox").split()]
     # Inkscape's own definitions (path effects) draw nothing; the fold's two clips are
     # written below from FOLD, so the drawing's copies of them are left out.
@@ -706,25 +800,53 @@ def drawing_parts():
     # While the flap lies nearly flat, a strip along the fold hides the inside's top: the
     # square corners past the paper's rounded ones, and the edge the turning flap (its
     # own 3D layer, a fraction of a pixel off) would show as a line. It reaches past
-    # the sides so no edge of it lines up with the paper's, and fades out by the flap's
-    # angle (`openingFades`).
+    # the sides so no edge of it lines up with the paper's. The mask never changes
+    # while the flap turns (a mask changed every frame redraws its layers every frame,
+    # slow on a phone): a copy of just that strip (`e-edge`), a layer of its own, fades
+    # in by the flap's angle (`openingFades`), and once open the mask's strip goes.
     x0, x1, o = BODY["x0"], BODY["x1"], 0.1
+    strip = f'x="{x0 - o}" y="{FOLD - o}" width="{x1 - x0 + 2 * o}" height="{EDGE + o}"'
     defs += (
         f'<mask id="e-inside" maskUnits="userSpaceOnUse" x="{vb[0] - 50}" y="{vb[1] - 50}" width="{vb[2] + 100}" height="{vb[3] + 100}">'
         f'<rect x="{vb[0] - 50}" y="{vb[1] - 50}" width="{vb[2] + 100}" height="{vb[3] + 100}" fill="#fff"/>'
-        f'<rect class="v-closed inside-edge" fill="#000" x="{x0 - o}" y="{FOLD - o}" width="{x1 - x0 + 2 * o}" height="{EDGE + o}"/>'
+        f'<rect class="v-closed" fill="#000" {strip}/>'
         "</mask>"
+        f'<clipPath id="e-edge" clipPathUnits="userSpaceOnUse"><rect {strip}/></clipPath>'
+    )
+
+    # Lining under the inside and the seam between it (clipped at the fold) and the flap's back
+    # face, which reaches only 0.25 past it: while the flap turns, a phone draws its 3D
+    # layer softer and a little off, and the ground showed through as a light line.
+    # Under the inside, so it shows only where the inside draws nothing (its pattern
+    # stays whole). Inset past the paper's 0.6 rounding; shown once the flap is past
+    # upright and its back face covers it (`openingFades`). A layer of its own, under
+    # the inside, so its fade redraws nothing.
+    r, reach = 0.6, 1.0
+    seam = (
+        f'<rect fill="{recolour("#617140")}" x="{x0 + r}" y="{FOLD - reach}" '
+        f'width="{x1 - x0 - 2 * r}" height="{2 * reach}"/>'
     )
 
     def state_class(name):
         return "v-open" if name.endswith("· open") else "v-closed" if name.endswith("· closed") else None
 
-    # Each top-level part of a state layer fades on its own: a wrapping group fading
-    # would cut the parts' blends off from the paper below.
-    pocket = "".join(ser(c, cls=state_class(n)) for n in POCKET for c in L[n])
-    flap = L["Flap · closed"]
-    front = by_label(flap, "closed flap")
-    pocket += "".join(ser(c, cls="v-closed flap-shadow") for c in flap if c is not front)
+    # The pocket twice, whole: closed (the shared parts and the closed ones) and open
+    # (the shared parts and the open ones), each its own layer, so the blends inside
+    # each fall on that pocket's own paper. The open one fades in over the closed one,
+    # the layer's opacity only: a part's opacity changed every frame redraws the whole
+    # layer every frame, slow on a phone.
+    def pocket(state):
+        return "".join(
+            ser(c, cls=state_class(n)) for n in POCKET for c in L[n] if state_class(n) in (None, state)
+        )
+
+    # The flap's shadow on the pocket and its spread copy, each a layer of its own. The
+    # layer multiplies (the CSS), so the group's own blend, with nothing under it in
+    # its layer, is dropped.
+    def alone(parts):
+        return "".join(ser(c) for c in parts).replace(' style="mix-blend-mode:multiply"', "", 1)
+
+    shadow, spread = alone(flap_shadow), alone(flap_spread)
     deco = split_decoration(L["Decoration · shared"])
     # The cast's tight and soft shadows, each in a marked group of its own: the page
     # scales them on their own as the envelope grows, about the group's box (on the path
@@ -746,11 +868,17 @@ def drawing_parts():
         "defs": defs,
         "castOpen": ser(by_label(L["Back · open"], "cast shadow"), cls="v-open"),
         "castClosed": ser(by_label(L["Back · closed"], "cast shadow"), cls="v-closed"),
+        "backSeam": seam,
         "inside": f'<g clip-path="url(#e-below)"><g mask="url(#e-inside)">{inside}</g></g>',
+        "insideEdge": f'<g clip-path="url(#e-below)"><g clip-path="url(#e-edge)">{inside}</g></g>',
         "insideShade": f'<g clip-path="url(#e-below)"><g mask="url(#e-inside)">{inside_shade}</g></g>',
+        "insideShadeEdge": f'<g clip-path="url(#e-below)"><g clip-path="url(#e-edge)">{inside_shade}</g></g>',
         "flapBack": f'<g clip-path="url(#e-above)">{back}</g>',
         "flapFront": ser(front),
-        "pocket": pocket,
+        "pocketClosed": pocket("v-closed"),
+        "pocketOpen": pocket("v-open"),
+        "flapShadow": shadow,
+        "flapSpread": spread,
         **deco,
     }
 
@@ -761,8 +889,6 @@ APP_OUT = ROOT / "src/components/envelope/drawing.generated.ts"
 APP_CLASSES = {
     "v-open": "env-v-open",
     "v-closed": "env-v-closed",
-    "flap-shadow": "env-flap-shadow",
-    "inside-edge": "env-inside-edge",
     "cast-tight": "env-cast-tight",
     "blur-more": "env-blur-more",
     "tag-paper": "env-tag-paper",
@@ -783,7 +909,7 @@ def for_app(markup):
         markup,
     )
     return re.sub(
-        r"var\(--(paper|liner|string|tag|seal|cast)(-mul|-scr)?\)", r"var(--env-\1\2)", markup
+        r"var\(--(paper|liner|string|tag|seal|cast)(-mul|-scr|-shadow)?\)", r"var(--env-\1\2)", markup
     )
 
 

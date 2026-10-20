@@ -1,5 +1,9 @@
 import type { CSSProperties } from "react";
-import type { EnvelopeColors, EnvelopeRole } from "@/types/envelope";
+import type {
+  EnvelopeColor,
+  EnvelopeColors,
+  PaletteEnvelopeRole,
+} from "@/types/envelope";
 import type { ModularPalette } from "@/types/modular";
 
 /* Hue + Vivid, fixed: shadows turn toward cold, highlights toward warm (OKLCH degrees). */
@@ -10,6 +14,14 @@ const WARM = 55;
 /* How much more colour highlights and shadows get (1 = none added). */
 const VIVID = 1.5;
 const VIVID_SHADOW = 1.15;
+/*
+ * The tag's own shadows (`--env-tag-shadow`): a tag is mostly light, and its
+ * colour multiplied onto itself hardly shows, so they are the tag's colour a
+ * little darker (OKLCH lightness, 0 to 1), its chroma times TAG_SHADOW_VIVID
+ * (0: a grey of that lightness). Left out of the Hue + Vivid shading above.
+ */
+const TAG_SHADOW_DARKER = 0.05;
+const TAG_SHADOW_VIVID = 0.3;
 
 /** The roles the drawing shades; the cast shadow keeps its own colour. */
 const SHADED = ["paper", "liner", "string", "tag", "seal"] as const;
@@ -17,10 +29,10 @@ const SHADED = ["paper", "liner", "string", "tag", "seal"] as const;
 const HEX = /^#[0-9a-f]{6}$/i;
 
 /** A role's hex, following roles that name another. A loop or a bad hex is a typo in a palette file. */
-export function roleColor(
-  colors: EnvelopeColors,
-  role: EnvelopeRole,
-  seen: EnvelopeRole[] = [],
+export function roleColor<R extends string>(
+  colors: Record<R, EnvelopeColor>,
+  role: R,
+  seen: R[] = [],
 ): string {
   const value = colors[role];
   if (value.startsWith("#")) {
@@ -32,22 +44,31 @@ export function roleColor(
   }
   if (seen.includes(role))
     throw new Error(`Envelope colours loop: ${[...seen, role].join(" → ")}`);
-  return roleColor(colors, value as EnvelopeRole, [...seen, role]);
+  return roleColor(colors, value as R, [...seen, role]);
 }
 
 /** A palette's envelope with its palette colour names ("secondary") swapped for their hex; envelope roles win. */
-export function paletteEnvelope(palette: ModularPalette): EnvelopeColors {
+export function paletteEnvelope(
+  palette: ModularPalette,
+): Record<PaletteEnvelopeRole, EnvelopeColor> {
   const own = palette.envelope;
-  const out = { ...own } as EnvelopeColors;
-  for (const role of Object.keys(own) as EnvelopeRole[]) {
+  const out = { ...own } as Record<PaletteEnvelopeRole, EnvelopeColor>;
+  for (const role of Object.keys(own) as PaletteEnvelopeRole[]) {
     const value = own[role];
     if (value.startsWith("#") || value in own) continue;
     const hex = palette.colors[value as keyof ModularPalette["colors"]];
     if (!hex)
       throw new Error(`Envelope colour "${role}" names no colour: ${value}`);
-    out[role] = hex as EnvelopeColors[EnvelopeRole];
+    out[role] = hex as EnvelopeColor;
   }
   return out;
+}
+
+/** The ground a palette's envelope sits on, as `--env-ground` (read by `bg-(--env-ground)`). */
+export function envelopeGround(palette: ModularPalette): CSSProperties {
+  return {
+    "--env-ground": roleColor(paletteEnvelope(palette), "ground"),
+  } as CSSProperties;
 }
 
 type Triple = [number, number, number];
@@ -135,10 +156,21 @@ function shade(
   return toHex(L, C, toward(hue, turn.to, turn.deg));
 }
 
+/** The tag's own shadows: its colour darker, its chroma scaled; its own hue, not the other shadows' turn toward cold. */
+function tagShadow(hex: string): string {
+  const [L, a, b] = toLab(hex);
+  const hue = ((Math.atan2(b, a) * 180) / Math.PI + 360) % 360;
+  return toHex(
+    Math.max(0, L - TAG_SHADOW_DARKER),
+    Math.hypot(a, b) * TAG_SHADOW_VIVID,
+    hue,
+  );
+}
+
 /**
  * The envelope's colours as the drawing reads them: `--env-<role>`, and for
  * each shaded role its shadow (`-mul`, drawn multiplied) and highlight
- * (`-scr`, drawn screened).
+ * (`-scr`, drawn screened); and the tag's own shadows (`--env-tag-shadow`).
  */
 export function envelopeVars(colors: EnvelopeColors): CSSProperties {
   const vars: Record<string, string> = {
@@ -162,5 +194,6 @@ export function envelopeVars(colors: EnvelopeColors): CSSProperties {
       true,
     );
   }
+  vars["--env-tag-shadow"] = tagShadow(roleColor(colors, "tag"));
   return vars as CSSProperties;
 }

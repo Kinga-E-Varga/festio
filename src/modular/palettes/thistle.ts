@@ -6,7 +6,6 @@ export const palette: ModularPalette = {
   name: "Thistle",
   mood: "balanced",
   colors: {
-    canvas: "#ddd5db",
     surface: "#f5eff1",
     "surface-alt": "#e8d9e1",
     ink: "#2a1f2b",
@@ -23,11 +22,12 @@ export const palette: ModularPalette = {
     error: "#b3261e",
   },
   envelope: {
-    paper: "#e9b8c8",
-    liner: "#6b3a5b",
-    string: "#316847",
-    seal: "liner",
-    tag: "#f5eff1",
-    shadow: "#5e5560",
+    paper: "#bb9690",
+    liner: "#4e5f54",
+    string: "liner",
+    seal: "accent",
+    tag: "surface",
+    shadow: "#693f56",
+    ground: "surface-alt",
   },
 };

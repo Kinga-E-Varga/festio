@@ -1,8 +1,24 @@
-import type { Ground, SectionDefinition, SectionGround } from "@/types/modular";
+import type {
+  Ground,
+  GroundRule,
+  SectionDefinition,
+  SectionGround,
+} from "@/types/modular";
 
 /** The other surface: a card's, on a section of this ground (on the accent, `surface`). */
 export function otherGround(ground: SectionGround): Ground {
   return ground === "surface" ? "surface-alt" : "surface";
+}
+
+/** A section's ground rule: its variant's, or else its own. */
+export function groundRule(
+  definition: SectionDefinition,
+  variant: string,
+): GroundRule | undefined {
+  return (
+    definition.variants.find(({ id }) => id === variant)?.ground ??
+    definition.ground
+  );
 }
 
 /**
@@ -19,9 +35,7 @@ export function sectionGrounds(
   let turn: Ground | null = null;
   let before: SectionGround = "surface";
   return sections.map(({ definition, variant }) => {
-    const rule =
-      definition.variants.find(({ id }) => id === variant)?.ground ??
-      definition.ground;
+    const rule = groundRule(definition, variant);
     let ground: SectionGround;
     if (rule === "own" || rule === "accent") {
       turn = null;

@@ -14,7 +14,7 @@ export function Variant({ values, onRsvp }: VariantProps) {
   const { form, send } = useReply(onRsvp);
 
   return (
-    <div className={`${SPLIT} items-start bg-[var(--m-secondary-soft)] ${PAD}`}>
+    <div className={`${SPLIT} items-start ${PAD}`}>
       <SectionHeading values={values} align="start" />
       {form.derived.sent ? (
         <ThankYouCard values={values} />

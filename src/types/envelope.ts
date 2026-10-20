@@ -12,3 +12,10 @@ export type EnvelopeRole =
 export type EnvelopeColor = `#${string}` | EnvelopeRole;
 
 export type EnvelopeColors = Record<EnvelopeRole, EnvelopeColor>;
+
+/**
+ * A modular palette's envelope adds `ground`: the colour behind the
+ * envelope (and the editor's area). A simple template's envelope sits on
+ * its own page instead, so it has none.
+ */
+export type PaletteEnvelopeRole = EnvelopeRole | "ground";

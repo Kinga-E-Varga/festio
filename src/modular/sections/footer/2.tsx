@@ -2,7 +2,7 @@ import { useTranslations } from "next-intl";
 import { longDate } from "@/modular/content";
 import { Icon } from "@/modular/icons";
 import { Mark, markParts } from "@/modular/Mark";
-import { EYEBROW, GROUND, HEADING, LINK } from "@/modular/styles";
+import { EYEBROW, HEADING, LINK, SECTION_GROUND } from "@/modular/styles";
 import type { VariantProps } from "@/types/modular";
 
 /* The middle of the mark, on the accent: its own ink, a step smaller. */
@@ -26,7 +26,7 @@ export function Variant({ basics, language, related, ground }: VariantProps) {
   const mark = markParts(related.header ?? {}, "mark", MIDDLE);
 
   return (
-    <div className={`${GROUND[ground]} text-center px-6`}>
+    <div className={`${SECTION_GROUND[ground]} text-center px-6`}>
       <div className={SPACE}>
         {mark.length > 0 ? (
           <p className={`${MARK} mb-4`}>

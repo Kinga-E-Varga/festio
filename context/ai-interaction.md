@@ -13,8 +13,8 @@
 ## Archived specs — do not read unless asked
 
 `context/features/`, `context/fixes/` (including `pending/`), `context/plans/`,
-`context/reviews/`, `context/research/` and `context/handoffs/` are completed work. The code
-is the source of truth.
+`context/reviews/`, `context/research/` and `context/handoffs/` are completed work;
+`context/dev-tools/` holds notes on the dev-only helpers. The code is the source of truth.
 
 - **Never read a file there on your own initiative** — only when the user names it, or the
   `feature` skill resolves a name to it.
