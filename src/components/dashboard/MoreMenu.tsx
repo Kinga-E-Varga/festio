@@ -2,7 +2,11 @@
 
 import { useLocale, useTranslations } from "next-intl";
 import { useCallback, useRef, useState } from "react";
-import { COUNT, COUNTED_VIEWS } from "@/components/dashboard/BarActions";
+import {
+  COUNT,
+  countedViews,
+  type BarData,
+} from "@/components/dashboard/BarActions";
 import { useDismiss } from "@/components/dashboard/event-nav/useDismiss";
 import { LanguageOptions } from "@/components/dashboard/LanguageMenu";
 import { SIDE_PANEL_ID } from "@/components/dashboard/SidePanel";
@@ -26,7 +30,7 @@ import type { Language } from "@/lib/language";
  * languages out under it: it is rarely needed, so it never takes half the
  * menu.
  */
-export function MoreMenu({ panel }: { panel: SidePanel }) {
+export function MoreMenu({ panel, bar }: { panel: SidePanel; bar: BarData }) {
   const t = useTranslations("TopBar");
   const tLanguage = useTranslations("LanguageSwitcher");
   const locale = useLocale();
@@ -55,12 +59,16 @@ export function MoreMenu({ panel }: { panel: SidePanel }) {
       {open ? (
         <div className={`${MENU_BOX} top-full right-0 mt-1 w-60`}>
           <ul>
-            {COUNTED_VIEWS.map((each) => (
+            {countedViews(bar).map((each) => (
               <li key={each.view}>
                 <button
                   type="button"
                   aria-controls={SIDE_PANEL_ID}
-                  aria-label={t(each.countKey, { count: each.count })}
+                  aria-label={
+                    each.count
+                      ? t(each.count.key, { count: each.count.value })
+                      : t(each.view)
+                  }
                   onClick={() => {
                     close();
                     panel.select(each.view);
@@ -69,9 +77,11 @@ export function MoreMenu({ panel }: { panel: SidePanel }) {
                 >
                   <Icon name={each.icon} {...SIDE_ICON} />
                   <span className="flex-1">{t(each.view)}</span>
-                  <span aria-hidden="true" className={COUNT}>
-                    {each.count}
-                  </span>
+                  {each.count ? (
+                    <span aria-hidden="true" className={COUNT}>
+                      {each.count.value}
+                    </span>
+                  ) : null}
                 </button>
               </li>
             ))}

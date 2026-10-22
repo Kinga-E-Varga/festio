@@ -7,12 +7,6 @@ import type {
   SidePanel,
   SidePanelView,
 } from "@/components/dashboard/useSidePanel";
-import {
-  ATTENTION_NOTICES,
-  HOST,
-  NEW_REPLIES,
-  UNPAID_EVENTS,
-} from "@/mock/dashboard";
 import type { IconName } from "@/types/dashboard";
 
 /** The count bubbles' look, in gold: on the strip's icons and in the phone's More menu. */
@@ -24,40 +18,50 @@ export const COUNT =
  */
 const BADGE = `absolute -top-0.5 -right-0.5 ${COUNT} transition-colors group-aria-expanded:bg-secondary-400`;
 
-/** The side panel's views with a count, in the strip's order: each its icon, name and count. */
-export const COUNTED_VIEWS: {
+/** What the strip and the phone's top bar show of the host: initials and two counts. */
+export interface BarData {
+  initials: string;
+  /** Events waiting for payment. */
+  cart: number;
+  alerts: number;
+}
+
+/** One of the side panel's views on the strip: its icon, name and count. */
+interface BarView {
   view: Exclude<SidePanelView, "account">;
   icon: IconName;
-  /** Its aria label with the count, in `TopBar`. */
-  countKey: "cartCount" | "alertsCount" | "repliesCount";
-  count: number;
-}[] = [
-  {
-    view: "cart",
-    icon: "cart",
-    countKey: "cartCount",
-    count: UNPAID_EVENTS.length,
-  },
-  {
-    view: "alerts",
-    icon: "bell",
-    countKey: "alertsCount",
-    count: ATTENTION_NOTICES.length,
-  },
-  {
-    view: "replies",
-    icon: "guests",
-    countKey: "repliesCount",
-    count: NEW_REPLIES,
-  },
-];
+  /** Its count and the `TopBar` aria label that says it; none for a view with no count. */
+  count?: { key: "cartCount" | "alertsCount"; value: number };
+}
+
+/**
+ * The side panel's views in the strip's order. Latest replies has no count
+ * until a last visit is stored to count new ones from.
+ */
+export function countedViews(bar: BarData): BarView[] {
+  return [
+    {
+      view: "cart",
+      icon: "cart",
+      count: { key: "cartCount", value: bar.cart },
+    },
+    {
+      view: "alerts",
+      icon: "bell",
+      count: { key: "alertsCount", value: bar.alerts },
+    },
+    { view: "replies", icon: "guests" },
+  ];
+}
 
 /** The account circle: the host's initials, opening Your account. */
 export function AccountButton({
   panel,
+  initials,
   className = "",
 }: {
   panel: SidePanel;
+  initials: string;
   /** The phone's top bar's bigger circle. */
   className?: string;
 }) {
@@ -72,7 +76,7 @@ export function AccountButton({
       aria-label={t("account")}
       className={`grid size-btn place-items-center rounded-full bg-primary-800 pl-[0.06em] text-xs leading-none font-semibold tracking-[0.06em] text-neutral-100 transition-colors hover:bg-primary-900 ${className}`}
     >
-      {HOST.initials}
+      {initials}
     </button>
   );
 }
@@ -85,31 +89,37 @@ export function AccountButton({
  * same 1px rule (here clear) and 12px. Below `nav` the phone's top bar has
  * the account and a More menu instead (`MoreMenu`).
  */
-export function BarActions({ panel }: { panel: SidePanel }) {
+export function BarActions({ panel, bar }: { panel: SidePanel; bar: BarData }) {
   const t = useTranslations("TopBar");
 
   return (
     <div className="flex h-full flex-col items-center pb-5 wide:pb-7">
       <div className="shrink-0 pt-chrome-top">
-        <AccountButton panel={panel} />
+        <AccountButton panel={panel} initials={bar.initials} />
       </div>
 
       {/* Each glyph carries hit area either side, so a gap reads wider than it is: 20px. */}
       <div className="flex min-h-0 flex-1 flex-col items-center gap-5 pt-chrome-top pb-3">
-        {COUNTED_VIEWS.map((each) => (
+        {countedViews(bar).map((each) => (
           <button
             key={each.view}
             type="button"
             onClick={() => panel.select(each.view)}
             aria-controls={SIDE_PANEL_ID}
             aria-expanded={panel.open && panel.view === each.view}
-            aria-label={t(each.countKey, { count: each.count })}
+            aria-label={
+              each.count
+                ? t(each.count.key, { count: each.count.value })
+                : t(each.view)
+            }
             className={`group ${BAR_ICON}`}
           >
             <Icon name={each.icon} {...STRIP_ICON} />
-            <span aria-hidden="true" className={BADGE}>
-              {each.count}
-            </span>
+            {each.count ? (
+              <span aria-hidden="true" className={BADGE}>
+                {each.count.value}
+              </span>
+            ) : null}
           </button>
         ))}
       </div>

@@ -1,14 +1,15 @@
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { NoticeAction } from "@/components/dashboard/NoticeAction";
-import { NOTICES, useNoticeValues } from "@/components/dashboard/notices";
+import { useNoticeValues } from "@/components/dashboard/notices";
+import type { AttentionNotice } from "@/types/dashboard";
 import { BOX_ROW, TEXT_LINK } from "@/components/dashboard/styles";
 
 /** A notice's call to action and its report link read as one pair. */
 const ACTION = `panel-face ${TEXT_LINK}`;
 
 /** The side panel's alerts: what needs the host, behind the bell. */
-export function AlertsList() {
+export function AlertsList({ notices }: { notices: AttentionNotice[] }) {
   const tNotices = useTranslations("Notices");
   /*
    * Titles are the cards' to-dos, word for word, so the alerts read as their
@@ -20,7 +21,7 @@ export function AlertsList() {
 
   return (
     <ul>
-      {NOTICES.map((notice) => {
+      {notices.map((notice) => {
         const values = noticeValues(notice);
         return (
           <li

@@ -2,7 +2,7 @@ import { useTranslations } from "next-intl";
 import { SettingsCard } from "@/components/dashboard/event-editor/SettingsCard";
 import { SettingRow } from "@/components/dashboard/event-editor/SettingRow";
 import { BTN_GHOST_LIGHT } from "@/components/dashboard/event-editor/styles";
-import { PACKAGES, nextPackage } from "@/mock/dashboard";
+import { PACKAGES, nextPackage } from "@/lib/packages";
 import type { DashboardEvent } from "@/types/dashboard";
 
 /**

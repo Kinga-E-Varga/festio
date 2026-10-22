@@ -171,7 +171,8 @@ export function DatesThatMatter({ event }: { event: DashboardEvent }) {
   );
 
   const now = countdownNow(event);
-  const eventAt = new Date(`${event.date}T${event.time}`);
+  /* No start time is stored: the event is its day. */
+  const eventAt = new Date(`${event.date}T00:00`);
   const stops: Stop[] = [
     {
       key: "replies",

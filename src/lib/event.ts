@@ -329,3 +329,32 @@ export function toDateTimeLocal(value: Date): string {
     `T${pad(value.getHours())}:${pad(value.getMinutes())}`
   );
 }
+
+/** Today's calendar day, `YYYY-MM-DD`, on the event's own clock. */
+export function todayIn(timeZone: string, now: Date): string {
+  return now.toLocaleDateString("en-CA", { timeZone });
+}
+
+/**
+ * How far `to` is from `now`, in the unit a person would say it in: minutes
+ * within the hour, hours within two days, days within two weeks, then weeks.
+ * Negative is in the past.
+ */
+export function spanFrom(now: Date, to: Date): TimeSpan {
+  const ms = to.getTime() - now.getTime();
+  const size = Math.abs(ms);
+  const unit: TimeSpan["unit"] =
+    size < SPAN_MS.hour
+      ? "minute"
+      : size < 2 * DAY_MS
+        ? "hour"
+        : size < 14 * DAY_MS
+          ? "day"
+          : "week";
+  return { value: Math.round(ms / SPAN_MS[unit]), unit };
+}
+
+/* The part of a title before " — ", which is how the notices and the latest replies name an event. */
+export function shortTitle(event: { title: string }): string {
+  return event.title.split(" — ")[0];
+}

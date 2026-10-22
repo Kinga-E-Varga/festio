@@ -111,7 +111,6 @@
     "alerts": "Alerts",
     "alertsCount": "Alerts, {count} items need attention",
     "replies": "Latest replies",
-    "repliesCount": "{count, plural, one {Latest replies, # new since your last visit} other {Latest replies, # new since your last visit}}",
     "closePanel": "Close panel",
     "cart": "Cart",
     "cartCount": "{count, plural, one {Cart, # invitation awaiting payment} other {Cart, # invitations awaiting payment}}",
@@ -172,7 +171,6 @@
     "cartEmpty": "Nothing is waiting for payment.",
     "cartTotal": "Total",
     "cartHint": "Each event is paid for on its Overview, beside its package. Open one to pay.",
-    "unknownTag": "Unknown",
     "noReplies": "No replies yet."
   },
   "Event": {
@@ -512,14 +510,12 @@
   },
   "Activity": {
     "attendingWith": "<b>{actor}</b> is attending with {others, plural, one {# other} other {# others}}",
-    "attendingBabies": "<b>{actor}</b> is attending, {babies, plural, one {# baby} other {# babies}}",
     "replied": "<b>{actor}</b> replied",
     "declined": "<b>{actor}</b> declined",
     "phoneRsvp": "<b>You</b> added a phone reply for <b>{subject}</b>",
     "children": "{count, plural, one {# child} other {# children}}",
     "vegetarian": "vegetarian",
     "glutenFree": "gluten-free",
-    "notOnList": "not on invite list",
     "addedByHost": "added by host"
   },
   "Meta": {

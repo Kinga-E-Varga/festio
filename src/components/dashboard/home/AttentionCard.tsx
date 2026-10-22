@@ -1,11 +1,14 @@
 import { useTranslations } from "next-intl";
 import { BoxHead } from "@/components/dashboard/BoxHead";
 import { NoticeAction } from "@/components/dashboard/NoticeAction";
-import { NOTICES, useNoticeValues } from "@/components/dashboard/notices";
+import { useNoticeValues } from "@/components/dashboard/notices";
 import { RowLines } from "@/components/dashboard/RowLines";
 import { BOX_ROWS, LINK_TEXT, PAGE_BOX } from "@/components/dashboard/styles";
-import { findEvent } from "@/mock/dashboard";
-import type { NoticeTone } from "@/types/dashboard";
+import type {
+  AttentionNotice,
+  DashboardEvent,
+  NoticeTone,
+} from "@/types/dashboard";
 
 /** Each notice's mark: brick for the ones that stop replies, gold for the rest. */
 const MARK: Record<NoticeTone, string> = {
@@ -22,23 +25,33 @@ const MARK: Record<NoticeTone, string> = {
  * event, the task, the way to deal with it. A planner can have many, so the
  * list scrolls inside the box after about three.
  */
-export function AttentionCard({ className = "" }: { className?: string }) {
+export function AttentionCard({
+  notices,
+  events,
+  className = "",
+}: {
+  notices: AttentionNotice[];
+  /** Where each notice's event title is looked up. */
+  events: DashboardEvent[];
+  className?: string;
+}) {
   const t = useTranslations("Dashboard");
   const tNotices = useTranslations("Notices");
   const noticeValues = useNoticeValues();
 
   return (
     <section className={`${PAGE_BOX} ${className}`}>
-      <BoxHead title={t("attention")} count={NOTICES.length} />
-      {NOTICES.length === 0 ? (
+      <BoxHead title={t("attention")} count={notices.length} />
+      {notices.length === 0 ? (
         <p className="muted-text">{t("allCaughtUp")}</p>
       ) : (
         <ul
           className={`${BOX_ROWS} side-scroll -mr-2 max-h-[264px] overflow-y-auto pr-2 [--scroll-track:var(--color-neutral-50)]`}
         >
-          {NOTICES.map((notice) => {
+          {notices.map((notice) => {
             const values = noticeValues(notice);
-            const title = findEvent(notice.eventId)?.title ?? "";
+            const title =
+              events.find((event) => event.id === notice.eventId)?.title ?? "";
 
             return (
               <li

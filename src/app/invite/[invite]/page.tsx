@@ -2,9 +2,9 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { Invitation } from "@/components/invitation/Invitation";
 import { repliesPaused } from "@/lib/event";
-import { cardValues, findByInvite, seedValues } from "@/lib/invitation";
-import { invitationLanguage } from "@/lib/language";
-import { EVENTS } from "@/mock/dashboard";
+import { cardValues, invitationValues } from "@/lib/invitation";
+import { loadEventBySlug } from "@/db/reads/events";
+import { loadInvitation } from "@/db/reads/invitation";
 import { loadSimpleTemplate } from "@/templates";
 
 /**
@@ -20,16 +20,19 @@ export default async function InvitationPage({
 }: PageProps<"/invite/[invite]">) {
   const { invite } = await params;
 
-  const event = findByInvite(EVENTS, invite);
+  const event = await loadEventBySlug(invite);
   if (!event?.templateId) notFound();
 
-  const loaded = await loadSimpleTemplate(event.templateId);
+  const [loaded, stored] = await Promise.all([
+    loadSimpleTemplate(event.templateId),
+    loadInvitation(event.id),
+  ]);
   if (!loaded) notFound();
 
   const { template, Card } = loaded;
-  const values = seedValues(template, event);
+  const values = invitationValues(template, event, stored);
   /* The date a guest reads is written in the invitation's own language. */
-  const language = invitationLanguage(event);
+  const { language } = event;
 
   return (
     <Invitation

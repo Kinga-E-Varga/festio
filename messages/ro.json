@@ -111,7 +111,6 @@
     "alerts": "Alerte",
     "alertsCount": "Alerte, {count} elemente necesită atenție",
     "replies": "Ultimele răspunsuri",
-    "repliesCount": "{count, plural, one {Ultimele răspunsuri, # nou de la ultima vizită} few {Ultimele răspunsuri, # noi de la ultima vizită} other {Ultimele răspunsuri, # noi de la ultima vizită}}",
     "closePanel": "Închide panoul",
     "cart": "Coș",
     "cartCount": "{count, plural, one {Coș, # invitație neplătită} few {Coș, # invitații neplătite} other {Coș, # invitații neplătite}}",
@@ -172,7 +171,6 @@
     "cartEmpty": "Nimic nu așteaptă plata.",
     "cartTotal": "Total",
     "cartHint": "Fiecare eveniment se plătește în Prezentarea lui, lângă pachet. Deschide unul ca să plătești.",
-    "unknownTag": "Necunoscut",
     "noReplies": "Niciun răspuns încă."
   },
   "Event": {
@@ -512,14 +510,12 @@
   },
   "Activity": {
     "attendingWith": "<b>{actor}</b> vine împreună cu încă {others, plural, one {# persoană} few {# persoane} other {# de persoane}}",
-    "attendingBabies": "<b>{actor}</b> vine, cu {babies, plural, one {# bebeluș} few {# bebeluși} other {# de bebeluși}}",
     "replied": "<b>{actor}</b> a răspuns",
     "declined": "<b>{actor}</b> a refuzat",
     "phoneRsvp": "<b>Tu</b> ai adăugat un răspuns telefonic pentru <b>{subject}</b>",
     "children": "{count, plural, one {# copil} few {# copii} other {# de copii}}",
     "vegetarian": "vegetarian",
     "glutenFree": "fără gluten",
-    "notOnList": "nu e pe lista de invitații",
     "addedByHost": "adăugat de gazdă"
   },
   "Meta": {

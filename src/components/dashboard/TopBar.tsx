@@ -1,6 +1,6 @@
 import { useTranslations } from "next-intl";
 import { Icon } from "@/components/icons";
-import { AccountButton } from "@/components/dashboard/BarActions";
+import { AccountButton, type BarData } from "@/components/dashboard/BarActions";
 import { MoreMenu } from "@/components/dashboard/MoreMenu";
 import {
   BAR_ICON,
@@ -13,6 +13,7 @@ interface TopBarProps {
   navOpen: boolean;
   onToggleNav: () => void;
   panel: SidePanel;
+  bar: BarData;
 }
 
 /**
@@ -24,7 +25,7 @@ interface TopBarProps {
  * drawer and the side panel, so they slide out from under it and their
  * shadows never grey it.
  */
-export function TopBar({ navOpen, onToggleNav, panel }: TopBarProps) {
+export function TopBar({ navOpen, onToggleNav, panel, bar }: TopBarProps) {
   const t = useTranslations("TopBar");
 
   return (
@@ -40,8 +41,12 @@ export function TopBar({ navOpen, onToggleNav, panel }: TopBarProps) {
       </button>
 
       <div className="flex items-center gap-2">
-        <MoreMenu panel={panel} />
-        <AccountButton panel={panel} className={TOP_BAR_CIRCLE} />
+        <MoreMenu panel={panel} bar={bar} />
+        <AccountButton
+          panel={panel}
+          initials={bar.initials}
+          className={TOP_BAR_CIRCLE}
+        />
       </div>
     </div>
   );

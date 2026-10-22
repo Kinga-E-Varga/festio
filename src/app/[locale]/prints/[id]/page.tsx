@@ -3,16 +3,17 @@ import { getTranslations } from "next-intl/server";
 import { notFound } from "next/navigation";
 import { PrintEditor } from "@/components/print/PrintEditor";
 import { eventPath, invitationLink } from "@/lib/event";
-import { seedValues } from "@/lib/invitation";
-import { invitationLanguage } from "@/lib/language";
-import { findEvent } from "@/mock/dashboard";
+import { invitationValues } from "@/lib/invitation";
+import { openEvent } from "@/app/[locale]/dashboard/events/[id]/load-event";
+import { loadEvent } from "@/db/reads/events";
+import { loadInvitation } from "@/db/reads/invitation";
 import { loadSimpleTemplate } from "@/templates";
 
 type Props = PageProps<"/[locale]/prints/[id]">;
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { id } = await params;
-  const event = findEvent(id);
+  const event = await loadEvent(id);
   const t = await getTranslations("Meta");
   return {
     title: event ? t("print", { title: event.title }) : t("printFallback"),
@@ -30,14 +31,18 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function PrintPage({ params }: Props) {
   const { id } = await params;
 
-  const event = findEvent(id);
-  if (!event?.templateId) notFound();
+  /* Unknown is not found; archived goes Home, like every event page. */
+  const event = await openEvent(id);
+  if (!event.templateId) notFound();
 
-  const loaded = await loadSimpleTemplate(event.templateId);
+  const [loaded, stored] = await Promise.all([
+    loadSimpleTemplate(event.templateId),
+    loadInvitation(event.id),
+  ]);
   if (!loaded) notFound();
 
   const { template } = loaded;
-  const values = seedValues(template, event);
+  const values = invitationValues(template, event, stored);
 
   /*
    * The page around the paper is host chrome and stays in the host's locale.
@@ -46,7 +51,7 @@ export default async function PrintPage({ params }: Props) {
    * language rather than read from this route's.
    */
   const t = await getTranslations({
-    locale: invitationLanguage(event),
+    locale: event.language,
     namespace: "Print",
   });
 

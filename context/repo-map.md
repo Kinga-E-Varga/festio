@@ -91,23 +91,26 @@ Geometry (`.sheet`, `.sheet-view`, `.leaf`, `.flip`, `.fold`, `.sheet-form`) liv
 
 ## Lib — `src/lib/`
 
-| File               | Holds                                                                                                                                                                                                                               |
-| ------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `config.ts`        | `GUEST_DATA_RETENTION_DAYS` — the single GDPR retention parameter. Never inline it. Also the reply-cap margins, the replies-closing-soon window and `SLUG_BLOCK_DAYS`.                                                              |
-| `event.ts`         | `eventPath` (an event's dashboard pages), `invitationLink`, `defaultReplyClose` (24h rule), `dateLocked` (from the event day), `deletionDate`, date formatting, expected-guests and reply-cap helpers, `replyClose` / `replyWindow` |
-| `slug.ts`          | `RESERVED_SLUGS` (the one list), slug limits and `SLUG_PATTERN`, `normalizeSlug`, suggestions, the invite rewrite pattern. Relative imports only — `next.config.ts` reads it.                                                       |
-| `invitation.ts`    | Template vars, `findByInvite`, seed/fallback values, `DATE_FORMATS`                                                                                                                                                                 |
-| `fonts.ts`         | Invitation fonts via `next/font/google` (per-template, not the app chrome — that's `src/app/fonts.ts`). Also the font pairs' faces (Gelasio, Arimo, Fraunces, Space Grotesk).                                                       |
-| `history.ts`       | Local visit tracking; `useLeaveFestio(fallback)` — the one BACK, with each page's own fallback when no Festio page is behind it                                                                                                     |
-| `guests.ts`        | Guest rows from list + replies: matching, Unknown/Duplicate tags, grouping and splitting by category, counts, filters, repeat check. Type imports only.                                                                             |
-| `leave-warning.ts` | `useLeaveWarning(active, message)` — while there are unsaved changes, asks before reload/close (the browser's prompt) and before in-app links or a `data-leaves` control (BACK)                                                     |
-| `language.ts`      | `LANGUAGES` (the one list, read by both `i18n/routing.ts` and an invitation's `language`), `invitationLanguage`, `LocalizedText`/`localized`, locale tags and names, `plainText` (case- and accent-blind search)                    |
-| `picked-event.ts`  | The event the nav is on: `PICKED_EVENT_COOKIE` (read in the dashboard layout), `toPickerEvent`, `resolvePicked`, `writePickedEvent` — the one place it is written                                                                   |
-| `id.ts`            | `newId()` — a random UUID; falls back to `getRandomValues` where `crypto.randomUUID` is missing (pages not on HTTPS or localhost, e.g. a phone on the dev server)                                                                   |
+| File               | Holds                                                                                                                                                                                                                                                                     |
+| ------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `config.ts`        | `GUEST_DATA_RETENTION_DAYS` — the single GDPR retention parameter. Never inline it. Also the reply-cap margins, the replies-closing-soon window and `SLUG_BLOCK_DAYS`.                                                                                                    |
+| `event.ts`         | `eventPath` (an event's dashboard pages), `invitationLink`, `defaultReplyClose` (24h rule), `dateLocked` (from the event day), `deletionDate`, date formatting, expected-guests and reply-cap helpers, `replyClose` / `replyWindow`, `todayIn` / `spanFrom`, `shortTitle` |
+| `slug.ts`          | `RESERVED_SLUGS` (the one list), slug limits and `SLUG_PATTERN`, `normalizeSlug`, suggestions, the invite rewrite pattern. Relative imports only — `next.config.ts` reads it.                                                                                             |
+| `invitation.ts`    | Template vars, `invitationValues` (saved text over the template's fallbacks, the event's date), fallback values, `DATE_FORMATS`                                                                                                                                           |
+| `fonts.ts`         | Invitation fonts via `next/font/google` (per-template, not the app chrome — that's `src/app/fonts.ts`). Also the font pairs' faces (Gelasio, Arimo, Fraunces, Space Grotesk).                                                                                             |
+| `history.ts`       | Local visit tracking; `useLeaveFestio(fallback)` — the one BACK, with each page's own fallback when no Festio page is behind it                                                                                                                                           |
+| `guests.ts`        | Guest rows from list + replies: `toGuestReplies` (reply cards → rows, shared with the seed), matching, Unknown/Duplicate tags, grouping and splitting by category, counts, filters, repeat check. No React or Firebase.                                                   |
+| `leave-warning.ts` | `useLeaveWarning(active, message)` — while there are unsaved changes, asks before reload/close (the browser's prompt) and before in-app links or a `data-leaves` control (BACK)                                                                                           |
+| `language.ts`      | `LANGUAGES` (the one list, read by both `i18n/routing.ts` and an invitation's `language`), `LocalizedText`/`localized`, locale tags and names, `plainText` (case- and accent-blind search)                                                                                |
+| `picked-event.ts`  | The event the nav is on: `PICKED_EVENT_COOKIE` (read in the dashboard layout), `toPickerEvent`, `resolvePicked`, `writePickedEvent` — the one place it is written                                                                                                         |
+| `packages.ts`      | `PACKAGES` (prices, what each unlocks), `nextPackage`, `covers` (paid = bought covers the template's), `upgradePrice` (the difference)                                                                                                                                    |
+| `id.ts`            | `newId()` — a random UUID; falls back to `getRandomValues` where `crypto.randomUUID` is missing (pages not on HTTPS or localhost, e.g. a phone on the dev server)                                                                                                         |
 
 ## Database — `src/db/` and `seed/`
 
-Nothing in the app reads it yet; pages still use `src/mock/`. Shapes: `context/features/pending/database.md`.
+Every page reads it (server only, no writes yet). Shapes: `context/features/pending/database.md`.
+
+- `src/db/reads/` — the pages' reads, Admin SDK, each card checked by its schema, each loader in React `cache()` and behind `connection()` (nothing read at build). `host.ts` (`DEV_HOST_ID`, the seed's host until sign-in; `loadHost`), `events.ts` (`toDashboardEvent` — countdown, paid, closes in worked out; `loadHostEvents`, `loadEvent`, `loadEventBySlug` through the slug card, `guestListCount`), `guests.ts` (`loadGuests`, once per event per request), `invitation.ts` (`loadInvitation`, `modularStart`), `activity.ts` (latest replies), `parse.ts` (`parseCard` / `parseCards`: a card failing its schema is logged and read as missing), `dashboard.ts` (`loadDashboard`: host, events, alerts, cart, latest replies).
 
 - `src/db/schemas/` — one Zod schema per Firestore card (`event`, `invitation`, `reply`, `guest-list`, `user`, `slug`, `seating`, `payment`, `rate-limit`) plus `common`. Plain Zod, no Firebase import, so browser and server share them. The value lists (visibility, packages, age groups, diets, …) live here; `src/types/` derives its unions and `PrintSettings` / `AnswerValue` from them.
 - `src/db/limits.ts` — `EVENT_KINDS`, `TITLE_MIN`/`MAX`, `PASSWORD_PATTERN`, `CANCEL_MESSAGE_MAX`: no Zod, so client forms import them without shipping Zod.
@@ -118,8 +121,7 @@ Nothing in the app reads it yet; pages still use `src/mock/`. Shapes: `context/f
 
 ## Other
 
-- `src/types/` — `envelope.ts` (the envelope's colour roles), `invitation.ts` (incl. `TemplateModule`, a union of simple and modular), `modular.ts` (sections, palettes, pairs, modular templates), `dashboard.ts`, `print.ts`, `guests.ts` (mock-only)
-- `src/mock/dashboard.ts` — mock data; **no Firestore wiring yet**
-- `src/mock/guests.ts` — `findGuests(eventId)`, mock guest lists
+- `src/types/` — `envelope.ts` (the envelope's colour roles), `invitation.ts` (incl. `TemplateModule`, a union of simple and modular), `modular.ts` (sections, palettes, pairs, modular templates), `dashboard.ts`, `print.ts`, `guests.ts` (the guest list's view shapes)
+- `src/mock/dashboard.ts` — the nav, account and footer keys only; `src/mock/inv-img/` — the print preview's placeholder front
 - `src/components/icons.tsx` — app-wide icons
 - Config: `next.config.ts`, `tsconfig.json`, `eslint.config.mjs`, `postcss.config.mjs`

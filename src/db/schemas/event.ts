@@ -15,6 +15,7 @@ import {
   localDateTimeSchema,
   momentSchema,
   packageSchema,
+  timeZoneSchema,
   versionSchema,
 } from "@/db/schemas/common";
 
@@ -97,7 +98,7 @@ export const eventSchema = z
     language: languageSchema,
     date: dateSchema,
     /** From the host's browser, e.g. `Europe/Bucharest`; every time rule uses it. */
-    timeZone: z.string().min(1),
+    timeZone: timeZoneSchema,
     /** The host's own closing time. Missing = the day before the event at 00:00. */
     repliesCloseAt: localDateTimeSchema.optional(),
     slug: slugSchema,

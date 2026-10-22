@@ -4,7 +4,7 @@ import { BTN_PRIMARY } from "@/components/dashboard/event-editor/styles";
 import { LINK_TEXT, PAGE_BOX } from "@/components/dashboard/styles";
 import { Link } from "@/i18n/navigation";
 import { eventPath, eventStatus } from "@/lib/event";
-import { PACKAGES, nextPackage } from "@/mock/dashboard";
+import { PACKAGES, nextPackage, upgradePrice } from "@/lib/packages";
 import type { DashboardEvent } from "@/types/dashboard";
 
 /**
@@ -17,10 +17,12 @@ export function PackageBox({ event }: { event: DashboardEvent }) {
   const tEvent = useTranslations("Event");
   const tPackages = useTranslations("Packages");
   const past = eventStatus(event) === "past";
-  const name = tPackages(`${event.package}.name`);
-  const amount = PACKAGES[event.package].price;
+  /* Unpaid, it shows what the event needs, at the difference. */
+  const shown = event.neededPackage;
+  const name = tPackages(`${shown}.name`);
+  const amount = event.paid ? PACKAGES[shown].price : upgradePrice(event);
   const price = tPackages("price", { amount });
-  const next = past ? undefined : nextPackage(event.package);
+  const next = past ? undefined : nextPackage(shown);
 
   return (
     <section className={`@container ${PAGE_BOX}`}>

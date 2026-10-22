@@ -3,6 +3,7 @@ import {
   countdownNow,
   defaultReplyClose,
   deletionDate,
+  eventStatus,
   eventPath,
   floodReportPath,
   formatDeadline,
@@ -11,10 +12,9 @@ import {
   replyClose,
   replyWindow,
   repliesPaused,
+  shortTitle,
 } from "@/lib/event";
-import { buildRows, countRows } from "@/lib/guests";
-import { ATTENTION_NOTICES, PACKAGES, shortTitle } from "@/mock/dashboard";
-import { findGuests } from "@/mock/guests";
+import { awaitingPayment, upgradePrice } from "@/lib/packages";
 import type {
   AttentionNotice,
   DashboardEvent,
@@ -53,37 +53,81 @@ function byUrgency(notices: AttentionNotice[]): AttentionNotice[] {
   );
 }
 
-/** Every notice, most urgent first: the rail's list. */
-export const NOTICES = byUrgency(ATTENTION_NOTICES);
-
-/** One event's notices, in the same order: its card's to-dos. */
-function noticesFor(eventId: string): AttentionNotice[] {
-  return NOTICES.filter((notice) => notice.eventId === eventId);
+/** The reply form closing soon or closed, with who is left to chase. */
+function closingNotice(
+  event: DashboardEvent,
+  pending: number,
+): AttentionNotice {
+  return {
+    id: `replies-close-${event.id}`,
+    eventId: event.id,
+    key: replyWindow(event) === "closed" ? "repliesClosed" : "repliesClosing",
+    span: event.repliesCloseIn,
+    closesAt: event.repliesCloseAt,
+    eventDate: event.date,
+    values: {
+      event: shortTitle(event),
+      /* Who is left to chase: the task names them. */
+      pending,
+      custom: event.repliesCloseAt ? "yes" : "no",
+      /*
+       * A custom time can still move until the default close. On the default
+       * time there is nothing to change, so the guest list is offered instead.
+       */
+      change:
+        event.repliesCloseAt &&
+        countdownNow(event) < defaultReplyClose(event.date)
+          ? "yes"
+          : "no",
+    },
+    tone: "deadline",
+  };
 }
 
 /**
- * What the event's own state says needs doing — the warnings its pages used
- * to open with: replies to sort out, replies paused, the reply form closing
- * or closed, unpaid, paid but hidden.
+ * The rail warns of a closing form for an active event still ahead; a closed
+ * form is worth a warning only until the event has passed.
  */
-function stateNotices(event: DashboardEvent): AttentionNotice[] {
-  const base = { eventId: event.id, values: { event: shortTitle(event) } };
-  const notices: AttentionNotice[] = [];
-  const attention = countRows(
-    buildRows(findGuests(event.id), event.preloaded),
-  ).attention;
-  const replies = replyWindow(event);
+function closingOnRail(event: DashboardEvent): boolean {
+  return (
+    eventStatus(event) === "active" &&
+    replyWindow(event) !== "open" &&
+    !isPast(event)
+  );
+}
 
-  if (attention > 0) {
+/** The events whose closing notice names who is left to chase: they need their guest list read. */
+export function needsWaiting(event: DashboardEvent): boolean {
+  return event.preloaded && closingOnRail(event);
+}
+
+/**
+ * One event's notices. On the rail (`overview` false) only what still needs
+ * the host now: active events for replies, nothing about a past one but its
+ * deletion. Its Overview also lists what its own state says needs doing,
+ * draft or not. `waiting` is who on its list hasn't replied yet.
+ */
+function eventNotices(
+  event: DashboardEvent,
+  waiting: number,
+  overview: boolean,
+): AttentionNotice[] {
+  const base = { eventId: event.id, values: { event: shortTitle(event) } };
+  const active = overview || eventStatus(event) === "active";
+  const past = isPast(event);
+  const replies = replyWindow(event);
+  const notices: AttentionNotice[] = [];
+  if (active && event.needsAttention > 0) {
     notices.push({
       ...base,
       id: `attention-${event.id}`,
       key: "attention",
-      values: { ...base.values, count: attention },
+      values: { ...base.values, count: event.needsAttention },
       tone: "attention",
     });
   }
-  if (repliesPaused(event)) {
+  /* Only active events can still take replies. */
+  if (active && repliesPaused(event)) {
     notices.push({
       ...base,
       id: `paused-${event.id}`,
@@ -92,40 +136,12 @@ function stateNotices(event: DashboardEvent): AttentionNotice[] {
       reportHref: floodReportPath(event),
     });
   }
-  /* Late replies are worth adding only until the event: once it has passed, no warning. */
-  if (
-    (replies === "closed" && !isPast(event)) ||
-    (replies === "soon" && event.repliesCloseIn)
-  ) {
-    notices.push({
-      ...base,
-      id: `replies-close-${event.id}`,
-      key: replies === "closed" ? "repliesClosed" : "repliesClosing",
-      span: event.repliesCloseIn,
-      closesAt: event.repliesCloseAt,
-      eventDate: event.date,
-      values: {
-        ...base.values,
-        pending: event.rsvp.pending,
-        custom: event.repliesCloseAt ? "yes" : "no",
-        change:
-          event.repliesCloseAt &&
-          countdownNow(event) < defaultReplyClose(event.date)
-            ? "yes"
-            : "no",
-      },
-      tone: "deadline",
-    });
-  }
-  if (!event.paid) {
-    notices.push({
-      ...base,
-      id: `unpaid-${event.id}`,
-      key: "unpaid",
-      package: event.package,
-      tone: "billing",
-    });
-  } else if (event.visibility === "hidden") {
+  const closing = overview
+    ? (replies === "closed" && !past) || replies === "soon"
+    : closingOnRail(event);
+  if (closing) notices.push(closingNotice(event, waiting));
+  /* Paid for, but set to Hidden: nobody can open it yet. */
+  if (event.paid && event.visibility === "hidden" && (overview || !past)) {
     notices.push({
       ...base,
       id: `hidden-${event.id}`,
@@ -133,21 +149,53 @@ function stateNotices(event: DashboardEvent): AttentionNotice[] {
       tone: "hidden",
     });
   }
+  /* Over, with its data not yet deleted: the last chance to export it. */
+  if (past && !event.dataDeleted) {
+    notices.push({
+      ...base,
+      id: `deleting-${event.id}`,
+      key: "deleting",
+      eventDate: event.date,
+      tone: "deletion",
+    });
+  }
+  if (overview ? !event.paid : awaitingPayment(event)) {
+    notices.push({
+      ...base,
+      id: `unpaid-${event.id}`,
+      key: "unpaid",
+      package: event.neededPackage,
+      amount: upgradePrice(event),
+      tone: "billing",
+    });
+  }
   return notices;
 }
 
 /**
- * One event's to-dos on its Overview: its alerts, plus whatever its own
- * state says needs doing that the alerts don't already hold, most urgent
- * first.
+ * Every event's alerts, most urgent first: the rail's list. Each notice's
+ * title and body are the event editor's banner for the same thing
+ * (`EventPage.<key>Title` / `<key>Body`), so the two always read alike;
+ * `Notices.<key>` holds only the rail's own context and action. `waiting`
+ * is who hasn't replied yet, by event, for the events `needsWaiting` names.
  */
-export function eventTodos(event: DashboardEvent): AttentionNotice[] {
-  const alerts = noticesFor(event.id);
-  const keys = new Set(alerts.map((notice) => notice.key));
-  return byUrgency([
-    ...alerts,
-    ...stateNotices(event).filter((notice) => !keys.has(notice.key)),
-  ]);
+export function hostNotices(
+  events: DashboardEvent[],
+  waiting: Record<string, number>,
+): AttentionNotice[] {
+  return byUrgency(
+    events.flatMap((event) =>
+      eventNotices(event, waiting[event.id] ?? 0, false),
+    ),
+  );
+}
+
+/** One event's to-dos on its Overview, most urgent first. */
+export function eventTodos(
+  event: DashboardEvent,
+  waiting: number,
+): AttentionNotice[] {
+  return byUrgency(eventNotices(event, waiting, true));
 }
 
 /**
@@ -177,9 +225,7 @@ export function useNoticeValues() {
     ...(notice.package
       ? {
           package: tPackages(`${notice.package}.name`),
-          price: tPackages("price", {
-            amount: PACKAGES[notice.package].price,
-          }),
+          price: tPackages("price", { amount: notice.amount ?? 0 }),
         }
       : {}),
   });

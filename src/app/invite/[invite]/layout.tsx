@@ -4,18 +4,18 @@ import { getTranslations } from "next-intl/server";
 import { HistoryTracker } from "@/components/HistoryTracker";
 import { ReactGrab } from "@/app/ReactGrab";
 import { loadMessages } from "@/i18n/messages";
-import { DEFAULT_LANGUAGE, invitationLanguage } from "@/lib/language";
-import { findByInvite } from "@/lib/invitation";
-import { EVENTS } from "@/mock/dashboard";
+import { DEFAULT_LANGUAGE } from "@/lib/language";
+
+import { loadEventBySlug } from "@/db/reads/events";
 import { appFontClassName } from "@/app/fonts";
 import "@/app/globals.css";
 
 /**
  * The invitation's own language, or the default for a link that matches none.
  */
-function inviteLanguage(invite: string) {
-  const event = findByInvite(EVENTS, invite);
-  return event ? invitationLanguage(event) : DEFAULT_LANGUAGE;
+async function inviteLanguage(invite: string) {
+  const event = await loadEventBySlug(invite);
+  return event?.language ?? DEFAULT_LANGUAGE;
 }
 
 /**
@@ -31,7 +31,7 @@ export async function generateMetadata({
 }: LayoutProps<"/invite/[invite]">): Promise<Metadata> {
   const { invite } = await params;
   const t = await getTranslations({
-    locale: inviteLanguage(invite),
+    locale: await inviteLanguage(invite),
     namespace: "Meta",
   });
   return { title: "Festio", description: t("description") };
@@ -50,7 +50,7 @@ export default async function InviteRootLayout({
    * ask, and the page below turns it into a 404; the default only dresses
    * that page.
    */
-  const language = inviteLanguage(invite);
+  const language = await inviteLanguage(invite);
   const messages = await loadMessages(language);
 
   return (

@@ -45,3 +45,13 @@ export const languageSchema = z.enum(LANGUAGES);
 export const packageSchema = z.enum(["free", "standard", "custom"]);
 
 export const rsvpStatusSchema = z.enum(["going", "not_going"]);
+
+/** An IANA time zone this runtime knows, e.g. `Europe/Bucharest`: every date rule reads the clock there. */
+export const timeZoneSchema = z.string().refine((zone) => {
+  try {
+    new Intl.DateTimeFormat("en", { timeZone: zone });
+    return true;
+  } catch {
+    return false;
+  }
+}, "Unknown time zone");

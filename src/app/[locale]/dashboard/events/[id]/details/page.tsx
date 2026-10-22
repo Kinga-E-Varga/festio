@@ -2,7 +2,7 @@ import { getTranslations } from "next-intl/server";
 import { EventPageHeader } from "@/components/dashboard/EventPageHeader";
 import { CONTENT_WIDTH } from "@/components/dashboard/styles";
 import { EventEditor } from "@/components/dashboard/event-editor/EventEditor";
-import { EVENTS } from "@/mock/dashboard";
+import { guestListCount, loadHostEvents } from "@/db/reads/events";
 import { eventMetadata, openEvent } from "../load-event";
 
 type Props = PageProps<"/[locale]/dashboard/events/[id]/details">;
@@ -13,7 +13,11 @@ export async function generateMetadata({ params }: Props) {
 
 export default async function EventPage({ params }: Props) {
   const event = await openEvent((await params).id);
-  const tNav = await getTranslations("Nav");
+  const [tNav, events, listCount] = await Promise.all([
+    getTranslations("Nav"),
+    loadHostEvents(),
+    guestListCount(event.id),
+  ]);
 
   return (
     <>
@@ -23,9 +27,10 @@ export default async function EventPage({ params }: Props) {
       <div className={`@container ${CONTENT_WIDTH.form}`}>
         <EventEditor
           event={event}
-          takenSlugs={EVENTS.filter((other) => other.id !== event.id).map(
-            (other) => other.slug,
-          )}
+          takenSlugs={events
+            .filter((other) => other.id !== event.id)
+            .map((other) => other.slug)}
+          listCount={listCount}
         />
       </div>
     </>

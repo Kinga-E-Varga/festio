@@ -1,4 +1,4 @@
-# Current Feature: Database step 1 — Emulators, schemas and seed data
+# Current Feature: Database step 2 — Reads
 
 ## Status
 
@@ -6,29 +6,36 @@ Completed
 
 ## Goals
 
-- Firebase emulators for Firestore, Auth and Storage run locally with a `demo-` project
-  ID (no real Firebase project), started by one npm script. Functions joins with the first
-  Cloud Function.
-- Zod schemas for every card in `context/features/pending/database.md` → Data: event,
-  invitation (simple and modular), reply (with `people`), guest list, user, slug, seating
-  chart, payment, rate limit.
-- A seed folder kept in git (a few events, replies, a guest list), loaded when the
-  emulators start, so everyone starts from the same data.
-- An env variable that tells the app to use the emulators.
-- **No app changes yet:** the app still reads `src/mock/`. Reading from the emulator is step 2.
+- The app reads its data from the Firestore emulator instead of `src/mock/`: dashboard
+  home, event pages (overview, details, guests), the invitation and print editors, and the
+  guest invitation page (`invite/[invite]`, found through its slug card).
+- Reads go through the Admin SDK on the server (`src/db/admin.ts`), parsed with the Zod
+  schemas in `src/db/schemas/`.
+- Pages look and behave the same as on mock data, on the seed's events.
+- `GuestQuestion` in `src/types/guests.ts` is derived from `questionSchema` instead of
+  repeating it, when the guest list moves over.
+- An event with a template but no invitation card yet (the seed's Revelion) opens with the
+  template's own starting state.
+- A deleted event's leftover card (the seed's Cumetrie) still shows, with zero counts.
+- Mock data no longer used by any page is removed from `src/mock/` (what's left there is
+  only what isn't data, e.g. nav keys).
+- **No writes yet:** saving stays as it is today. Host saves are step 4.
 
 ## Notes
 
-- Spec: `context/features/pending/database.md` — step 1 of its **Order**. The document
+- Spec: `context/features/pending/database.md` — step 2 of its **Order**. The document
   shapes there are settled apart from its Open list; don't re-open them.
-- **Tools:** the Firebase CLI is a dev dependency (`npx firebase`), Java 25 is installed.
-- The seed data comes from `src/mock/dashboard.ts` and `src/mock/guests.ts`, reshaped to the
-  new cards (no time, venue or address on the event; answers stored once per reply, not
-  per person; no stored Unknown/Duplicate tags).
-- Time zone on each seeded event (e.g. `Europe/Bucharest`).
-- The retention period stays `GUEST_DATA_RETENTION_DAYS` in `src/lib/config.ts`; nothing
-  stores a deletion date.
-- Decided (now in the spec): `package` = what's bought, paid is worked out; `cancelled`
-  on the event card; `differentPerson` on each person in a reply.
-- Update `context/repo-map.md` for any new `src/lib/` file or top-level folder.
+- **No auth yet** (step 3): decided — the seed host (`host-maria`) as a fixed dev user
+  until sign-in exists.
+- Decided: the Overview draws the invitation live (no saved pictures); latest replies come
+  from the reply cards; the "new since your last visit" badge is hidden until a last visit
+  is stored.
+- Live updates (`onSnapshot` from the host's browser) need the Firestore rules, which stay
+  closed until step 6, so for now every read is a server read.
+- Things worked out, never saved: countdown, locked, Active / Draft / Past, closes in. No
+  time, venue or address on the event; `seedValues` stops copying them.
+- Seed and runner: `seed/`, `npm run emulators`, `npm run seed`.
+- Update `context/repo-map.md` for any route, `src/lib/` file or folder move, and the
+  `src/db/` / `src/mock/` lines once the app reads the database.
+- Plan: `context/plans/database-step-2-reads.md`
 - Simplify: ran 2026-10-22

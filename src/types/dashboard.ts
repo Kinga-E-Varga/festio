@@ -1,8 +1,8 @@
-import type { StaticImageData } from "next/image";
 import type { z } from "zod";
 import type { packageSchema } from "@/db/schemas/common";
 import type { eventKindSchema, visibilitySchema } from "@/db/schemas/event";
 import type { Language } from "@/lib/language";
+import type { GuestQuestion } from "@/types/guests";
 
 export type IconName =
   | "home"
@@ -109,12 +109,11 @@ export interface PickerEvent {
   slug: string;
 }
 
+/** Worked out from the event's counters: replied = attending + declined. */
 export interface RsvpTally {
   replied: number;
-  invited: number;
   attending: number;
   declined: number;
-  pending: number;
 }
 
 /**
@@ -142,26 +141,23 @@ export interface DashboardEvent {
   kind: EventKind;
   /** ISO `YYYY-MM-DD`; the editor computes every deadline from it. */
   date: string;
-  /** 24h `HH:MM` start time. */
-  time: string;
   /** How far the event is from today; the list does no date maths of its own. */
   countdown: TimeSpan;
-  isNextUp?: boolean;
-  venue: string;
-  address: string;
   visibility: Visibility;
   package: PackageId;
   /** Which template file draws this invitation; see `src/templates/`. */
   templateId?: string;
   /**
+   * The package the event needs: what was bought, or its template's when
+   * that is higher. Paid for = the two are the same.
+   */
+  neededPackage: PackageId;
+  /**
    * The language the invitation itself is written in — RSVP labels, Festio's
    * own section copy, the dates guests read. Never the host's app locale: a
    * host reading Festio in Hungarian may send a Romanian invitation.
-   *
-   * Absent means English. Invitations made before this field existed carry
-   * nothing, and read as English without anyone touching them.
    */
-  language?: Language;
+  language: Language;
   paid: boolean;
   /** The whole guest link path; unique across Festio. */
   slug: string;
@@ -176,8 +172,8 @@ export interface DashboardEvent {
   /** Replies to sort out: names not on the pre-loaded list, or used by more than one reply. */
   needsAttention: number;
   preloaded: boolean;
-  preloadedCount: number;
-  preview: StaticImageData;
+  /** The host's own questions, archived ones too: their answers still show. */
+  questions: GuestQuestion[];
   seatingAvailable: boolean;
   /**
    * The host's own reply-form closing time, `YYYY-MM-DDTHH:MM`. Absent means
@@ -212,6 +208,8 @@ export interface AttentionNotice extends Message {
   closesAt?: string;
   /** Filled in as `{package}`, the package's own name in the reader's language. */
   package?: PackageId;
+  /** Filled in as `{price}`: what that package costs this event, the difference on an upgrade. */
+  amount?: number;
   tone: NoticeTone;
   /** Set once replies pause at the cap: where the host reports a flood. */
   reportHref?: string;
@@ -219,6 +217,8 @@ export interface AttentionNotice extends Message {
 
 export interface RsvpActivity {
   id: string;
+  /** The event it came in for. */
+  eventId: string;
   initials: string;
   /** Who acted. Absent means the host, who is addressed as "you". */
   actor?: string;
@@ -227,7 +227,6 @@ export interface RsvpActivity {
    * itself — where the name sits is the language's business.
    */
   action: Message;
-  tag?: "UNKNOWN";
   /** The event's short name, as the host would say it. */
   event: string;
   /** Anything worth knowing about the reply, as keys into `Activity`. */

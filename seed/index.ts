@@ -10,9 +10,8 @@ import { seatingSchema, type SeatingDoc } from "@/db/schemas/seating";
 import { slugDocSchema } from "@/db/schemas/slug";
 import { userSchema } from "@/db/schemas/user";
 import { SLUG_BLOCK_DAYS } from "@/lib/config";
-import { DAY_MS, deletionDate, toDateTimeLocal } from "@/lib/event";
-import { buildRows, countRows } from "@/lib/guests";
-import type { GuestReply } from "@/types/guests";
+import { DAY_MS, deletionDate } from "@/lib/event";
+import { buildRows, countRows, toGuestReplies } from "@/lib/guests";
 import { momentFromNow } from "./build";
 import { SEED_EVENTS, type SeedEvent } from "./events";
 
@@ -59,29 +58,9 @@ async function clear() {
   );
 }
 
-/** Each person as the guest list's rows read them. */
-function asGuestReplies(seed: SeedEvent): GuestReply[] {
-  return seed.replies.flatMap((reply) =>
-    reply.people.map((person) => ({
-      id: person.id,
-      submissionId: reply.id,
-      name: person.name,
-      status: reply.status,
-      note: reply.message,
-      ageGroup: person.ageGroup,
-      diet: person.diet,
-      dietOther: person.dietOther,
-      answers: { ...reply.answers, ...person.answers },
-      repliedAt: toDateTimeLocal(reply.sentAt.toDate()),
-      differentPerson: person.differentPerson ?? false,
-      listNameId: person.listNameId,
-    })),
-  );
-}
-
 /** The counters, worked out the way the guest list page will recount them. */
 function counts(seed: SeedEvent): EventDoc["counts"] {
-  const people = asGuestReplies(seed);
+  const people = toGuestReplies(seed.replies);
   const rows = buildRows(
     { list: seed.guestList, replies: people, questions: seed.event.questions },
     seed.event.preloaded,

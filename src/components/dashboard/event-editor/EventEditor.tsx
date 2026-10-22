@@ -21,12 +21,18 @@ interface EventEditorProps {
   event: DashboardEvent;
   /** Every other event's slug, which this one's link must not repeat. */
   takenSlugs: string[];
+  /** How many names are on the pre-loaded list. */
+  listCount: number;
 }
 
 /** The cards with fields behind an Edit; Package and Cancel or delete hold actions instead. */
 type CardId = "general" | "replies" | "link";
 
-export function EventEditor({ event, takenSlugs }: EventEditorProps) {
+export function EventEditor({
+  event,
+  takenSlugs,
+  listCount,
+}: EventEditorProps) {
   const t = useTranslations("EventEditor");
   const form = useEventForm(event, takenSlugs);
   const toast = useToast();
@@ -84,7 +90,12 @@ export function EventEditor({ event, takenSlugs }: EventEditorProps) {
           editing={editing("general")}
         />
         <LinkSection event={event} form={form} editing={editing("link")} />
-        <GuestsSection event={event} form={form} editing={editing("replies")} />
+        <GuestsSection
+          event={event}
+          form={form}
+          editing={editing("replies")}
+          listCount={listCount}
+        />
         <PackageSection event={event} />
         <DangerZone event={event} onAction={toast.show} />
       </div>

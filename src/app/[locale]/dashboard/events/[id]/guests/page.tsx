@@ -5,7 +5,7 @@ import { GuestManager } from "@/components/dashboard/guest-list/GuestManager";
 import { ButtonIcon } from "@/components/icons";
 import { GUEST_DATA_RETENTION_DAYS } from "@/lib/config";
 import { eventPath } from "@/lib/event";
-import { findGuests } from "@/mock/guests";
+import { loadGuests } from "@/db/reads/guests";
 import { eventMetadata, openEvent } from "../load-event";
 
 type Props = PageProps<"/[locale]/dashboard/events/[id]/guests">;
@@ -18,8 +18,12 @@ export default async function GuestsPage({ params, searchParams }: Props) {
   const event = await openEvent((await params).id);
   /* The open tab, `?view=summary` as in `GuestManager`. */
   const summary = (await searchParams).view === "summary";
-  const t = await getTranslations("GuestList");
-  const tNav = await getTranslations("Nav");
+  /* Read alongside the page's words; a deleted event has none left to read. */
+  const [t, tNav, initial] = await Promise.all([
+    getTranslations("GuestList"),
+    getTranslations("Nav"),
+    event.dataDeleted ? null : loadGuests(event),
+  ]);
   const guests = eventPath(event.id, "guests");
 
   return (
@@ -55,7 +59,7 @@ export default async function GuestsPage({ params, searchParams }: Props) {
         }
       />
 
-      {event.dataDeleted ? (
+      {initial === null ? (
         /* What is left to say once the guest data is gone. */
         <div className="mt-6">
           <p className="rounded-ui border border-neutral-500 bg-neutral-300 px-[15px] py-[13px] meta-text">
@@ -63,7 +67,7 @@ export default async function GuestsPage({ params, searchParams }: Props) {
           </p>
         </div>
       ) : (
-        <GuestManager event={event} initial={findGuests(event.id)} />
+        <GuestManager event={event} initial={initial} />
       )}
     </div>
   );

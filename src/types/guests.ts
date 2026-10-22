@@ -1,6 +1,6 @@
 import type { RsvpStatus } from "@/types/invitation";
 import type { z } from "zod";
-import type { questionScopeSchema } from "@/db/schemas/event";
+import type { Question, questionScopeSchema } from "@/db/schemas/event";
 import type {
   ageGroupSchema,
   answerSchema,
@@ -8,8 +8,9 @@ import type {
 } from "@/db/schemas/reply";
 
 /*
- * Mock-only shapes for the host's guest list. Not a Firestore schema: that
- * is still unsettled, so ask before persisting any of this.
+ * The guest list as the pages read it, built from the reply and guest-list
+ * cards (`src/db/reads/guests.ts`). View shapes, not the stored ones: a
+ * reply's answers are copied onto each of its people here.
  */
 
 /** A name on the host's pre-loaded list. */
@@ -29,22 +30,8 @@ export type DietNeed = z.infer<typeof dietNeedSchema>;
 /** Asked of each person coming, or once for the whole reply. */
 export type QuestionScope = z.infer<typeof questionScopeSchema>;
 
-interface QuestionBase {
-  /** Permanent: answers are keyed by it. */
-  id: string;
-  /** The host's own wording, in the invitation's language. */
-  label: string;
-  scope: QuestionScope;
-}
-
-/** A host's custom question. Asked only of people coming. */
-export type GuestQuestion =
-  | (QuestionBase & {
-      kind: "choice";
-      options: { id: string; label: string }[];
-    })
-  | (QuestionBase & { kind: "yesNo" })
-  | (QuestionBase & { kind: "text" });
+/** A host's own question, as the event card stores it. Asked only of people coming. */
+export type GuestQuestion = Question;
 
 /** A choice's option id, a yes/no, or free text. */
 export type AnswerValue = NonNullable<z.infer<typeof answerSchema>>;

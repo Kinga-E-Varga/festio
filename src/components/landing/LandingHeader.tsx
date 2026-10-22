@@ -1,7 +1,7 @@
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { Icon } from "@/components/icons";
-import { ATTENTION_NOTICES, HOST, UNPAID_EVENTS } from "@/mock/dashboard";
+import type { BarData } from "@/components/dashboard/BarActions";
 
 /*
  * A copy of the dashboard's top bar, so the dashboard can be redone without
@@ -20,9 +20,8 @@ const TOP_BAR =
 const BADGE =
   "absolute top-0.5 right-0.5 grid h-4 min-w-4 place-items-center rounded-full px-1 text-[10px] font-bold text-primary-900";
 
-export function LandingHeader() {
+export function LandingHeader({ bar }: { bar: BarData }) {
   const t = useTranslations("TopBar");
-  const awaitingPayment = UNPAID_EVENTS.length;
 
   return (
     <header className="sticky top-0 z-40 bg-primary-900">
@@ -42,23 +41,23 @@ export function LandingHeader() {
         <div className="ml-auto flex items-center gap-1">
           <button
             type="button"
-            aria-label={t("alertsCount", { count: ATTENTION_NOTICES.length })}
+            aria-label={t("alertsCount", { count: bar.alerts })}
             className={ICON_BUTTON}
           >
             <Icon name="bell" className="size-5" />
             <span aria-hidden="true" className={`${BADGE} bg-warning-400`}>
-              {ATTENTION_NOTICES.length}
+              {bar.alerts}
             </span>
           </button>
 
           <button
             type="button"
-            aria-label={t("cartCount", { count: awaitingPayment })}
+            aria-label={t("cartCount", { count: bar.cart })}
             className={ICON_BUTTON}
           >
             <Icon name="cart" className="size-5" />
             <span aria-hidden="true" className={`${BADGE} bg-secondary-400`}>
-              {awaitingPayment}
+              {bar.cart}
             </span>
           </button>
 
@@ -67,7 +66,7 @@ export function LandingHeader() {
             aria-label={t("account")}
             className="ml-2.5 grid size-[30px] place-items-center rounded-full bg-secondary-400 text-xs font-semibold tracking-[0.06em] text-neutral-950 transition-colors hover:bg-secondary-300"
           >
-            {HOST.initials}
+            {bar.initials}
           </Link>
         </div>
       </div>

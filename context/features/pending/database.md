@@ -1,7 +1,7 @@
 # Database, hosting and environments
 
-The plan agreed in chat before connecting anything. Nothing here is built yet; the app
-still runs on mock data. Fields and names are a sketch to build from, not a final
+The plan agreed in chat before connecting anything. Steps 1–2 are built: the app reads the
+local emulator (see Order). Fields and names are a sketch to build from, not a final
 schema. Each step still gets its own spec in `current-feature.md` when it's built.
 
 ## Platform
@@ -76,8 +76,7 @@ rateLimits/       short-lived counts per visitor (see Rate limiting)
 
 Only what the event form asks: title, event type, language, date, reply closing time,
 link name, visibility, password, expected guests, whether a guest list is pre-loaded. Plus
-package and template. No time, venue or address: the form doesn't ask for them (the mock
-still has them, and `seedValues` copies them into simple invitations; both go).
+package and template. No time, venue or address: the form doesn't ask for them.
 
 **Time zone** (e.g. `Europe/Bucharest`): taken from the host's browser when the event is
 created; not shown or changeable in the event form for now. Every time rule uses that
@@ -435,13 +434,48 @@ Steps 1–5 run fully on your machine; the first big handoff is step 6.
 1. **Emulators + schemas + seed data.** Firestore, Auth and Storage running
    locally with a `demo-` project ID, Zod schemas for the cards above, and the seed folder.
    No app changes yet. The Functions emulator joins with the first Cloud Function.
-2. **Reads.** The app reads from the emulator in place of `src/mock/`.
+2. **Reads.** Done: every page reads the emulator through `src/db/reads/`. An event with no
+   invitation card opens on its template's own start; the Overview draws the invitation
+   live; the latest replies come from the reply cards.
+   - **Fix next, on its own `fix/` branch:** the deletion date and the default reply close
+     add or take away 24-hour blocks (`DAY_MS`), so across a clock change they land an hour
+     off, on the day before (Majorat: "6 December, 23:00" instead of 7 December). Count
+     calendar days instead.
+   - **Later, with the time-zone work:** every time rule on the event's own clock
+     (`timeZone`), not the server's. Today only "today" for the countdown uses it.
 3. **Auth.** Sign in and sign up (email + password, Google), the `users` card, and the one
    shared check every server action starts with: logged in, and it's their event.
+   - Replace `DEV_HOST_ID` (`src/db/reads/host.ts`, the seed's host) with the signed-in one.
+   - `loadInvitation` and `guestListCount` take a bare event id; make them go through the
+     shared check too, so no caller can skip it.
+   - The shared check replaces `openEvent` (today in the dashboard's route folder, imported
+     by the invitation and print pages too): put it next to the reads. On dashboard pages it
+     can take the event from the host's events the layout already read, instead of reading
+     the card a second time.
+   - The landing page reads the whole dashboard (`loadDashboard`) for two badge counts. Give
+     it a lighter read. Every dashboard page also runs one replies query and one template
+     load per event; fine at a few events, worth a look as hosts get more.
+   - The "new since your last visit" badge on latest replies is hidden: it needs a stored
+     last visit. Decide where it lives (likely the `users` card).
 4. **Host saves.** Event, invitation and guest list through Server Actions, with version
    numbers and slug claiming.
+   - Once a link can change, `loadEventBySlug` should also check the event's `slug` still
+     equals the link, so a stale slug card never opens the event.
+   - Event settings checks a new link only against this host's other events
+     (`takenSlugs`). Links are unique across Festio, so the check reads the slug cards.
+   - A saved modular card keeps its own section list; sections added to the library later
+     need merging in when it's read (`modularStart`).
 5. **Guest replies.** The reply transaction (cap, counters), the duplicate check, the
    closing time, rate limiting and the Protected password.
+   - One shared function for the event's counters, used by both the reply transaction and
+     the seed (`counts` in `seed/index.ts` today), so the two never disagree.
+   - The guest page doesn't check visibility yet: Hidden, Protected and cancelled events
+     all open as Public today.
+   - The latest replies have no Unknown tag: working it out needs each event's guest list.
+     Decide whether it's worth that read.
+   - Who is waiting is worked out, not stored, so the dashboard reads the whole guest list
+     of each active event whose form is closing. Fine at a few events; revisit only if it
+     gets slow.
 6. **`festio-dev`**, Firestore and Storage rules, and rules tests.
 7. **CI:** lint, build and rules tests on every push; auto-deploy to dev.
 8. **GDPR cleanup.** The nightly deletion job and account deletion.

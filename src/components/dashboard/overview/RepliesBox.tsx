@@ -18,13 +18,8 @@ import {
 } from "@/lib/event";
 import { answeredCustom, buildRows, tallyGuests } from "@/lib/guests";
 import type { Language } from "@/lib/language";
-import { shortTitle } from "@/mock/dashboard";
-import { findGuests } from "@/mock/guests";
-import type { DashboardEvent } from "@/types/dashboard";
-import type { DietNeed } from "@/types/guests";
-
-/** The latest replies shown here; the side panel and the guest list hold the rest. */
-const LATEST = 5;
+import type { DashboardEvent, RsvpActivity } from "@/types/dashboard";
+import type { DietNeed, EventGuests } from "@/types/guests";
 
 /**
  * How the replies stand, then who is coming, by age and diet, in a line
@@ -32,12 +27,20 @@ const LATEST = 5;
  * still takes replies, then this event's latest replies under them; the
  * guest page's Summary and its list one link away.
  */
-export function RepliesBox({ event }: { event: DashboardEvent }) {
+export function RepliesBox({
+  event,
+  guests,
+  latest,
+}: {
+  event: DashboardEvent;
+  guests: EventGuests;
+  /** Its latest replies; the side panel and the guest list hold the rest. */
+  latest: RsvpActivity[];
+}) {
   const t = useTranslations("Event");
   const tGuests = useTranslations("GuestList");
   const tTop = useTranslations("TopBar");
   const locale = useLocale() as Language;
-  const guests = findGuests(event.id);
   const rows = buildRows(guests, event.preloaded);
   const tally = tallyGuests(rows, guests.questions);
   /* Each age group and need with anyone in it; a line left out with none. */
@@ -115,7 +118,7 @@ export function RepliesBox({ event }: { event: DashboardEvent }) {
       <div className="mt-5 border-t border-neutral-200 pt-4">
         {/* Named for screen readers; each row says what it is. */}
         <h3 className="sr-only">{tTop("replies")}</h3>
-        <RepliesList event={shortTitle(event)} limit={LATEST} />
+        <RepliesList entries={latest} single />
       </div>
 
       <Link

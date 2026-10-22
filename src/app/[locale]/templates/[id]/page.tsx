@@ -26,7 +26,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 /**
  * A template on its own, before any host has picked it or an event exists —
  * the same editor a host gets on a real event, just seeded from the
- * template's own fallback copy instead of `seedValues(template, event)`.
+ * template's own fallback copy instead of the event's invitation.
  * A modular template gets the modular editor, seeded from `DEFAULT_BASICS`
  * and the whole library, so the Design tab can offer every palette, pair,
  * pattern and section.

@@ -10,18 +10,10 @@ export const LANGUAGES = ["en", "ro", "hu"] as const;
 export type Language = (typeof LANGUAGES)[number];
 
 /**
- * What an invitation speaks when nothing says otherwise — including every
- * invitation that existed before the field did, which is why the field is
- * optional rather than backfilled.
+ * What a page speaks when nothing says otherwise: a guest link that matches
+ * no invitation, a template previewed on its own.
  */
 export const DEFAULT_LANGUAGE: Language = "en";
-
-/** The language an invitation is written in. Never the host's app locale. */
-export function invitationLanguage(invitation: {
-  language?: Language;
-}): Language {
-  return invitation.language ?? DEFAULT_LANGUAGE;
-}
 
 /**
  * How each language is named to a host picking one — in that language, so

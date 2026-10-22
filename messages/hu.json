@@ -111,7 +111,6 @@
     "alerts": "Értesítések",
     "alertsCount": "Értesítések, {count} elem igényel figyelmet",
     "replies": "Legutóbbi válaszok",
-    "repliesCount": "{count, plural, one {Legutóbbi válaszok, # új a legutóbbi látogatás óta} other {Legutóbbi válaszok, # új a legutóbbi látogatás óta}}",
     "closePanel": "Panel bezárása",
     "cart": "Kosár",
     "cartCount": "{count, plural, one {Kosár, # meghívó fizetésre vár} other {Kosár, # meghívó fizetésre vár}}",
@@ -172,7 +171,6 @@
     "cartEmpty": "Nincs fizetésre váró tétel.",
     "cartTotal": "Összesen",
     "cartHint": "Minden eseményt az Áttekintésében fizethetsz ki, a csomagja mellett. Nyiss meg egyet a fizetéshez.",
-    "unknownTag": "Ismeretlen",
     "noReplies": "Még nincs válasz."
   },
   "Event": {
@@ -512,14 +510,12 @@
   },
   "Activity": {
     "attendingWith": "<b>{actor}</b> jön, még {others} fővel",
-    "attendingBabies": "<b>{actor}</b> jön, {babies} babával",
     "replied": "<b>{actor}</b> válaszolt",
     "declined": "<b>{actor}</b> nemet mondott",
     "phoneRsvp": "<b>Te</b> telefonos választ rögzítettél <b>{subject}</b> nevében",
     "children": "{count, plural, one {# gyerek} other {# gyerek}}",
     "vegetarian": "vegetáriánus",
     "glutenFree": "gluténmentes",
-    "notOnList": "nincs a meghívólistán",
     "addedByHost": "a házigazda rögzítette"
   },
   "Meta": {

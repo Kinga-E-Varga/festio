@@ -1,8 +1,10 @@
 /**
  * The guest list as the host sees it: one row per person, built from the
- * pre-loaded names and the replies. Type imports only, so a plain Node
- * script can load this file.
+ * pre-loaded names and the replies. No React or Firebase, so a plain Node
+ * script (the seed) can load this file.
  */
+import type { ReplyDoc } from "@/db/schemas/reply";
+import { toDateTimeLocal } from "@/lib/event";
 import type {
   AttentionItem,
   EventGuests,
@@ -17,6 +19,32 @@ import type {
   NameRepeat,
   QuestionTally,
 } from "@/types/guests";
+
+/** A reply card with the ID it is saved under. */
+export type StoredReply = ReplyDoc & { id: string };
+
+/**
+ * Each person as the guest list's rows read them. The reply's answers are
+ * stored once; the rows still carry them on every person, for now.
+ */
+export function toGuestReplies(replies: StoredReply[]): GuestReply[] {
+  return replies.flatMap((reply) =>
+    reply.people.map((person) => ({
+      id: person.id,
+      submissionId: reply.id,
+      name: person.name,
+      status: reply.status,
+      note: reply.message,
+      ageGroup: person.ageGroup,
+      diet: person.diet,
+      dietOther: person.dietOther,
+      answers: { ...reply.answers, ...person.answers },
+      repliedAt: toDateTimeLocal(reply.sentAt.toDate()),
+      differentPerson: person.differentPerson ?? false,
+      listNameId: person.listNameId,
+    })),
+  );
+}
 
 /** Case, accents and spacing never make two names different people. */
 export function normalizeName(name: string): string {

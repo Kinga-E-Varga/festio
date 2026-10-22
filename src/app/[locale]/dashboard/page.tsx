@@ -7,7 +7,7 @@ import { EventsBox } from "@/components/dashboard/home/EventsBox";
 import { NextEventCard } from "@/components/dashboard/home/NextEventCard";
 import { CONTENT_WIDTH, TWO_COLUMNS } from "@/components/dashboard/styles";
 import { homeRows } from "@/lib/event";
-import { EVENTS, findEvent, HOST } from "@/mock/dashboard";
+import { loadDashboard } from "@/db/reads/dashboard";
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations("Meta");
@@ -17,9 +17,10 @@ export async function generateMetadata(): Promise<Metadata> {
 export default async function DashboardPage() {
   const t = await getTranslations("Dashboard");
   const format = await getFormatter();
-  const rows = homeRows(EVENTS);
+  const { host, events, notices } = await loadDashboard();
+  const rows = homeRows(events);
   const nextRow = rows.find((row) => row.status !== "past");
-  const next = nextRow && findEvent(nextRow.id);
+  const next = nextRow && events.find((event) => event.id === nextRow.id);
 
   return (
     <>
@@ -35,7 +36,7 @@ export default async function DashboardPage() {
           month: "long",
           year: "numeric",
         })}
-        title={t("greeting", { name: HOST.name })}
+        title={t("greeting", { name: host.name })}
         look="home"
       />
 
@@ -49,7 +50,11 @@ export default async function DashboardPage() {
           <div className="flex flex-col gap-4 @max-[859px]:contents">
             <CreateEventCard />
             <NextEventCard event={next} />
-            <AttentionCard className="@max-[859px]:order-last" />
+            <AttentionCard
+              notices={notices}
+              events={events}
+              className="@max-[859px]:order-last"
+            />
           </div>
           <EventsBox events={rows} />
         </div>

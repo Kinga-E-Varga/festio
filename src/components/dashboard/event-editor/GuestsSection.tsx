@@ -22,13 +22,20 @@ interface SectionProps {
   event: DashboardEvent;
   form: EventForm;
   editing: CardEditing;
+  /** How many names are on the pre-loaded list. */
+  listCount: number;
 }
 
 /**
  * Replies: how many guests the host expects, until when they can reply, and
  * whether replies are matched against an invite list.
  */
-export function GuestsSection({ event, form, editing }: SectionProps) {
+export function GuestsSection({
+  event,
+  form,
+  editing,
+  listCount,
+}: SectionProps) {
   const t = useTranslations("EventEditor");
   const locale = useLocale();
   const { values, set, derived } = form;
@@ -126,7 +133,7 @@ export function GuestsSection({ event, form, editing }: SectionProps) {
                 {values.preloaded ? (
                   <span className="meta-text">
                     {" · "}
-                    {t("listCount", { count: event.preloadedCount })} ·{" "}
+                    {t("listCount", { count: listCount })} ·{" "}
                     <Link
                       href={eventPath(event.id, "guests")}
                       className={TEXT_LINK}
@@ -158,9 +165,7 @@ export function GuestsSection({ event, form, editing }: SectionProps) {
           <ReadRow
             label={t("readListLabel")}
             note={
-              values.preloaded
-                ? t("listNow", { count: event.preloadedCount })
-                : undefined
+              values.preloaded ? t("listNow", { count: listCount }) : undefined
             }
           >
             {t(values.preloaded ? "matchedList" : "matchedNoList")}

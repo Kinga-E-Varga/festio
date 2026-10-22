@@ -1,33 +1,25 @@
 import { useLocale, useTranslations } from "next-intl";
 import { formatRelative } from "@/lib/event";
-import { TAG } from "@/components/dashboard/guest-list/styles";
-import {
-  BOX_ROW,
-  DANGER_DARK,
-  SUCCESS_DARK,
-} from "@/components/dashboard/styles";
-import { RECENT_RSVPS } from "@/mock/dashboard";
+import { BOX_ROW, SUCCESS_DARK } from "@/components/dashboard/styles";
+import type { RsvpActivity } from "@/types/dashboard";
 
 /**
  * The latest replies: who answered, across every event in the side panel, or
- * one event's alone on its Overview (by the short name the replies carry).
+ * one event's alone on its Overview.
  */
 export function RepliesList({
-  event,
-  limit,
+  entries,
+  single = false,
 }: {
-  /** One event's alone, on its Overview; else every event's, in the side panel. */
-  event?: string;
-  /** The most to show, the latest first. */
-  limit?: number;
+  /** The latest first. */
+  entries: RsvpActivity[];
+  /** One event's alone, on its Overview: no event name on each line. */
+  single?: boolean;
 }) {
   const t = useTranslations("Rail");
   const tActivity = useTranslations("Activity");
   const locale = useLocale();
 
-  const entries = (
-    event ? RECENT_RSVPS.filter((entry) => entry.event === event) : RECENT_RSVPS
-  ).slice(0, limit);
   if (entries.length === 0) {
     return <p className="muted-text">{t("noReplies")}</p>;
   }
@@ -41,9 +33,7 @@ export function RepliesList({
         >
           <span
             aria-hidden="true"
-            className={`grid size-6 shrink-0 place-items-center wide:size-7 rounded-full border text-[10px] font-semibold ${
-              entry.tag ? DANGER_DARK : SUCCESS_DARK
-            }`}
+            className={`grid size-6 shrink-0 place-items-center wide:size-7 rounded-full border text-[10px] font-semibold ${SUCCESS_DARK}`}
           >
             {entry.initials}
           </span>
@@ -55,20 +45,10 @@ export function RepliesList({
                 actor: entry.actor ?? "",
                 b: (chunks) => <span className="strong-text">{chunks}</span>,
               })}
-              {entry.tag ? (
-                <>
-                  {" "}
-                  <span
-                    className={`${TAG} ${DANGER_DARK} inline-block align-[1px]`}
-                  >
-                    {t("unknownTag")}
-                  </span>
-                </>
-              ) : null}
             </p>
             <p className="mt-0.5 hint-text">
               {[
-                ...(event ? [] : [entry.event]),
+                ...(single ? [] : [entry.event]),
                 ...(entry.details?.length
                   ? [
                       entry.details

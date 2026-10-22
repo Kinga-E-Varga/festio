@@ -1,6 +1,7 @@
 import { Timestamp } from "firebase-admin/firestore";
-import type { Person, ReplyDoc } from "@/db/schemas/reply";
-import { DAY_MS } from "@/lib/event";
+import type { Person } from "@/db/schemas/reply";
+import { DAY_MS, todayIn } from "@/lib/event";
+import type { StoredReply } from "@/lib/guests";
 
 /*
  * Helpers for the seed. Dates are counted from the day it runs, so the
@@ -10,13 +11,11 @@ import { DAY_MS } from "@/lib/event";
 export const TIME_ZONE = "Europe/Bucharest";
 
 /** A reply card with the ID it is saved under. */
-export type SeedReply = ReplyDoc & { id: string };
+export type SeedReply = StoredReply;
 
 /** A calendar day `days` from today, `YYYY-MM-DD`, in the seed's time zone. */
 export function dayFromNow(days: number): string {
-  return new Date(Date.now() + days * DAY_MS).toLocaleDateString("en-CA", {
-    timeZone: TIME_ZONE,
-  });
+  return todayIn(TIME_ZONE, new Date(Date.now() + days * DAY_MS));
 }
 
 /** A moment `days` from now; negative is in the past. */

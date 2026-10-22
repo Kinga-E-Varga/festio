@@ -4,6 +4,7 @@
  */
 export const paths = {
   user: (uid: string) => `users/${uid}`,
+  events: "events",
   event: (eventId: string) => `events/${eventId}`,
   invitation: (eventId: string) => `events/${eventId}/invitation/content`,
   replies: (eventId: string) => `events/${eventId}/replies`,

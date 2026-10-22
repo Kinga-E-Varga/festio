@@ -3,17 +3,20 @@ import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import { notFound } from "next/navigation";
 import { HostInvitationEditor } from "@/components/invitation/HostInvitationEditor";
+import { ModularEditor } from "@/components/modular/ModularEditor";
+import { openEvent } from "@/app/[locale]/dashboard/events/[id]/load-event";
+import { loadEvent } from "@/db/reads/events";
+import { loadInvitation, modularStart } from "@/db/reads/invitation";
 import { loadMessages } from "@/i18n/messages";
-import { seedValues } from "@/lib/invitation";
-import { invitationLanguage } from "@/lib/language";
-import { findEvent } from "@/mock/dashboard";
-import { loadSimpleTemplate } from "@/templates";
+import { invitationValues } from "@/lib/invitation";
+import { loadLibrary } from "@/modular";
+import { loadTemplate } from "@/templates";
 
 type Props = PageProps<"/[locale]/invitations/[id]">;
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { id } = await params;
-  const event = findEvent(id);
+  const event = await loadEvent(id);
   const t = await getTranslations("Meta");
   return {
     title: event
@@ -27,10 +30,14 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function HostInvitationPage({ params }: Props) {
   const { id } = await params;
 
-  const event = findEvent(id);
-  if (!event?.templateId) notFound();
+  /* Unknown is not found; archived goes Home, like every event page. */
+  const event = await openEvent(id);
+  if (!event.templateId) notFound();
 
-  const loaded = await loadSimpleTemplate(event.templateId);
+  const [loaded, stored] = await Promise.all([
+    loadTemplate(event.templateId),
+    loadInvitation(event.id),
+  ]);
   if (!loaded) notFound();
 
   const { template } = loaded;
@@ -41,12 +48,25 @@ export default async function HostInvitationPage({ params }: Props) {
    * The editor draws the guest page in this catalog and keeps its own
    * chrome in the host's.
    */
-  const language = invitationLanguage(event);
+  const { language } = event;
+
+  if (template.kind === "modular") {
+    const library = loadLibrary();
+    return (
+      <ModularEditor
+        library={library}
+        initial={modularStart(template, stored, library, language)}
+        templateId={template.id}
+        basics={{ date: event.date }}
+        language={language}
+      />
+    );
+  }
 
   return (
     <HostInvitationEditor
       template={template}
-      initial={seedValues(template, event)}
+      initial={invitationValues(template, event, stored)}
       language={language}
       guestMessages={await loadMessages(language)}
       backTo={eventPath(event.id)}

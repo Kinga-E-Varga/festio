@@ -1,13 +1,12 @@
 import type { CSSProperties } from "react";
+import type { InvitationDoc } from "@/db/schemas/invitation";
 import { DATE_PARTS, isRealDate, pad } from "@/lib/event";
 import {
   DEFAULT_LANGUAGE,
   LANGUAGE_LOCALE,
-  invitationLanguage,
   localized,
   type Language,
 } from "@/lib/language";
-import type { DashboardEvent } from "@/types/dashboard";
 import type {
   Palette,
   InvitationTemplate,
@@ -115,43 +114,27 @@ export function pageBackground(template: InvitationTemplate): {
   }
 }
 
-/** The event a guest link points at, or undefined when nothing matches. */
-export function findByInvite(
-  events: DashboardEvent[],
-  param: string,
-): DashboardEvent | undefined {
-  return events.find((event) => event.slug === param);
-}
-
 /**
- * Fields the event already answers are seeded from it; the rest fall back to
- * the template's own copy, so a card is never blank before a host types.
+ * The values an invitation's card is drawn from: the host's saved text (a
+ * simple card's) for each field the template declares, else that field's fallback, so a card is
+ * never blank before a host types. Saved keys the template no longer has are
+ * dropped and new fields fall back, so a template edit never breaks a card.
+ * The date is always the event's own; the title is never copied in.
  */
-const FROM_EVENT: Record<string, (event: DashboardEvent) => string> = {
-  title: (event) => event.title,
-  date: (event) => event.date,
-  time: (event) => event.time,
-  venue: (event) => event.venue,
-  address: (event) => event.address,
-};
-
-/*
- * The language is taken from the event rather than passed in: a fallback is
- * copy a guest reads, so there is only ever one right answer for it, and
- * asking each caller to supply it would be inviting one of them to get it
- * wrong.
- */
-export function seedValues(
+export function invitationValues(
   template: InvitationTemplate,
-  event: DashboardEvent,
+  event: { date: string; language: Language },
+  stored: InvitationDoc | null = null,
 ): TemplateValues {
-  const language = invitationLanguage(event);
+  /* A modular card holds no simple fields: none of it applies here. */
+  const saved = stored?.kind === "simple" ? stored.values : {};
   const values: TemplateValues = { [EVENT_DATE]: event.date };
   for (const field of template.fields) {
-    const fromEvent = FROM_EVENT[field.id];
-    values[field.id] = fromEvent
-      ? fromEvent(event)
-      : localized(field.fallback, language);
+    const text = saved[field.id];
+    values[field.id] =
+      typeof text === "string"
+        ? text
+        : localized(field.fallback, event.language);
   }
   return values;
 }

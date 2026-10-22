@@ -8,7 +8,7 @@ import {
   type MouseEvent,
   type ReactNode,
 } from "react";
-import { BarActions } from "@/components/dashboard/BarActions";
+import { BarActions, type BarData } from "@/components/dashboard/BarActions";
 import { NAV_DOCKED } from "@/components/dashboard/media";
 import { SidePanel } from "@/components/dashboard/SidePanel";
 import { PAGE_GUTTER } from "@/components/dashboard/styles";
@@ -29,6 +29,8 @@ interface DashboardShellProps {
   replies: ReactNode;
   /** Server-rendered account links and Log out, the view behind the account circle. */
   account: ReactNode;
+  /** The host's initials and the strip's counts. */
+  bar: BarData;
   children: ReactNode;
 }
 
@@ -60,6 +62,7 @@ export function DashboardShell({
   alerts,
   replies,
   account,
+  bar,
   children,
 }: DashboardShellProps) {
   const t = useTranslations("TopBar");
@@ -124,7 +127,12 @@ export function DashboardShell({
       data-dashboard
       data-scroll-lock={navOpen || undefined}
     >
-      <TopBar navOpen={navOpen} onToggleNav={toggleNav} panel={panel} />
+      <TopBar
+        navOpen={navOpen}
+        onToggleNav={toggleNav}
+        panel={panel}
+        bar={bar}
+      />
 
       <div className="flex min-w-0 flex-1 items-start">
         {/* A dialog only while it is open as the drawer, which happens only below `nav`. */}
@@ -164,7 +172,7 @@ export function DashboardShell({
        * beyond it, at the window's edge.
        */}
       <div className="sticky top-0 hidden h-screen w-topbar shrink-0 justify-center border-l border-neutral-300 bg-neutral-125 nav:flex wide:w-16">
-        <BarActions panel={panel} />
+        <BarActions panel={panel} bar={bar} />
       </div>
 
       <SidePanel panel={panel} views={{ cart, alerts, replies, account }} />

@@ -12,7 +12,7 @@ import {
   toDateTimeLocal,
 } from "@/lib/event";
 import { PASSWORD_PATTERN, TITLE_MIN } from "@/db/limits";
-import { invitationLanguage, type Language } from "@/lib/language";
+import type { Language } from "@/lib/language";
 import {
   isReservedSlug,
   normalizeSlug,
@@ -68,7 +68,7 @@ export function useEventForm(
   const original = {
     slug: event.slug,
     password: event.password ?? "",
-    language: invitationLanguage(event),
+    language: event.language,
   };
 
   const { control, setValue, getValues, reset, formState } =

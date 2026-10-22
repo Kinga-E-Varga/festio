@@ -2,7 +2,8 @@ import { useLocale, useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { eventPath, formatDay, SHORT_DATE_PARTS } from "@/lib/event";
 import type { Language } from "@/lib/language";
-import { PACKAGES, UNPAID_EVENTS } from "@/mock/dashboard";
+import { upgradePrice } from "@/lib/packages";
+import type { DashboardEvent } from "@/types/dashboard";
 import { BOX_ROW } from "@/components/dashboard/styles";
 
 /**
@@ -10,15 +11,11 @@ import { BOX_ROW } from "@/components/dashboard/styles";
  * price, then the total. Each opens its Overview, where the event's box
  * pays for it.
  */
-export function CartList() {
+export function CartList({ unpaid }: { unpaid: DashboardEvent[] }) {
   const t = useTranslations("Rail");
   const tPackages = useTranslations("Packages");
   const locale = useLocale() as Language;
-  const unpaid = UNPAID_EVENTS;
-  const total = unpaid.reduce(
-    (sum, event) => sum + PACKAGES[event.package].price,
-    0,
-  );
+  const total = unpaid.reduce((sum, event) => sum + upgradePrice(event), 0);
 
   if (unpaid.length === 0) {
     return <p className="muted-text">{t("cartEmpty")}</p>;
@@ -40,14 +37,12 @@ export function CartList() {
                 <span className="mt-0.5 block hint-text">
                   {[
                     formatDay(event.date, locale, SHORT_DATE_PARTS),
-                    tPackages(`${event.package}.name`),
+                    tPackages(`${event.neededPackage}.name`),
                   ].join(" · ")}
                 </span>
               </span>
               <span className="shrink-0 panel-face strong-text">
-                {tPackages("price", {
-                  amount: PACKAGES[event.package].price,
-                })}
+                {tPackages("price", { amount: upgradePrice(event) })}
               </span>
             </Link>
           </li>

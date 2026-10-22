@@ -1,9 +1,9 @@
 import { useTranslations } from "next-intl";
+import type { ReactNode } from "react";
 import { BoxHead } from "@/components/dashboard/BoxHead";
 import { DatesThatMatter } from "@/components/dashboard/DatesThatMatter";
 import { EventPageHeader } from "@/components/dashboard/EventPageHeader";
 import { TodoBoard } from "@/components/dashboard/TodoBoard";
-import { eventTodos } from "@/components/dashboard/notices";
 import { EventBox } from "@/components/dashboard/overview/EventBox";
 import { PackageBox } from "@/components/dashboard/overview/PackageBox";
 import { PrivacyBox } from "@/components/dashboard/overview/PrivacyBox";
@@ -14,7 +14,23 @@ import {
   PAGE_BOX,
   TWO_COLUMNS,
 } from "@/components/dashboard/styles";
-import type { DashboardEvent } from "@/types/dashboard";
+import type {
+  AttentionNotice,
+  DashboardEvent,
+  RsvpActivity,
+} from "@/types/dashboard";
+import type { EventGuests } from "@/types/guests";
+
+interface EventOverviewProps {
+  event: DashboardEvent;
+  /** Its alerts plus what its own state needs doing. */
+  todos: AttentionNotice[];
+  guests: EventGuests;
+  /** Its latest replies, newest first. */
+  latest: RsvpActivity[];
+  /** The invitation drawn live and shrunk; none before a design is picked. */
+  preview: ReactNode;
+}
 
 /**
  * One event's own home. A narrow column of the event with its invitation,
@@ -23,10 +39,15 @@ import type { DashboardEvent } from "@/types/dashboard";
  * second column follows the first, each in its own order. Its pages are in the nav, so the only
  * buttons here are the invitation's own and paying.
  */
-export function EventOverview({ event }: { event: DashboardEvent }) {
+export function EventOverview({
+  event,
+  todos,
+  guests,
+  latest,
+  preview,
+}: EventOverviewProps) {
   const t = useTranslations("Event");
   const tNav = useTranslations("Nav");
-  const todos = eventTodos(event);
 
   return (
     <>
@@ -36,7 +57,7 @@ export function EventOverview({ event }: { event: DashboardEvent }) {
       <div className={`@container mt-8 ${CONTENT_WIDTH.page}`}>
         <div className={TWO_COLUMNS}>
           <div className="flex flex-col gap-4">
-            <EventBox event={event} />
+            <EventBox event={event} preview={preview} />
             <ShareBox event={event} />
             <PackageBox event={event} />
           </div>
@@ -49,7 +70,7 @@ export function EventOverview({ event }: { event: DashboardEvent }) {
                 <TodoBoard todos={todos} />
               </section>
             ) : null}
-            <RepliesBox event={event} />
+            <RepliesBox event={event} guests={guests} latest={latest} />
             <section className={PAGE_BOX}>
               <BoxHead title={t("keyDates")} />
               <div className="mt-5">

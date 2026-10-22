@@ -1,5 +1,5 @@
 import { useTranslations } from "next-intl";
-import Image from "next/image";
+import type { ReactNode } from "react";
 import { BoxHead } from "@/components/dashboard/BoxHead";
 import { EventWhen } from "@/components/dashboard/EventWhen";
 import { StatusTag } from "@/components/dashboard/StatusTag";
@@ -21,7 +21,14 @@ const EDIT =
  * The event itself: its name and status, its day, then its invitation as
  * guests see it, with Edit on its corner.
  */
-export function EventBox({ event }: { event: DashboardEvent }) {
+export function EventBox({
+  event,
+  preview,
+}: {
+  event: DashboardEvent;
+  /** The invitation drawn live and shrunk; none before a design is picked. */
+  preview: ReactNode;
+}) {
   const t = useTranslations("Event");
   const tEditor = useTranslations("EventEditor");
 
@@ -39,12 +46,7 @@ export function EventBox({ event }: { event: DashboardEvent }) {
        * and the picture would be twice the size it is beside the others. Centred in it then.
        */}
       <div className="relative mx-auto mt-5 max-w-[380px]">
-        <Image
-          src={event.preview}
-          alt={t("previewAlt", { title: event.title })}
-          sizes="380px"
-          className="h-auto w-full rounded-ui border border-neutral-300"
-        />
+        {preview}
         <PageLink
           page={eventPage(event, "invitation")}
           label={tEditor("edit")}

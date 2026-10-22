@@ -1,10 +1,13 @@
 import { LandingHeader } from "@/components/landing/LandingHeader";
 import { SiteFooter } from "@/components/landing/SiteFooter";
+import { loadDashboard } from "@/db/reads/dashboard";
 
-export default function Home() {
+export default async function Home() {
+  const { bar } = await loadDashboard();
+
   return (
     <>
-      <LandingHeader />
+      <LandingHeader bar={bar} />
       <main className="flex-1">
         <h1>FESTIO</h1>
       </main>

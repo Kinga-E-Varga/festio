@@ -7,7 +7,7 @@ import { RepliesList } from "@/components/dashboard/RepliesList";
 import { SideNav } from "@/components/dashboard/SideNav";
 import { orderEvents } from "@/lib/event";
 import { PICKED_EVENT_COOKIE, toPickerEvent } from "@/lib/picked-event";
-import { EVENTS } from "@/mock/dashboard";
+import { loadDashboard } from "@/db/reads/dashboard";
 
 /**
  * The shell owns the drawer state, so it is a client component — but the nav
@@ -18,15 +18,17 @@ export default async function DashboardLayout({
 }: LayoutProps<"/[locale]/dashboard">) {
   // The event picked on an earlier visit, so the nav draws it straight away.
   const storedEventId = (await cookies()).get(PICKED_EVENT_COOKIE)?.value;
-  const events = orderEvents(EVENTS, "active").map(toPickerEvent);
+  const { events: all, notices, unpaid, activity, bar } = await loadDashboard();
+  const events = orderEvents(all, "active").map(toPickerEvent);
 
   return (
     <DashboardShell
       nav={<SideNav events={events} storedEventId={storedEventId} />}
-      cart={<CartList />}
-      alerts={<AlertsList />}
-      replies={<RepliesList />}
+      cart={<CartList unpaid={unpaid} />}
+      alerts={<AlertsList notices={notices} />}
+      replies={<RepliesList entries={activity} />}
       account={<AccountList />}
+      bar={bar}
     >
       {children}
     </DashboardShell>
