@@ -6,14 +6,18 @@ argument-hint: run|check
 
 Review the codebase for cleanup tasks:
 
-1. Make sure that the history in @context/current-feature.md is in order from newest to oldest
+1. Make sure that `context/history.md` is in order from newest to oldest
 2. Find unnecessary console.log statements in src/
 3. Find unused imports
 4. Check for stale TODO comments
 5. Find orphaned/unused files
-6. Check that context files match actual project state
+6. Check that context files and skills match the actual project:
+   - `context/repo-map.md` and `context/map/`: every path they name exists. Every route folder in `src/app/`, every top-level `src/` folder and every file in `src/lib/` is listed (not every component). Each detail map is linked from the repo-map. When fixing, write the missing or changed lines yourself, in the right file and its style.
+   - `context/current-feature.md`: Status fits the branch — `Not Started` on main, `In Progress` on a feature branch.
+   - `CLAUDE.md`: every `npm run` command it lists exists in `package.json`, and "There is no test setup" is still true.
+   - `context/ai-interaction.md`: every pinned guide path exists under `node_modules/next/dist/docs/`.
+   - `.claude/skills/`: every command and file path a skill names still exists (e.g. `npm test`, a script, a context file).
 7. Check if the .env.production has the same variables (not always the same value) as the .env. If something is missing, tell me.
-8. Find `@ts-ignore` comments that might be stale
 
 **Mode: $ARGUMENTS**
 

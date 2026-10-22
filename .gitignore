@@ -48,3 +48,6 @@ next-env.d.ts
 
 # session handoff notes — never committed
 /context/handoffs/
+
+# superpowers scratch (visual companion mockups, subagent workspaces) — never committed
+/.superpowers/

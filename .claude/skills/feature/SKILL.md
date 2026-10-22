@@ -1,7 +1,7 @@
 ---
 name: feature
-description: Manage current feature workflow - load, plan, start, review, explain or complete
-argument-hint: load|plan|start|review|explain|complete
+description: Manage current feature workflow - load, plan, start or complete
+argument-hint: load|plan|start|complete
 ---
 
 # Feature Workflow
@@ -17,10 +17,11 @@ Manages the full lifecycle of a feature from spec to merge.
 current-feature.md has these sections:
 
 - `# Current Feature` - H1 heading with feature name when active
-- `## Status` - Not Started | In Progress | Complete
+- `## Status` - Not Started | In Progress | Completed
 - `## Goals` - Bullet points of what success looks like
 - `## Notes` - Additional context, constraints, or details from spec
-- `## History` - Completed features (append only)
+
+Completed features are listed in `context/history.md` (append only, newest first).
 
 ## Task
 
@@ -31,9 +32,8 @@ Execute the requested action: $ARGUMENTS
 | `load`     | Load a feature spec or inline description      |
 | `plan`     | Write an implementation plan (large features)  |
 | `start`    | Begin implementation, create and switch branch |
-| `review`   | Check goals met, code quality                  |
-| `explain`  | Document what changed and why                  |
-| `complete` | Commit, merge, reset, push                     |
+| `complete` | Simplify, commit, merge, reset, push           |
+| `test`     | Not set up yet — no test runner                |
 
 See [actions/](actions/) for detailed instructions.
 

@@ -9,51 +9,48 @@
 - Ask before large refactors or architectural changes
 - Don't add features not in the project spec
 - Never delete files without clarification
+- **Show, don't describe, when the answer is visual** — a layout, mockup, comparison of
+  looks, diagram or flow. Use the superpowers visual companion (brainstorming skill,
+  `visual-companion.md`), in any conversation, not only brainstorming. Offer it first in one
+  short line and start it only on a yes; once it is open, use it for later visual answers
+  without asking again. Everything else stays text. Mock up Festio's own UI in its fonts
+  (Work Sans, Libre Baskerville) and the `@theme` colours in `src/app/globals.css`; an
+  invitation in its own palette and fonts.
 
-## Archived specs — do not read unless asked
+## Context folders — do not read unless asked
 
 `context/features/`, `context/fixes/` (including `pending/`), `context/plans/`,
-`context/reviews/`, `context/research/` and `context/handoffs/` are completed work;
-`context/dev-tools/` holds notes on the dev-only helpers. The code is the source of truth.
+`context/reviews/`, `context/research/`, `context/handoffs/` and `context/dev-tools/` hold
+extra context that isn't needed by default. The code is the source of truth.
 
 - **Never read a file there on your own initiative** — only when the user names it, or the
   `feature` skill resolves a name to it.
-- **Plans are stricter:** read one only when the user names it, or when the `Plan:` line in
-  @context/current-feature.md Notes points to it while that feature is being built. Never
-  list or search `context/plans/`.
-- **Reviews are written, not read:** `context/reviews/[date].md` holds plain-language
-  write-ups of a cleanup run, one section per commit, for the user's review. Only the
-  workflow agents of that run append to that day's file. Read one only when the user names it.
-- **Research is background, not spec:** `context/research/` holds market research (other
-  platforms, ideas). An idea there is not a decision. Read one only when the user names it.
-- **Handoffs are history:** `context/handoffs/` holds notes written to carry work between
-  sessions. Once a skill or the code takes the work over, they are kept only as history —
-  never update one. Read one only when the user names it.
+- **Plans:** also read one when the `Plan:` line in @context/current-feature.md Notes points
+  to it while that feature is being built. Never list or search `context/plans/`.
+- **Reviews:** only the workflow agents of a cleanup run append to that day's
+  `context/reviews/[date].md`.
+- **Research:** an idea there is not a decision.
+- **Handoffs:** never update one.
 - **Exclude these folders from every Grep and Glob.** They produce false matches.
 - A match there is not evidence about current behaviour. Check the code or
   @context/project-overview.md.
 
 @context/current-feature.md is the only spec file to consult by default.
 
+`context/history.md` lists the changes that affected the product (features, fixes,
+refactors — not skills, agents, context files or dev tooling), newest first. Write to it at close out; read
+it only when the user asks.
+
 ## Reading the Next.js docs
 
 AGENTS.md requires reading the relevant guide in `node_modules/next/dist/docs/` before
 writing code. 452 files, ~3 MB — don't grep it.
 
-**Find the guide, in this order:**
+**Read the pinned guides below directly** — they cover most Festio work.
 
-1. Check the pinned list below. It covers most Festio work.
-2. Otherwise read `node_modules/next/dist/docs/index.md` (3 KB) and `01-app/index.md` (1 KB).
-3. Grep the docs tree only if both come up empty.
-
-**Prefer `01-getting-started/` (7–15 KB) over `03-api-reference/` (30–61 KB)** — same topics.
-Go to the API reference only when you need an exhaustive option list.
-
-**Read the pinned guides below directly. Send any other doc file to a subagent**, which
-returns only the relevant excerpt. Also use a subagent when you need just one detail from
-a pinned guide — a signature, one option, whether an API still exists.
-
-Ignore `02-pages/` entirely. This project is App Router only.
+**For anything else, use the `next-docs` agent** (Haiku). It finds the guide and returns the
+relevant part quoted word for word. Also use it when you need just one detail from a pinned
+guide — a signature, one option, whether an API still exists.
 
 ### Pinned guides
 
@@ -71,33 +68,49 @@ Ignore `02-pages/` entirely. This project is App Router only.
 
 ## Workflow
 
-Workflow for every feature/fix:
+Every feature/fix, in this order. The `feature` skill holds the how-to for each step; the
+rules below hold whether or not it is used.
 
-1. **Document** - Document the feature in @context/current-feature.md.
-2. **Plan** - Large features only, and ask before planning: write an implementation plan to `context/plans/[feature].md`. Plans are git-ignored and never committed. @context/current-feature.md stays the spec.
-3. **Branch** - Create new branch for feature, fix, etc
-4. **Implement** - Implement the feature/fix that I create in @context/current-feature.md
-5. **Test** - Verify it works in the browser. Implement unit testing later. Run `npm run build` and fix any errors
-6. **Iterate** - Iterate and change things if needed
-7. **Commit** - Only after build passes and everything works. Right before committing, set **Status: Completed** in @context/current-feature.md — that line only, nothing else in the file — and delete `.superpowers/` if it exists. If the change moved a route, a top-level `src/` directory, a file in `src/lib/`, or a component between folders, update @context/repo-map.md in this same commit. Adding a template does not count.
-8. **Merge** - Merge to main. Fast-forward, no merge commits — if main has moved on and a fast-forward isn't possible, rebase the branch onto main first rather than creating a merge commit.
-9. **Delete Branch** - Delete the branch after the merge.
-10. **Close out** - The last step, after the merge. In @context/current-feature.md: add the feature name to the top of History, then reset everything else — Status back to `Not Started`, Goals and Notes back to their empty boilerplate comments. **History is never reset; it only grows.** Leave this edit uncommitted; it rides along with the next feature's commit at step 7.
-
-Do NOT commit without permission and until the build passes. If build fails, fix the issues first.
-
-One feature/fix = one commit. The close-out edit above is the only change allowed to sit uncommitted between features.
-
-## Branching
-
-We will create a new branch for every feature/fix. Name branch **feature/[feature]** or **fix[fix]**, etc.
+1. **Document** — the feature in @context/current-feature.md (`/feature load`).
+2. **Plan** — large features only, and ask before planning (`/feature plan`).
+3. **Branch** — a new branch per feature/fix: `feature/[name]`, `fix/[name]`, `chore/[name]`
+   (`/feature start`).
+4. **Implement** — what @context/current-feature.md describes.
+5. **Test** — verify it in the browser, then run `npm run build` and fix any errors. No unit
+   tests yet.
+6. **Iterate** — change things if needed.
+7. **Simplify, commit, merge, push, close out** — `/feature complete`.
 
 ## Commits
 
-- Ask before committing (don't auto-commit)
-- Use conventional commit messages (feat:, fix:, chore:, etc.)
-- Keep commits focused (one feature/fix per commit)
-- Never put "Generated With Claude" or "Co-authored with..." in the commit messages
+- **Ask before every commit.** The only exception: running `/feature complete` is the
+  permission to commit, merge and push that feature.
+- Never commit until `npm run build` passes. If it fails, fix it first.
+- One feature/fix = one commit, with a conventional message (`feat:`, `fix:`, `chore:`, …).
+- Never put "Generated with Claude" or "Co-authored-by" lines in commit messages.
+- Merge to main fast-forward only, never a merge commit — rebase onto main first if needed.
+- If the change moved a route, a top-level `src/` directory, a file in `src/lib/`, or a
+  component between folders, update @context/repo-map.md (or the matching `context/map/`
+  file) in the same commit. Adding a template does not count.
+- The close-out edit (the history line and the reset @context/current-feature.md) is the only
+  change allowed to sit uncommitted between features. It rides along with the next
+  feature's commit.
+
+## Superpowers in Festio
+
+The superpowers plugin is welcome, with these adjustments. They override the plugin.
+
+- **Brainstorming — yes**, visual companion included. On the architectural path the spec
+  goes into @context/current-feature.md (not `docs/superpowers/specs/`) and is never
+  committed on its own; the plan comes from `/feature plan`, in `context/plans/`.
+- **Use:** `systematic-debugging` for bugs, `verification-before-completion` before saying
+  something is done or fixed, `receiving-code-review` when acting on review findings,
+  `writing-plans` / `executing-plans` / `subagent-driven-development` through `/feature`.
+- **Skip for now:** `test-driven-development` (no test setup), `using-git-worktrees` (one
+  branch at a time), `finishing-a-development-branch` (use `/feature complete`),
+  `requesting-code-review`.
+- Nothing goes under `docs/superpowers/`. `.superpowers/` is scratch, deleted before each
+  feature's commit.
 
 ## When Stuck
 
