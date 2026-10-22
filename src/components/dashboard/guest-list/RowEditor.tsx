@@ -1,20 +1,13 @@
 "use client";
 
 import { useTranslations } from "next-intl";
+import { UnsavedPrompt } from "@/components/dashboard/UnsavedPrompt";
+import type { FormEventHandler, ReactNode } from "react";
 import {
-  type FormEventHandler,
-  type ReactNode,
-  useEffect,
-  useRef,
-} from "react";
-import { BTN_GHOST_LIGHT } from "@/components/dashboard/event-editor/styles";
-import {
-  ALERT,
-  FADE_IN,
-  GUEST_BTN_PRIMARY,
-  SMALL_BTN_WARN,
-  SMALL_BTN_WARN_SOLID,
-} from "@/components/dashboard/guest-list/styles";
+  BTN_GHOST_LIGHT,
+  BTN_PRIMARY,
+} from "@/components/dashboard/event-editor/styles";
+import { FADE_IN } from "@/components/dashboard/guest-list/styles";
 
 export interface RowEditorProps {
   onCancel: () => void;
@@ -40,15 +33,6 @@ export function RowEditor({
   children,
 }: FrameProps) {
   const t = useTranslations("GuestList");
-  const prompt = useRef<HTMLDivElement>(null);
-  const asked = pending?.asked ?? null;
-
-  /* The Edit click that raised the prompt may be far down the list; so may every click after it. */
-  useEffect(() => {
-    if (asked === null) return;
-    prompt.current?.scrollIntoView({ block: "nearest" });
-    prompt.current?.querySelector("button")?.focus();
-  }, [asked]);
 
   return (
     <form
@@ -75,35 +59,20 @@ export function RowEditor({
           <button type="button" onClick={onCancel} className={BTN_GHOST_LIGHT}>
             {t("cancel")}
           </button>
-          <button type="submit" className={GUEST_BTN_PRIMARY}>
+          <button type="submit" className={BTN_PRIMARY}>
             {t("save")}
           </button>
         </div>
 
         {pending ? (
-          <div
-            ref={prompt}
-            role="alert"
-            className={`${ALERT} flex scroll-mt-[88px] scroll-mb-4 flex-wrap items-center gap-2.5`}
-          >
-            <span className="mr-auto">{t("unsaved")}</span>
-            <div className="flex shrink-0 gap-2.5">
-              <button
-                type="button"
-                onClick={pending.onDiscard}
-                className={SMALL_BTN_WARN}
-              >
-                {t("discard")}
-              </button>
-              <button
-                type="button"
-                onClick={pending.onKeep}
-                className={SMALL_BTN_WARN_SOLID}
-              >
-                {t("keepEditing")}
-              </button>
-            </div>
-          </div>
+          <UnsavedPrompt
+            title={t("unsaved")}
+            discardLabel={t("discard")}
+            keepLabel={t("keepEditing")}
+            onDiscard={pending.onDiscard}
+            onKeep={pending.onKeep}
+            asked={pending.asked}
+          />
         ) : null}
       </div>
     </form>

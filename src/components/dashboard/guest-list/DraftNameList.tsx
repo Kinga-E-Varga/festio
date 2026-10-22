@@ -2,15 +2,15 @@
 
 import { useLocale, useTranslations } from "next-intl";
 import { useState } from "react";
+import { SearchClear } from "@/components/dashboard/SearchClear";
 import { Icon } from "@/components/icons";
-import { HINT } from "@/components/dashboard/event-editor/styles";
 import { ICON_BTN_DANGER } from "@/components/dashboard/guest-list/styles";
 import { normalizeName } from "@/lib/guests";
 import type { ListName } from "@/types/guests";
 
 /* Each row draws both lines and pulls up 1px, so a column's first row carries its top line. */
 const ROW_BASE =
-  "-mt-px flex min-h-9 items-center gap-2 border-neutral-400 pl-2 text-[13.5px] text-neutral-950";
+  "-mt-px flex min-h-9 items-center gap-2 border-neutral-400 pl-2 field-text";
 const ROW = `${ROW_BASE} border-y`;
 /*
  * The list's columns, shared with the search row so the search is one column wide.
@@ -21,7 +21,7 @@ const ROW = `${ROW_BASE} border-y`;
 const COLUMNS =
   "grid-cols-[repeat(auto-fill,minmax(220px,1fr))] gap-x-10 p-px side-scroll [scrollbar-gutter:stable] [--scroll-track:var(--color-neutral-50)]";
 /** A row's height with the inputs' fill and full edge. */
-const SEARCH = `flex min-h-9 w-full items-center gap-2 rounded-ui border border-neutral-400 bg-neutral-50 pl-2 text-[13.5px] text-neutral-950 transition-colors outline-neutral-500 hover:border-neutral-600 focus-within:border-neutral-500 focus-within:outline-2 focus-within:-outline-offset-1`;
+const SEARCH = `flex min-h-9 w-full items-center gap-2 rounded-ui border border-neutral-400 bg-neutral-50 pl-2 field-text transition-colors outline-neutral-500 hover:border-neutral-600 focus-within:border-neutral-500 focus-within:outline-2 focus-within:-outline-offset-1`;
 
 interface DraftNameListProps {
   names: ListName[];
@@ -46,7 +46,7 @@ export function DraftNameList({
     .toSorted((a, b) => collator.compare(a.name, b.name));
 
   if (names.length === 0)
-    return <p className={`mt-4 ${HINT}`}>{t("listEmpty")}</p>;
+    return <p className="mt-4 hint-text">{t("listEmpty")}</p>;
 
   return (
     <div className="@container">
@@ -58,7 +58,7 @@ export function DraftNameList({
       <div
         className={`mt-4 flex flex-col-reverse gap-2 overflow-hidden @min-[500px]:grid ${COLUMNS}`}
       >
-        <label className={SEARCH}>
+        <label className={`relative ${SEARCH}`}>
           <Icon name="search" className="size-4 text-neutral-700" />
           <input
             type="search"
@@ -66,12 +66,11 @@ export function DraftNameList({
             onChange={(control) => setQuery(control.target.value)}
             placeholder={t("searchList")}
             aria-label={t("searchList")}
-            className="min-w-0 grow bg-transparent py-1.5 outline-none"
+            className="min-w-0 grow bg-transparent py-1.5 pr-7 outline-none"
           />
+          <SearchClear query={query} onClear={() => setQuery("")} />
         </label>
-        <p
-          className={`${HINT} @min-[500px]:col-start-2 @min-[500px]:col-end-[-1] @min-[500px]:self-center`}
-        >
+        <p className="hint-text @min-[500px]:col-start-2 @min-[500px]:col-end-[-1] @min-[500px]:self-center">
           {t("listCount", { count: names.length })}
         </p>
       </div>
@@ -80,7 +79,7 @@ export function DraftNameList({
           <li key={entry.id} className={ROW}>
             <span className="min-w-0 grow truncate">{entry.name}</span>
             {repliedIds.has(entry.id) ? (
-              <span className="shrink-0 text-[11.5px] whitespace-nowrap text-neutral-700">
+              <span className="shrink-0 hint-text whitespace-nowrap">
                 {t("alreadyReplied")}
               </span>
             ) : (
@@ -97,7 +96,7 @@ export function DraftNameList({
         ))}
       </ul>
       {shown.length === 0 ? (
-        <p className={`mt-3 ${HINT}`}>{t("noMatches")}</p>
+        <p className="mt-3 hint-text">{t("noMatches")}</p>
       ) : null}
     </div>
   );

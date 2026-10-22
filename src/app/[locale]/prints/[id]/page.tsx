@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import { notFound } from "next/navigation";
 import { PrintEditor } from "@/components/print/PrintEditor";
-import { invitationLink } from "@/lib/event";
+import { eventPath, invitationLink } from "@/lib/event";
 import { seedValues } from "@/lib/invitation";
 import { invitationLanguage } from "@/lib/language";
 import { findEvent } from "@/mock/dashboard";
@@ -61,7 +61,7 @@ export default async function PrintPage({ params }: Props) {
           : undefined
       }
       defaultNote={t("defaultNote")}
-      title={event.title}
+      backTo={eventPath(event.id)}
     />
   );
 }

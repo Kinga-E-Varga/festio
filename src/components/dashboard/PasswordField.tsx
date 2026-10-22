@@ -25,14 +25,14 @@ export function PasswordField({ password }: { password: string }) {
           type="button"
           onClick={() => setRevealed((shown) => !shown)}
           aria-label={revealed ? t("hidePassword") : t("showPassword")}
-          className="text-neutral-600 transition-colors hover:text-primary-800"
+          className="text-neutral-600 transition-colors hover:text-accent-800"
         >
           <Icon name={revealed ? "eyeOff" : "eye"} className="size-4" />
         </button>
         <CopyButton
           value={password}
           label={t("copyPassword")}
-          tone="text-neutral-600 hover:text-primary-800"
+          tone="text-neutral-600 hover:text-accent-800"
           copiedLabel={t("passwordCopied")}
         />
       </span>

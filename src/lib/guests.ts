@@ -8,7 +8,6 @@ import type {
   EventGuests,
   GuestCategory,
   GuestCounts,
-  GuestFilter,
   GuestGroup,
   GuestQuestion,
   GuestReply,
@@ -236,13 +235,11 @@ export function countRows(rows: GuestRow[]): GuestCounts {
     going: 0,
     notGoing: 0,
     waiting: 0,
-    notSent: 0,
     attention: 0,
   };
   for (const row of rows) {
     if (row.kind === "waiting") {
       counts.waiting += 1;
-      if (!row.listName.sent) counts.notSent += 1;
       continue;
     }
     if (row.reply.status === "going") counts.going += 1;
@@ -311,59 +308,38 @@ export function tallyGuests(
   return tally;
 }
 
-export function rowMatches(
-  row: GuestRow,
-  filter: GuestFilter,
-  query: string,
-): boolean {
+/** The people coming who answered at least one of the host's own questions. */
+export function answeredCustom(rows: GuestRow[]): number {
+  return rows.filter(
+    (row) =>
+      row.kind === "reply" &&
+      row.reply.status === "going" &&
+      Object.values(row.reply.answers ?? {}).some((answer) => answer !== null),
+  ).length;
+}
+
+export function rowMatches(row: GuestRow, query: string): boolean {
   const needle = normalizeName(query);
-  if (needle && !normalizeName(rowName(row)).includes(needle)) return false;
-  switch (filter) {
-    case "all":
-      return true;
-    case "going":
-      return row.kind === "reply" && row.reply.status === "going";
-    case "not_going":
-      return row.kind === "reply" && row.reply.status === "not_going";
-    case "waiting":
-      return row.kind === "waiting";
-    case "notSent":
-      return row.kind === "waiting" && !row.listName.sent;
-    case "attention":
-      return needsAttention(row);
-  }
+  return !needle || normalizeName(rowName(row)).includes(needle);
 }
 
 /**
  * Only the members who pass stay, still together; the ones left out join the
  * "Replied with" names, the same way an unknown person splits off. `keep`
- * stays shown whatever the filter: the row open in the editor.
+ * stays shown whatever the search: the row open in the editor.
  */
 export function filterGroup(
   group: GuestGroup,
-  filter: GuestFilter,
   query: string,
   keep: string | null = null,
 ): GuestGroup | null {
   const shown = group.rows.filter(
-    (row) => row.id === keep || rowMatches(row, filter, query),
+    (row) => row.id === keep || rowMatches(row, query),
   );
   if (shown.length === 0) return null;
   if (shown.length === group.rows.length) return group;
   const left = group.rows.filter((row) => !shown.includes(row)).map(rowName);
   return { ...group, rows: shown, with: [...group.with, ...left] };
-}
-
-/** A filter whose chip is no longer shown falls back to All. */
-export function resolveFilter(
-  filter: GuestFilter,
-  counts: GuestCounts,
-  useList: boolean,
-): GuestFilter {
-  if (filter === "waiting" && !useList) return "all";
-  if (filter === "notSent" && !(useList && counts.notSent > 0)) return "all";
-  if (filter === "attention" && counts.attention === 0) return "all";
-  return filter;
 }
 
 /** Names about to be added that appear more than once, counting the list. */

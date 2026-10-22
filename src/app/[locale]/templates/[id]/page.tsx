@@ -59,7 +59,6 @@ export default async function TemplatePreviewPage({ params }: Props) {
         templateId={template.id}
         basics={DEFAULT_BASICS}
         language={language}
-        title={template.name}
       />
     );
   }
@@ -69,7 +68,6 @@ export default async function TemplatePreviewPage({ params }: Props) {
       template={template}
       initial={fallbackValues(template, language)}
       language={language}
-      title={template.name}
     />
   );
 }

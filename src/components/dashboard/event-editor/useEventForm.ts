@@ -6,8 +6,6 @@ import { useForm, useWatch } from "react-hook-form";
 import {
   dateLocked,
   defaultReplyClose,
-  deletionDate,
-  formatEventDate,
   formatDeadline,
   invitationLink,
   isRealDate,
@@ -37,6 +35,9 @@ export interface Warning {
 }
 
 const PASSWORD_PATTERN = /^[A-Za-z0-9]{4,}$/;
+
+/** The shortest event name, spaces at either end not counted. */
+export const TITLE_MIN = 3;
 
 const NONE_ACKNOWLEDGED: Record<WarningId, boolean> = {
   date: false,
@@ -103,7 +104,6 @@ export function useEventForm(
   const expected = useWatch({ control, name: "expected" });
   const preloaded = useWatch({ control, name: "preloaded" });
 
-  const [justSaved, setJustSaved] = useState(false);
   const [acknowledged, setAcknowledged] =
     useState<Record<WarningId, boolean>>(NONE_ACKNOWLEDGED);
 
@@ -113,7 +113,6 @@ export function useEventForm(
   function edit<K extends keyof EventFieldValues>(key: K) {
     return (value: EventFieldValues[K]) => {
       setValue(key, value as never, { shouldDirty: true });
-      setJustSaved(false);
     };
   }
 
@@ -130,7 +129,6 @@ export function useEventForm(
     ? date
     : event.date;
   const cutoff = defaultReplyClose(effectiveDate);
-  const deletion = deletionDate(effectiveDate);
   const cutoffLabel = formatDeadline(cutoff, locale);
   const chosenClose = new Date(closeAt);
   const chosenReal = closeEarly && isRealDate(chosenClose);
@@ -162,6 +160,14 @@ export function useEventForm(
     (warning) => warning.shown && !warning.acknowledged,
   ).length;
 
+  const titleLength = title.trim().length;
+  let titleError: string | null = null;
+  if (titleLength === 0) {
+    titleError = t("titleRequired");
+  } else if (titleLength < TITLE_MIN) {
+    titleError = t("titleTooShort", { min: TITLE_MIN });
+  }
+
   const expectedValue = Number.parseInt(expected, 10) || 0;
   let expectedError: string | null = null;
   if (expectedValue < 1) {
@@ -190,10 +196,18 @@ export function useEventForm(
       ? t("passwordInvalid")
       : null;
 
+  /* Every card needs a name, so a missing or short one keeps Save shut. */
+  const canSave = formState.isDirty && pending === 0 && !titleError;
+
   function save() {
-    if (!formState.isDirty || pending > 0) return;
+    if (!canSave) return;
     reset(getValues());
-    setJustSaved(true);
+    setAcknowledged(NONE_ACKNOWLEDGED);
+  }
+
+  /** Back to the last saved values, every warning forgotten. */
+  function cancel() {
+    reset();
     setAcknowledged(NONE_ACKNOWLEDGED);
   }
 
@@ -246,13 +260,12 @@ export function useEventForm(
     warnings,
     derived: {
       link: invitationLink({ slug: cleanSlug }),
-      dateLabel: formatEventDate(new Date(`${effectiveDate}T00:00`), locale),
       /** The `max` a custom closing time cannot go past. */
       closeLimit: toDateTimeLocal(cutoff),
       closeDefaultLabel: cutoffLabel,
       /** Set while a chosen time sits past the cut-off, which cannot apply. */
       closeTooLate: chosenReal && chosenClose > cutoff,
-      deletionLabel: formatEventDate(deletion, locale),
+      titleError,
       expectedValue,
       expectedError,
       slugError,
@@ -262,10 +275,9 @@ export function useEventForm(
     },
     save: {
       dirty: formState.isDirty,
-      pending,
-      justSaved,
-      canSave: formState.isDirty && pending === 0,
+      canSave,
       submit: save,
+      cancel,
     },
   };
 }

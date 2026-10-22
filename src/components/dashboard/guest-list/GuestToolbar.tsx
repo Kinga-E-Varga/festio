@@ -1,51 +1,117 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { BTN_GHOST_LIGHT } from "@/components/dashboard/event-editor/styles";
-import {
-  GUEST_BTN_PRIMARY,
-  HEADER_BTN_WIDTH,
-} from "@/components/dashboard/guest-list/styles";
-import { ButtonIcon } from "@/components/icons";
+import { useRef, useState } from "react";
+import { useDismiss } from "@/components/dashboard/event-nav/useDismiss";
+import { BTN_PRIMARY } from "@/components/dashboard/event-editor/styles";
+import { BTN_LIST_OUTLINE } from "@/components/dashboard/guest-list/styles";
+import { MENU_BOX } from "@/components/dashboard/styles";
+import { ButtonIcon, FoldChevron } from "@/components/icons";
 
 interface GuestToolbarProps {
   useList: boolean;
+  /** Turns the invite list on or off; the caller asks first when something is unsaved. */
+  onUseList: (on: boolean) => void;
   onAddNames: () => void;
   onAddGuest: () => void;
 }
 
+/** A menu item: the whole row is the button. */
+const ITEM =
+  "flex w-full items-center justify-center gap-2.5 px-3 py-2 text-center row-text transition-colors hover:bg-secondary-400/30";
+
+/**
+ * The list's two actions, above the search: New reply, then the invite
+ * list's menu (use it, or edit it and stop using it).
+ */
 export function GuestToolbar({
   useList,
+  onUseList,
   onAddNames,
   onAddGuest,
 }: GuestToolbarProps) {
   const t = useTranslations("GuestList");
+  const tEditor = useTranslations("EventEditor");
+  const [open, setOpen] = useState(false);
+  const rootRef = useRef<HTMLDivElement>(null);
+  useDismiss(open, rootRef, () => setOpen(false));
+
+  /** Closes the menu, then does what the item says. */
+  const pick = (action: () => void) => () => {
+    setOpen(false);
+    action();
+  };
 
   return (
     /*
-     * Equal columns as wide as the longer label, so the two always match.
-     * Small screens fill the line, halved; the narrowest stack them.
+     * Two equal columns, each as wide as the wider button, and at least 180px.
+     * New reply comes first while they sit above the search, last once they
+     * share its row (from 800px, `GuestManager`).
      */
-    <div className="grid w-full gap-2.5 @min-[400px]:auto-cols-fr @min-[400px]:grid-flow-col @min-[560px]:inline-grid @min-[560px]:w-auto @min-[820px]:contents">
-      {/* The list only has something to edit while it's in use. */}
-      {useList ? (
-        <button
-          type="button"
-          onClick={onAddNames}
-          className={`${HEADER_BTN_WIDTH} ${BTN_GHOST_LIGHT} @min-[820px]:-col-end-1 @min-[820px]:row-start-1`}
-        >
-          <ButtonIcon name="pencil" />
-          {t("editList")}
-        </button>
-      ) : null}
+    <div className="grid grid-cols-2 gap-2.5 @min-[560px]:grid-cols-[repeat(2,minmax(180px,1fr))]">
       <button
         type="button"
         onClick={onAddGuest}
-        className={`${HEADER_BTN_WIDTH} ${GUEST_BTN_PRIMARY} @min-[820px]:-col-end-1 @min-[820px]:row-start-2`}
+        className={`w-full whitespace-nowrap @min-[800px]:order-last ${BTN_PRIMARY}`}
       >
         <ButtonIcon name="plus" />
         {t("addReply")}
       </button>
+
+      <div ref={rootRef} className="relative">
+        <button
+          type="button"
+          aria-expanded={open}
+          aria-haspopup="true"
+          onClick={() => setOpen(!open)}
+          className={`w-full whitespace-nowrap ${BTN_LIST_OUTLINE}`}
+        >
+          {t("inviteList")}
+          <FoldChevron open={open} />
+        </button>
+
+        {open ? (
+          <ul
+            className={`${MENU_BOX} top-full right-0 mt-1.5 w-max max-w-[calc(100vw-36px)] min-w-full`}
+          >
+            {useList ? (
+              <>
+                <li>
+                  <button
+                    type="button"
+                    onClick={pick(onAddNames)}
+                    className={ITEM}
+                  >
+                    <ButtonIcon name="pencil" />
+                    {t("editList")}
+                  </button>
+                </li>
+                <li>
+                  <button
+                    type="button"
+                    onClick={pick(() => onUseList(false))}
+                    className={ITEM}
+                  >
+                    <ButtonIcon name="close" />
+                    {t("stopList")}
+                  </button>
+                </li>
+              </>
+            ) : (
+              <li>
+                <button
+                  type="button"
+                  onClick={pick(() => onUseList(true))}
+                  className={ITEM}
+                >
+                  <ButtonIcon name="guests" />
+                  {tEditor("useList")}
+                </button>
+              </li>
+            )}
+          </ul>
+        ) : null}
+      </div>
     </div>
   );
 }

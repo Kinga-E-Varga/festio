@@ -16,7 +16,7 @@ import { ANSWER_LIMIT } from "@/components/dashboard/guest-list/replyValues";
 import { GUEST_DATA_RETENTION_DAYS } from "@/lib/config";
 import type { RsvpStatus } from "@/types/invitation";
 import { PlusIcon, XIcon } from "./icons";
-import { PERSON } from "./styles";
+import { INVITE_SCROLL, PERSON } from "./styles";
 import {
   NAME_LIMIT,
   NOTE_LIMIT,
@@ -202,7 +202,7 @@ export function RsvpForm({ form, skin, onSubmit }: RsvpFormProps) {
           maxLength={NOTE_LIMIT}
           placeholder={t("notePlaceholder")}
           onChange={(control) => set.note(control.target.value)}
-          className={`${skin.input} resize-none`}
+          className={`${skin.input} resize-none ${INVITE_SCROLL}`}
         />
       </div>
 

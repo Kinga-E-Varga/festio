@@ -3,7 +3,7 @@
 import { useTranslations } from "next-intl";
 import { type CSSProperties, useState } from "react";
 import { useToast } from "@/components/dashboard/Toast";
-import { EditorFrame } from "@/components/invitation/EditorTopBar";
+import { EditorFrame } from "@/components/invitation/EditorFrame";
 import { printVars, templateFontVars } from "@/lib/invitation";
 import type { InvitationTemplate } from "@/types/invitation";
 import type { PrintSettings } from "@/types/print";
@@ -13,7 +13,7 @@ import { PrintPreview } from "./PrintPreview";
 /**
  * The print page's own palette. A printable is Festio's artifact, not the
  * invitation's — the template's colours stop at the card's artwork, and the
- * page around it is painted from here. The top bar and the form are the
+ * page around it is painted from here. The strip and the form are the
  * editors' own, in the app's palette.
  *
  * Same var names as a template's palette, so the leaf faces read this
@@ -48,13 +48,13 @@ interface PrintEditorProps {
    * invitation's language — never the locale the host reads Festio in.
    */
   defaultNote: string;
-  /** The top bar's title — the event's. No tags: they are the invitation's, not the printable's. */
-  title: string;
+  /** Where BACK goes when no Festio page is behind this one: the event's Overview. */
+  backTo?: string;
 }
 
 /**
  * The print page. It is laid out like the invitation editor and takes the
- * same top bar and panel, but what fills the middle is a sheet of paper being turned
+ * same frame and panel, but what fills the middle is a sheet of paper being turned
  * rather than the invitation itself, and the panel beside it settles the
  * paper rather than the copy.
  *
@@ -66,7 +66,7 @@ export function PrintEditor({
   link,
   passwordLine,
   defaultNote,
-  title,
+  backTo,
 }: PrintEditorProps) {
   const [settings, setSettings] = useState<PrintSettings>({
     shape: "flat",
@@ -77,9 +77,10 @@ export function PrintEditor({
   /*
    * Answered at every width. Below the breakpoint the form covers the
    * paper; above it the form sits beside the paper and closing it hands the
-   * width over — see `.sheet-form`.
+   * width over — see `.sheet-form`. Closed on arrival: the host sees the
+   * paper first and opens the form from the strip.
    */
-  const [editing, setEditing] = useState(true);
+  const [editing, setEditing] = useState(false);
   const t = useTranslations("HostEditor");
   const toast = useToast();
 
@@ -92,9 +93,12 @@ export function PrintEditor({
 
   return (
     <EditorFrame
-      title={title}
-      editing={editing}
-      onToggleEdit={() => setEditing(!editing)}
+      backTo={backTo}
+      views={[{ id: "settings", label: t("settings"), icon: "printer" }]}
+      view="settings"
+      open={editing}
+      onView={() => setEditing(true)}
+      onClose={() => setEditing(false)}
       action={{ kind: "export", onExport: () => toast.show(t("exported")) }}
       toast={toast}
     >
@@ -107,8 +111,8 @@ export function PrintEditor({
         className={`invite relative overflow-hidden ${template.fonts.primary.className} ${template.fonts.secondary.className} bg-[var(--print-ground)] flex h-full flex-col invite:flex-row`}
       >
         {/*
-         * The sheet sizes itself against what is left beside the panel, and
-         * the top bar above both — never partly behind either.
+         * The sheet sizes itself against what is left beside the panel or
+         * the strip — never partly behind either.
          */}
         <div className="relative flex min-h-0 min-w-0 flex-1">
           <PrintPreview

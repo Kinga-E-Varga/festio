@@ -6,7 +6,12 @@ import {
   REPLY_CAP_MIN_EXTRA,
 } from "@/lib/config";
 import { LANGUAGE_LOCALE, type Language } from "@/lib/language";
-import type { DashboardEvent, EventStatus, TimeSpan } from "@/types/dashboard";
+import type {
+  DashboardEvent,
+  EventStatus,
+  HomeEventRow,
+  TimeSpan,
+} from "@/types/dashboard";
 
 /**
  * A pile of events still ahead reads soonest first — the next one is the one
@@ -26,11 +31,40 @@ export function orderEvents(
 }
 
 /**
+ * Home's events as its box lists them: the upcoming soonest first, then
+ * the past latest first, each with its status worked out.
+ */
+export function homeRows(events: DashboardEvent[]): HomeEventRow[] {
+  const past = events.filter(isPast);
+  const upcoming = events.filter((event) => !isPast(event));
+  return [...orderEvents(upcoming, "active"), ...orderEvents(past, "past")].map(
+    (event) => ({
+      id: event.id,
+      title: event.title,
+      date: event.date,
+      countdown: event.countdown,
+      rsvp: event.rsvp,
+      expectedGuests: event.expectedGuests,
+      status: eventStatus(event),
+      archived: isArchived(event),
+    }),
+  );
+}
+
+/**
  * True once the event has happened. Read from the event's own countdown, so
  * it always agrees with the "2 weeks ago" the cards show.
  */
 export function isPast(event: { countdown: TimeSpan }): boolean {
   return event.countdown.value < 0;
+}
+
+/** Past and its guest data deleted: the record is a stub, with nothing to open. */
+export function isArchived(event: {
+  countdown: TimeSpan;
+  dataDeleted: boolean;
+}): boolean {
+  return isPast(event) && event.dataDeleted;
 }
 
 /**
@@ -76,8 +110,14 @@ export function repliesPaused(event: ReplyCounts): boolean {
   return event.rsvp.replied >= replyCap(event.expectedGuests);
 }
 
+/** One event's page in the dashboard: its Overview, or one of the pages under it. */
+export function eventPath(id: string, page?: "details" | "guests"): string {
+  const overview = `/dashboard/events/${id}`;
+  return page ? `${overview}/${page}` : overview;
+}
+
 export function floodReportPath(event: { id: string }): string {
-  return `/dashboard/events/${event.id}/report`;
+  return `${eventPath(event.id)}/report`;
 }
 
 /** Replies received as a share of expected guests. May pass 100. */
@@ -129,6 +169,12 @@ export const DATE_PARTS: Intl.DateTimeFormatOptions = {
 /** "5 Sept 2026": the same date with its month cut short, where room is tight. */
 export const SHORT_DATE_PARTS: Intl.DateTimeFormatOptions = {
   ...DATE_PARTS,
+  month: "short",
+};
+
+/** "5 Sept": the day and short month alone, for the event picker. */
+export const PICKER_DATE_PARTS: Intl.DateTimeFormatOptions = {
+  day: "numeric",
   month: "short",
 };
 
@@ -218,15 +264,27 @@ export function formatEventDate(
 }
 
 /** An ISO `YYYY-MM-DD` day as `formatEventDate` writes it. */
-export function formatDay(date: string, language: Language): string {
-  return formatEventDate(new Date(`${date}T00:00`), language);
+export function formatDay(
+  date: string,
+  language: Language,
+  parts?: Intl.DateTimeFormatOptions,
+): string {
+  return formatEventDate(new Date(`${date}T00:00`), language, parts);
 }
 
-/** "in 2 days", "12 weeks ago", "yesterday" — counted from now. */
+/** "in 2 days", "12 weeks ago", "today" — counted from now, in numbers but for today. */
 export function formatRelative(span: TimeSpan, language: Language): string {
   return new Intl.RelativeTimeFormat(LANGUAGE_LOCALE[language], {
-    numeric: "auto",
+    numeric: span.value === 0 ? "auto" : "always",
   }).format(span.value, span.unit);
+}
+
+/** How far `to` is from `from`, in days up to two weeks, in weeks after: for `formatRelative`. */
+export function spanBetween(from: Date, to: Date): TimeSpan {
+  const days = Math.round((to.getTime() - from.getTime()) / DAY_MS);
+  return Math.abs(days) < 14
+    ? { value: days, unit: "day" }
+    : { value: Math.round(days / 7), unit: "week" };
 }
 
 /** "30 hours" — a length of time on its own, for a sentence to place. */

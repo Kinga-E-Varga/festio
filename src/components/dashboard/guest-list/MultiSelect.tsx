@@ -6,7 +6,7 @@ import {
   INPUT,
   LABEL,
 } from "@/components/dashboard/event-editor/styles";
-import { Icon } from "@/components/icons";
+import { FoldChevron } from "@/components/icons";
 
 /** The classes a dropdown is drawn with, so an invitation can dress it in its own palette. */
 export interface MultiSelectSkin {
@@ -30,7 +30,7 @@ export const DASHBOARD_SKIN: MultiSelectSkin = {
   panel:
     "absolute inset-x-0 top-full z-10 mt-1 rounded-ui border border-neutral-400 bg-neutral-50 py-1 shadow-sm",
   option:
-    "flex cursor-pointer items-center gap-2.5 px-3 py-1.5 text-[13.5px] text-neutral-950 transition-colors hover:bg-neutral-150",
+    "flex cursor-pointer items-center gap-2.5 px-3 py-1.5 field-text transition-colors hover:bg-neutral-150",
   tick: "size-4 accent-neutral-600",
 };
 
@@ -138,10 +138,7 @@ export function MultiSelect<T extends string>({
         >
           {shown.length > 0 ? shown.join(", ") : placeholder}
         </span>
-        <Icon
-          name="chevron"
-          className={`size-4 shrink-0 transition-transform ${skin.chevron} ${open ? "rotate-180" : ""}`}
-        />
+        <FoldChevron open={open} className={`size-4 ${skin.chevron}`} />
       </button>
       {open ? (
         <div

@@ -39,7 +39,7 @@ function copyFallback(value: string): boolean {
 export function CopyButton({
   value,
   label,
-  tone = "text-neutral-700 hover:text-primary-700",
+  tone = "text-neutral-700 hover:text-accent-700",
   icon = "copy",
   copiedLabel,
 }: CopyButtonProps) {
@@ -79,7 +79,7 @@ export function CopyButton({
       </button>
       <span
         role="status"
-        className={`pointer-events-none absolute -top-7 right-0 rounded-ui bg-primary-800 px-2.5 py-1 text-[11.5px] whitespace-nowrap text-neutral-50 transition-opacity ${
+        className={`pointer-events-none absolute -top-7 right-0 rounded-ui bg-primary-800 px-2.5 py-1 hint-face whitespace-nowrap text-neutral-50 transition-opacity ${
           copied ? "opacity-100" : "opacity-0"
         }`}
       >

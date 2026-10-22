@@ -8,7 +8,8 @@
   --breakpoint-nav: 820px;
   /* Where the RSVP moves from a bottom bar to a panel beside the card. */
   --breakpoint-invite: 1000px;
-  --breakpoint-rail: 1600px;
+  /* Where the dashboard's chrome and its texts grow a step, on large screens. */
+  --breakpoint-wide: 1800px;
 
   /*
    * The one corner of Festio's own UI: every box, button, field and tab
@@ -25,8 +26,33 @@
   --spacing-invite-panel: clamp(400px, 33.333vw, 700px);
 
   --spacing-side: 220px;
-  --spacing-rail: 290px;
   --spacing-topbar: 56px;
+  /*
+   * The chrome's top padding, so the logo, the strip's account circle, the
+   * side panel's title and the event bar stay level. A step more from
+   * `wide` (in `@layer base`).
+   */
+  --spacing-chrome-top: 1.25rem;
+  /* The side panel's width (cart, alerts, latest replies, account); the strip moves over by it. */
+  --spacing-drawer: 400px;
+
+  /*
+   * The widest the landing page's content grows (`max-w-app`): the top bar's
+   * and the footer's strips span the window, their content stops here.
+   * 1536 is a 1920 screen at 125% scaling, so most laptops fill it exactly.
+   */
+  --container-app: 1536px;
+  /*
+   * The widths a dashboard page's content picks from (`CONTENT_WIDTH`),
+   * centred between the nav and the right-hand strip; the event bar and the
+   * page's title span the whole width above it. Short forms and messages
+   * (`max-w-narrow`), forms like Event settings (`max-w-form`), lists and
+   * mixed boxes like Home and the Overview (`max-w-page`); a table takes the
+   * whole width.
+   */
+  --container-narrow: 640px;
+  --container-form: 840px;
+  --container-page: 1280px;
   /* The everyday button's height (`h-btn`): Save, Cancel, New event, the bars' actions. */
   --spacing-btn: 36px;
   /* The everyday single-line field's height (`h-input`): text, date, select. */
@@ -59,6 +85,7 @@
   /* Neutral — page, text and most borders. Now warm linen. */
   --color-neutral-50: #fbfaf5;
   --color-neutral-100: #f4f2e9;
+  --color-neutral-125: #f2efe5;
   --color-neutral-150: #efebe0;
   --color-neutral-200: #e5e0d1;
   --color-neutral-300: #dad3be;
@@ -76,11 +103,14 @@
    */
   --color-shadow: oklch(from var(--color-neutral-100) 0.4 0.05 h);
 
-  /* The dashboard's cards, at rest and lifted on hover. */
-  --shadow-card: 0 3px 5px 0
+  /* The dashboard's cards, at rest. */
+  /* --shadow-card: 0 3px 5px 0
     color-mix(in oklab, var(--color-shadow) 15%, transparent);
   --shadow-card-hover: 0 5px 7px 0
-    color-mix(in oklab, var(--color-shadow) 15%, transparent);
+    color-mix(in oklab, var(--color-shadow) 15%, transparent); */
+  --shadow-card: 0;
+  /* The nav drawer's and the side panel's, lying over the page on phones. */
+  --shadow-drawer: 0 0 40px rgb(47 40 31 / 0.2);
 
   /* Accent — what should stand out: the main button, dates that matter. Now burgundy. */
   --color-accent-50: #fff6f7;
@@ -125,14 +155,14 @@
   --color-info-950: #172535;
 
   /* Warning — deadlines, unsaved changes, the top bar's alert dot. Now antique gold. */
-  --color-warning-50: #fef8e9;
-  --color-warning-100: #fbf1d7;
-  --color-warning-150: #f8eac7;
-  --color-warning-200: #f2deac;
-  --color-warning-300: #ebce8a;
-  --color-warning-400: #deb453;
-  --color-warning-500: #bb963d;
-  --color-warning-600: #987826;
+  --color-warning-50: #fdf8ec;
+  --color-warning-100: #f9f1dc;
+  --color-warning-150: #f5eace;
+  --color-warning-200: #eedeb7;
+  --color-warning-300: #e6cf9a;
+  --color-warning-400: #d7b66d;
+  --color-warning-500: #b59856;
+  --color-warning-600: #93793e;
   --color-warning-700: #7b5f0f;
   --color-warning-800: #604904;
   --color-warning-900: #473502;
@@ -154,6 +184,9 @@
 
   /* White — text on the main button and on urgent badges. */
   --color-white: #ffffff;
+
+  /* The dashboard's panels in motion: the side panel sliding, a box rolling out. */
+  --ease-panel: cubic-bezier(0.65, 0, 0.35, 1);
 
   /*
    * A slow float up and down — the cover's circle. It moves `translate`, not
@@ -183,6 +216,17 @@
   initial-value: 0px;
 }
 
+/*
+ * The dashboard's `main` width, set just inside it (`DashboardShell`) so a
+ * page's bar can span all of it (`BLEED`). Registered as a length so it is
+ * worked out there, not again inside a page's own `@container`.
+ */
+@property --main-width {
+  syntax: "<length>";
+  inherits: true;
+  initial-value: 100vw;
+}
+
 @layer base {
   /*
    * The host's edit sheet slides to `translateX(100%)` while closed, which is
@@ -192,6 +236,39 @@
    */
   html {
     overflow-x: hidden;
+  }
+
+  /* The chrome's top padding a step deeper on large screens (`--spacing-chrome-top`). */
+  :root {
+    @variant wide {
+      --spacing-chrome-top: 1.75rem;
+    }
+  }
+
+  /*
+   * The window's scrollbar on the page's own ground, so it doesn't stand out
+   * as a white strip: the body's, or the dashboard's a step darker. Thin, its
+   * thumb the side cards' (`side-scroll`).
+   */
+  html {
+    --page-ground: var(--color-neutral-100);
+    scrollbar-width: thin;
+    scrollbar-color: var(--color-neutral-400) var(--page-ground);
+  }
+
+  /*
+   * The dashboard keeps the scrollbar's room even with nothing to scroll, so
+   * a page growing past the window (a card rolling out) never pushes it
+   * sideways. The empty room is in the page's own colour, so it doesn't show.
+   */
+  html:has([data-dashboard]) {
+    --page-ground: var(--color-neutral-125);
+    scrollbar-gutter: stable;
+  }
+
+  /* The colour passes down; boxes that scroll keep the browser's own unless they set theirs. */
+  body {
+    scrollbar-color: auto;
   }
 
   /*
@@ -217,6 +294,11 @@
   button:not(:disabled),
   [role="button"]:not([aria-disabled="true"]) {
     cursor: pointer;
+  }
+
+  /* Search boxes draw the app's own clear X (`SearchClear`), not the browser's. */
+  input[type="search"]::-webkit-search-cancel-button {
+    appearance: none;
   }
 
   /* Keyboard focus stays visible everywhere in the app shell. */
@@ -291,31 +373,145 @@
 }
 
 /*
- * A page section's serif title: Active events on the dashboard, the side
- * cards' titles (fixed at 20px there). Colour included. 22px on phones,
- * 24px once the nav docks, 26px once the rail docks.
+ * The host app's shared text styles: size, weight and colour, so two texts
+ * that look alike are written once. Line height stays with each use, except
+ * in `hint-text`, which every hint shares.
  */
-@utility section-title {
-  @apply font-serif text-[22px] leading-[1.2] text-neutral-950 nav:text-[24px] rail:text-[26px];
+
+/* The nav's links and picker, the event bar, the page tabs: 14px from 1800px. Weight and colour stay with each use. */
+@utility nav-text {
+  @apply text-[13.5px] wide:text-[14px];
 }
 
-/*
- * The dashboard's side cards: the docked nav, and each notifications panel
- * once the rail docks (in the drawer they are plain sections).
- */
-@utility side-card {
-  @apply rounded-ui border border-neutral-400 bg-neutral-200 shadow-card;
+/* The nav's current link and the picked event's name. */
+@utility nav-current {
+  @apply nav-text font-medium text-neutral-950;
+}
+
+/* The event bar's name and the current page tab. */
+@utility bar-text {
+  @apply nav-text font-medium text-neutral-900;
+}
+
+/* The side panel's alert and reply texts: 12.5px from 1800px. */
+@utility panel-text {
+  @apply panel-face text-neutral-900;
+}
+
+/* The side panel's text size alone, for its links. */
+@utility panel-face {
+  @apply text-[11.5px] wide:text-[12.5px];
+}
+
+/* A guest's name in the list, the summary tables' heads. */
+@utility name-text {
+  @apply text-[14px] font-medium text-neutral-950;
+}
+
+/* An event's facts: its date, package and visibility; the empty events list. */
+@utility body-text {
+  @apply text-[14px] text-neutral-800;
+}
+
+/* What a field or a list holds: inputs, options, the names in a list. */
+@utility field-text {
+  @apply text-[13.5px] text-neutral-950;
+}
+
+/* A menu's items, the summary tables' rows, the link's fixed start. */
+@utility row-text {
+  @apply text-[13.5px] text-neutral-800;
+}
+
+/* The size of the meta and muted texts alone, for a line on a coloured fill or a link. */
+@utility meta-face {
+  @apply text-[12.5px];
+}
+
+/* Counts and details beside the main text: replies, legends, a card's line. */
+@utility meta-text {
+  @apply meta-face text-neutral-800;
+}
+
+/* A quieter line: empty states, a setting's label, a list's note. */
+@utility muted-text {
+  @apply meta-face text-neutral-700;
+}
+
+/* The explanatory line under a field or a title, and the smallest notes. */
+@utility hint-text {
+  @apply hint-face text-neutral-700;
+}
+
+/* The hint's size alone, for a small line in its own colour: an error, a tooltip. */
+@utility hint-face {
+  @apply text-[11.5px] leading-[1.45];
+}
+
+/* A thing's name heading its few lines: a setting, a warning, a to-do. */
+@utility item-title {
+  @apply item-face text-neutral-950;
+}
+
+/* The item title without its colour, for one on a tinted banner. */
+@utility item-face {
+  @apply meta-face font-semibold;
+}
+
+/* A button's and a badge's words. Colour comes from the button. */
+@utility button-text {
+  @apply text-[12.5px] font-medium;
+}
+
+/* A word picked out in a sentence (a name, a count). Size comes from the sentence. */
+@utility strong-text {
+  @apply font-semibold text-neutral-950;
+}
+
+/* A big serif number set in a sentence: the replies' percent. */
+@utility big-number {
+  @apply font-serif text-[22px] text-neutral-950;
+}
+
+/* An event page's title, under its bar. */
+@utility page-title {
+  @apply font-serif text-[28px] leading-[1.08] text-neutral-950;
+}
+
+/* Home's greeting: the page title a size up, two once the page is wide. */
+@utility greeting-title {
+  @apply font-serif text-[32px] leading-[1.05] text-neutral-950 @min-[720px]:text-[40px];
+}
+
+/* A figure meant to be the first thing seen: Home's next-event countdown. */
+@utility display-number {
+  @apply font-serif text-[32px] leading-[1.1] text-neutral-950;
+}
+
+/* A small serif title: a dialog's, an empty list's. */
+@utility small-title {
+  @apply font-serif text-[17px] text-neutral-950;
+}
+
+/* A card's serif title, without its colour: for one on a coloured fill, or in danger red. */
+@utility card-face {
+  @apply font-serif text-[17px] leading-[1.2] wide:text-[20px];
+}
+
+/* A card's title: Home's boxes, the Overview's and Event settings' cards, the side panel. */
+@utility card-title {
+  @apply card-face text-neutral-950;
 }
 
 /*
  * A side card's own scrollbar, in its colours: thin, a `neutral-400` thumb (the
  * card's border) on the card's `neutral-200`; a box on another fill sets it as
- * `--scroll-track`. `scrollbar-color` for Chrome and Firefox; the
+ * `--scroll-track`, and an invitation its palette's thumb as `--scroll-thumb`. `scrollbar-color` for Chrome and Firefox; the
  * `::-webkit-scrollbar` rules for Safari, as `.invite-scroll`.
  */
 @utility side-scroll {
   scrollbar-width: thin;
-  scrollbar-color: var(--color-neutral-400)
+  scrollbar-color: var(--scroll-thumb, var(--color-neutral-400))
     var(--scroll-track, var(--color-neutral-200));
 
   &::-webkit-scrollbar {
@@ -327,7 +523,7 @@
   }
 
   &::-webkit-scrollbar-thumb {
-    background: var(--color-neutral-400);
+    background: var(--scroll-thumb, var(--color-neutral-400));
     border-radius: 4px;
   }
 }
@@ -613,7 +809,8 @@
   .edit,
   .sheet-form {
     position: fixed;
-    inset: 0;
+    /* Under the editor's top bar (`EditorFrame`), which stays in view. */
+    inset: var(--spacing-topbar) 0 0;
     z-index: 50;
     display: flex;
     flex-direction: column;
@@ -637,7 +834,6 @@
     .edit {
       position: absolute;
       inset: 0 0 0 auto;
-      flex-direction: row;
     }
   }
 

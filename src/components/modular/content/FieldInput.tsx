@@ -7,7 +7,6 @@ import { useState } from "react";
 import {
   ERROR,
   SOFT_ACTION,
-  HINT,
   INPUT,
   LABEL,
 } from "@/components/dashboard/event-editor/styles";
@@ -157,7 +156,7 @@ function ImageField({ id, value }: { id: string; value: string }) {
         >
           {t("changePhoto")}
         </button>
-        <p className={HINT}>{t("photoSoon")}</p>
+        <p className="hint-text">{t("photoSoon")}</p>
       </div>
     </div>
   );

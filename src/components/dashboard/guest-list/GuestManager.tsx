@@ -1,24 +1,22 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { type ReactNode, useEffect, useEffectEvent, useState } from "react";
+import { useSearchParams } from "next/navigation";
+import { useEffect, useEffectEvent, useState } from "react";
 import { Toast, useToast } from "@/components/dashboard/Toast";
-import { Banner } from "@/components/dashboard/event-editor/Banner";
-import { EditorSection } from "@/components/dashboard/event-editor/EditorSection";
+import { CONTENT_WIDTH } from "@/components/dashboard/styles";
 import { AddNamesBox } from "@/components/dashboard/guest-list/AddNamesBox";
-import { GuestSearch } from "@/components/dashboard/guest-list/GuestSearch";
-import { GuestSummary } from "@/components/dashboard/guest-list/GuestSummary";
+import { SearchField } from "@/components/dashboard/SearchField";
 import { GuestTable } from "@/components/dashboard/guest-list/GuestTable";
 import { GuestToolbar } from "@/components/dashboard/guest-list/GuestToolbar";
 import { ReplySummary } from "@/components/dashboard/guest-list/ReplySummary";
-import { FADE_IN } from "@/components/dashboard/guest-list/styles";
+import { fold } from "@/components/dashboard/guest-list/styles";
 import { useGuestActions } from "@/components/dashboard/guest-list/useGuestActions";
 import { useGuestList } from "@/components/dashboard/guest-list/useGuestList";
 import {
   NEW_ROW,
   useRowEditor,
 } from "@/components/dashboard/guest-list/useRowEditor";
-import { Switch } from "@/components/invitation/PanelSwitch";
 import { useLeaveWarning } from "@/lib/leave-warning";
 import type { DashboardEvent } from "@/types/dashboard";
 import type { EventGuests, ListName } from "@/types/guests";
@@ -26,19 +24,21 @@ import type { EventGuests, ListName } from "@/types/guests";
 interface GuestManagerProps {
   event: DashboardEvent;
   initial: EventGuests;
-  /** The page's own banners, drawn above the list's, in the same block. */
-  notices?: ReactNode;
 }
 
-/** The list box eases out the way it eased in (`FADE_IN`). */
-const BOX_LEAVING = "pointer-events-none -translate-y-2 opacity-0";
+/** The list box rolls up from the buttons under it (`fold`, from nothing as it mounts) and back down into them. */
+const boxRoll = (leaving: boolean) =>
+  `${fold(!leaving)} starting:grid-rows-[0fr] starting:opacity-0 ${leaving ? "pointer-events-none" : ""}`;
 
 /** Everyone the event knows about, in one list the host can read and fix. */
-export function GuestManager({ event, initial, notices }: GuestManagerProps) {
+export function GuestManager({ event, initial }: GuestManagerProps) {
   const t = useTranslations("GuestList");
-  const tPage = useTranslations("EventPage");
-  const tEditor = useTranslations("EventEditor");
   const toast = useToast();
+  /*
+   * Two tabs on one page, picked by `?view=`, so switching keeps the list's
+   * edits (they live here, in memory, until there is a store).
+   */
+  const summary = useSearchParams().get("view") === "summary";
   const list = useGuestList(initial, event.preloaded);
   const actions = useGuestActions(list.edit, toast.show, {
     guests: list.guests,
@@ -57,7 +57,7 @@ export function GuestManager({ event, initial, notices }: GuestManagerProps) {
     return () => cancelAnimationFrame(frame);
   }, []);
 
-  /* The box stays until its fade-out ends; with reduced motion there's none, so it goes at once. */
+  /* The box stays until it has rolled away; with reduced motion there's no roll, so it goes at once. */
   const [leaving, setLeaving] = useState(false);
   /* Fading out, the box is already saved or discarded. */
   const boxUnsaved = list.addOpen && !leaving && boxDirty;
@@ -73,7 +73,7 @@ export function GuestManager({ event, initial, notices }: GuestManagerProps) {
   /*
    * The list box and a row editor are never open together: opening one
    * closes the other (each asks first when the other has unsaved changes).
-   * Opening again mid-fade keeps the box, draft and all.
+   * Opening again mid-roll keeps the box, draft and all.
    */
   function openBox() {
     editor.close();
@@ -122,124 +122,87 @@ export function GuestManager({ event, initial, notices }: GuestManagerProps) {
 
   return (
     <>
-      {/*
-       * Held clear of the header as on the event page: the margins collapse,
-       * so the first banner's own and the header's fold into this.
-       */}
-      <div className="mt-8">
-        {notices}
-        {/* Live from the rows, so it clears as the host sorts names out. */}
-        {list.counts.attention > 0 ? (
-          <Banner
-            tone="warn"
-            icon="alert"
-            title={tPage("attentionTitle", { count: list.counts.attention })}
-          >
-            {tPage("attentionBody")}
-          </Banner>
-        ) : null}
-      </div>
-
-      <EditorSection title={t("sectionSummary")} first>
-        <ReplySummary
-          tally={list.tally}
-          counts={list.counts}
-          useList={list.useList}
-          expected={event.expectedGuests}
-          eventId={event.id}
-        />
-      </EditorSection>
-
-      <EditorSection title={t("sectionList")}>
-        {/*
-         * The table's header: the list box when open, then the search, the
-         * filters, the list switch and the buttons.
-         */}
-        <div className="mb-4 flex flex-col gap-4">
-          {/* Above everything it opens from. 16px + the 16px gap = the 32px below it. */}
-          {list.addOpen ? (
-            <div
-              onTransitionEnd={(event) => {
-                if (leaving && event.target === event.currentTarget) closeNow();
-              }}
-              className={`mb-4 ${FADE_IN} ${leaving ? BOX_LEAVING : ""}`}
-            >
-              <AddNamesBox
-                list={list.guests.list}
-                repliedIds={repliedIds}
-                onSave={saveList}
-                onCancel={closeBox}
-                onDirty={setBoxDirty}
-                ask={
-                  boxPending
-                    ? {
-                        onDiscard: discardBox,
-                        onKeep: () => setBoxPending(null),
-                        asked: boxAsked,
-                      }
-                    : null
-                }
-              />
-            </div>
-          ) : null}
+      {summary ? (
+        <div className={`@container mt-6 ${CONTENT_WIDTH.page}`}>
+          <ReplySummary
+            tally={list.tally}
+            counts={list.counts}
+            useList={list.useList}
+            expected={event.expectedGuests}
+            eventId={event.id}
+          />
+        </div>
+      ) : (
+        <div className={`@container mt-6 ${CONTENT_WIDTH.page}`}>
           {/*
-           * Wide, two rows of two: the search, then the filters, each beside
-           * its row of the controls. On a small screen they stack, the switch
-           * and buttons first.
+           * The table's header: the list box when open, then the search and
+           * the list's actions.
            */}
-          <div className="grid gap-x-6 gap-y-4 @min-[820px]:grid-cols-[minmax(0,1fr)_auto] @min-[820px]:items-center">
+          <div className="mb-4 flex flex-col gap-4">
+            {/* Above everything it opens from, 32px over the buttons. */}
+            {list.addOpen ? (
+              <div
+                onTransitionEnd={(event) => {
+                  if (leaving && event.target === event.currentTarget)
+                    closeNow();
+                }}
+                className={`-mb-4 ${boxRoll(leaving)}`}
+              >
+                {/* Pinned to its foot, so the bottom shows first and it grows upward. The column's gap is taken back (-mb-4) and the 32px under the box folds with it, so nothing jumps; 1px on top for the box's own -mt-px (`SUBBOX`). */}
+                <div className="flex min-h-0 flex-col justify-end overflow-hidden">
+                  <div className="pt-px pb-8">
+                    <AddNamesBox
+                      list={list.guests.list}
+                      repliedIds={repliedIds}
+                      onSave={saveList}
+                      onCancel={closeBox}
+                      onDirty={setBoxDirty}
+                      ask={
+                        boxPending
+                          ? {
+                              onDiscard: discardBox,
+                              onKeep: () => setBoxPending(null),
+                              asked: boxAsked,
+                            }
+                          : null
+                      }
+                    />
+                  </div>
+                </div>
+              </div>
+            ) : null}
             {/*
-             * The controls, wide: the list switch, then "Edit invite list"
-             * above "New reply" at the edge. Their columns share one width,
-             * the widest of them; with the list off its button is gone and the
-             * switch takes its spot, centred in it. Narrower, they join the stack
-             * above.
+             * The search at the left and the list's two actions at the right,
+             * in one row once both fit; before that the actions, then the
+             * search under them.
              */}
-            <div
-              className={`contents @min-[820px]:col-start-2 @min-[820px]:row-span-2 @min-[820px]:row-start-1 @min-[820px]:grid @min-[820px]:grid-rows-subgrid @min-[820px]:items-center @min-[820px]:gap-x-6 ${list.useList ? "@min-[820px]:grid-cols-2" : "@min-[820px]:grid-cols-1"}`}
-            >
-              {/* Whether replies are matched against a list; the list's button follows it. */}
-              <label className="flex w-fit cursor-pointer items-center gap-2.5 text-[12.5px] font-medium text-neutral-800 @min-[820px]:row-start-1 @min-[820px]:justify-self-center">
-                <Switch
-                  label={tEditor("useList")}
-                  checked={list.useList}
-                  onChange={(on) => editor.guard(() => list.set.useList(on))}
-                />
-                {tEditor("useList")}
-              </label>
-              {/* Wide, the toolbar's buttons join this grid, one above the other. */}
-              <div className="@min-[820px]:contents">
-                <GuestToolbar
-                  useList={list.useList}
-                  onAddNames={() =>
-                    list.addOpen ? openBox() : editor.guard(openBox)
-                  }
-                  onAddGuest={() => editor.open(NEW_ROW)}
+            <div className="grid w-full gap-4 @min-[800px]:grid-cols-[minmax(0,360px)_auto] @min-[800px]:justify-between">
+              <GuestToolbar
+                useList={list.useList}
+                onUseList={(on) => editor.guard(() => list.set.useList(on))}
+                onAddNames={() =>
+                  list.addOpen ? openBox() : editor.guard(openBox)
+                }
+                onAddGuest={() => editor.open(NEW_ROW)}
+              />
+              <div className="@min-[800px]:order-first">
+                <SearchField
+                  query={list.query}
+                  onQuery={list.set.query}
+                  label={t("search")}
                 />
               </div>
             </div>
-            <div className="@min-[820px]:col-start-1 @min-[820px]:row-start-1 @min-[560px]:max-w-[400px]">
-              <GuestSearch query={list.query} onQuery={list.set.query} />
-            </div>
-            <div className="min-w-0 @min-[820px]:col-start-1 @min-[820px]:row-start-2">
-              <GuestSummary
-                counts={list.counts}
-                total={list.rows.length}
-                useList={list.useList}
-                filter={list.filter}
-                onFilter={list.set.filter}
-              />
-            </div>
           </div>
-        </div>
 
-        <GuestTable
-          list={list}
-          actions={actions}
-          editor={editor}
-          onStartList={() => editor.guard(openBox)}
-        />
-      </EditorSection>
+          <GuestTable
+            list={list}
+            actions={actions}
+            editor={editor}
+            onStartList={() => editor.guard(openBox)}
+          />
+        </div>
+      )}
 
       <Toast message={toast.message} tone={toast.tone} />
     </>

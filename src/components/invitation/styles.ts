@@ -33,6 +33,10 @@ export const BOXED_INPUT = `${FIELD_SHAPE} ${REPLY_CONTROL_HEIGHT} ${REPLY_TYPE}
 
 const LABEL_CORE = "text-[11px] font-semibold tracking-[0.16em] uppercase";
 
+/** An invitation's own scrollbar (reply panel, note box, the card's stage): thin, `--c4` softened, on a clear track so it sits on whatever is behind it. */
+export const INVITE_SCROLL =
+  "side-scroll [--scroll-thumb:color-mix(in_oklab,var(--c4)_45%,transparent)] [--scroll-track:transparent]";
+
 /** The reply form's labels, in `--c4`. */
 export const REPLY_LABEL = `${LABEL_CORE} text-[color:var(--c4)]`;
 

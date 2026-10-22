@@ -1,14 +1,23 @@
 "use client";
 
-import { useTranslations } from "next-intl";
-import { EditorSection } from "@/components/dashboard/event-editor/EditorSection";
-import { BTN_DANGER } from "@/components/dashboard/event-editor/styles";
-import { DANGER_DARK } from "@/components/dashboard/styles";
+import { useLocale, useTranslations } from "next-intl";
+import { CancelEventForm } from "@/components/dashboard/event-editor/CancelEventForm";
+import { ExportLink } from "@/components/dashboard/ExportLink";
+import { DeleteRecordForm } from "@/components/dashboard/event-editor/DeleteRecordForm";
+import { RollOut } from "@/components/dashboard/event-editor/RollOut";
+import {
+  ActionRow,
+  SettingsCard,
+} from "@/components/dashboard/event-editor/SettingsCard";
+import {
+  BTN_DANGER,
+  BTN_GHOST_LIGHT,
+} from "@/components/dashboard/event-editor/styles";
 import type { ToastTone } from "@/components/dashboard/Toast";
 import { ButtonIcon } from "@/components/icons";
-import type { ReactNode } from "react";
+import { useState, type ReactNode } from "react";
 import { GUEST_DATA_RETENTION_DAYS } from "@/lib/config";
-import { isPast } from "@/lib/event";
+import { deletionDate, formatEventDate, isPast } from "@/lib/event";
 import type { DashboardEvent, IconName } from "@/types/dashboard";
 
 interface DangerZoneProps {
@@ -19,89 +28,178 @@ interface DangerZoneProps {
 interface RowProps {
   title: string;
   children: ReactNode;
-  /** The row's button; a row without one only explains. */
-  action?: { icon: IconName; label: string; onClick: () => void };
+  below?: ReactNode;
+  /** Beside its button: a link to a step to take first. */
+  aside?: ReactNode;
+  /** The row's button; a row without one only explains. `quiet`: the accent outline, for a step back. */
+  action?: {
+    icon?: IconName;
+    label: string;
+    onClick: () => void;
+    quiet?: boolean;
+  };
 }
 
-/** One choice in its own box: what it does, and the button that does it. */
-function Row({ title, children, action }: RowProps) {
+/**
+ * A row's button that opens the form under it, or, once open, the quiet
+ * step back that closes it.
+ */
+function toggle(
+  open: boolean,
+  setOpen: (open: boolean) => void,
+  start: { icon: IconName; label: string },
+  keepLabel: string,
+): RowProps["action"] {
+  return open
+    ? { label: keepLabel, onClick: () => setOpen(false), quiet: true }
+    : { ...start, onClick: () => setOpen(true) };
+}
+
+/** One choice as a row: what it does, and the button that does it. */
+function Row({ title, children, below, aside, action }: RowProps) {
   return (
-    <div
-      className={`flex flex-col gap-3 rounded-ui border px-5 py-[18px] @min-[640px]:flex-row @min-[640px]:items-center @min-[640px]:gap-5 ${DANGER_DARK}`}
+    <ActionRow
+      title={title}
+      below={below}
+      action={
+        action ? (
+          <div className="flex flex-wrap items-center gap-x-5 gap-y-2">
+            <button
+              type="button"
+              className={action.quiet ? BTN_GHOST_LIGHT : BTN_DANGER}
+              onClick={action.onClick}
+            >
+              {action.icon ? <ButtonIcon name={action.icon} /> : null}
+              {action.label}
+            </button>
+            {aside}
+          </div>
+        ) : null
+      }
     >
-      <div className="flex-1">
-        <b className="mb-1 block font-semibold">{title}</b>
-        <p className="text-[12.5px] leading-[1.5]">{children}</p>
-      </div>
-      {action ? (
-        <button type="button" className={BTN_DANGER} onClick={action.onClick}>
-          <ButtonIcon name={action.icon} />
-          {action.label}
-        </button>
-      ) : null}
-    </div>
+      {children}
+    </ActionRow>
   );
 }
 
 export function DangerZone({ event, onAction }: DangerZoneProps) {
   const t = useTranslations("EventEditor");
+  const locale = useLocale();
   const replied = event.rsvp.replied;
-  /* TEMPORARY preview: every row shows, whatever the event's state. Set to false to restore. */
-  const PREVIEW_ALL = true;
+  const [cancelling, setCancelling] = useState(false);
+  const [deletingDraft, setDeletingDraft] = useState(false);
+  const [deletingRecord, setDeletingRecord] = useState(false);
+  /* Until there is a store, cancelling here marks it cancelled for this visit. */
+  const [cancelled, setCancelled] = useState(event.cancelled ?? false);
+  /* A cancelled event can be deleted, like a past one; its own row says why. */
+  const showCancelled = cancelled && event.paid;
   /* A past draft was never paid for, so it shows only the delete row. */
-  const showPast = PREVIEW_ALL || (isPast(event) && event.paid);
+  const showPast = !cancelled && isPast(event) && event.paid;
   /* A live paid event explains why it has no delete, under its cancel row. */
-  const showCancel = PREVIEW_ALL || (!isPast(event) && event.paid);
-  const showDraft = PREVIEW_ALL || !event.paid;
+  const showCancel = !cancelled && !isPast(event) && event.paid;
+  const showDraft = !event.paid;
+  /* The delete row's switch and its password form: a past event's and a cancelled one's. */
+  const deleteRecord = {
+    action: toggle(
+      deletingRecord,
+      setDeletingRecord,
+      { icon: "trash", label: t("deleteNow") },
+      t("pastKeep"),
+    ),
+    aside: <ExportLink />,
+    below: (
+      <DeleteRecordForm
+        open={deletingRecord}
+        onDelete={() => {
+          setDeletingRecord(false);
+          onAction(t("pastDeleted"), "neutral");
+        }}
+      />
+    ),
+  };
+  const deletionLabel = formatEventDate(deletionDate(event.date), locale);
 
   return (
-    <EditorSection title={t("dangerSection")}>
-      <div className="flex flex-col gap-3">
-        {showPast ? (
-          <Row
-            title={t("pastTitle")}
-            action={{
-              icon: "trash",
-              label: t("deleteNow"),
-              onClick: () => onAction(t("pastDeleted"), "neutral"),
-            }}
-          >
-            {t("pastBody")}
-          </Row>
+    <SettingsCard title={t("dangerSection")}>
+      <div>
+        {/* Why a live paid event has no delete, before the cancel it points to. */}
+        {showCancel ? (
+          <Row title={t("paidDeleteTitle")}>{t("paidDeleteBody")}</Row>
         ) : null}
 
         {showCancel ? (
-          <>
-            <Row
-              title={t("cancelTitle")}
-              action={{
-                icon: "ban",
-                label: t("cancelButton"),
-                onClick: () => onAction(t("cancelled"), "neutral"),
-              }}
-            >
-              {t("cancelBody", {
-                count: replied,
-                days: GUEST_DATA_RETENTION_DAYS,
-              })}
-            </Row>
-            <Row title={t("paidDeleteTitle")}>{t("paidDeleteBody")}</Row>
-          </>
+          <Row
+            title={t("cancelTitle")}
+            action={toggle(
+              cancelling,
+              setCancelling,
+              { icon: "ban", label: t("cancelButton") },
+              t("cancelKeep"),
+            )}
+            below={
+              <CancelEventForm
+                open={cancelling}
+                onCancel={() => {
+                  setCancelling(false);
+                  setCancelled(true);
+                  onAction(t("cancelled"), "neutral");
+                }}
+              />
+            }
+          >
+            {t("cancelBody", {
+              count: replied,
+              days: GUEST_DATA_RETENTION_DAYS,
+            })}
+          </Row>
         ) : null}
 
         {showDraft ? (
           <Row
             title={t("draftTitle")}
-            action={{
-              icon: "trash",
-              label: t("deleteDraft"),
-              onClick: () => onAction(t("draftDeleted"), "neutral"),
-            }}
+            action={toggle(
+              deletingDraft,
+              setDeletingDraft,
+              { icon: "trash", label: t("deleteDraft") },
+              t("draftKeep"),
+            )}
+            below={
+              <RollOut open={deletingDraft}>
+                <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-3">
+                  <p className="font-medium text-accent-700">
+                    {t("draftConfirm")}
+                  </p>
+                  <button
+                    type="button"
+                    className={BTN_DANGER}
+                    onClick={() => {
+                      setDeletingDraft(false);
+                      onAction(t("draftDeleted"), "neutral");
+                    }}
+                  >
+                    <ButtonIcon name="trash" />
+                    {t("deleteDraft")}
+                  </button>
+                </div>
+              </RollOut>
+            }
           >
             {t("draftBody")}
           </Row>
         ) : null}
+
+        {showCancelled ? (
+          <Row title={t("cancelledTitle")} {...deleteRecord}>
+            {t("cancelledBody", { date: deletionLabel })}
+          </Row>
+        ) : null}
+
+        {showPast ? (
+          <Row title={t("pastTitle")} {...deleteRecord}>
+            {t("pastBody", { date: deletionLabel })}
+          </Row>
+        ) : null}
       </div>
-    </EditorSection>
+    </SettingsCard>
   );
 }

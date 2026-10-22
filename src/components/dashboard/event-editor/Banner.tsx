@@ -5,7 +5,6 @@ import {
   BANNER_TITLE,
   BANNER_TONE,
   type BannerTone,
-  ICON_SQUARE,
 } from "@/components/dashboard/event-editor/styles";
 import type { IconName } from "@/types/dashboard";
 
@@ -14,18 +13,29 @@ interface BannerProps {
   icon: IconName;
   title: string;
   children: ReactNode;
-  /** Sits under the text, below the icon's row, so the icon centres on the text alone. */
+  /** Sits under the text, below the icon's row. */
   footer?: ReactNode;
+  /** Its space above, 12px unless the place it sits says otherwise. */
+  className?: string;
 }
 
-export function Banner({ tone, icon, title, children, footer }: BannerProps) {
+export function Banner({
+  tone,
+  icon,
+  title,
+  children,
+  footer,
+  className = "mt-3",
+}: BannerProps) {
   return (
     <div
-      className={`mt-3 grid grid-cols-[auto_1fr] items-center gap-x-3.5 rounded-ui border px-[15px] py-2.5 text-[12.5px] leading-[1.5] ${BANNER_TONE[tone]}`}
+      className={`${className} grid grid-cols-[auto_1fr] items-start gap-x-3 rounded-ui border px-[15px] py-2.5 meta-face leading-[1.5] ${BANNER_TONE[tone]}`}
     >
-      <span className={`${ICON_SQUARE} ${BANNER_ICON[tone]}`}>
-        <Icon name={icon} className="size-[17px]" strokeWidth={1.75} />
-      </span>
+      <Icon
+        name={icon}
+        strokeWidth={2}
+        className={`mt-[1.5px] size-4 shrink-0 ${BANNER_ICON[tone]}`}
+      />
       <div>
         <b className={BANNER_TITLE}>{title}</b>
         {children}

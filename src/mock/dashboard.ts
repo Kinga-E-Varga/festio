@@ -16,53 +16,33 @@ import {
 import type {
   AttentionNotice,
   DashboardEvent,
-  DashboardStat,
   EventKind,
   FooterColumn,
-  NavSection,
+  NavItem,
   RsvpActivity,
   Package,
   PackageId,
 } from "@/types/dashboard";
 
 /**
- * Placeholder host until accounts are wired up. The name and the date are
- * data, not sentences: the greeting around the name and the way the date is
- * written both change with the host's language.
+ * Placeholder host until accounts are wired up. The name is data, not a
+ * sentence: the greeting around it changes with the host's language.
  */
 export const HOST = {
   name: "Maria",
   initials: "MI",
-  today: "2026-09-04",
 };
 
 /* Keys into the `Nav` message namespace; the words themselves live there. */
-export const NAV_SECTIONS: NavSection[] = [
-  {
-    labelKey: "hosting",
-    items: [
-      { labelKey: "home", href: "/dashboard", icon: "home" },
-      { labelKey: "events", href: "/dashboard/events", icon: "calendar" },
-      {
-        labelKey: "downloads",
-        href: "/dashboard/downloads",
-        icon: "download",
-      },
-      {
-        labelKey: "templates",
-        href: "/dashboard/templates",
-        icon: "templates",
-      },
-    ],
-  },
-  {
-    labelKey: "account",
-    items: [
-      { labelKey: "billing", href: "/dashboard/billing", icon: "billing" },
-      { labelKey: "privacy", href: "/dashboard/privacy", icon: "shield" },
-      { labelKey: "settings", href: "/dashboard/settings", icon: "settings" },
-    ],
-  },
+export const NAV_ITEMS: NavItem[] = [
+  { labelKey: "home", href: "/dashboard", icon: "home" },
+];
+
+/* The side panel's account view, behind the account circle; keys into `Nav` too. */
+export const ACCOUNT_LINKS: NavItem[] = [
+  { labelKey: "billing", href: "/dashboard/billing", icon: "billing" },
+  { labelKey: "privacy", href: "/dashboard/privacy", icon: "shield" },
+  { labelKey: "settings", href: "/dashboard/settings", icon: "settings" },
 ];
 
 /** Prices and what each package unlocks, lowest first, straight from the project spec. */
@@ -91,18 +71,8 @@ export const EVENT_KINDS: EventKind[] = [
   "other",
 ];
 
-/* Keys into the `Stats` message namespace. */
-export const STATS: DashboardStat[] = [
-  {
-    labelKey: "liveInvitations",
-    value: "4",
-    detailKey: "ofTotal",
-    detailValue: 5,
-  },
-  { labelKey: "nextEvent", value: "2", detailKey: "daysAway" },
-  { labelKey: "newReplies", value: "12", detailKey: "sinceLastVisit" },
-  { labelKey: "repliesToReview", value: "7", detailKey: "toReview" },
-];
+/** Replies since the host's last visit: the latest replies' tag. */
+export const NEW_REPLIES = 12;
 
 export const EVENTS: DashboardEvent[] = [
   {
@@ -299,8 +269,11 @@ export function findEvent(id: string): DashboardEvent | undefined {
   return EVENTS.find((event) => event.id === id);
 }
 
-/* The part of a title before " — ", which is how the notices name an event. */
-function shortTitle(event: DashboardEvent): string {
+/** An invitation is only live once it is paid for, so the unpaid events are exactly what sits in the cart. */
+export const UNPAID_EVENTS = EVENTS.filter((event) => !event.paid);
+
+/* The part of a title before " — ", which is how the notices and the latest replies name an event. */
+export function shortTitle(event: DashboardEvent): string {
   return event.title.split(" — ")[0];
 }
 
@@ -337,8 +310,12 @@ export const ATTENTION_NOTICES: AttentionNotice[] = [
   },
   ...replyNotices(),
   /* Chasing the last guests comes before the last edits. */
+  /* A closed reply form is worth a warning only until the event has passed. */
   ...EVENTS.filter(
-    (event) => eventStatus(event) === "active" && replyWindow(event) !== "open",
+    (event) =>
+      eventStatus(event) === "active" &&
+      replyWindow(event) !== "open" &&
+      !isPast(event),
   ).map((event): AttentionNotice => ({
     id: `replies-close-${event.id}`,
     eventId: event.id,

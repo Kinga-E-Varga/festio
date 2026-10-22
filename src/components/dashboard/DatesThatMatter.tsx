@@ -1,12 +1,16 @@
 import { Fragment } from "react";
 import { useLocale, useTranslations } from "next-intl";
+import { RowLines } from "@/components/dashboard/RowLines";
 import {
   countdownNow,
   deletionDate,
   formatEventDate,
+  formatRelative,
   replyClose,
   replyWindow,
+  spanBetween,
 } from "@/lib/event";
+import type { Language } from "@/lib/language";
 import type { DashboardEvent } from "@/types/dashboard";
 
 type StopKind = "today" | "deadline" | "event" | "later";
@@ -18,30 +22,31 @@ interface Stop {
   label: string;
 }
 
-/** Day and short month, no year: the timeline's dates. */
+/** Weekday, day and short month, no year: the timeline's dates. */
 const STOP_DATE: Intl.DateTimeFormatOptions = {
+  weekday: "short",
   day: "numeric",
   month: "short",
 };
 
 /**
  * Each kind of stop's dot. The event and the record's deletion stand out
- * with a light ring, the event a size up; today is a plain dot, as the
- * deadlines are. A stop already behind today is greyed out.
+ * with a light ring, the event a size up; today and the deadlines are plain
+ * dots in the line's own colour, as is a stop already behind today.
  */
 const DOT: Record<StopKind | "passed", string> = {
-  today: "size-2.5 bg-neutral-950",
-  deadline: "size-2.5 bg-neutral-950",
+  today: "size-2.5 bg-neutral-300",
+  deadline: "size-2.5 bg-neutral-300",
   event: "size-4 bg-primary-700 ring-4 ring-primary-200",
   later: "size-3 bg-accent-800 ring-4 ring-accent-200",
-  passed: "size-2.5 bg-neutral-400",
+  passed: "size-2.5 bg-neutral-300",
 };
 
 /**
- * How much of the track's spare room the gap after each stop takes: half
- * shared evenly, half by the days it spans, so a long wait looks longer
- * without crowding the near dates together. Kept to whole steps, one class
- * each.
+ * How much of the track's spare room the gap after each stop takes, once it
+ * runs across: half shared evenly, half by the days it spans, so a long wait
+ * looks longer without crowding the near dates together. Kept to whole
+ * steps, one class each.
  */
 const GROW = [
   "grow-2",
@@ -62,91 +67,91 @@ function gapGrow(stops: Stop[], index: number): string {
   return GROW[weight - 2];
 }
 
-/** The first stop sits flush left on the track, the last flush right. */
+/** Across, the first stop sits flush left on the track, the last flush right. */
 function stopAlign(index: number, count: number): string {
-  if (index === 0) return "@min-[440px]:items-start @min-[440px]:text-left";
+  if (index === 0) return "@min-[560px]:items-start @min-[560px]:text-left";
   if (index === count - 1)
-    return "@min-[440px]:items-end @min-[440px]:text-right";
-  return "@min-[440px]:items-center @min-[440px]:text-center";
+    return "@min-[560px]:items-end @min-[560px]:text-right";
+  return "@min-[560px]:items-center @min-[560px]:text-center";
 }
 
 /**
- * Today, the deadlines, the event and the record's deletion on one track, in
- * date order. Across the card once there is room, each stop's date above its
- * dot and what it is under it; narrower, the track turns on its side, the
- * date to the left of the dot.
+ * Today, the deadlines, the event and the record's deletion on one line, in
+ * date order: each stop's name over its day and how far off it is (under
+ * the day once across). Across the box once it has room, its gaps as long as
+ * the waits; down it before.
+ * A stop already behind today fades its words, its dot plain in the line's colour.
  */
 function Timeline({ stops, now }: { stops: Stop[]; now: Date }) {
   const t = useTranslations("Event");
-  const locale = useLocale();
+  const locale = useLocale() as Language;
 
   return (
-    /* Padded as the to-do box under it, so the two line up. */
-    <section aria-label={t("keyDates")} className="@container px-[17px]">
-      <div className="relative">
+    <div className="@container">
+      <ol aria-label={t("keyDates")} className="relative @min-[560px]:flex">
+        {/* Across, from the first dot's middle to the last one's (8px in from either end), so the dots cover its ends. */}
         <span
           aria-hidden="true"
-          className="absolute top-[18px] bottom-[18px] left-[81px] w-0.5 bg-neutral-800 @min-[440px]:hidden"
+          className="absolute inset-x-2 top-[8.5px] hidden h-0.5 bg-neutral-300 @min-[560px]:block"
         />
-        {/* Through the dots' middle: the date (14), 10, half the dot's box (8), less half the line. */}
-        <span
-          aria-hidden="true"
-          className="absolute inset-x-0 top-[31px] hidden h-0.5 bg-neutral-800 @min-[440px]:block"
-        />
-        {/*
-         * Across, each stop is as wide as its words and the gaps between take
-         * the rest, by `gapGrow`; a gap never closes below 24, so labels keep
-         * apart. On its side the track stays evenly spaced.
-         */}
-        <ol className="relative @min-[440px]:flex">
-          {stops.map((stop, index) => {
-            const passed = stop.kind !== "today" && stop.at < now;
-            return (
-              <Fragment key={stop.key}>
-                {index > 0 ? (
-                  <li
+        {stops.map((stop, index) => {
+          const passed = stop.kind !== "today" && stop.at < now;
+          const day = formatEventDate(stop.at, locale, STOP_DATE);
+          return (
+            <Fragment key={stop.key}>
+              {/* Across, the gaps take the spare room; a gap never closes below 24. */}
+              {index > 0 ? (
+                <li
+                  aria-hidden="true"
+                  className={`hidden min-w-6 @min-[560px]:block ${gapGrow(stops, index - 1)}`}
+                />
+              ) : null}
+              <li
+                className={`relative flex gap-3 pb-4 last:pb-0 @min-[560px]:min-w-0 @min-[560px]:flex-col @min-[560px]:gap-2 @min-[560px]:pb-0 ${stopAlign(index, stops.length)}`}
+              >
+                {/*
+                 * Down, each stop's stretch of the line: from its dot's middle
+                 * to the next one's (9.5px into it), so none runs past the last.
+                 */}
+                {index < stops.length - 1 ? (
+                  <span
                     aria-hidden="true"
-                    className={`hidden min-w-6 @min-[440px]:block ${gapGrow(stops, index - 1)}`}
+                    className="absolute top-[9.5px] -bottom-[9.5px] left-[7px] w-0.5 bg-neutral-300 @min-[560px]:hidden"
                   />
                 ) : null}
-                <li
-                  className={`grid grid-cols-[64px_16px_minmax(0,1fr)] items-center gap-x-2.5 py-[7px] @min-[440px]:flex @min-[440px]:min-w-0 @min-[440px]:flex-col @min-[440px]:py-0 ${stopAlign(index, stops.length)}`}
+                <span
+                  aria-hidden="true"
+                  className="relative flex h-[19px] w-4 shrink-0 items-center justify-center"
                 >
                   <span
-                    className={`text-[14px] leading-none font-medium whitespace-nowrap ${
-                      passed
-                        ? "text-neutral-600"
-                        : stop.kind === "event"
-                          ? "text-primary-700"
-                          : stop.kind === "later"
-                            ? "text-accent-800"
-                            : "text-neutral-950"
-                    }`}
-                  >
-                    {formatEventDate(stop.at, locale, STOP_DATE)}
-                  </span>
-                  <span
-                    aria-hidden="true"
-                    className="flex h-4 items-center justify-center @min-[440px]:my-2.5"
-                  >
-                    <span
-                      className={`block rounded-full ${DOT[passed ? "passed" : stop.kind]}`}
-                    />
-                  </span>
-                  <span
-                    className={`text-[14px] leading-5 ${
-                      passed ? "text-neutral-600" : "text-neutral-800"
-                    }`}
-                  >
-                    {stop.label}
-                  </span>
-                </li>
-              </Fragment>
-            );
-          })}
-        </ol>
-      </div>
-    </section>
+                    className={`block rounded-full ${DOT[passed ? "passed" : stop.kind]}`}
+                  />
+                </span>
+                {/* The day and how far off it is: one line down the box, two across it. */}
+                {/* A stop behind today fades its words; its dot keeps the line's colour. */}
+                <RowLines
+                  className={passed ? "opacity-60" : ""}
+                  title={stop.label}
+                  detail={
+                    stop.kind === "today" ? (
+                      day
+                    ) : (
+                      <>
+                        {day}
+                        <span className="@min-[560px]:hidden"> · </span>
+                        <span className="@min-[560px]:block">
+                          {formatRelative(spanBetween(now, stop.at), locale)}
+                        </span>
+                      </>
+                    )
+                  }
+                />
+              </li>
+            </Fragment>
+          );
+        })}
+      </ol>
+    </div>
   );
 }
 

@@ -1,60 +1,38 @@
-"use client";
-
 import { useTranslations } from "next-intl";
-
-/*
- * The editor's tabs, the Save button's size and type, side by side as
- * separate buttons. Every tab takes the top bar's fill and ink; the open one
- * primary-800 at 90%, and any one primary-800 on hover.
- */
-const TAB =
-  "h-btn flex-1 rounded-ui text-[12.5px] font-medium bg-primary-900 text-secondary-100 transition-colors aria-selected:bg-primary-800/90 hover:bg-primary-800 aria-selected:hover:bg-primary-800 focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-info-600";
+import type { IconName } from "@/types/dashboard";
+import type { StripView } from "./EditorFrame";
 
 /**
- * The editor's tabs, in the order the host meets them: the design first,
- * then the invitation's content, then the reply's. Shared by the simple and the
- * modular edit panels, which differ only in what each tab holds.
+ * The invitation editors' tabs, in the order the host meets them: the design
+ * first, then the invitation's content, then the reply's. Each is a button
+ * on the editor's strip (`EditorFrame`) that opens the side panel on it.
+ * Shared by the simple and the modular editor, which differ only in what
+ * each tab holds. The icons are the modular preview's Design and Content
+ * buttons'.
  */
-const TABS = [
-  { id: "design", labelKey: "tabDesign" },
-  { id: "content", labelKey: "tabContent" },
-  { id: "replies", labelKey: "tabReplies" },
-] as const;
+export const TABS = [
+  { id: "design", labelKey: "tabDesign", icon: "brush" },
+  { id: "content", labelKey: "tabContent", icon: "fonts" },
+  { id: "replies", labelKey: "tabReplies", icon: "guests" },
+] as const satisfies readonly {
+  id: string;
+  labelKey: string;
+  icon: IconName;
+}[];
 
 export type PanelTabId = (typeof TABS)[number]["id"];
 
-/** The one tab panel the tabs control. */
-export const TABPANEL_ID = "edit-tabpanel";
+/** Each tab's message key in `HostEditor`: the panel's title. */
+export const TAB_LABEL = Object.fromEntries(
+  TABS.map((each) => [each.id, each.labelKey]),
+) as Record<PanelTabId, (typeof TABS)[number]["labelKey"]>;
 
-export function tabElementId(tab: PanelTabId): string {
-  return `edit-tab-${tab}`;
-}
-
-export function PanelTabs({
-  tab,
-  onSelect,
-}: {
-  tab: PanelTabId;
-  onSelect: (tab: PanelTabId) => void;
-}) {
+/** The tabs as the strip's buttons, in the host's language. */
+export function useTabViews(): StripView<PanelTabId>[] {
   const t = useTranslations("HostEditor");
-
-  return (
-    <div role="tablist" className="flex flex-1 gap-2">
-      {TABS.map((each) => (
-        <button
-          key={each.id}
-          type="button"
-          role="tab"
-          id={tabElementId(each.id)}
-          aria-selected={tab === each.id}
-          aria-controls={TABPANEL_ID}
-          onClick={() => onSelect(each.id)}
-          className={TAB}
-        >
-          {t(each.labelKey)}
-        </button>
-      ))}
-    </div>
-  );
+  return TABS.map((each) => ({
+    id: each.id,
+    label: t(each.labelKey),
+    icon: each.icon,
+  }));
 }

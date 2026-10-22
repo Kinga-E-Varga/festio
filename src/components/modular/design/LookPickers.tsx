@@ -67,11 +67,7 @@ export function PalettePicker({
       aria-labelledby="design-heading-palette"
       className="mb-8 flex flex-col"
     >
-      <EditorHeading
-        id="design-heading-palette"
-        title={t("palette")}
-        className="mb-[18px]"
-      />
+      <EditorHeading id="design-heading-palette" title={t("palette")} />
       <RollOut
         id="design-palettes"
         label={`${t("palette")}: ${palette?.name ?? ""}`}
@@ -138,11 +134,7 @@ export function PatternPicker({
       aria-labelledby="design-heading-pattern"
       className="mb-8 flex flex-col"
     >
-      <EditorHeading
-        id="design-heading-pattern"
-        title={t("pattern")}
-        className="mb-[18px]"
-      />
+      <EditorHeading id="design-heading-pattern" title={t("pattern")} />
       <RollOut
         id="design-patterns"
         label={`${t("pattern")}: ${name}`}
@@ -188,11 +180,7 @@ export function FontPairPicker({
       aria-labelledby="design-heading-fontPair"
       className="mb-8 flex flex-col"
     >
-      <EditorHeading
-        id="design-heading-fontPair"
-        title={t("fontPair")}
-        className="mb-[18px]"
-      />
+      <EditorHeading id="design-heading-fontPair" title={t("fontPair")} />
       <RollOut
         id="design-font-pairs"
         label={`${t("fontPair")}: ${pair?.name ?? ""}`}
@@ -250,11 +238,7 @@ export function CornersPicker({
       aria-labelledby="design-heading-corners"
       className="mb-8 flex flex-col"
     >
-      <EditorHeading
-        id="design-heading-corners"
-        title={t("corners")}
-        className="mb-[18px]"
-      />
+      <EditorHeading id="design-heading-corners" title={t("corners")} />
       <RollOut
         id="design-corners"
         label={`${t("corners")}: ${name}`}

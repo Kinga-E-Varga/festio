@@ -11,7 +11,7 @@ import {
   CHOICE_ON,
 } from "@/components/dashboard/guest-list/styles";
 import { PanelSwitch } from "@/components/invitation/PanelSwitch";
-import { PanelViewButton, SidePanel } from "@/components/invitation/SidePanel";
+import { SidePanel } from "@/components/invitation/SidePanel";
 import type { PrintSettings, PrintShape } from "@/types/print";
 
 /*
@@ -40,7 +40,7 @@ interface PrintPanelProps {
  * fixed rather than generated from `template.fields`, because what a
  * printable needs settling is the paper, not the template's copy.
  *
- * Nothing in here submits: the top bar's Export is what the form is for.
+ * Nothing in here submits: Export, on the strip, is what the form is for.
  */
 export function PrintPanel({
   settings,
@@ -49,9 +49,15 @@ export function PrintPanel({
   onClose,
 }: PrintPanelProps) {
   const t = useTranslations("PrintPanel");
+  const tHost = useTranslations("HostEditor");
 
   return (
-    <SidePanel panelClassName="sheet-form" open={open} onClose={onClose}>
+    <SidePanel
+      panelClassName="sheet-form"
+      open={open}
+      title={tHost("printSettings")}
+      onClose={onClose}
+    >
       {/*
        * `w-full` is what makes it fill: the auto margins that centre it
        * also turn off the column's stretch, so without it the form would
@@ -143,8 +149,6 @@ export function PrintPanel({
             ))}
           </div>
         </div>
-
-        <PanelViewButton onClose={onClose} className="mt-6" />
       </div>
     </SidePanel>
   );

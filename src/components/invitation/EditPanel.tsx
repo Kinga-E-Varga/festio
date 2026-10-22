@@ -1,7 +1,6 @@
 "use client";
 
 import { useLocale, useTranslations } from "next-intl";
-import { useState } from "react";
 import type {
   FieldScope,
   InvitationTemplate,
@@ -11,14 +10,8 @@ import type {
 import { DEFAULT_DATE_FORMAT, EVENT_DATE } from "@/lib/invitation";
 import { localized, type Language } from "@/lib/language";
 import { DateFormatSelect } from "./DateFormatSelect";
+import { TAB_LABEL, type PanelTabId } from "./PanelTabs";
 import {
-  PanelTabs,
-  TABPANEL_ID,
-  tabElementId,
-  type PanelTabId,
-} from "./PanelTabs";
-import {
-  HINT,
   LABEL,
   INPUT,
   SOFT_ACTION_SHAPE,
@@ -26,7 +19,7 @@ import {
 } from "@/components/dashboard/event-editor/styles";
 import { CARD_OPENINGS, type CardOpening } from "@/components/envelope/card";
 import { PanelSwitch } from "./PanelSwitch";
-import { PanelViewButton, SidePanel } from "./SidePanel";
+import { SidePanel } from "./SidePanel";
 
 /** Content and Replies each show the fields of one scope; Design has the envelope switch. */
 const SCOPE: Record<PanelTabId, FieldScope | null> = {
@@ -42,6 +35,8 @@ interface EditPanelProps {
   language: Language;
   /** Always mounted; this slides it in over the RSVP panel instead of replacing it. */
   open: boolean;
+  /** The open tab, picked on the editor's strip. */
+  tab: PanelTabId;
   onChange: (id: string, value: string) => void;
   onClose: () => void;
   /** The Design tab's switch: guests open an envelope first. */
@@ -70,6 +65,7 @@ export function EditPanel({
   values,
   language,
   open,
+  tab,
   onChange,
   onClose,
   envelope,
@@ -78,7 +74,7 @@ export function EditPanel({
   onOpening,
 }: EditPanelProps) {
   const tDesign = useTranslations("DesignTab");
-  const [tab, setTab] = useState<PanelTabId>("content");
+  const tHost = useTranslations("HostEditor");
   const scope = SCOPE[tab];
   const fields = scope
     ? template.fields.filter((field) => (field.scope ?? "card") === scope)
@@ -89,7 +85,7 @@ export function EditPanel({
       panelClassName="edit"
       open={open}
       inert={!open}
-      tabs={<PanelTabs tab={tab} onSelect={setTab} />}
+      title={tHost(TAB_LABEL[tab])}
       onClose={onClose}
     >
       {/*
@@ -97,12 +93,7 @@ export function EditPanel({
        * turn off the column's stretch, so without it the form would only be as
        * wide as its widest label.
        */}
-      <div
-        role="tabpanel"
-        id={TABPANEL_ID}
-        aria-labelledby={tabElementId(tab)}
-        className="flex flex-col w-full max-w-[640px] mx-auto"
-      >
+      <div className="flex flex-col w-full max-w-[640px] mx-auto">
         {scope ? (
           fields.map((field) => (
             <Field
@@ -149,8 +140,6 @@ export function EditPanel({
             ) : null}
           </>
         )}
-
-        <PanelViewButton onClose={onClose} />
       </div>
     </SidePanel>
   );
@@ -196,7 +185,7 @@ function Field({
             language={language}
             onChange={(next) => onChange(field.id, next)}
           />
-          <p className={HINT}>{t("dateHint")}</p>
+          <p className="hint-text">{t("dateHint")}</p>
         </>
       ) : field.type === "longText" ? (
         <textarea
@@ -222,7 +211,7 @@ function Field({
        * phone the guest sees just the Respond bar — so the host is told.
        */}
       {field.id === "rsvpMessage" ? (
-        <p className={HINT}>{t("rsvpMessageHint")}</p>
+        <p className="hint-text">{t("rsvpMessageHint")}</p>
       ) : null}
     </div>
   );

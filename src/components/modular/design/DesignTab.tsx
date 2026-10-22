@@ -84,7 +84,6 @@ export function DesignTab({
         <EditorHeading
           id="design-heading-envelope"
           title={t("envelopeHeading")}
-          className="mb-[18px]"
         />
         {/* As a section's card in Sections, its switch set the same way. */}
         <div className={CARD}>

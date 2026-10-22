@@ -3,6 +3,7 @@
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import type { CSSProperties, ReactNode } from "react";
 import type { CardShadow } from "@/types/invitation";
+import { INVITE_SCROLL } from "./styles";
 
 /**
  * Measurement has to land before paint or the card flashes at the wrong size.
@@ -93,7 +94,7 @@ export function ScaledStage({
       style={vars}
       data-measured={scale > 0}
       data-shadow={shadow ?? undefined}
-      className="stage"
+      className={`stage ${INVITE_SCROLL}`}
     >
       <div className="frame">
         <div className="card">{children}</div>

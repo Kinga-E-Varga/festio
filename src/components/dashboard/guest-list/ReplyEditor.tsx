@@ -3,7 +3,6 @@
 import { useLocale, useTranslations } from "next-intl";
 import { type ReactNode, useEffect, useState } from "react";
 import { useFieldArray, useForm, useWatch } from "react-hook-form";
-import { HINT } from "@/components/dashboard/event-editor/styles";
 import {
   NameField,
   PersonFields,
@@ -107,7 +106,7 @@ export function ReplyEditor({
         </div>
         {going ? (
           <div
-            className={`${QUESTIONS} ${reply ? "border-t border-neutral-400 pt-4" : "pl-4"}`}
+            className={`${QUESTIONS} ${reply ? "border-t border-neutral-200 pt-4" : "pl-4"}`}
           >
             <PersonFields
               control={control}
@@ -164,10 +163,10 @@ export function ReplyEditor({
    */
   const sharedBlock = withShared ? (
     grouped ? (
-      <div className="flex flex-col gap-4 border-t border-neutral-400 pt-4">
-        <div className="flex flex-col gap-3 border-b border-neutral-400 pb-4">
+      <div className="flex flex-col gap-4 border-t border-neutral-200 pt-4">
+        <div className="flex flex-col gap-3 border-b border-neutral-200 pb-4">
           {separate ? null : (
-            <p className={`text-justify ${HINT}`}>
+            <p className="text-justify hint-text">
               {t("sharedFor", { names: partyList })}
             </p>
           )}
@@ -205,7 +204,7 @@ export function ReplyEditor({
       {fields.map((field, index) => (
         <div
           key={field.id}
-          className="flex flex-col gap-3 border-t border-neutral-400 pt-4"
+          className="flex flex-col gap-3 border-t border-neutral-200 pt-4"
         >
           {fields.length > 1 ? (
             <div className="flex items-start gap-2">
@@ -228,7 +227,7 @@ export function ReplyEditor({
       ))}
       {/* Between lines: the one below is the buttons' own unless reply-wide questions come first. */}
       <div
-        className={`border-t border-neutral-400 pt-4 ${withShared ? "border-b pb-4" : ""}`}
+        className={`border-t border-neutral-200 pt-4 ${withShared ? "border-b pb-4" : ""}`}
       >
         <button
           type="button"
@@ -262,7 +261,8 @@ function SeparateField({
   const t = useTranslations("GuestList");
   const [confirming, setConfirming] = useState(false);
 
-  if (separate) return <p className={HINT}>{t("separatePending", { name })}</p>;
+  if (separate)
+    return <p className="hint-text">{t("separatePending", { name })}</p>;
   if (confirming) {
     return (
       <div

@@ -26,15 +26,32 @@ const SIZES = {
 };
 
 /**
- * The switch's track, pale when off: `solid` on the panel's own ground;
- * `light`, a shade lighter when on, on pale surfaces such as the Design
- * tab's section cards.
+ * The switch's track and its knob, off and on. `solid`, on the panel's own
+ * ground, and `light`, a shade lighter when on, on pale surfaces such as the
+ * Design tab's section cards: a pale track with a neutral edge when off.
+ * `choice` matches the event settings' radio choices: off, a pale track with
+ * their ring as its edge and their dot as its knob; on, filled in the ring's
+ * colour with a pale knob.
  */
 const TONES = {
-  solid:
-    "bg-neutral-50 aria-checked:border-neutral-500 aria-checked:bg-neutral-500",
-  light:
-    "bg-neutral-50 aria-checked:border-neutral-400 aria-checked:bg-neutral-400",
+  solid: {
+    track:
+      "border-neutral-400 bg-neutral-50 hover:border-neutral-500 aria-checked:border-neutral-500 aria-checked:bg-neutral-500",
+    knob: "bg-neutral-400 group-hover/switch:bg-neutral-500",
+    knobOn: "bg-neutral-50",
+  },
+  light: {
+    track:
+      "border-neutral-400 bg-neutral-50 hover:border-neutral-500 aria-checked:border-neutral-400 aria-checked:bg-neutral-400",
+    knob: "bg-neutral-400 group-hover/switch:bg-neutral-500",
+    knobOn: "bg-neutral-50",
+  },
+  choice: {
+    track:
+      "border-neutral-500 bg-neutral-50 aria-checked:border-neutral-500 aria-checked:bg-neutral-500",
+    knob: "bg-neutral-500",
+    knobOn: "bg-neutral-50",
+  },
 };
 export type SwitchTone = keyof typeof TONES;
 
@@ -68,11 +85,11 @@ export function Switch({
       aria-checked={checked}
       aria-label={label}
       onClick={() => onChange(!checked)}
-      className={`group/switch relative ${track} shrink-0 cursor-pointer rounded-full before:absolute before:-inset-x-1.5 before:-inset-y-3 before:content-[''] border border-neutral-400 transition-colors hover:border-neutral-500 ${TONES[tone]} focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-500`}
+      className={`group/switch relative ${track} shrink-0 cursor-pointer rounded-full before:absolute before:-inset-x-1.5 before:-inset-y-3 before:content-[''] border transition-colors ${TONES[tone].track} focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-500`}
     >
       <span
         aria-hidden="true"
-        className={`absolute top-1/2 left-0.5 ${knob} -translate-y-1/2 rounded-full transition-[translate,background-color] ${checked ? `${on} bg-neutral-50` : "bg-neutral-400 group-hover/switch:bg-neutral-500"}`}
+        className={`absolute top-1/2 left-0.5 ${knob} -translate-y-1/2 rounded-full transition-[translate,background-color] ${checked ? `${on} ${TONES[tone].knobOn}` : TONES[tone].knob}`}
       />
     </button>
   );

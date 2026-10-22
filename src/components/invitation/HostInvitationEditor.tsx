@@ -15,7 +15,8 @@ import type { Language } from "@/lib/language";
 import { TemplateCard } from "@/templates/TemplateCard";
 import type { InvitationTemplate, TemplateValues } from "@/types/invitation";
 import { EditPanel } from "./EditPanel";
-import { EditorFrame } from "./EditorTopBar";
+import { EditorFrame } from "./EditorFrame";
+import { useTabViews, type PanelTabId } from "./PanelTabs";
 import { Invitation } from "./Invitation";
 
 interface HostInvitationEditorProps {
@@ -28,8 +29,8 @@ interface HostInvitationEditorProps {
    * guest page inside is drawn in it; absent, it shares the host's.
    */
   guestMessages?: AbstractIntlMessages;
-  /** The top bar's title — the event's, or the template's on a preview. */
-  title: string;
+  /** Where BACK goes when no Festio page is behind this one: the event's Overview. */
+  backTo?: string;
 }
 
 /**
@@ -42,35 +43,34 @@ export function HostInvitationEditor({
   initial,
   language,
   guestMessages,
-  title,
+  backTo,
 }: HostInvitationEditorProps) {
   const t = useTranslations("HostEditor");
   const hostLocale = useLocale();
   const hostMessages = useMessages();
   const [values, setValues] = useState(initial);
   const [saved, setSaved] = useState(initial);
-  const [justSaved, setJustSaved] = useState(false);
-  const [editing, setEditing] = useState(true);
+  /* Closed on arrival: the host sees the invitation first and opens the panel from the strip. */
+  const [editing, setEditing] = useState(false);
+  const [tab, setTab] = useState<PanelTabId>("content");
   const [envelope, setEnvelope] = useState(true);
   const [savedEnvelope, setSavedEnvelope] = useState(true);
   /* Not saved: only to compare the two ways out while they are tried. */
   const [opening, setOpening] = useState<CardOpening>("rise");
   const toast = useToast();
+  const views = useTabViews();
 
   function change(id: string, value: string) {
     setValues((current) => ({ ...current, [id]: value }));
-    setJustSaved(false);
   }
 
   function switchEnvelope(on: boolean) {
     setEnvelope(on);
-    setJustSaved(false);
   }
 
   function save() {
     setSaved(values);
     setSavedEnvelope(envelope);
-    setJustSaved(true);
     toast.show(t("saved"));
   }
 
@@ -109,6 +109,7 @@ export function HostInvitationEditor({
           values={values}
           language={language}
           open={editing}
+          tab={tab}
           onChange={change}
           envelope={envelope}
           onEnvelope={switchEnvelope}
@@ -127,10 +128,16 @@ export function HostInvitationEditor({
 
   return (
     <EditorFrame
-      title={title}
-      editing={editing}
-      onToggleEdit={() => setEditing(!editing)}
-      action={{ kind: "save", dirty, justSaved, onSave: save }}
+      backTo={backTo}
+      views={views}
+      view={tab}
+      open={editing}
+      onView={(id) => {
+        setTab(id);
+        setEditing(true);
+      }}
+      onClose={() => setEditing(false)}
+      action={{ kind: "save", dirty, onSave: save }}
       toast={toast}
     >
       {guestMessages ? (

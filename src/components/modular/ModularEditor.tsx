@@ -11,8 +11,11 @@ import {
 } from "react";
 import { useToast } from "@/components/dashboard/Toast";
 import { envelopeGround } from "@/components/envelope/colors";
-import { EditorFrame } from "@/components/invitation/EditorTopBar";
-import type { PanelTabId } from "@/components/invitation/PanelTabs";
+import { EditorFrame } from "@/components/invitation/EditorFrame";
+import {
+  useTabViews,
+  type PanelTabId,
+} from "@/components/invitation/PanelTabs";
 import type { Language } from "@/lib/language";
 import { useLeaveWarning } from "@/lib/leave-warning";
 import { firstMissing } from "@/modular/fields";
@@ -76,13 +79,12 @@ interface ModularEditorProps {
   templateId: string;
   basics: InvitationBasics;
   language: Language;
-  title: string;
 }
 
 /**
  * The modular template page: the invitation as its shadowed column
- * on its own ground, with the editor's top bar above it and the edit panel
- * beside it. Same bar, same panel shell, same toasts as the simple editor.
+ * on its own ground, with the edit panel beside it (the strip while it is
+ * closed). Same frame, same panel shell, same toasts as the simple editor.
  * The Design tab edits `state` and the invitation follows it live; Save
  * keeps it in memory, and leaving with unsaved changes asks first. The RSVP
  * form works; a reply only ever shows the test toast.
@@ -93,15 +95,15 @@ export function ModularEditor({
   templateId,
   basics,
   language,
-  title,
 }: ModularEditorProps) {
   const t = useTranslations("HostEditor");
-  const [editing, setEditing] = useState(true);
+  /* Closed on arrival: the host sees the invitation first and opens the panel from the strip. */
+  const [editing, setEditing] = useState(false);
   const [state, setState] = useState(initial);
   const [saved, setSaved] = useState(initial);
-  const [justSaved, setJustSaved] = useState(false);
   /* Not stored: only which template the Design tab shows as current. */
   const [template, setTemplate] = useState(templateId);
+  const views = useTabViews();
   const [tab, setTab] = useState<PanelTabId>("design");
   /* The Content tab's one open section. */
   const [openSection, setOpenSection] = useState<string | null>(null);
@@ -157,7 +159,6 @@ export function ModularEditor({
       });
     }
     setState(next);
-    setJustSaved(false);
   }
 
   /*
@@ -179,7 +180,6 @@ export function ModularEditor({
     }
     setShowErrors(false);
     setSaved(state);
-    setJustSaved(true);
     toast.show(t("saved"));
   }
 
@@ -256,10 +256,15 @@ export function ModularEditor({
 
   return (
     <EditorFrame
-      title={title}
-      editing={editing}
-      onToggleEdit={() => setEditing(!editing)}
-      action={{ kind: "save", dirty, justSaved, onSave: save }}
+      views={views}
+      view={tab}
+      open={editing}
+      onView={(id) => {
+        setTab(id);
+        setEditing(true);
+      }}
+      onClose={() => setEditing(false)}
+      action={{ kind: "save", dirty, onSave: save }}
       toast={toast}
     >
       {/*
@@ -303,7 +308,6 @@ export function ModularEditor({
           open={editing}
           onClose={() => setEditing(false)}
           tab={tab}
-          onTab={setTab}
           library={library}
           state={state}
           basics={basics}

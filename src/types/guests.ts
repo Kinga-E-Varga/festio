@@ -121,14 +121,10 @@ export type AttentionItem =
       entries: Extract<GuestRow, { kind: "reply" }>[];
     };
 
-export type GuestFilter =
-  "all" | "going" | "not_going" | "waiting" | "notSent" | "attention";
-
 export interface GuestCounts {
   going: number;
   notGoing: number;
   waiting: number;
-  notSent: number;
   /** Rows to sort out: unknown names plus identical ones. */
   attention: number;
 }

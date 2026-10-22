@@ -28,8 +28,8 @@ interface InvitationProps {
    */
   host?: ReactNode;
   /**
-   * Fill the parent instead of the viewport — the editors put their top bar
-   * above the invitation and hand it what is left.
+   * Fill the parent instead of the viewport — the editors put their strip
+   * beside the invitation and hand it what is left.
    */
   fill?: boolean;
   /** Switches the reply panel inert — what the host's edit form asks for while it covers it. */

@@ -1,14 +1,14 @@
 "use client";
 
 import { useTranslations } from "next-intl";
+import { SearchClear } from "@/components/dashboard/SearchClear";
 import { useState } from "react";
 import {
   BTN_GHOST_LIGHT,
-  HINT,
+  BTN_PRIMARY,
   INPUT,
 } from "@/components/dashboard/event-editor/styles";
 import { Dialog } from "@/components/dashboard/guest-list/Dialog";
-import { GUEST_BTN_PRIMARY } from "@/components/dashboard/guest-list/styles";
 import { normalizeName } from "@/lib/guests";
 import type { ListName } from "@/types/guests";
 
@@ -42,36 +42,39 @@ export function MatchPicker({
       onDismiss={onClose}
     >
       {waiting.length === 0 ? (
-        <p className={`mt-4 ${HINT}`}>{t("noWaiting")}</p>
+        <p className="mt-4 hint-text">{t("noWaiting")}</p>
       ) : (
         <>
-          <input
-            type="search"
-            autoFocus
-            value={query}
-            onChange={(control) => setQuery(control.target.value)}
-            placeholder={t("matchSearch")}
-            aria-label={t("matchSearch")}
-            className={`mt-4 ${INPUT}`}
-          />
+          <div className="relative mt-4">
+            <input
+              type="search"
+              autoFocus
+              value={query}
+              onChange={(control) => setQuery(control.target.value)}
+              placeholder={t("matchSearch")}
+              aria-label={t("matchSearch")}
+              className={`${INPUT} pr-9`}
+            />
+            <SearchClear query={query} onClear={() => setQuery("")} />
+          </div>
           {options.length === 0 ? (
-            <p className={`mt-2 ${HINT}`}>{t("noMatches")}</p>
+            <p className="mt-2 hint-text">{t("noMatches")}</p>
           ) : (
             <div className="mt-2 max-h-60 side-scroll overflow-y-auto rounded-ui border border-neutral-400 [--scroll-track:var(--color-neutral-50)]">
               {options.map((entry) => (
                 <label
                   key={entry.id}
-                  className="flex cursor-pointer items-center gap-2.5 border-neutral-400 px-3 py-2 text-[13.5px] transition-colors not-first:border-t hover:bg-neutral-150 has-checked:bg-primary-100"
+                  className="flex cursor-pointer items-center gap-2.5 border-neutral-200 px-3 py-2 field-text transition-colors not-first:border-t hover:bg-neutral-100 has-checked:bg-neutral-200 has-checked:font-medium has-focus-visible:outline-2 has-focus-visible:-outline-offset-2 has-focus-visible:outline-neutral-500"
                 >
                   <input
                     type="radio"
                     name="match"
                     checked={picked?.id === entry.id}
                     onChange={() => setPicked(entry)}
-                    className="accent-primary-700"
+                    className="peer sr-only"
                   />
                   <span className="min-w-0 flex-1 truncate">{entry.name}</span>
-                  <small className="text-[11.5px] text-neutral-700">
+                  <small className="hint-text">
                     {t(entry.sent ? "invitationSent" : "invitationNotSent")}
                   </small>
                 </label>
@@ -89,7 +92,7 @@ export function MatchPicker({
           type="button"
           disabled={picked === null}
           onClick={() => picked && onPick(picked)}
-          className={GUEST_BTN_PRIMARY}
+          className={BTN_PRIMARY}
         >
           {picked ? t("matchToName", { name: picked.name }) : t("match")}
         </button>

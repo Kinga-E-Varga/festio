@@ -34,11 +34,7 @@ export function TemplatePicker({
       aria-labelledby="design-heading-template"
       className="mb-8 flex flex-col"
     >
-      <EditorHeading
-        id="design-heading-template"
-        title={t("template")}
-        className="mb-[18px]"
-      />
+      <EditorHeading id="design-heading-template" title={t("template")} />
       <RollOut
         id="design-templates"
         label={`${t("template")}: ${name}`}

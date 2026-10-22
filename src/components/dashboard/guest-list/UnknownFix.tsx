@@ -26,7 +26,7 @@ export function UnknownFix({
   const [matching, setMatching] = useState(false);
 
   return (
-    <div className="pb-2 text-[12.5px] text-neutral-700">
+    <div className="pb-2 muted-text">
       <p>{t("unmatchedHint")}</p>
       <div className="mt-3 flex flex-wrap gap-2">
         <button

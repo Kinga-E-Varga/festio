@@ -9,7 +9,7 @@ import type { DashboardEvent } from "@/types/dashboard";
  * share the stack's columns, so both values start at the same point.
  */
 export const SHARE_LINE =
-  "col-span-2 grid grid-cols-subgrid items-center text-[14px] text-neutral-950";
+  "col-span-2 grid grid-cols-subgrid items-center meta-face text-neutral-950";
 export const SHARE_VALUE = "flex min-w-0 items-center gap-2";
 export const SHARE_LABEL = "shrink-0 text-neutral-800";
 
@@ -39,7 +39,7 @@ export function ShareFields({
           <CopyButton
             value={`https://${link}`}
             label={t("copyLinkFor", { title: event.title })}
-            tone="text-neutral-600 hover:text-primary-800"
+            tone="text-neutral-600 hover:text-accent-800"
             copiedLabel={t("linkCopied")}
           />
         </span>

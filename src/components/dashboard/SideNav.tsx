@@ -2,47 +2,68 @@ import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { Icon } from "@/components/icons";
 import { NavLink } from "@/components/dashboard/NavLink";
-import { SIDE_CARD_TITLE } from "@/components/dashboard/styles";
-import { NAV_SECTIONS } from "@/mock/dashboard";
+import { EventNav } from "@/components/dashboard/event-nav/EventNav";
+import {
+  NAV_MARGIN,
+  QUIT_ITEM,
+  QUIT_RULE,
+  SIDE_ICON,
+} from "@/components/dashboard/styles";
+import { NAV_ITEMS } from "@/mock/dashboard";
+import type { PickerEvent } from "@/types/dashboard";
 
-export function SideNav() {
+interface SideNavProps {
+  /** Every event, soonest first, for the picker. */
+  events: PickerEvent[];
+  /** The event picked on an earlier visit. */
+  storedEventId?: string;
+}
+
+export function SideNav({ events, storedEventId }: SideNavProps) {
   const t = useTranslations("Nav");
 
   return (
     <nav
       aria-label={t("aria")}
-      className="flex h-full flex-col bg-neutral-200 pb-5 text-neutral-900 min-[1800px]:pb-7"
+      className="flex h-full flex-col bg-neutral-125 pb-5 text-neutral-900 wide:pb-7"
     >
-      <div className="min-h-0 flex-1 overflow-y-auto pt-5 pb-3 min-[1800px]:pt-7">
-        {NAV_SECTIONS.map((section) => (
-          <div key={section.labelKey} className="pb-5 last:pb-0">
-            <h2
-              className={`px-5 pb-4 min-[1800px]:px-[30px] ${SIDE_CARD_TITLE}`}
-            >
-              {t(section.labelKey)}
-            </h2>
-            <ul className="flex flex-col gap-1">
-              {section.items.map((item) => (
-                <li key={item.href}>
-                  <NavLink item={item} />
-                </li>
-              ))}
-            </ul>
-          </div>
-        ))}
+      {/*
+       * The nav heads with the logo, docked and in the phone's drawer; in the
+       * drawer, centred in a row as tall as the top bar it covers.
+       */}
+      <Link
+        href="/dashboard"
+        aria-label="Festio"
+        className="flex h-topbar shrink-0 items-center px-[22px] nav:h-auto nav:pt-chrome-top wide:px-[26px]"
+      >
+        <span
+          aria-hidden="true"
+          className="block aspect-[148/32] h-[30px] bg-primary-800 nav:h-btn mask-[url(/festio-lockup-alt.svg)] mask-contain mask-center mask-no-repeat"
+        />
+      </Link>
+
+      {/*
+       * Docked, Home as far under the logo as the logo is from the top: 20px
+       * (28px from 1800px). In the drawer, where the logo has its own 56px
+       * row, the same 12px above Home as below it.
+       */}
+      <div className="side-scroll min-h-0 flex-1 overflow-y-auto pt-3 [--scroll-track:var(--color-neutral-125)] pb-3 nav:pt-chrome-top">
+        <ul className="flex flex-col gap-1 pb-3">
+          {NAV_ITEMS.map((item) => (
+            <li key={item.href}>
+              <NavLink item={item} />
+            </li>
+          ))}
+        </ul>
+
+        {/* The event being worked on, and its pages. */}
+        <EventNav events={events} storedEventId={storedEventId} />
       </div>
 
       {/* Leaving is rare, so it reads as a nav item, set apart by a rule. */}
-      <div className="mx-4 border-t border-neutral-400 pt-3 min-[1800px]:mx-6">
-        <Link
-          href="/"
-          className="flex h-btn items-center gap-3 rounded-ui px-3 text-[13.5px] min-[1800px]:px-4 min-[1800px]:text-[14px] transition-colors hover:bg-secondary-400/30 hover:text-neutral-950"
-        >
-          <Icon
-            name="quit"
-            strokeWidth={1.75}
-            className="size-4 shrink-0 [stroke-linecap:square] [stroke-linejoin:miter]"
-          />
+      <div className={`${NAV_MARGIN} ${QUIT_RULE}`}>
+        <Link href="/" className={`${QUIT_ITEM} wide:px-4`}>
+          <Icon name="quit" {...SIDE_ICON} />
           <span>{t("quit")}</span>
         </Link>
       </div>

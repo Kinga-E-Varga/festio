@@ -66,11 +66,7 @@ export function ContentTab({
         aria-labelledby="content-heading-sections"
         className="mb-8 flex flex-col"
       >
-        <EditorHeading
-          id="content-heading-sections"
-          title={t("sections")}
-          className="mb-[18px]"
-        />
+        <EditorHeading id="content-heading-sections" title={t("sections")} />
         <div className="flex flex-col gap-5">
           {shown.map(({ definition, variant }, index) => {
             /* Numbered by its place on the page, even past one left out. */

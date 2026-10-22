@@ -18,8 +18,8 @@ import {
   NEW_ROW,
   type RowEditorState,
 } from "@/components/dashboard/guest-list/useRowEditor";
-import { Icon } from "@/components/icons";
-import { STRONG_TEXT, TEXT_LINK } from "@/components/dashboard/styles";
+import { FoldChevron } from "@/components/icons";
+import { CARD_FRAME, LINK_TEXT } from "@/components/dashboard/styles";
 import { attentionItems, CATEGORIES, groupCategory } from "@/lib/guests";
 import type {
   AttentionItem,
@@ -30,47 +30,37 @@ import type {
 
 const CATEGORY = {
   /*
-   * `band` fills the title's band (200) and inks its text; `hover` makes
-   * both one shade darker while its button is hovered; `ink`, with `fill`,
-   * draws the status dots; `line`, `dashed` and `split` draw the groups'
-   * threads and their marks.
+   * `ink`, with `fill`, draws the status dots; `line`, `dashed` and `split`
+   * draw the groups' threads and their marks.
    */
   attention: {
     title: "categoryAttention",
-    band: "bg-danger-200 text-danger-800",
     ink: "border-danger-600",
     fill: "bg-danger-600",
-    hover: "hover:bg-danger-400 hover:text-danger-900",
     line: "bg-danger-500",
     dashed: "border-danger-500",
     split: "border-danger-600",
   },
   going: {
     title: "categoryGoing",
-    band: "bg-primary-200 text-primary-900",
     ink: "border-primary-700",
     fill: "bg-primary-700",
-    hover: "hover:bg-primary-400 hover:text-primary-950",
     line: "bg-primary-500",
     dashed: "border-primary-500",
     split: "border-primary-700",
   },
   notGoing: {
     title: "categoryNotGoing",
-    band: "bg-warning-200 text-warning-700",
     ink: "border-warning-500",
     fill: "bg-warning-500",
-    hover: "hover:bg-warning-300 hover:text-warning-800",
     line: "bg-warning-400",
     dashed: "border-warning-400",
     split: "border-warning-500",
   },
   waiting: {
     title: "categoryWaiting",
-    band: "bg-neutral-200 text-neutral-700",
     ink: "border-neutral-500",
     fill: "bg-neutral-500",
-    hover: "hover:bg-neutral-300 hover:text-neutral-800",
     line: "bg-neutral-300",
     dashed: "border-neutral-300",
     split: "border-neutral-400",
@@ -79,10 +69,8 @@ const CATEGORY = {
   GuestCategory,
   {
     title: string;
-    band: string;
     ink: string;
     fill: string;
-    hover: string;
     line: string;
     dashed: string;
     split: string;
@@ -128,14 +116,12 @@ export function GuestTable({
       <>
         {newReply}
         <div className="rounded-ui border border-dashed border-neutral-400 px-6 py-10 text-center">
-          <p className="font-serif text-[17px] text-neutral-950">
-            {t("emptyTitle")}
-          </p>
+          <p className="small-title">{t("emptyTitle")}</p>
           {list.useList ? null : (
             <button
               type="button"
               onClick={onStartList}
-              className={`mx-auto mt-3 block cursor-pointer text-[12.5px] ${TEXT_LINK}`}
+              className={`mx-auto mt-3 block cursor-pointer ${LINK_TEXT}`}
             >
               {t("emptyList")}
             </button>
@@ -145,32 +131,30 @@ export function GuestTable({
     );
   }
 
-  /* The table's sides and bottom, padded so nothing inside touches them. */
+  /* A card per status, each folding on its own; search narrows them all. */
   return (
     <>
       {newReply}
-      <div className="rounded-ui border border-neutral-400 bg-neutral-50 px-4 py-4 @min-[720px]:px-5">
-        {list.groups.length === 0 ? (
-          <p className="py-8 text-center text-[12.5px] text-neutral-700">
-            {t("noResults")}
-          </p>
-        ) : (
-          <div className="flex flex-col gap-4">
-            {CATEGORIES.map((category) => (
-              <Category
-                key={category}
-                category={category}
-                groups={list.groups.filter(
-                  (group) => groupCategory(group) === category,
-                )}
-                list={list}
-                actions={actions}
-                editor={editor}
-              />
-            ))}
-          </div>
-        )}
-      </div>
+      {list.groups.length === 0 ? (
+        <p className={`${CARD_FRAME} py-8 text-center muted-text`}>
+          {t("noResults")}
+        </p>
+      ) : (
+        <div className="flex flex-col gap-3.5">
+          {CATEGORIES.map((category) => (
+            <Category
+              key={category}
+              category={category}
+              groups={list.groups.filter(
+                (group) => groupCategory(group) === category,
+              )}
+              list={list}
+              actions={actions}
+              editor={editor}
+            />
+          ))}
+        </div>
+      )}
     </>
   );
 }
@@ -183,7 +167,10 @@ interface CategoryProps {
   editor: RowEditorState;
 }
 
-/** A named block of the table. Hidden when it has nothing to show. */
+/**
+ * A status as a card: its dot, title and count as the head, which folds it.
+ * Hidden when it has nothing to show.
+ */
 function Category({ category, groups, list, actions, editor }: CategoryProps) {
   const t = useTranslations("GuestList");
   /* Folded on arrival, so the page opens on the counts; what needs sorting out stays open. */
@@ -191,33 +178,31 @@ function Category({ category, groups, list, actions, editor }: CategoryProps) {
   const body = useId();
   if (groups.length === 0) return null;
   const people = groups.reduce((total, group) => total + group.rows.length, 0);
-  const { title, band, hover } = CATEGORY[category];
+  const { title, fill } = CATEGORY[category];
 
   return (
-    <section>
-      {/* The whole band is the button, so a click anywhere folds the category. */}
-      <h2 className="text-[14px] font-medium">
+    <section className={`overflow-hidden ${CARD_FRAME}`}>
+      {/* The whole head is the button, so a click anywhere on it folds the card. */}
+      <h2>
         <button
           type="button"
           aria-expanded={open}
           aria-controls={body}
           onClick={() => setOpen(!open)}
-          className={`flex w-full cursor-pointer items-center gap-3 px-4 py-2.5 text-left transition-colors ${band} ${hover}`}
+          className={`flex w-full cursor-pointer items-center gap-2.5 px-4 py-3 text-left transition-colors hover:bg-neutral-200 ${open ? "border-b border-neutral-200" : ""}`}
         >
-          <span className="flex items-baseline gap-1.5">
-            {t(title)}
-            <span className="tabular-nums">{people}</span>
-          </span>
-          <Icon
-            name="chevron"
-            className={`ml-auto size-5 shrink-0 transition-transform ${open ? "rotate-180" : ""}`}
-            strokeWidth={2}
+          <span
+            aria-hidden="true"
+            className={`size-3 shrink-0 rounded-full ${open ? "invisible" : fill}`}
           />
+          <span className="card-face">{t(title)}</span>
+          <span className="meta-face tabular-nums opacity-75">{people}</span>
+          <FoldChevron open={open} className="ml-auto size-5" strokeWidth={2} />
         </button>
       </h2>
       {/* Grows from and shrinks to nothing; `inert` keeps a folded category out of reach. */}
       <div id={body} inert={!open} className={fold(open)}>
-        <div className="min-h-0 divide-y divide-neutral-400 overflow-hidden">
+        <div className="min-h-0 divide-y divide-neutral-200 overflow-hidden">
           {category === "attention"
             ? attentionItems(groups).map((item) => (
                 <AttentionCard
@@ -280,13 +265,11 @@ function AttentionCard({ item, list, actions, editor }: AttentionCardProps) {
         }
       >
         <div className="flex min-h-10 flex-wrap items-center gap-2 py-1">
-          <span className="min-w-0 truncate text-[14px] font-medium text-neutral-950">
-            {item.name}
-          </span>
+          <span className="min-w-0 truncate name-text">{item.name}</span>
           <span className={ATTENTION_TAG}>{t("duplicateTag")}</span>
         </div>
       </Strand>
-      <p className="pb-2 text-[12.5px] text-neutral-700">
+      <p className="pb-2 muted-text">
         {t("sameName", { count: item.entries.length })}
       </p>
       <div className="grid gap-3 pb-3.5 @min-[720px]:grid-cols-2">
@@ -330,12 +313,10 @@ function SameNameReply({ row, list, actions, editor }: SameNameReplyProps) {
 
   return (
     <div className="@container rounded-ui border border-neutral-400 bg-neutral-50 px-3 py-2">
-      <p className="text-[11.5px] text-neutral-700">
-        {t("repliedOn", { date })}
-      </p>
+      <p className="hint-text">{t("repliedOn", { date })}</p>
       <RowItem row={row} list={list} actions={actions} editor={editor} inCard />
       {party.length > 0 ? (
-        <p className="py-1 text-[12.5px] text-neutral-700">
+        <p className="py-1 muted-text">
           <RepliedWith names={party} />
         </p>
       ) : null}
@@ -358,7 +339,7 @@ function RepliedWith({ names }: { names: string[] }) {
   const locale = useLocale();
   return t.rich("repliedWith", {
     names: new Intl.ListFormat(locale).format(names),
-    b: (chunks) => <b className={STRONG_TEXT}>{chunks}</b>,
+    b: (chunks) => <b className="strong-text">{chunks}</b>,
   });
 }
 
@@ -417,7 +398,7 @@ function GroupView({ group, list, actions, editor }: GroupViewProps) {
           }
         >
           {/* One span inside the flex line, or flex drops the space before the name. */}
-          <p className="flex min-h-8 items-center py-1 text-[12.5px] text-neutral-700">
+          <p className="flex min-h-8 items-center py-1 muted-text">
             <span>
               <RepliedWith names={group.with} />
             </span>

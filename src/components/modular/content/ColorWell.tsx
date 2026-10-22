@@ -1,7 +1,6 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { HINT } from "@/components/dashboard/event-editor/styles";
 import { use, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { swatchHex } from "@/modular/cards/DressCodeCard";
 import { PaletteColors } from "./palette";
@@ -74,7 +73,7 @@ export function ColorWell({
   return (
     <div className="flex items-center gap-3">
       {well}
-      <span className={HINT}>
+      <span className="hint-text">
         {shown ? shown.toUpperCase() : t("pickColour")}
       </span>
     </div>

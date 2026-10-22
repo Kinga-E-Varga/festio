@@ -16,6 +16,13 @@ export const AGE_KEY = {
   baby: "ageBaby",
 } as const satisfies Record<AgeGroup, string>;
 
+/** The age groups' plural names, heading the Summary's counts. */
+export const AGE_SUMMARY_KEY = {
+  adult: "summaryAdults",
+  child: "summaryChildren",
+  baby: "summaryBabies",
+} as const satisfies Record<AgeGroup, string>;
+
 export const DIET_KEY = {
   vegetarian: "dietVegetarian",
   vegan: "dietVegan",

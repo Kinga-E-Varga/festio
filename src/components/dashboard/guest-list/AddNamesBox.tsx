@@ -1,10 +1,12 @@
 "use client";
 
 import { useTranslations } from "next-intl";
+import { UnsavedPrompt } from "@/components/dashboard/UnsavedPrompt";
 import { type ChangeEvent, useEffect, useRef, useState } from "react";
 import { useForm, useWatch } from "react-hook-form";
 import {
-  HINT,
+  BTN_GHOST_LIGHT,
+  BTN_PRIMARY,
   INPUT,
   SUBBOX,
 } from "@/components/dashboard/event-editor/styles";
@@ -61,15 +63,6 @@ export function AddNamesBox({
     setFocus("text");
   }, [setFocus]);
 
-  /* Asked from the table or the switch: bring the prompt into view and onto its first button. */
-  const discardPrompt = useRef<HTMLDivElement>(null);
-  const asked = ask?.asked ?? null;
-  useEffect(() => {
-    if (asked === null) return;
-    discardPrompt.current?.scrollIntoView({ block: "nearest" });
-    discardPrompt.current?.querySelector("button")?.focus();
-  }, [asked]);
-
   const dirty = draft.changed || names.length > 0;
   useEffect(() => onDirty(dirty), [onDirty, dirty]);
 
@@ -123,18 +116,16 @@ export function AddNamesBox({
       className={`scroll-mt-24 ${SUBBOX} border-neutral-400! bg-neutral-50`}
     >
       <div className="flex flex-wrap items-center gap-x-4 gap-y-3">
-        <h3 className="mr-auto font-serif text-[15px] tracking-[0.1em] text-neutral-950 uppercase">
-          {t("listTitle")}
-        </h3>
+        <h3 className="mr-auto card-title">{t("listTitle")}</h3>
         <div className="flex gap-2.5">
-          <button type="button" onClick={cancel} className={BTN_LIST_OUTLINE}>
+          <button type="button" onClick={cancel} className={BTN_GHOST_LIGHT}>
             {t("cancel")}
           </button>
           <button
             type="button"
             onClick={save}
             disabled={!draft.changed && names.length === 0}
-            className={BTN_LIST}
+            className={BTN_PRIMARY}
           >
             {t("save")}
           </button>
@@ -153,32 +144,18 @@ export function AddNamesBox({
         </div>
       ) : null}
       {notice === "discard" || ask ? (
-        <div
-          ref={discardPrompt}
-          role="alert"
-          className={`mt-3 ${ALERT} flex scroll-mt-[88px] scroll-mb-4 flex-wrap items-center gap-2.5`}
-        >
-          <span className="mr-auto">{t("discardTitle")}</span>
-          <div className="flex shrink-0 gap-2.5">
-            <button
-              type="button"
-              onClick={ask ? ask.onDiscard : onCancel}
-              className={SMALL_BTN_WARN}
-            >
-              {t("discard")}
-            </button>
-            <button
-              type="button"
-              onClick={() => {
-                setNotice(null);
-                ask?.onKeep();
-              }}
-              className={SMALL_BTN_WARN_SOLID}
-            >
-              {t("keepEditing")}
-            </button>
-          </div>
-        </div>
+        <UnsavedPrompt
+          className="mt-3"
+          title={t("discardTitle")}
+          discardLabel={t("discard")}
+          keepLabel={t("keepEditing")}
+          onDiscard={ask ? ask.onDiscard : onCancel}
+          onKeep={() => {
+            setNotice(null);
+            ask?.onKeep();
+          }}
+          asked={ask?.asked}
+        />
       ) : null}
 
       {repeats ? (
@@ -206,7 +183,7 @@ export function AddNamesBox({
         </div>
       ) : (
         <form onSubmit={handleSubmit(add)} className="mt-4">
-          <p className={`mb-2 ${HINT}`}>{t("addNamesHint")}</p>
+          <p className="mb-2 hint-text">{t("addNamesHint")}</p>
           <textarea
             {...register("text", { onChange: clearUnadded })}
             rows={5}

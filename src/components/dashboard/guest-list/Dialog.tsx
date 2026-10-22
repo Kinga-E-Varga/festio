@@ -1,7 +1,6 @@
 "use client";
 
 import { type ReactNode, useEffect, useId, useRef } from "react";
-import { HINT } from "@/components/dashboard/event-editor/styles";
 
 interface DialogProps {
   title: string;
@@ -56,10 +55,10 @@ export function Dialog({ title, hint, onDismiss, children }: DialogProps) {
     >
       {/* No bottom padding: each body ends with its own, so a pinned bar can sit flush. */}
       <div className="px-5 pt-5">
-        <h3 id={titleId} className="font-serif text-[17px] text-neutral-950">
+        <h3 id={titleId} className="small-title">
           {title}
         </h3>
-        {hint ? <p className={`mt-1.5 ${HINT}`}>{hint}</p> : null}
+        {hint ? <p className="mt-1.5 hint-text">{hint}</p> : null}
         {children}
       </div>
     </dialog>

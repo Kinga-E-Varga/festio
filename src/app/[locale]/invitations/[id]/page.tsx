@@ -1,3 +1,4 @@
+import { eventPath } from "@/lib/event";
 import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import { notFound } from "next/navigation";
@@ -48,7 +49,7 @@ export default async function HostInvitationPage({ params }: Props) {
       initial={seedValues(template, event)}
       language={language}
       guestMessages={await loadMessages(language)}
-      title={event.title}
+      backTo={eventPath(event.id)}
     />
   );
 }

@@ -208,6 +208,13 @@ const PATHS: Record<IconName, ReactNode> = {
       <path d="M8 7h9v9" />
     </>
   ),
+  logout: (
+    <>
+      <path d="M9.5 20.25H5.75a1.5 1.5 0 0 1-1.5-1.5V5.25a1.5 1.5 0 0 1 1.5-1.5H9.5" />
+      <path d="M15.5 16.25 19.75 12 15.5 7.75" />
+      <path d="M19.75 12H9.5" />
+    </>
+  ),
   arrowLeft: (
     <>
       <path d="M19.25 12H4.75" />
@@ -274,6 +281,14 @@ const PATHS: Record<IconName, ReactNode> = {
       <path d="M4 7h16M4 12h16M4 17h16" />
     </>
   ),
+  more: (
+    <>
+      {/* Three dots, one above another. */}
+      <circle cx="12" cy="5.5" r="0.9" />
+      <circle cx="12" cy="12" r="0.9" />
+      <circle cx="12" cy="18.5" r="0.9" />
+    </>
+  ),
   close: (
     <>
       <path d="m6 6 12 12M18 6 6 18" />
@@ -310,6 +325,25 @@ export function Icon({
     >
       {PATHS[name]}
     </svg>
+  );
+}
+
+/** A chevron that turns over while what it opens is open: menus, folding cards and rows. */
+export function FoldChevron({
+  open,
+  className = "size-4",
+  strokeWidth,
+}: {
+  open: boolean;
+  className?: string;
+  strokeWidth?: number;
+}) {
+  return (
+    <Icon
+      name="chevron"
+      className={`transition-transform ${className} ${open ? "rotate-180" : ""}`}
+      strokeWidth={strokeWidth}
+    />
   );
 }
 

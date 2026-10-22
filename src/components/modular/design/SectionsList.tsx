@@ -66,11 +66,7 @@ export function SectionsList({
       aria-labelledby="design-heading-sections"
       className="mb-8 flex flex-col"
     >
-      <EditorHeading
-        id="design-heading-sections"
-        title={t("sections")}
-        className="mb-[18px]"
-      />
+      <EditorHeading id="design-heading-sections" title={t("sections")} />
       <div className="flex flex-col gap-5">
         {state.sections.map((section) => {
           const definition = library.sections.find(

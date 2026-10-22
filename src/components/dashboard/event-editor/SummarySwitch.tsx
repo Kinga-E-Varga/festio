@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import { SOFT_ACTION, HINT } from "@/components/dashboard/event-editor/styles";
+import { SOFT_ACTION } from "@/components/dashboard/event-editor/styles";
 import { Icon } from "@/components/icons";
 import type { IconName } from "@/types/dashboard";
 
@@ -58,7 +58,7 @@ export function SummarySwitch({
           {action}
         </button>
       </div>
-      <div className={`mt-1.5 ${HINT}`}>{hint}</div>
+      <div className="mt-1.5 hint-text">{hint}</div>
     </>
   );
 }

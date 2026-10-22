@@ -8,39 +8,33 @@ import {
 
 /** Guest-list controls, on top of the event editor's shared form styles. */
 
-export const CHIP =
-  "inline-flex shrink-0 cursor-pointer items-center rounded-ui border px-3 py-1.5 text-[12.5px] font-medium whitespace-nowrap transition-colors";
-/** "Edit invite list" and "New reply": at least 160px, never wrapping; their row makes them equal. */
-export const HEADER_BTN_WIDTH = "min-w-[160px] whitespace-nowrap";
-export const CHIP_ON = "border-primary-800 bg-primary-800 text-neutral-50";
-export const CHIP_OFF =
-  "border-neutral-400 bg-neutral-50 text-neutral-800 hover:border-primary-800 hover:bg-primary-200";
-
-/** The page's solid action: the shared one, in the event tabs' green. */
-export const GUEST_BTN_PRIMARY = `${BUTTON} border-primary-800 bg-primary-800 text-neutral-50 hover:border-primary-900 hover:bg-primary-900`;
 /** A row's Delete: the shared danger button, a shade lighter. */
 export const GUEST_BTN_DANGER = `${BUTTON} border-danger-700 bg-danger-700 text-neutral-50 hover:border-danger-800 hover:bg-danger-800`;
 
 /** The small soft action the editor's "Edit list" uses. */
 const SMALL_BTN_SHAPE =
-  "inline-flex cursor-pointer items-center gap-1.5 rounded-ui border px-3 py-1.5 text-[12.5px] font-medium whitespace-nowrap transition-colors";
+  "inline-flex cursor-pointer items-center gap-1.5 rounded-ui border px-3 py-1.5 button-text whitespace-nowrap transition-colors";
 export const SMALL_BTN = `${SMALL_BTN_SHAPE} ${SOFT_BTN}`;
 /** The same small action in the warning colour, for the prompts on a warning alert. */
 export const SMALL_BTN_WARN = `${SMALL_BTN_SHAPE} border-warning-700 bg-warning-50 text-warning-700 hover:border-warning-800 hover:text-warning-800`;
 /** Its solid pair, for the choice the prompt leans to. */
 export const SMALL_BTN_WARN_SOLID = `${SMALL_BTN_SHAPE} border-warning-700 bg-warning-700 text-warning-50 hover:border-warning-800 hover:bg-warning-800`;
+/** The unsaved-changes bar's pair, in one ink: Keep editing filled in the light warning, Discard as its words alone (the edge kept clear, so both stand the same size). */
+export const SMALL_BTN_KEEP = `${SMALL_BTN_SHAPE} border-warning-300 bg-warning-300 text-warning-800 hover:border-warning-400 hover:bg-warning-400 hover:text-warning-900`;
+export const SMALL_BTN_DISCARD = `${SMALL_BTN_SHAPE} border-transparent text-warning-800 hover:text-warning-950`;
 
-/** A small flag beside a name: Unknown, Duplicate. */
+/** A small flag beside a name: Unknown, Duplicate. Its own whole-pixel line, so every tag is 18px tall wherever it sits and its edges land on whole pixels. */
 export const TAG =
-  "rounded-ui border px-1.5 py-px text-[10px] font-semibold tracking-[0.12em] whitespace-nowrap uppercase";
+  "rounded-ui border px-1.5 py-px text-[10px] leading-[14px] font-semibold tracking-[0.12em] whitespace-nowrap uppercase";
 /** Unknown and Duplicate: the tags that mark a reply needing attention. */
 export const ATTENTION_TAG = `${TAG} ${DANGER_DARK}`;
 
 /** A row's one status: its reply, or where a waiting name's invitation stands. */
 const BADGE_TYPE =
-  "inline-flex rounded-ui border text-[12.5px] font-medium whitespace-nowrap";
+  "inline-flex rounded-ui border button-text whitespace-nowrap";
 const BADGE_PAD = "px-2.5 py-[3px]";
-export const BADGE = `${BADGE_TYPE} items-center gap-1.5 ${BADGE_PAD}`;
+/** A reply's Coming / Not coming: 26px tall, its words centred in it. */
+export const BADGE = `${BADGE_TYPE} h-[26px] items-center gap-1.5 px-2.5`;
 /** The same badge with a full-height box as its left side; its words go in `BADGE_TEXT`. */
 export const BOX_BADGE = `${BADGE_TYPE} items-stretch overflow-hidden`;
 export const BADGE_TEXT = BADGE_PAD;
@@ -82,9 +76,9 @@ export const FADE_IN =
 
 /** Folds to nothing and back, height and fade together: a category, a row's details. Pair it with `inert` while folded. */
 export const fold = (open: boolean) =>
-  `grid transition-[grid-template-rows,opacity] duration-300 ease-out motion-reduce:transition-none ${
+  `grid transition-[grid-template-rows,opacity] duration-450 ease-panel motion-reduce:transition-none ${
     open ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"
   }`;
 
 /** The warning box that holds a prompt: the list box's and the row editor's. */
-export const ALERT = `rounded-ui border px-4 py-3 text-[12.5px] ${WARNING_DARK}`;
+export const ALERT = `rounded-ui border px-4 py-3 meta-face ${WARNING_DARK}`;

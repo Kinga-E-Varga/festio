@@ -31,6 +31,7 @@ export type IconName =
   | "globe"
   | "arrowUpRight"
   | "quit"
+  | "logout"
   | "arrowLeft"
   | "arrowRight"
   | "calendar"
@@ -42,6 +43,7 @@ export type IconName =
   | "check"
   | "search"
   | "menu"
+  | "more"
   | "close"
   | "note"
   | "chevron";
@@ -56,12 +58,6 @@ export interface NavItem {
   labelKey: string;
   href: string;
   icon: IconName;
-}
-
-export interface NavSection {
-  /** A key in the `Nav` namespace. */
-  labelKey: string;
-  items: NavItem[];
 }
 
 /**
@@ -93,6 +89,31 @@ export type EventKind =
 export type Visibility = "hidden" | "public" | "protected";
 
 export type EventStatus = "active" | "draft" | "past";
+
+/** What Home's events box needs of an event: small enough to hand to the client. */
+export interface HomeEventRow extends Pick<
+  DashboardEvent,
+  "id" | "title" | "date" | "countdown" | "rsvp" | "expectedGuests"
+> {
+  status: EventStatus;
+  /** Past and its data deleted: nothing left to open. */
+  archived: boolean;
+}
+
+/** What the nav needs of an event: small enough to hand to the client. */
+export interface PickerEvent {
+  id: string;
+  title: string;
+  date: string;
+  countdown: TimeSpan;
+  status: EventStatus;
+  /** Past and its data deleted: nothing left to open. */
+  archived: boolean;
+  /** A template draws its invitation, so there is something to edit, print and show. */
+  hasDesign: boolean;
+  seatingAvailable: boolean;
+  slug: string;
+}
 
 export interface RsvpTally {
   replied: number;
@@ -173,20 +194,8 @@ export interface DashboardEvent {
   repliesCloseIn?: TimeSpan;
   /** True once the retention window has run out and the guest data is gone. */
   dataDeleted: boolean;
-}
-
-export interface DashboardStat {
-  /** A key in the `Stats` namespace. */
-  labelKey: string;
-  value: string;
-  /**
-   * A key in the `Stats` namespace for the quieter text trailing the value,
-   * e.g. "of 4" or "days away". It follows the value rather than wrapping it,
-   * so every language has to phrase it as a suffix.
-   */
-  detailKey?: string;
-  /** Filled into `detailKey` when it names a count. */
-  detailValue?: number;
+  /** Cancelled by the host: the reply form is closed and the invitation shows their message instead. */
+  cancelled?: boolean;
 }
 
 export type NoticeTone =

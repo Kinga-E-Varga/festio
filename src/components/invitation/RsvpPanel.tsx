@@ -9,7 +9,7 @@ import type {
 } from "@/types/invitation";
 import { XIcon } from "./icons";
 import { RsvpForm } from "./RsvpForm";
-import { PANEL, SIMPLE_RSVP_SKIN } from "./styles";
+import { INVITE_SCROLL, PANEL, SIMPLE_RSVP_SKIN } from "./styles";
 import { useRsvpForm, type RsvpFormState } from "./useRsvpForm";
 
 const TITLE =
@@ -90,7 +90,9 @@ export function RsvpPanel({
        * behind so its wavy mask still shows the page ground through it,
        * exactly as the spacer does at rest.
        */}
-      <div className="flex flex-1 flex-col bg-[var(--c1)] invite:overflow-y-auto  invite:p-8">
+      <div
+        className={`flex flex-1 flex-col bg-[var(--c1)] invite:overflow-y-auto invite:p-8 ${INVITE_SCROLL}`}
+      >
         {/*
          * The bar is the narrow screen's only handle — it is what the
          * closed block leaves on screen. Beside the card there is nothing
@@ -126,7 +128,9 @@ export function RsvpPanel({
          * after a few names. Below the breakpoint the reply scrolls
          * within its own ceiling instead, so the bar stays reachable.
          */}
-        <div className="max-h-[60dvh] overflow-y-auto px-5 pt-5 pb-8 invite:my-auto invite:max-h-none invite:overflow-visible invite:px-0 invite:pt-0 invite:pb-0">
+        <div
+          className={`${INVITE_SCROLL} max-h-[60dvh] overflow-y-auto px-5 pt-5 pb-8 invite:my-auto invite:max-h-none invite:overflow-visible invite:px-0 invite:pt-0 invite:pb-0`}
+        >
           {sent ? null : (
             <p className={`${TITLE} hidden invite:block`}>{message}</p>
           )}

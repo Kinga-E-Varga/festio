@@ -25,7 +25,9 @@ export function ChangeWarning({
   if (!warning.shown) return null;
 
   return (
+    /* With its row's 6px gap, as far from the hint above as from the rule below. */
     <Banner
+      className="mt-1.5"
       tone="warn"
       icon="alert"
       title={title}

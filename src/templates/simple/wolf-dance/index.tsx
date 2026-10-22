@@ -63,7 +63,7 @@ export const template: InvitationTemplate = {
 
   /* The prototype's Wolf Dance envelope; the seal is color5. */
   envelope: {
-    paper: "#c8b9a2",
+    paper: "#c7b59b",
     liner: "#715855",
     string: "liner",
     seal: "#788a5c",

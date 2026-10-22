@@ -1,5 +1,6 @@
 "use client";
 
+import { BTN_PRIMARY } from "@/components/dashboard/event-editor/styles";
 import { useLocale, useTranslations } from "next-intl";
 import { type MouseEvent, useState } from "react";
 import { SUCCESS_DARK, WARNING_DARK } from "@/components/dashboard/styles";
@@ -15,13 +16,12 @@ import {
   BOX_BADGE,
   fold,
   GUEST_BTN_DANGER,
-  GUEST_BTN_PRIMARY,
   ICON_BTN,
   ICON_BTN_DANGER,
 } from "@/components/dashboard/guest-list/styles";
 import type { GuestActions } from "@/components/dashboard/guest-list/useGuestActions";
 import { UnknownFix } from "@/components/dashboard/guest-list/UnknownFix";
-import { Icon } from "@/components/icons";
+import { Icon, FoldChevron } from "@/components/icons";
 import { rowName, showsUnknown } from "@/lib/guests";
 import type {
   AnswerValue,
@@ -139,9 +139,7 @@ export function RowView({
         >
           {/* The name and its arrow never part: a long name is cut short instead. */}
           <span className="flex min-h-8 max-w-full min-w-0 items-center gap-1">
-            <span className="min-w-0 truncate text-[14px] font-medium text-neutral-950">
-              {name}
-            </span>
+            <span className="min-w-0 truncate name-text">{name}</span>
             {hasDetails ? (
               <button
                 type="button"
@@ -150,10 +148,7 @@ export function RowView({
                 onClick={() => setOpen(!open)}
                 className="grid size-6 shrink-0 cursor-pointer place-items-center text-neutral-600"
               >
-                <Icon
-                  name="chevron"
-                  className={`size-4 transition-transform ${open ? "rotate-180" : ""}`}
-                />
+                <FoldChevron open={open} />
               </button>
             ) : null}
           </span>
@@ -252,14 +247,14 @@ export function RowView({
       {confirming ? (
         <div
           role="alert"
-          className="flex flex-wrap items-center gap-2.5 pb-2 text-[12.5px] text-danger-800"
+          className="flex flex-wrap items-center gap-2.5 pb-2 meta-face text-danger-800"
         >
           <span className="mr-auto">{t("deleteConfirm", { name })}</span>
           <div className="flex shrink-0 gap-2.5">
             <button
               type="button"
               onClick={() => setConfirming(false)}
-              className={GUEST_BTN_PRIMARY}
+              className={BTN_PRIMARY}
             >
               {t("cancel")}
             </button>
@@ -340,7 +335,7 @@ function ReplyDetails({ reply, questions, spaced }: ReplyDetailsProps) {
 
   return (
     <dl
-      className={`flex flex-col gap-y-1 pt-1 text-[12.5px] ${spaced ? "pb-5" : "pb-3"}`}
+      className={`flex flex-col gap-y-1 pt-1 meta-face ${spaced ? "pb-5" : "pb-3"}`}
     >
       {answers.map((answer) => (
         <div key={answer.key} className="flex gap-1">

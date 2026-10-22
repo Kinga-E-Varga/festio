@@ -1,13 +1,16 @@
 "use client";
 
+import { eventPath } from "@/lib/event";
 import { useTranslations } from "next-intl";
-import { type ReactNode, useState } from "react";
-import { DIET_KEY } from "@/components/dashboard/guest-list/labels";
-import { TEXT_LINK } from "@/components/dashboard/styles";
-import { Icon } from "@/components/icons";
+import type { ReactNode } from "react";
+import {
+  AGE_SUMMARY_KEY,
+  AGES,
+  DIET_KEY,
+} from "@/components/dashboard/guest-list/labels";
+import { LINK_TEXT } from "@/components/dashboard/styles";
 import { Link } from "@/i18n/navigation";
 import type {
-  AgeGroup,
   DietNeed,
   GuestCounts,
   GuestTally,
@@ -32,21 +35,9 @@ interface Line {
   keep?: boolean;
 }
 
-const AGE_KEYS: Record<
-  AgeGroup,
-  "summaryAdults" | "summaryChildren" | "summaryBabies"
-> = {
-  adult: "summaryAdults",
-  child: "summaryChildren",
-  baby: "summaryBabies",
-};
-
 /** Three columns wide, two in between, one on a phone. */
 const GRID =
   "grid gap-x-10 gap-y-8 @min-[560px]:grid-cols-2 @min-[860px]:grid-cols-3";
-
-/** Dietary needs' rows before "Show more"; the rest wait behind it. */
-const DIET_ROWS_FOLDED = 4;
 
 /** The numbers a host plans with, one small table per question. */
 export function ReplySummary({
@@ -57,7 +48,6 @@ export function ReplySummary({
   eventId,
 }: ReplySummaryProps) {
   const t = useTranslations("GuestList");
-  const [open, setOpen] = useState(false);
 
   function questionLines({
     question,
@@ -116,8 +106,8 @@ export function ReplySummary({
                 <>
                   {t("summaryExpected")}{" "}
                   <Link
-                    href={`/dashboard/events/${eventId}#guests`}
-                    className={`ml-1 text-[12.5px] ${TEXT_LINK}`}
+                    href={`${eventPath(eventId, "details")}#guests`}
+                    className={`ml-1 ${LINK_TEXT}`}
                   >
                     {t("summaryChange")}
                   </Link>
@@ -130,9 +120,9 @@ export function ReplySummary({
         />
         <Block
           title={t("ageLabel")}
-          lines={(Object.keys(AGE_KEYS) as AgeGroup[]).map((age) => ({
+          lines={AGES.map((age) => ({
             key: age,
-            label: t(AGE_KEYS[age]),
+            label: t(AGE_SUMMARY_KEY[age]),
             count: tally.ages[age],
           }))}
         />
@@ -143,19 +133,12 @@ export function ReplySummary({
             label: t(DIET_KEY[need]),
             count: tally.diets[need],
           }))}
-          limit={open ? undefined : DIET_ROWS_FOLDED}
-          onMore={() => setOpen(true)}
         />
-        {/*
-         * Custom answers and messages wait behind the toggle; the three above
-         * always show. Same grid, so they fill the gap beside Dietary needs.
-         */}
         {tally.questions.map((entry) => (
           <Block
             key={entry.question.id}
             title={entry.question.label}
             lines={questionLines(entry)}
-            folded={!open}
           />
         ))}
         <Block
@@ -170,23 +153,8 @@ export function ReplySummary({
                 ]
               : []
           }
-          folded={!open}
         />
       </div>
-      {/* Under what it opens. */}
-      <button
-        type="button"
-        aria-expanded={open}
-        onClick={() => setOpen(!open)}
-        className={`mt-6 inline-flex cursor-pointer items-center gap-1.5 text-[12.5px] ${TEXT_LINK}`}
-      >
-        {t(open ? "summaryLess" : "summaryMore")}
-        <Icon
-          name="chevron"
-          className={`size-4 transition-transform ${open ? "rotate-180" : ""}`}
-          strokeWidth={2}
-        />
-      </button>
     </div>
   );
 }
@@ -194,37 +162,18 @@ export function ReplySummary({
 interface BlockProps {
   title: string;
   lines: Line[];
-  /** Set on the blocks behind the toggle: hidden while true, fading in and out as it turns. */
-  folded?: boolean;
-  /**
-   * At most this many rows, counted after the empty ones drop out. When more
-   * are left, the last row says how many and opens them all.
-   */
-  limit?: number;
-  onMore?: () => void;
 }
 
-/**
- * A block the toggle shows fades in, and fades out before it hides: `display`
- * waits out the fade (`transition-discrete`). Browsers without that just hide it.
- */
-const FADE =
-  "transition-[opacity,display] transition-discrete duration-300 starting:opacity-0 motion-reduce:transition-none";
-
 /** A title, then label-and-number rows; rows at 0 drop out unless kept. */
-function Block({ title, lines, folded, limit, onMore }: BlockProps) {
+function Block({ title, lines }: BlockProps) {
   const t = useTranslations("GuestList");
-  const all = lines.filter(
+  const shown = lines.filter(
     (line) => line.keep || line.count === undefined || line.count > 0,
   );
-  const cut = limit !== undefined && all.length > limit;
-  const shown = cut ? all.slice(0, limit - 1) : all;
 
   return (
-    <section
-      className={`min-w-0 ${folded === undefined ? "" : `${FADE} ${folded ? "hidden opacity-0" : ""}`}`}
-    >
-      <h3 className="rounded-t-ui bg-neutral-200 px-3 py-1.5 text-[14px] font-medium text-neutral-950">
+    <section className="min-w-0">
+      <h3 className="rounded-t-ui bg-neutral-200 px-3 py-1.5 name-text">
         {title}
       </h3>
       {shown.length > 0 ? (
@@ -232,7 +181,7 @@ function Block({ title, lines, folded, limit, onMore }: BlockProps) {
           {shown.map((line) => (
             <div
               key={line.key}
-              className="flex items-baseline justify-between gap-4 border-b border-neutral-300 px-3 py-2 text-[13.5px] text-neutral-800"
+              className="flex items-baseline justify-between gap-4 border-b border-neutral-200 px-3 py-2 row-text"
             >
               <dt className="min-w-0">{line.label}</dt>
               {line.count !== undefined ? (
@@ -242,20 +191,9 @@ function Block({ title, lines, folded, limit, onMore }: BlockProps) {
               ) : null}
             </div>
           ))}
-          {cut ? (
-            <div className="border-b border-neutral-300 px-3 py-2 text-[13.5px]">
-              <button
-                type="button"
-                onClick={onMore}
-                className={`cursor-pointer ${TEXT_LINK}`}
-              >
-                {t("summaryMoreRows", { count: all.length - shown.length })}
-              </button>
-            </div>
-          ) : null}
         </dl>
       ) : (
-        <p className="border-b border-neutral-300 px-3 py-2 text-[13.5px] text-neutral-600">
+        <p className="border-b border-neutral-200 px-3 py-2 row-text">
           {t("summaryEmpty")}
         </p>
       )}

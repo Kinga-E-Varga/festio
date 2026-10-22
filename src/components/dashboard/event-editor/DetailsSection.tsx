@@ -1,150 +1,178 @@
 "use client";
 
 import { Select } from "@/components/dashboard/event-editor/Select";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
+import { useState } from "react";
 import { ChangeWarning } from "@/components/dashboard/event-editor/ChangeWarning";
-import { EditorSection } from "@/components/dashboard/event-editor/EditorSection";
-import { Field } from "@/components/dashboard/event-editor/Field";
 import {
-  ERROR,
-  FIELD_GRID,
-  INPUT,
-  LABEL,
-} from "@/components/dashboard/event-editor/styles";
-import { SummarySwitch } from "@/components/dashboard/event-editor/SummarySwitch";
-import type { EventForm } from "@/components/dashboard/event-editor/useEventForm";
+  EditRow,
+  ReadRow,
+  ReadRows,
+  SettingsCard,
+  type CardEditing,
+} from "@/components/dashboard/event-editor/SettingsCard";
+import { INPUT } from "@/components/dashboard/event-editor/styles";
+import {
+  TITLE_MIN,
+  type EventForm,
+} from "@/components/dashboard/event-editor/useEventForm";
+import { formatDay } from "@/lib/event";
 import { LANGUAGES, LANGUAGE_NAMES, type Language } from "@/lib/language";
 import { EVENT_KINDS } from "@/mock/dashboard";
 import type { DashboardEvent, EventKind } from "@/types/dashboard";
 
+/** A field with a short value, kept from stretching across the card. */
+const SHORT = "w-full @min-[420px]:max-w-[280px]";
+
+/**
+ * The event's name, which every event needs. Its error waits until the host
+ * leaves the field, so it never scolds while they are still typing; Save
+ * stays shut either way. Drawn only while the card is open, so each opening
+ * starts untouched.
+ */
+function NameRow({ form }: { form: EventForm }) {
+  const t = useTranslations("EventEditor");
+  const [left, setLeft] = useState(false);
+  const error = left ? form.derived.titleError : null;
+
+  return (
+    <EditRow
+      htmlFor="event-name"
+      label={t("eventName")}
+      error={error}
+      hint={t("eventNameHint")}
+    >
+      <input
+        id="event-name"
+        type="text"
+        required
+        minLength={TITLE_MIN}
+        maxLength={80}
+        aria-invalid={error ? true : undefined}
+        value={form.values.title}
+        onChange={(control) => form.set.title(control.target.value)}
+        onBlur={() => setLeft(true)}
+        className={INPUT}
+      />
+    </EditRow>
+  );
+}
+
 interface SectionProps {
   event: DashboardEvent;
   form: EventForm;
+  editing: CardEditing;
 }
 
-export function DetailsSection({ event, form }: SectionProps) {
+/**
+ * General: what the event is and when. Read as rows; open, the same rows
+ * with their fields, a change warning under each change guests would notice.
+ */
+export function DetailsSection({ event, form, editing }: SectionProps) {
   const t = useTranslations("EventEditor");
   const tOccasions = useTranslations("Occasions");
-  const { values, set, derived } = form;
+  const locale = useLocale();
+  const { values, set } = form;
 
   return (
-    <EditorSection title={t("details")} first>
-      <div className={FIELD_GRID}>
-        <Field
-          htmlFor="event-name"
-          label={t("eventName")}
-          hint={t("eventNameHint")}
-        >
-          <input
-            id="event-name"
-            type="text"
-            maxLength={80}
-            value={values.title}
-            onChange={(control) => set.title(control.target.value)}
-            className={INPUT}
-          />
-        </Field>
+    <SettingsCard title={t("general")} editing={editing}>
+      {editing.open ? (
+        <div>
+          <NameRow form={form} />
 
-        <Field
-          htmlFor="event-kind"
-          label={t("occasion")}
-          hint={t("occasionHint")}
-        >
-          <Select
-            id="event-kind"
-            value={values.kind}
-            onChange={(control) => set.kind(control.target.value as EventKind)}
+          <EditRow
+            htmlFor="event-kind"
+            label={t("occasion")}
+            hint={t("occasionHint")}
           >
-            {EVENT_KINDS.map((id) => (
-              <option key={id} value={id}>
-                {tOccasions(id)}
-              </option>
-            ))}
-          </Select>
-        </Field>
+            <div className={SHORT}>
+              <Select
+                id="event-kind"
+                value={values.kind}
+                onChange={(control) =>
+                  set.kind(control.target.value as EventKind)
+                }
+              >
+                {EVENT_KINDS.map((id) => (
+                  <option key={id} value={id}>
+                    {tOccasions(id)}
+                  </option>
+                ))}
+              </Select>
+            </div>
+          </EditRow>
 
-        <Field
-          htmlFor="event-language"
-          label={t("language")}
-          hint={t("languageHint")}
-        >
-          <Select
-            id="event-language"
-            value={values.language}
-            onChange={(control) =>
-              set.language(control.target.value as Language)
+          <EditRow
+            htmlFor="event-language"
+            label={t("language")}
+            hint={t("languageHint")}
+            warning={
+              <ChangeWarning
+                title={t("languageWarningTitle")}
+                warning={form.warnings.language}
+              >
+                {t("languageWarning")}
+              </ChangeWarning>
             }
           >
-            {LANGUAGES.map((code) => (
-              <option key={code} value={code}>
-                {LANGUAGE_NAMES[code]}
-              </option>
-            ))}
-          </Select>
-        </Field>
+            <div className={SHORT}>
+              <Select
+                id="event-language"
+                value={values.language}
+                onChange={(control) =>
+                  set.language(control.target.value as Language)
+                }
+              >
+                {LANGUAGES.map((code) => (
+                  <option key={code} value={code}>
+                    {LANGUAGE_NAMES[code]}
+                  </option>
+                ))}
+              </Select>
+            </div>
+          </EditRow>
 
-        <Field
-          htmlFor="event-date"
-          label={t("date")}
-          hint={t(form.dateLocked ? "dateLockedHint" : "dateHint")}
-        >
-          <input
-            id="event-date"
-            type="date"
-            disabled={form.dateLocked}
-            value={values.date}
-            onChange={(control) => set.date(control.target.value)}
-            className={INPUT}
-          />
-        </Field>
-      </div>
-
-      <ChangeWarning
-        title={t("languageWarningTitle")}
-        warning={form.warnings.language}
-      >
-        {t("languageWarning")}
-      </ChangeWarning>
-
-      <ChangeWarning title={t("dateWarningTitle")} warning={form.warnings.date}>
-        {t.rich("dateWarning", {
-          count: event.rsvp.replied,
-          b: (chunks) => <b className="font-semibold">{chunks}</b>,
-        })}
-      </ChangeWarning>
-
-      <p className={`mt-[22px] mb-1.5 ${LABEL}`}>{t("closeHeading")}</p>
-
-      <SummarySwitch
-        icon="calendar"
-        action={t(values.closeEarly ? "useDefault" : "closeEarlier")}
-        onAction={() => set.closeEarly(!values.closeEarly)}
-        hint={t("closeDefaultHint")}
-        text={
-          values.closeEarly
-            ? t("replyUntil")
-            : t("replyUntilDate", {
-                /* Non-breaking spaces: the date moves to a new line whole. */
-                date: derived.closeDefaultLabel.replaceAll(" ", "\u00a0"),
-              })
-        }
-      >
-        {values.closeEarly ? (
-          <input
-            id="event-close"
-            type="datetime-local"
-            aria-label={t("closeAt")}
-            max={derived.closeLimit}
-            value={values.closeAt}
-            onChange={(control) => set.closeAt(control.target.value)}
-            /* In the sentence's own type, so the date reads as part of it. */
-            className={`${INPUT} text-[14px]! font-medium! text-neutral-800! @min-[460px]:max-w-max`}
-          />
-        ) : null}
-      </SummarySwitch>
-      {derived.closeTooLate ? (
-        <p className={`mt-1.5 ${ERROR}`}>{t("closeTooLate")}</p>
-      ) : null}
-    </EditorSection>
+          <EditRow
+            htmlFor="event-date"
+            label={t("date")}
+            hint={t(form.dateLocked ? "dateLockedHint" : "dateHint")}
+            warning={
+              <ChangeWarning
+                title={t("dateWarningTitle")}
+                warning={form.warnings.date}
+              >
+                {t.rich("dateWarning", {
+                  count: event.rsvp.replied,
+                  b: (chunks) => <b className="font-semibold">{chunks}</b>,
+                })}
+              </ChangeWarning>
+            }
+          >
+            <input
+              id="event-date"
+              type="date"
+              disabled={form.dateLocked}
+              value={values.date}
+              onChange={(control) => set.date(control.target.value)}
+              className={`${INPUT} ${SHORT}`}
+            />
+          </EditRow>
+        </div>
+      ) : (
+        <ReadRows>
+          <ReadRow label={t("eventName")}>{values.title}</ReadRow>
+          <ReadRow label={t("occasion")}>{tOccasions(values.kind)}</ReadRow>
+          <ReadRow label={t("language")}>
+            {LANGUAGE_NAMES[values.language]}
+          </ReadRow>
+          <ReadRow
+            label={t("date")}
+            note={form.dateLocked ? t("dateLockedHint") : undefined}
+          >
+            {formatDay(values.date, locale)}
+          </ReadRow>
+        </ReadRows>
+      )}
+    </SettingsCard>
   );
 }

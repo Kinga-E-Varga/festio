@@ -2,7 +2,7 @@
 
 import { useLocale, useTranslations } from "next-intl";
 import { Fragment } from "react";
-import { HINT, LABEL } from "@/components/dashboard/event-editor/styles";
+import { LABEL } from "@/components/dashboard/event-editor/styles";
 import { DateFormatSelect } from "@/components/invitation/DateFormatSelect";
 import { localized, type Language } from "@/lib/language";
 import { groups, isOn, list, longDate, text } from "@/modular/content";
@@ -234,7 +234,7 @@ function EventDateLine({
     <div className="flex flex-col gap-1.5">
       <span className={LABEL}>{localized(field.label, host)}</span>
       <p className="text-[13.5px] text-neutral-950">{longDate(date, host)}</p>
-      <p className={HINT}>{t("dateHint")}</p>
+      <p className="hint-text">{t("dateHint")}</p>
     </div>
   );
 }

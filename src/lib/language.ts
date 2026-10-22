@@ -59,3 +59,11 @@ export type LocalizedText = string | Record<Language, string>;
 export function localized(text: LocalizedText, language: Language): string {
   return typeof text === "string" ? text : text[language];
 }
+
+/** Text compared without case or accents, so "logodna" finds "Logodnă". */
+export function plainText(text: string): string {
+  return text
+    .normalize("NFD")
+    .replace(/\p{Diacritic}/gu, "")
+    .toLowerCase();
+}

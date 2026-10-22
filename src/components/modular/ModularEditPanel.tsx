@@ -1,12 +1,8 @@
 "use client";
 
-import {
-  PanelTabs,
-  TABPANEL_ID,
-  tabElementId,
-  type PanelTabId,
-} from "@/components/invitation/PanelTabs";
-import { PanelViewButton, SidePanel } from "@/components/invitation/SidePanel";
+import { useTranslations } from "next-intl";
+import { TAB_LABEL, type PanelTabId } from "@/components/invitation/PanelTabs";
+import { SidePanel } from "@/components/invitation/SidePanel";
 import type { Language } from "@/lib/language";
 import type {
   InvitationBasics,
@@ -19,9 +15,8 @@ import { DesignTab } from "./design/DesignTab";
 interface ModularEditPanelProps {
   open: boolean;
   onClose: () => void;
-  /** The open tab — the editor's, so Save and the preview can switch it. */
+  /** The open tab — the editor's, so the strip, Save and the preview can switch it. */
   tab: PanelTabId;
-  onTab: (tab: PanelTabId) => void;
   library: ModularLibrary;
   state: ModularState;
   basics: InvitationBasics;
@@ -45,14 +40,13 @@ interface ModularEditPanelProps {
 }
 
 /**
- * The modular editor's shell and tabs. Design and Content edit the state;
+ * The modular editor's panel, on the tab picked on the strip. Design and Content edit the state;
  * Replies is still empty.
  */
 export function ModularEditPanel({
   open,
   onClose,
   tab,
-  onTab,
   library,
   state,
   basics,
@@ -67,20 +61,17 @@ export function ModularEditPanel({
   onOpenStyles,
   onStylePicked,
 }: ModularEditPanelProps) {
+  const t = useTranslations("HostEditor");
+
   return (
     <SidePanel
       panelClassName="edit"
       open={open}
       inert={!open}
-      tabs={<PanelTabs tab={tab} onSelect={onTab} />}
+      title={t(TAB_LABEL[tab])}
       onClose={onClose}
     >
-      <div
-        role="tabpanel"
-        id={TABPANEL_ID}
-        aria-labelledby={tabElementId(tab)}
-        className="mx-auto flex w-full max-w-[640px] flex-col"
-      >
+      <div className="mx-auto flex w-full max-w-[640px] flex-col">
         {tab === "design" ? (
           <DesignTab
             library={library}
@@ -106,7 +97,6 @@ export function ModularEditPanel({
             onChange={onChange}
           />
         ) : null}
-        <PanelViewButton onClose={onClose} />
       </div>
     </SidePanel>
   );

@@ -8,192 +8,182 @@ import {
   type MouseEvent,
   type ReactNode,
 } from "react";
+import { BarActions } from "@/components/dashboard/BarActions";
+import { NAV_DOCKED } from "@/components/dashboard/media";
+import { SidePanel } from "@/components/dashboard/SidePanel";
+import { PAGE_GUTTER } from "@/components/dashboard/styles";
 import { TopBar } from "@/components/dashboard/TopBar";
+import {
+  useSidePanel,
+  type SidePanelView,
+} from "@/components/dashboard/useSidePanel";
 
 interface DashboardShellProps {
   /** Server-rendered nav, shown as a column on wide screens and a drawer below. */
   nav: ReactNode;
-  /** Server-rendered notifications rail, same treatment at its own breakpoint. */
-  notices: ReactNode;
+  /** Server-rendered cart, the side panel's view behind the cart icon. */
+  cart: ReactNode;
+  /** Server-rendered alerts, the side panel's view behind the bell. */
+  alerts: ReactNode;
+  /** Server-rendered latest replies, the side panel's view behind the guests icon. */
+  replies: ReactNode;
+  /** Server-rendered account links and Log out, the view behind the account circle. */
+  account: ReactNode;
   children: ReactNode;
 }
 
-type Drawer = "nav" | "notices";
-
-/** Matches the `nav` and `rail` breakpoints where each column docks. */
-const NAV_DOCKED = "(min-width: 820px)";
-const RAIL_DOCKED = "(min-width: 1600px)";
-
-/*
- * Width is deliberately left out: each drawer sets its own — the nav's
- * matches its column, the notices' is wider than theirs, as it lies over the
- * page instead of sharing it — and two `w-*` utilities on one element resolve
- * by stylesheet order rather than by the order they are written.
+/**
+ * The one nav: below `nav` a drawer over the page, the full height of the
+ * screen, slid out of sight and hidden (out of reach of keys and screen
+ * readers) while closed; from `nav` up docked, the window's full height
+ * against its left edge, sticky, in the page's colour, ruled off from it.
+ * Hidden by CSS, not `inert`, so the docked nav is usable before the page
+ * knows the window's width.
  */
-const PANEL =
-  "fixed top-topbar bottom-0 z-40 flex flex-col bg-neutral-200 shadow-[0_0_40px_rgba(47,40,31,0.2)] transition-transform duration-200 ease-out";
+const NAV =
+  "fixed top-0 bottom-0 left-0 z-[60] flex w-side max-w-[88vw] flex-col bg-neutral-125 shadow-drawer outline-none transition-[translate,visibility] duration-200 ease-out nav:sticky nav:bottom-auto nav:z-auto nav:h-screen nav:max-w-none nav:shrink-0 nav:translate-x-0 nav:overflow-hidden nav:border-r nav:border-neutral-300 nav:shadow-none nav:transition-none wide:w-[272px]";
+
+const SCRIM =
+  "fixed inset-x-0 bottom-0 bg-neutral-950/35 transition-opacity duration-200 nav:hidden";
+const SCRIM_ON = "opacity-100";
+const SCRIM_OFF = "pointer-events-none opacity-0";
 
 /**
- * A docked column is held off the top bar, the page's bottom and the
- * window's edge, and sticky inside that margin. The nav is one card; the
- * notifications rail holds a card per panel.
+ * From `nav` up: nav, page, strip and side panel side by side, the panel
+ * squeezing the page when it opens. Below: the top bar, with the side panel
+ * laid over the page under it, and the nav as a drawer over both, the full
+ * height of the screen.
  */
-const DOCKED = "sticky hidden shrink-0";
-/** The margin: 20px all round. */
-const GAP_20 =
-  "top-[calc(var(--spacing-topbar)+20px)] my-5 h-[calc(100vh-var(--spacing-topbar)-40px)]";
-/**
- * The nav's: 12px while the notifications are a drawer, so the nav leans
- * closer to the window's edge with no column across from it; 20px, like the
- * rail's, once they dock.
- */
-const NAV_GAP =
-  "ml-3 top-[calc(var(--spacing-topbar)+12px)] my-3 h-[calc(100vh-var(--spacing-topbar)-24px)] rail:ml-5 rail:top-[calc(var(--spacing-topbar)+20px)] rail:my-5 rail:h-[calc(100vh-var(--spacing-topbar)-40px)]";
-
 export function DashboardShell({
   nav,
-  notices,
+  cart,
+  alerts,
+  replies,
+  account,
   children,
 }: DashboardShellProps) {
   const t = useTranslations("TopBar");
-  const [open, setOpen] = useState<Drawer | null>(null);
+  const sidePanel = useSidePanel();
+  const [navOpen, setNavOpen] = useState(false);
   const navPanelRef = useRef<HTMLDivElement>(null);
-  const noticesPanelRef = useRef<HTMLDivElement>(null);
 
-  const navOpen = open === "nav";
-  const noticesOpen = open === "notices";
-  const anyOpen = open !== null;
+  /*
+   * On a phone the nav drawer and the side panel would cover each other, so
+   * opening one shuts the other. From `nav` up the drawer never opens.
+   */
+  const panel = {
+    ...sidePanel,
+    select: (view: SidePanelView) => {
+      setNavOpen(false);
+      sidePanel.select(view);
+    },
+  };
 
-  function toggle(target: Drawer) {
-    setOpen((current) => (current === target ? null : target));
-  }
-
-  function close() {
-    setOpen(null);
+  function toggleNav() {
+    if (!navOpen) sidePanel.close();
+    setNavOpen(!navOpen);
   }
 
   /*
-   * The only way out of an open drawer is a link inside it, so closing on the
-   * way through is all the route change needs. Holding the route the drawer
-   * was opened on would be the other way round, and it kept the drawer coming
-   * back: the record outlived the visit, so returning to that route opened a
-   * menu the host had never asked for.
+   * The only way out of the open nav drawer is a link inside it, so closing
+   * on the way through is all the route change needs. Holding the route the
+   * drawer was opened on would be the other way round, and it kept the drawer
+   * coming back: the record outlived the visit, so returning to that route
+   * opened a menu the host had never asked for.
    */
-  function closeOnLink(event: MouseEvent<HTMLElement>) {
-    if ((event.target as HTMLElement).closest("a")) close();
+  function closeNavOnLink(event: MouseEvent<HTMLElement>) {
+    if ((event.target as HTMLElement).closest("a")) setNavOpen(false);
   }
 
   useEffect(() => {
-    if (!anyOpen) return;
+    if (!navOpen) return;
+    navPanelRef.current?.focus();
     const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape") setOpen(null);
+      if (event.key === "Escape") setNavOpen(false);
     };
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
-  }, [anyOpen]);
+  }, [navOpen]);
 
-  // Each drawer has a static column above its breakpoint; close it on the way
-  // up so the app never holds an open drawer nobody can see.
+  // The nav docks as a column above its breakpoint; close its drawer on the
+  // way up so the app never holds an open drawer nobody can see.
   useEffect(() => {
     const navBreakpoint = window.matchMedia(NAV_DOCKED);
-    const noticesBreakpoint = window.matchMedia(RAIL_DOCKED);
     const closeStale = () => {
-      setOpen((current) => {
-        if (current === "nav" && navBreakpoint.matches) return null;
-        if (current === "notices" && noticesBreakpoint.matches) return null;
-        return current;
-      });
+      if (navBreakpoint.matches) setNavOpen(false);
     };
 
     navBreakpoint.addEventListener("change", closeStale);
-    noticesBreakpoint.addEventListener("change", closeStale);
-    return () => {
-      navBreakpoint.removeEventListener("change", closeStale);
-      noticesBreakpoint.removeEventListener("change", closeStale);
-    };
+    return () => navBreakpoint.removeEventListener("change", closeStale);
   }, []);
 
-  useEffect(() => {
-    if (open === "nav") navPanelRef.current?.focus();
-    if (open === "notices") noticesPanelRef.current?.focus();
-  }, [open]);
-
   return (
-    /* While a drawer is open the page under it holds still (`globals.css`). */
+    /* While the nav drawer is open the page under it holds still; `data-dashboard` gives the window's scrollbar this ground (both in `globals.css`). */
     <div
-      className="flex flex-1 flex-col"
-      data-scroll-lock={anyOpen || undefined}
+      className="flex flex-1 flex-col bg-neutral-125 nav:flex-row"
+      data-dashboard
+      data-scroll-lock={navOpen || undefined}
     >
-      <TopBar
-        navOpen={navOpen}
-        noticesOpen={noticesOpen}
-        onToggleNav={() => toggle("nav")}
-        onToggleNotices={() => toggle("notices")}
-      />
+      <TopBar navOpen={navOpen} onToggleNav={toggleNav} panel={panel} />
 
-      <div className="flex flex-1 items-start">
-        <aside
-          className={`${DOCKED} ${NAV_GAP} side-card w-side overflow-hidden nav:block min-[1800px]:w-[272px]`}
+      <div className="flex min-w-0 flex-1 items-start">
+        {/* A dialog only while it is open as the drawer, which happens only below `nav`. */}
+        <div
+          ref={navPanelRef}
+          tabIndex={-1}
+          role={navOpen ? "dialog" : undefined}
+          aria-modal={navOpen || undefined}
+          aria-label={navOpen ? t("menu") : undefined}
+          onClick={closeNavOnLink}
+          className={`${NAV} ${
+            navOpen
+              ? "translate-x-0"
+              : "-translate-x-[calc(100%+40px)] max-nav:invisible"
+          }`}
         >
           {nav}
-        </aside>
+        </div>
 
         {/*
-         * Fills the width between the columns; wider screens get wider
-         * margins instead of a cap. From 1200 the margins are the widest: a
-         * laptop has no docked rail, and once the rail docks at 1600 it and
-         * the nav are narrow until 1800, so the page keeps its room.
+         * Fills the width between the nav and the strip. Each page caps its
+         * own content (`CONTENT_WIDTH`), centred under a header that spans
+         * the whole width. From 1200 the margins are the widest. A container, its width kept in `--main-width` so a
+         * page's bars can span all of it (`BLEED`).
          */}
-        <main className="min-w-0 flex-1 px-[18px] pt-6 pb-10 nav:px-8 nav:pt-6 nav:pb-10 min-[1200px]:px-12 min-[1800px]:pt-[34px] min-[1800px]:pb-[46px]">
-          {children}
+        <main className="@container/main min-w-0 flex-1 pt-(--main-top) pb-10 [--main-top:--spacing(6)] wide:pb-[46px] wide:[--main-top:34px]">
+          <div className={`[--main-width:100cqw] ${PAGE_GUTTER}`}>
+            {children}
+          </div>
         </main>
-
-        <aside
-          aria-label={t("activity")}
-          className={`${DOCKED} ${GAP_20} mr-5 w-rail rail:block min-[1800px]:w-[380px]`}
-        >
-          {notices}
-        </aside>
       </div>
 
-      {/* Shared scrim; the top bar sits above it so its toggles stay reachable. */}
+      {/*
+       * From `nav` up, the top bar's actions stand down the right side, in
+       * the nav's colours and built like it (`BarActions`), as wide as the
+       * event bar is tall (56px, 64px from 1800px). The side panel opens
+       * beyond it, at the window's edge.
+       */}
+      <div className="sticky top-0 hidden h-screen w-topbar shrink-0 justify-center border-l border-neutral-300 bg-neutral-125 nav:flex wide:w-16">
+        <BarActions panel={panel} />
+      </div>
+
+      <SidePanel panel={panel} views={{ cart, alerts, replies, account }} />
+
+      {/*
+       * The scrims, below `nav` only: a tap closes what they dim. The side
+       * panel's starts under the top bar, which stays in reach; the nav
+       * drawer's covers it too, as the drawer does.
+       */}
       <div
         aria-hidden="true"
-        onClick={close}
-        className={`fixed inset-x-0 top-topbar bottom-0 z-30 bg-neutral-950/35 transition-opacity duration-200 ${
-          anyOpen ? "opacity-100" : "pointer-events-none opacity-0"
-        }`}
+        onClick={sidePanel.close}
+        className={`${SCRIM} top-topbar z-30 ${sidePanel.open ? SCRIM_ON : SCRIM_OFF}`}
       />
-
       <div
-        ref={navPanelRef}
-        tabIndex={-1}
-        role="dialog"
-        aria-modal="true"
-        aria-label={t("menu")}
-        inert={!navOpen}
-        onClick={closeOnLink}
-        className={`${PANEL} left-0 w-side max-w-[88vw] nav:hidden ${
-          navOpen ? "translate-x-0" : "-translate-x-full"
-        }`}
-      >
-        {nav}
-      </div>
-
-      <div
-        ref={noticesPanelRef}
-        tabIndex={-1}
-        role="dialog"
-        aria-modal="true"
-        aria-label={t("activity")}
-        inert={!noticesOpen}
-        onClick={closeOnLink}
-        className={`${PANEL} right-0 w-[360px] max-w-[88vw] side-scroll overflow-y-auto px-[18px] py-5 rail:hidden ${
-          noticesOpen ? "translate-x-0" : "translate-x-full"
-        }`}
-      >
-        {notices}
-      </div>
+        aria-hidden="true"
+        onClick={() => setNavOpen(false)}
+        className={`${SCRIM} top-0 z-[55] ${navOpen ? SCRIM_ON : SCRIM_OFF}`}
+      />
     </div>
   );
 }
