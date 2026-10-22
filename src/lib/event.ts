@@ -154,6 +154,20 @@ export function repliesBarVars(event: ReplyCounts): CSSProperties {
 
 export const DAY_MS = 86_400_000;
 
+/**
+ * The same wall-clock time, `days` calendar days on. Not `days × DAY_MS`: a day
+ * with a clock change is 23 or 25 hours long.
+ */
+export function addDays(value: Date, days: number): Date {
+  return new Date(
+    value.getFullYear(),
+    value.getMonth(),
+    value.getDate() + days,
+    value.getHours(),
+    value.getMinutes(),
+  );
+}
+
 /** A clock or calendar number at two digits: 9 → "09". */
 export function pad(part: number): string {
   return String(part).padStart(2, "0");
@@ -183,7 +197,7 @@ export const PICKER_DATE_PARTS: Intl.DateTimeFormatOptions = {
  * the project's 24h rule, expressed as a wall-clock cut-off.
  */
 export function defaultReplyClose(date: string): Date {
-  return new Date(new Date(`${date}T00:00`).getTime() - DAY_MS);
+  return addDays(new Date(`${date}T00:00`), -1);
 }
 
 /**
@@ -199,9 +213,7 @@ export function dateLocked(event: {
 
 /** When the whole record goes, per the configurable retention window. */
 export function deletionDate(date: string): Date {
-  return new Date(
-    new Date(`${date}T00:00`).getTime() + GUEST_DATA_RETENTION_DAYS * DAY_MS,
-  );
+  return addDays(new Date(`${date}T00:00`), GUEST_DATA_RETENTION_DAYS);
 }
 
 /** When the reply form closes: the host's own time, else the day before. */
@@ -223,9 +235,10 @@ export function countdownNow(event: {
   countdown: TimeSpan;
 }): Date {
   const { value, unit } = event.countdown;
-  return new Date(
-    new Date(`${event.date}T00:00`).getTime() - value * SPAN_MS[unit],
-  );
+  const midnight = new Date(`${event.date}T00:00`);
+  if (unit === "day") return addDays(midnight, -value);
+  if (unit === "week") return addDays(midnight, -7 * value);
+  return new Date(midnight.getTime() - value * SPAN_MS[unit]);
 }
 
 export type ReplyWindow = "open" | "soon" | "closed";

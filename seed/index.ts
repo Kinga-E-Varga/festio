@@ -10,7 +10,7 @@ import { seatingSchema, type SeatingDoc } from "@/db/schemas/seating";
 import { slugDocSchema } from "@/db/schemas/slug";
 import { userSchema } from "@/db/schemas/user";
 import { SLUG_BLOCK_DAYS } from "@/lib/config";
-import { DAY_MS, deletionDate } from "@/lib/event";
+import { addDays, deletionDate } from "@/lib/event";
 import { buildRows, countRows, toGuestReplies } from "@/lib/guests";
 import { momentFromNow } from "./build";
 import { SEED_EVENTS, type SeedEvent } from "./events";
@@ -116,11 +116,12 @@ function payment(seed: SeedEvent): PaymentDoc | undefined {
 
 /** A deleted event's link stays blocked for a while after its data went. */
 function slugCard(seed: SeedEvent) {
-  const deleted = deletionDate(seed.event.date).getTime();
   return slugDocSchema.parse({
     eventId: seed.id,
     ...(seed.event.dataDeleted && {
-      blockedUntil: Timestamp.fromMillis(deleted + SLUG_BLOCK_DAYS * DAY_MS),
+      blockedUntil: Timestamp.fromDate(
+        addDays(deletionDate(seed.event.date), SLUG_BLOCK_DAYS),
+      ),
     }),
   });
 }

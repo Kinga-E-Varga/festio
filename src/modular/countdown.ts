@@ -1,5 +1,6 @@
 import { useNow } from "./clock";
 import { eventStart, timeLeft, type TimeLeft } from "./content";
+import { addDays } from "@/lib/event";
 import type { InvitationBasics } from "@/types/modular";
 
 /** The countdown's units, largest first. */
@@ -28,8 +29,7 @@ export function useCountdown(basics: InvitationBasics): {
 } {
   const start = eventStart(basics.date);
   // The next midnight, not 24 hours on: a clock change keeps the day whole.
-  const end = new Date(start);
-  end.setDate(end.getDate() + 1);
+  const end = addDays(start, 1);
   // After the day, the text is fixed: the clock can stop.
   const now = useNow(end.getTime());
   if (now === null) return { left: null, done: null };
