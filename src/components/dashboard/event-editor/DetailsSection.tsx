@@ -12,13 +12,10 @@ import {
   type CardEditing,
 } from "@/components/dashboard/event-editor/SettingsCard";
 import { INPUT } from "@/components/dashboard/event-editor/styles";
-import {
-  TITLE_MIN,
-  type EventForm,
-} from "@/components/dashboard/event-editor/useEventForm";
+import type { EventForm } from "@/components/dashboard/event-editor/useEventForm";
+import { EVENT_KINDS, TITLE_MAX, TITLE_MIN } from "@/db/limits";
 import { formatDay } from "@/lib/event";
 import { LANGUAGES, LANGUAGE_NAMES, type Language } from "@/lib/language";
-import { EVENT_KINDS } from "@/mock/dashboard";
 import type { DashboardEvent, EventKind } from "@/types/dashboard";
 
 /** A field with a short value, kept from stretching across the card. */
@@ -47,7 +44,7 @@ function NameRow({ form }: { form: EventForm }) {
         type="text"
         required
         minLength={TITLE_MIN}
-        maxLength={80}
+        maxLength={TITLE_MAX}
         aria-invalid={error ? true : undefined}
         value={form.values.title}
         onChange={(control) => form.set.title(control.target.value)}

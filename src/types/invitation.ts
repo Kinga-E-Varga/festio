@@ -1,3 +1,5 @@
+import type { z } from "zod";
+import type { rsvpStatusSchema } from "@/db/schemas/common";
 import type { LocalizedText } from "@/lib/language";
 import type { PackageId, EventKind } from "@/types/dashboard";
 import type { EnvelopeColors } from "@/types/envelope";
@@ -182,7 +184,7 @@ export interface SimpleTemplateModule {
 /** Any template file. `template.kind` says which. */
 export type TemplateModule = SimpleTemplateModule | ModularTemplateModule;
 
-export type RsvpStatus = "going" | "not_going";
+export type RsvpStatus = z.infer<typeof rsvpStatusSchema>;
 
 /**
  * Age and diet are asked only of people coming — left out otherwise, as

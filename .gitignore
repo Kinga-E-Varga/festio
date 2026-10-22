@@ -28,10 +28,19 @@
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+
+# firebase emulators
+firebase-debug.log
+firestore-debug.log
+ui-debug.log
+database-debug.log
+pubsub-debug.log
 .pnpm-debug.log*
 
 # env files (can opt-in for committing if needed)
 .env*
+# no secrets: only points `npm run dev` at the local emulators
+!.env.development
 
 # vercel
 .vercel

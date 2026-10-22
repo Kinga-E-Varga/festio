@@ -6,9 +6,7 @@ import { BTN_DANGER, INPUT } from "@/components/dashboard/event-editor/styles";
 import { ConfirmPassword } from "@/components/dashboard/event-editor/ConfirmPassword";
 import { RollOut } from "@/components/dashboard/event-editor/RollOut";
 import { ButtonIcon } from "@/components/icons";
-
-/** The longest message the cancelled invitation shows. */
-export const CANCEL_MESSAGE_MAX = 300;
+import { CANCEL_MESSAGE_MAX } from "@/db/limits";
 
 interface CancelValues {
   message: string;

@@ -1,0 +1,11 @@
+rules_version = '2';
+
+// Closed to every browser for now; the real rules come with festio-dev
+// (database step 6). The server's Admin SDK skips rules.
+service firebase.storage {
+  match /b/{bucket}/o {
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+  }
+}

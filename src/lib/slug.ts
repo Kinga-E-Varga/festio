@@ -23,6 +23,9 @@ export const RESERVED_SLUGS: readonly string[] = [
 export const SLUG_MIN = 6;
 export const SLUG_MAX = 32;
 
+/** A finished slug: lowercase letters and digits, single hyphens between them. */
+export const SLUG_PATTERN = /^[a-z0-9]+(-[a-z0-9]+)*$/;
+
 /**
  * The path pattern of a guest link: one top-level segment of slug characters
  * that isn't reserved. Written for `next.config.ts` rewrites (path-to-regexp),

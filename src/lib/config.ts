@@ -14,3 +14,6 @@ export const REPLY_CAP_MIN_EXTRA = 20;
 
 /** Days before the reply form closes at which the host is warned. */
 export const REPLIES_CLOSING_SOON_DAYS = 7;
+
+/** Days a deleted event's link stays blocked, so old printed cards never open a stranger's invitation. */
+export const SLUG_BLOCK_DAYS = 365;

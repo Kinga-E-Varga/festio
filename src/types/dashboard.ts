@@ -1,4 +1,7 @@
 import type { StaticImageData } from "next/image";
+import type { z } from "zod";
+import type { packageSchema } from "@/db/schemas/common";
+import type { eventKindSchema, visibilitySchema } from "@/db/schemas/event";
 import type { Language } from "@/lib/language";
 
 export type IconName =
@@ -65,7 +68,7 @@ export interface NavItem {
  * free → standard → custom (project spec). Also the key into the `Packages`
  * message namespace, which holds each package's name.
  */
-export type PackageId = "free" | "standard" | "custom";
+export type PackageId = z.infer<typeof packageSchema>;
 
 export interface Package {
   /** In RON; 0 is the free package. */
@@ -74,19 +77,10 @@ export interface Package {
 }
 
 /** Occasion drives which templates are offered first. */
-export type EventKind =
-  | "wedding"
-  | "engagement"
-  | "bachelorParty"
-  | "christening"
-  | "birthday"
-  | "kidsParty"
-  | "dinnerParty"
-  | "reunion"
-  | "other";
+export type EventKind = z.infer<typeof eventKindSchema>;
 
 /** Per-invitation visibility (project spec: Hidden / Public / Protected). */
-export type Visibility = "hidden" | "public" | "protected";
+export type Visibility = z.infer<typeof visibilitySchema>;
 
 export type EventStatus = "active" | "draft" | "past";
 

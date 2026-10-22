@@ -16,7 +16,6 @@ import {
 import type {
   AttentionNotice,
   DashboardEvent,
-  EventKind,
   FooterColumn,
   NavItem,
   RsvpActivity,
@@ -57,19 +56,6 @@ export function nextPackage(id: PackageId): PackageId | undefined {
   const order = Object.keys(PACKAGES) as PackageId[];
   return order[order.indexOf(id) + 1];
 }
-
-/* Keys into the `Occasions` message namespace, in the order they are offered. */
-export const EVENT_KINDS: EventKind[] = [
-  "wedding",
-  "engagement",
-  "bachelorParty",
-  "christening",
-  "birthday",
-  "kidsParty",
-  "dinnerParty",
-  "reunion",
-  "other",
-];
 
 /** Replies since the host's last visit: the latest replies' tag. */
 export const NEW_REPLIES = 12;

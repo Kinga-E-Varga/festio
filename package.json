@@ -8,14 +8,18 @@
     "start": "next start",
     "lint": "eslint",
     "format": "prettier --write .",
-    "format:check": "prettier --check ."
+    "format:check": "prettier --check .",
+    "emulators": "firebase emulators:exec --ui \"npm run seed -- --stay\"",
+    "seed": "node --env-file=.env.development --import tsx seed/index.ts"
   },
   "dependencies": {
+    "firebase-admin": "^14.5.0",
     "next": "16.3.4",
     "next-intl": "^4.14.6",
     "react": "19.2.8",
     "react-dom": "19.2.8",
-    "react-hook-form": "^7.88.0"
+    "react-hook-form": "^7.88.0",
+    "zod": "^4.6.7"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
@@ -25,8 +29,10 @@
     "babel-plugin-react-compiler": "1.0.0",
     "eslint": "^9",
     "eslint-config-next": "16.3.4",
+    "firebase-tools": "^15.34.1",
     "prettier": "3.9.9",
     "tailwindcss": "^4",
+    "tsx": "^4.23.15",
     "typescript": "^5"
   }
 }

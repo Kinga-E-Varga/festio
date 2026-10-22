@@ -152,7 +152,7 @@ export function repliesBarVars(event: ReplyCounts): CSSProperties {
   } as CSSProperties;
 }
 
-const DAY_MS = 86_400_000;
+export const DAY_MS = 86_400_000;
 
 /** A clock or calendar number at two digits: 9 → "09". */
 export function pad(part: number): string {

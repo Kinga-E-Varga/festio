@@ -37,9 +37,12 @@ schema. Each step still gets its own spec in `current-feature.md` when it's buil
 
 ## Deploying (CI/CD)
 
-- **App Hosting is linked to GitHub.** The dev backend follows `main` and deploys every merge.
+- **App Hosting is linked to GitHub.** The dev backend follows `main`.
   The prod backend has automatic deploys off; a "Deploy to production" button in GitHub
   Actions starts a release, ideally with an approval step.
+- **Dev deploys only after the checks pass.** By default App Hosting deploys every push, even
+  one whose lint, build or rules tests failed. Instead, its automatic deploys are off on dev
+  too, and the GitHub Action starts the dev deploy once all checks are green.
 - **Settings per environment** in `apphosting.yaml` plus a file per environment. Secrets
   (payment and email keys) in Secret Manager, never in the repo. No service-account key
   files: on App Hosting the server can already use its own project.
@@ -98,6 +101,11 @@ Also on the event card:
   form but their answers still show and export.
 - **`print`** — the printable's settings: shape (flat / folded), tinted, headline, note.
   Saved when the printable is exported, so the print page opens with the last settings.
+- **`package`** — what has been bought, starting at Free. Whether the event is paid for is
+  worked out: the template's package is no higher than the event's. No separate paid flag,
+  so the two can never disagree.
+- **`cancelled`** — the host's short message and when it was cancelled; missing = not
+  cancelled.
 
 **Counters** (`counts`), so the dashboard never reads every reply of every event: people coming, people not coming, names needing attention,
 `seatingWarnings`. Replied = coming + not coming; invited and waiting come from the guest
@@ -141,6 +149,8 @@ One guest fills in the form once → one card, with everyone they answered for i
   - age group and dietary needs when coming (missing when not coming)
   - answers to the host's per-person questions, by question ID
   - the pre-loaded name the host matched them to, if any
+  - `differentPerson` when the host said a same-name reply isn't the same guest. The
+    Duplicate tag is worked out live, but this answer is the host's, so it's saved.
 - Answers stored once on the reply, never copied onto each person (the mock copies them).
 - **Separate from group** moves a person to a new reply card of their own; they keep their
   ID, so their seat follows them.
@@ -382,16 +392,62 @@ Later, `maria-wedding.festio.eu` instead of `festio.eu/maria-wedding`. Its own s
 - The exact options of each seating printable.
 - Which fields the deleted event's leftover keeps (no guest data, no images).
 
+## Working together
+
+Some steps need the owner's Google account, so they're done by you, guided by Claude. Claude
+does the rest, stops at each handoff, and checks your part worked before going on.
+
+**Only you:**
+
+- Anything that needs your Google account: signing in, creating the Firebase projects,
+  turning on Blaze billing, setting budget alerts.
+- Picking the region in the console. It can never change, so Claude points at the exact
+  option first.
+- Turning on sign-in methods (email/password, Google) in the Auth console.
+- Linking App Hosting to GitHub.
+- Pasting secrets (payment and email keys) into Secret Manager.
+- Interactive logins such as `firebase login`, typed as `! firebase login` in Claude Code so
+  the output lands in the chat.
+
+**Claude:**
+
+- All the code: Zod schemas, seed data, swapping `src/mock/` for real reads, rules and rules
+  tests.
+- Config files: `firebase.json`, `.firebaserc`, `apphosting.yaml`, the emulator setup.
+- CLI commands, once you're logged in.
+- Checking that what you set up in the console works.
+
+**Handoffs:** when it's your turn, Claude posts "Your turn:" with a short numbered list, one
+small batch at a time, saying exactly what to click or type. You say when it's done, or paste
+what you see; Claude checks it, then continues.
+
+**Step 1 needs little from you:** the emulators run locally with a `demo-` project ID, no
+real Firebase project. Only installing the Firebase CLI and Java (the Firestore emulator
+needs it). The real back-and-forth starts at step 6.
+
 ## Order
 
 The document shapes above are settled, apart from the Open list; don't re-open them. Start
 at step 1. Each step is its own feature: spec it in `current-feature.md`, then build it.
 
-1. **Emulators + seed data.** Firestore, Auth, Storage and Functions running locally, the
-   seed folder, Zod schemas for the cards above, and the app reading from the emulator in
-   place of `src/mock/`.
-2. **`festio-dev`**, Firestore and Storage rules, and rules tests.
-3. **CI:** lint, build and rules tests on every push; auto-deploy to dev.
-4. **Subdomain links** (`context/features/pending/subdomain-links.md`). The code part can be built
-   and tried on `*.localhost` any time after step 1; the wildcard domain needs App Hosting.
-5. **`festio-prod`** with backups and the manual release button, close to launch.
+Steps 1–5 run fully on your machine; the first big handoff is step 6.
+
+1. **Emulators + schemas + seed data.** Firestore, Auth and Storage running
+   locally with a `demo-` project ID, Zod schemas for the cards above, and the seed folder.
+   No app changes yet. The Functions emulator joins with the first Cloud Function.
+2. **Reads.** The app reads from the emulator in place of `src/mock/`.
+3. **Auth.** Sign in and sign up (email + password, Google), the `users` card, and the one
+   shared check every server action starts with: logged in, and it's their event.
+4. **Host saves.** Event, invitation and guest list through Server Actions, with version
+   numbers and slug claiming.
+5. **Guest replies.** The reply transaction (cap, counters), the duplicate check, the
+   closing time, rate limiting and the Protected password.
+6. **`festio-dev`**, Firestore and Storage rules, and rules tests.
+7. **CI:** lint, build and rules tests on every push; auto-deploy to dev.
+8. **GDPR cleanup.** The nightly deletion job and account deletion.
+9. **Photos (Storage).** When modular host photos are built.
+10. **Subdomain links** (`context/features/pending/subdomain-links.md`). The code part can be
+    built and tried on `*.localhost` any time after step 2; the wildcard domain needs App
+    Hosting.
+11. **Payments**, once the Merchant of Record is chosen.
+12. **`festio-prod`** with backups and the manual release button, close to launch.

@@ -11,6 +11,7 @@ import {
   isRealDate,
   toDateTimeLocal,
 } from "@/lib/event";
+import { PASSWORD_PATTERN, TITLE_MIN } from "@/db/limits";
 import { invitationLanguage, type Language } from "@/lib/language";
 import {
   isReservedSlug,
@@ -33,11 +34,6 @@ export interface Warning {
   acknowledged: boolean;
   toggle: (value: boolean) => void;
 }
-
-const PASSWORD_PATTERN = /^[A-Za-z0-9]{4,}$/;
-
-/** The shortest event name, spaces at either end not counted. */
-export const TITLE_MIN = 3;
 
 const NONE_ACKNOWLEDGED: Record<WarningId, boolean> = {
   date: false,

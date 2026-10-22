@@ -1,4 +1,11 @@
 import type { RsvpStatus } from "@/types/invitation";
+import type { z } from "zod";
+import type { questionScopeSchema } from "@/db/schemas/event";
+import type {
+  ageGroupSchema,
+  answerSchema,
+  dietNeedSchema,
+} from "@/db/schemas/reply";
 
 /*
  * Mock-only shapes for the host's guest list. Not a Firestore schema: that
@@ -14,19 +21,13 @@ export interface ListName {
 }
 
 /** The age question every form asks, for each person coming. */
-export type AgeGroup = "adult" | "child" | "baby";
+export type AgeGroup = z.infer<typeof ageGroupSchema>;
 
 /** The dietary presets every form offers, for each person coming; `other` comes with the guest's own words. */
-export type DietNeed =
-  | "vegetarian"
-  | "vegan"
-  | "glutenFree"
-  | "lactoseFree"
-  | "nutAllergy"
-  | "other";
+export type DietNeed = z.infer<typeof dietNeedSchema>;
 
 /** Asked of each person coming, or once for the whole reply. */
-export type QuestionScope = "person" | "reply";
+export type QuestionScope = z.infer<typeof questionScopeSchema>;
 
 interface QuestionBase {
   /** Permanent: answers are keyed by it. */
@@ -46,7 +47,7 @@ export type GuestQuestion =
   | (QuestionBase & { kind: "text" });
 
 /** A choice's option id, a yes/no, or free text. */
-export type AnswerValue = string | boolean;
+export type AnswerValue = NonNullable<z.infer<typeof answerSchema>>;
 
 /**
  * One attendee from one reply. A reply fans out into one of these per
