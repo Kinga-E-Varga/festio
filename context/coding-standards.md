@@ -13,6 +13,7 @@
 - Use hooks for state and side effects
 - Keep components focused - one job per component
 - Extract reusable logic into custom hooks
+- React Compiler is on: never call React Hook Form's `reset()` in a `useEffect` — `useWatch` stops updating. To start a form fresh, remount it with a `key` (see `src/components/dashboard/event-editor/RollOut.tsx`)
 
 ## Next.js
 
@@ -69,6 +70,10 @@ Example v4 configuration:
 - Tailwind CSS for all styling
 - No inline styles
 - Only light mode as option
+- Write each style and element once: `@utility` classes in `src/app/globals.css`, constants in a `styles.ts`, small shared components. Check for an existing one first; extract a pattern on its second use; delete what ends up unused
+- Host-app text styles (size, weight, colour, family, tracking, case) are `@utility` classes in `globals.css`, never TS constants or repeated inline classes. Dashboard scale: page 28 serif / card 17 serif / row 14 / field 13.5 / line 12.5 / item 12.5 semibold / hint 11.5 / caps 10, no 11px
+- Line height doesn't count when matching text styles and stays with each use. It goes into a class only when many places use it for one reason (like `hint-text`'s 1.45)
+- Invitations are excluded: when looking for matching text styles, skip `src/components/invitation/`, `src/modular/` and `src/templates/` entirely — they have their own fonts and palettes
 
 ## Database
 
@@ -96,5 +101,6 @@ Example v4 configuration:
 
 - Formatting is Prettier's job (`.prettierrc.json`: double quotes, semicolons). Run `npm run format`; never hand-format against it
 - No commented-out code unless specified
+- When analyzing or reviewing code, judge it by what it does, not its comments — comments here are sometimes misleading. Check any claim about layout, alignment or behaviour against the classes and logic (do the arithmetic)
 - No unused imports or variables
 - Keep functions under 50 lines when possible

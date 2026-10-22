@@ -364,7 +364,7 @@ theirs with everything inside it and its Storage folder. Payment cards stay, for
 ## Links
 
 Later, `maria-wedding.festio.eu` instead of `festio.eu/maria-wedding`. Its own spec:
-`context/features/subdomain-links.md`.
+`context/features/pending/subdomain-links.md`.
 
 ## Error alerts
 
@@ -392,6 +392,6 @@ at step 1. Each step is its own feature: spec it in `current-feature.md`, then b
    place of `src/mock/`.
 2. **`festio-dev`**, Firestore and Storage rules, and rules tests.
 3. **CI:** lint, build and rules tests on every push; auto-deploy to dev.
-4. **Subdomain links** (`context/features/subdomain-links.md`). The code part can be built
+4. **Subdomain links** (`context/features/pending/subdomain-links.md`). The code part can be built
    and tried on `*.localhost` any time after step 1; the wildcard domain needs App Hosting.
 5. **`festio-prod`** with backups and the manual release button, close to launch.

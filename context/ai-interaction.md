@@ -87,7 +87,6 @@ rules below hold whether or not it is used.
   permission to commit, merge and push that feature.
 - Never commit until `npm run build` passes. If it fails, fix it first.
 - One feature/fix = one commit, with a conventional message (`feat:`, `fix:`, `chore:`, …).
-- Never put "Generated with Claude" or "Co-authored-by" lines in commit messages.
 - Merge to main fast-forward only, never a merge commit — rebase onto main first if needed.
 - If the change moved a route, a top-level `src/` directory, a file in `src/lib/`, or a
   component between folders, update @context/repo-map.md (or the matching `context/map/`

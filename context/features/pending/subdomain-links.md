@@ -6,7 +6,7 @@ does. The host app stays on `festio.eu`.
 Decide and build before launch: the link is printed on cards, so the first format that
 goes out has to keep working forever. Nothing is printed yet, so switching now is free.
 
-Hosting depends on the database plan (`context/features/database.md`): only Firebase App
+Hosting depends on the database plan (`context/features/pending/database.md`): only Firebase App
 Hosting supports wildcard subdomains, classic Firebase Hosting doesn't. The code part can be
 built and tried locally before any hosting exists.
 
@@ -104,4 +104,4 @@ only blocks new links, never ones already taken.
   with Festio's reserved subdomains are rejected.
 - `context/repo-map.md` — `slug.ts` (reserved subdomains, no pattern), `proxy.ts` (decides
   by host), `next.config.ts` (no invite rewrite).
-- `context/features/database.md` — the Links section points here.
+- `context/features/pending/database.md` — the Links section points here.
