@@ -116,7 +116,8 @@
     "cartCount": "{count, plural, one {Coș, # invitație neplătită} few {Coș, # invitații neplătite} other {Coș, # invitații neplătite}}",
     "account": "Contul tău",
     "menu": "Meniu",
-    "more": "Mai mult"
+    "more": "Mai mult",
+    "signIn": "Autentificare"
   },
   "Footer": {
     "search": "Caută în Festio",
@@ -529,7 +530,9 @@
     "printFallback": "Tipărire · Festio",
     "template": "{name} · Șabloane · Festio",
     "templateFallback": "Șabloane · Festio",
-    "guests": "{title} · Invitați · Festio"
+    "guests": "{title} · Invitați · Festio",
+    "signIn": "Autentificare · Festio",
+    "signUp": "Creează-ți contul · Festio"
   },
   "GuestList": {
     "sectionSummary": "Rezumat",
@@ -650,5 +653,34 @@
     "tabs": "Pagini invitați",
     "inviteList": "Lista de invitați",
     "stopList": "Nu mai folosi lista"
+  },
+  "Auth": {
+    "signInTitle": "Autentificare",
+    "signUpTitle": "Creează-ți contul",
+    "name": "Numele tău",
+    "email": "Email",
+    "password": "Parolă",
+    "nameRequired": "Spune-ne cum te numești.",
+    "emailInvalid": "Introdu o adresă de email validă.",
+    "passwordRequired": "Introdu parola.",
+    "passwordShort": "Folosește cel puțin {min} caractere.",
+    "terms": "Sunt de acord cu Termenii și cu acordul de prelucrare a datelor.",
+    "termsRequired": "Acceptă Termenii pentru a-ți crea contul.",
+    "termsStep": "Nu ai încă un cont Festio. Acceptă Termenii pentru a-ți crea unul.",
+    "signIn": "Autentifică-te",
+    "createAccount": "Creează cont",
+    "or": "sau",
+    "google": "Continuă cu Google",
+    "noAccount": "Nou pe Festio?",
+    "toSignUp": "Creează un cont",
+    "haveAccount": "Ai deja un cont?",
+    "toSignIn": "Autentifică-te",
+    "wrongLogin": "Emailul și parola nu se potrivesc.",
+    "emailTaken": "Acest email are deja un cont. Autentifică-te sau continuă cu Google.",
+    "tooMany": "Prea multe încercări. Te rugăm să aștepți câteva minute și să încerci din nou.",
+    "offline": "Nu există conexiune. Verifică internetul și încearcă din nou.",
+    "failed": "Ceva nu a mers. Te rugăm să încerci din nou.",
+    "passwordAccount": "Acest email are deja un cont Festio cu parolă. Autentifică-te cu parola.",
+    "again": "A trecut ceva timp, așa că te rugăm să te autentifici din nou."
   }
 }

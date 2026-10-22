@@ -3,7 +3,7 @@ import { EventPageHeader } from "@/components/dashboard/EventPageHeader";
 import { CONTENT_WIDTH } from "@/components/dashboard/styles";
 import { EventEditor } from "@/components/dashboard/event-editor/EventEditor";
 import { guestListCount, loadHostEvents } from "@/db/reads/events";
-import { eventMetadata, openEvent } from "../load-event";
+import { eventMetadata, openEvent } from "@/db/reads/access";
 
 type Props = PageProps<"/[locale]/dashboard/events/[id]/details">;
 
@@ -16,7 +16,7 @@ export default async function EventPage({ params }: Props) {
   const [tNav, events, listCount] = await Promise.all([
     getTranslations("Nav"),
     loadHostEvents(),
-    guestListCount(event.id),
+    guestListCount(event),
   ]);
 
   return (

@@ -169,6 +169,9 @@ Firebase Auth keeps the login itself (email, scrambled password, sign-in method)
 when they joined, and which Terms version they accepted and when (proof of the DPA; a new
 version can be asked for again). No list of events: each event card names its host.
 
+- **`lastVisit`** — when the host last looked at the latest replies. Missing = never. The
+  "new since your last visit" badge counts guests' replies (`createdBy: guest`) sent after it.
+
 **Sign-in:** email + password and "Continue with Google". No Apple (it needs a paid Apple
 Developer membership, about $99 a year) and no Facebook. One account per email, so signing
 in with Google and with a password on the same email reaches the same account.
@@ -455,8 +458,8 @@ Steps 1–5 run fully on your machine; the first big handoff is step 6.
    - The landing page reads the whole dashboard (`loadDashboard`) for two badge counts. Give
      it a lighter read. Every dashboard page also runs one replies query and one template
      load per event; fine at a few events, worth a look as hosts get more.
-   - The "new since your last visit" badge on latest replies is hidden: it needs a stored
-     last visit. Decide where it lives (likely the `users` card).
+   - Decided: the last visit lives on the `users` card (`lastVisit`). The badge is built
+     with step 4, since setting it is a host save.
 4. **Host saves.** Event, invitation and guest list through Server Actions, with version
    numbers and slug claiming.
    - Once a link can change, `loadEventBySlug` should also check the event's `slug` still
@@ -465,6 +468,9 @@ Steps 1–5 run fully on your machine; the first big handoff is step 6.
      (`takenSlugs`). Links are unique across Festio, so the check reads the slug cards.
    - A saved modular card keeps its own section list; sections added to the library later
      need merging in when it's read (`modularStart`).
+   - The "new since your last visit" badge: add optional `lastVisit` to `userSchema`, set it
+     (Server Action) when the host opens the latest replies, and count guests' replies sent
+     after it on the strip's replies icon (`countedViews` in `BarActions.tsx`).
 5. **Guest replies.** The reply transaction (cap, counters), the duplicate check, the
    closing time, rate limiting and the Protected password.
    - One shared function for the event's counters, used by both the reply transaction and
@@ -477,8 +483,20 @@ Steps 1–5 run fully on your machine; the first big handoff is step 6.
      of each active event whose form is closing. Fine at a few events; revisit only if it
      gets slow.
 6. **`festio-dev`**, Firestore and Storage rules, and rules tests.
+   - **Google on a password account:** the emulator can't produce
+     `auth/account-exists-with-different-credential`. Check on the real project that it shows
+     the "sign in with your password" message (`passwordAccount` in `AuthForm.tsx`).
+   - **The login check's cost:** `loadHostId` (`src/db/reads/session.ts`) checks the cookie
+     with Firebase on every host request (`verifySessionCookie(…, true)`, to catch revoked
+     sessions). Measure it; if it's slow, check revocation less often.
+   - **Email verification** needs real email sending, so it can only be finished here:
+     `context/fixes/pending/email-verification.md`. Until then, Google on an unverified
+     password account drops the password.
 7. **CI:** lint, build and rules tests on every push; auto-deploy to dev.
 8. **GDPR cleanup.** The nightly deletion job and account deletion.
+   - Log out only deletes this browser's cookie; a copied cookie stays valid up to 14 days.
+     Deleting an account must also end every session (`auth.revokeRefreshTokens(uid)`).
+     Later, maybe: a "Log out of all devices" button in Settings, doing the same.
 9. **Photos (Storage).** When modular host photos are built.
 10. **Subdomain links** (`context/features/pending/subdomain-links.md`). The code part can be
     built and tried on `*.localhost` any time after step 2; the wildcard domain needs App

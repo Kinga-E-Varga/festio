@@ -6,7 +6,7 @@ import { ButtonIcon } from "@/components/icons";
 import { GUEST_DATA_RETENTION_DAYS } from "@/lib/config";
 import { eventPath } from "@/lib/event";
 import { loadGuests } from "@/db/reads/guests";
-import { eventMetadata, openEvent } from "../load-event";
+import { eventMetadata, openEvent } from "@/db/reads/access";
 
 type Props = PageProps<"/[locale]/dashboard/events/[id]/guests">;
 

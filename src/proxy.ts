@@ -19,5 +19,7 @@ export const config = {
     "/invitations/:path*",
     "/templates/:path*",
     "/prints/:path*",
+    "/sign-in",
+    "/sign-up",
   ],
 };

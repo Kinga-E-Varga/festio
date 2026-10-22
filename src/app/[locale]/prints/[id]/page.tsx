@@ -4,19 +4,15 @@ import { notFound } from "next/navigation";
 import { PrintEditor } from "@/components/print/PrintEditor";
 import { eventPath, invitationLink } from "@/lib/event";
 import { invitationValues } from "@/lib/invitation";
-import { openEvent } from "@/app/[locale]/dashboard/events/[id]/load-event";
-import { loadEvent } from "@/db/reads/events";
+import { eventMetadata, openEvent } from "@/db/reads/access";
 import { loadInvitation } from "@/db/reads/invitation";
 import { loadSimpleTemplate } from "@/templates";
 
 type Props = PageProps<"/[locale]/prints/[id]">;
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const { id } = await params;
-  const event = await loadEvent(id);
-  const t = await getTranslations("Meta");
   return {
-    title: event ? t("print", { title: event.title }) : t("printFallback"),
+    ...(await eventMetadata((await params).id, "print")),
     robots: { index: false, follow: false },
   };
 }
@@ -37,7 +33,7 @@ export default async function PrintPage({ params }: Props) {
 
   const [loaded, stored] = await Promise.all([
     loadSimpleTemplate(event.templateId),
-    loadInvitation(event.id),
+    loadInvitation(event),
   ]);
   if (!loaded) notFound();
 

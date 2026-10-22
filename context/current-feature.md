@@ -1,4 +1,4 @@
-# Current Feature: Dates across a clock change
+# Current Feature: Database step 3 — Auth
 
 ## Status
 
@@ -6,47 +6,44 @@ Completed
 
 ## Goals
 
-- Add `addDays(value: Date, days: number): Date` to `src/lib/event.ts`: moves the calendar
-  day and keeps the wall-clock time (`new Date(y, m, d + days, hours, minutes)` from the
-  date's own parts). Days, not hours.
-- `deletionDate` = `addDays(event day at 00:00, GUEST_DATA_RETENTION_DAYS)`.
-- `defaultReplyClose` = `addDays(event day at 00:00, -1)`.
-- Seed's blocked-slug date (`seed/index.ts`) = `addDays(deletionDate(...), SLUG_BLOCK_DAYS)`.
-- Leave the length-of-time rules alone: `spanBetween`, `spanFrom`, `replyWindow`'s "closing
-  soon" window, the modular countdown (`src/modular/content.ts`), the seed's `dayFromNow` /
-  `momentFromNow`.
+- Hosts can sign up and sign in with email + password, and with "Continue with Google".
+  One account per email: Google and password on the same email reach the same account.
+  No Apple, no Facebook. Hosts can sign out.
+- Sign-up creates the host's `users` card (name, language, joined, accepted Terms version +
+  when), checked by `userSchema`.
+- Works against the Auth emulator (seed login `maria@festio.test` / `festio-dev`).
+- The signed-in host replaces `DEV_HOST_ID` (`src/db/reads/host.ts`) everywhere it's used
+  (`loadHost`, `loadHostEvents`, `loadEvent`). Signed-out visitors to host pages go to
+  sign-in.
+- **One shared check**, next to the reads: logged in, and it's _their_ event. Every server
+  action (from step 4 on) and every host page starts with it.
+  - It replaces `openEvent` (`src/app/[locale]/dashboard/events/[id]/load-event.ts`, also
+    imported by the invitation and print pages).
+  - On dashboard pages it takes the event from the host's events the layout already read,
+    instead of reading the card again.
+  - `loadInvitation` and `guestListCount` go through it, so no caller can pass a bare
+    event id and skip it.
+- The landing page gets a lighter read than the whole `loadDashboard`, just for its two
+  badge counts.
 
 ## Notes
 
-Spec: `context/fixes/clock-change-dates.md`. Branch: `fix/clock-change-dates`.
-
+- Spec: `context/features/pending/database.md` (Step 3, User card, Security rules).
+- Document shapes are settled; don't re-open them. The `users` card is `userSchema` in
+  `src/db/schemas/user.ts`.
+- No `src/actions/` exists yet — this step builds the shared check; host saves come in
+  step 4.
+- The guest page (`invite/[invite]/page.tsx`) also calls `loadInvitation(event.id)`, with
+  no host. It needs its own guest path that doesn't bypass the host check.
+- Decided: the server knows the host by a Firebase session cookie (`__session`, 14 days)
+  the Admin SDK verifies; after sign-in the host always lands on `/dashboard`.
+- Decided: the last visit lives on the `users` card (`lastVisit`). The badge is built with
+  step 4 (setting it is a host save), noted there in `database.md`.
+- Firebase behaviour: Google on an email whose password account isn't verified keeps the
+  account but drops its password. Avoiding it needs email verification (not built): `context/fixes/pending/email-verification.md`.
+- Worth a look, not a must: every dashboard page runs one replies query and one template
+  load per event. Fine at a few events.
+- Plan: `context/plans/database-step-3-auth.md`
 - Simplify: ran 2026-10-22
-
-**Problem:** both rules add or take away whole days as fixed 24-hour blocks (`DAY_MS`). A
-day with a clock change is 23 or 25 hours, so the result lands an hour off — at midnight,
-the day before.
-
-- Majorat (8 October 2026) is deleted on 6 December, 23:00 instead of 7 December (clocks go
-  back 25 October).
-- An event on 26 October 2026 closes replies at 24 October, 23:00 instead of 25 October,
-  00:00.
-
-Seen in `RetentionInfo`, `DatesThatMatter`, the "export your data" alert (`notices.ts`, which
-also adds ", 23:00" since `formatDeadline` only drops the time at midnight), `DangerZone`,
-the event form's cut-off (`useEventForm`) and the closing notice's "can still move" check.
-
-**Not in this fix:** the rules still run on the server's clock. Running them on the event's
-own `timeZone` is the separate time-zone work (`context/features/pending/database.md` →
-Order, step 2). This fix stays correct after that.
-
-**Check:**
-
-- `/dashboard`: Majorat's alert reads "deleted on 7 December 2026", no time.
-- `/dashboard/events/majorat-ana`: Data and privacy and Key dates both say 7 December.
-- Scratch check with `TZ=Europe/Bucharest`:
-  - `defaultReplyClose("2026-10-26")` → 25 October, 00:00.
-  - `deletionDate("2026-10-08")` → 7 December, 00:00.
-  - No clock change in between gives the same as before, e.g. `deletionDate("2026-06-01")`
-    → 31 July.
-- `npm run seed` still runs; Cumetrie's `blockedUntil` falls at 00:00.
-- `npm run build` passes.
+- Firebase console steps (turning on sign-in methods) are step 6; here everything runs on
+  the emulator.

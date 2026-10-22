@@ -3,6 +3,10 @@
  * (the to-dos); dark, for one on the page or a darker ground (the warning
  * banners, Not coming).
  */
+/** The Festio lockup as a mask, so the caller picks its colour (`bg-*`) and height. */
+export const LOCKUP =
+  "block aspect-[148/32] mask-[url(/festio-lockup-alt.svg)] mask-contain mask-center mask-no-repeat";
+
 export const WARNING_LIGHT =
   "border-warning-500/50 bg-warning-50 text-warning-700";
 export const WARNING_DARK =

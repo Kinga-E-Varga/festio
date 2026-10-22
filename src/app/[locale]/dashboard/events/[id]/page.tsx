@@ -13,7 +13,7 @@ import { cardValues, invitationValues } from "@/lib/invitation";
 import { loadLibrary } from "@/modular";
 import { loadTemplate } from "@/templates";
 import type { DashboardEvent } from "@/types/dashboard";
-import { eventMetadata, openEvent } from "./load-event";
+import { eventMetadata, openEvent } from "@/db/reads/access";
 
 type Props = PageProps<"/[locale]/dashboard/events/[id]">;
 
@@ -29,7 +29,7 @@ async function invitationPreview(event: DashboardEvent) {
   if (!event.templateId) return null;
   const [loaded, stored, t] = await Promise.all([
     loadTemplate(event.templateId),
-    loadInvitation(event.id),
+    loadInvitation(event),
     getTranslations("Event"),
   ]);
   if (!loaded) return null;

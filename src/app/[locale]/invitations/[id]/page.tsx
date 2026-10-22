@@ -1,11 +1,9 @@
 import { eventPath } from "@/lib/event";
 import type { Metadata } from "next";
-import { getTranslations } from "next-intl/server";
 import { notFound } from "next/navigation";
 import { HostInvitationEditor } from "@/components/invitation/HostInvitationEditor";
 import { ModularEditor } from "@/components/modular/ModularEditor";
-import { openEvent } from "@/app/[locale]/dashboard/events/[id]/load-event";
-import { loadEvent } from "@/db/reads/events";
+import { eventMetadata, openEvent } from "@/db/reads/access";
 import { loadInvitation, modularStart } from "@/db/reads/invitation";
 import { loadMessages } from "@/i18n/messages";
 import { invitationValues } from "@/lib/invitation";
@@ -15,13 +13,8 @@ import { loadTemplate } from "@/templates";
 type Props = PageProps<"/[locale]/invitations/[id]">;
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const { id } = await params;
-  const event = await loadEvent(id);
-  const t = await getTranslations("Meta");
   return {
-    title: event
-      ? t("invitation", { title: event.title })
-      : t("invitationFallback"),
+    ...(await eventMetadata((await params).id, "invitation")),
     robots: { index: false, follow: false },
   };
 }
@@ -36,7 +29,7 @@ export default async function HostInvitationPage({ params }: Props) {
 
   const [loaded, stored] = await Promise.all([
     loadTemplate(event.templateId),
-    loadInvitation(event.id),
+    loadInvitation(event),
   ]);
   if (!loaded) notFound();
 

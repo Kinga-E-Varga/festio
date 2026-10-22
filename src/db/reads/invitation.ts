@@ -5,6 +5,7 @@ import { paths } from "@/db/paths";
 import { parseCard } from "@/db/reads/parse";
 import { invitationSchema, type InvitationDoc } from "@/db/schemas/invitation";
 import type { Language } from "@/lib/language";
+import type { DashboardEvent } from "@/types/dashboard";
 import { initialState } from "@/modular/state";
 import type {
   ModularLibrary,
@@ -15,17 +16,16 @@ import type {
 /**
  * The invitation's own card, or null before the host has saved one. A card
  * that fails its schema reads as none, so the template's start shows instead.
+ * It takes the event, not its id: only an event a check returned (the host's,
+ * or a guest link's) can be passed.
  */
 export const loadInvitation = cache(
-  async (eventId: string): Promise<InvitationDoc | null> => {
+  async (event: DashboardEvent): Promise<InvitationDoc | null> => {
     await connection();
-    const snapshot = await db.doc(paths.invitation(eventId)).get();
+    const path = paths.invitation(event.id);
+    const snapshot = await db.doc(path).get();
     if (!snapshot.exists) return null;
-    return parseCard(
-      invitationSchema,
-      paths.invitation(eventId),
-      snapshot.data(),
-    );
+    return parseCard(invitationSchema, path, snapshot.data());
   },
 );
 

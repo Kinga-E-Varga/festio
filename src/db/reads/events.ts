@@ -5,7 +5,7 @@ import { paths } from "@/db/paths";
 import { eventSchema, type EventDoc } from "@/db/schemas/event";
 import { slugDocSchema } from "@/db/schemas/slug";
 import { SLUG_PATTERN } from "@/lib/slug";
-import { DEV_HOST_ID } from "@/db/reads/host";
+import { requireHostId } from "@/db/reads/session";
 import { parseCard } from "@/db/reads/parse";
 import { replyClose, spanBetween, spanFrom, todayIn } from "@/lib/event";
 import { covers, PACKAGES } from "@/lib/packages";
@@ -59,21 +59,6 @@ function toDashboardEvent(
   };
 }
 
-/**
- * True when `id` can name a Firestore card. An id from a URL that can't
- * (`a/b`, `..`, `__x__`) would make Firestore throw; it reads as no event.
- */
-function isCardId(id: string): boolean {
-  return (
-    id.length > 0 &&
-    id.length <= 1500 &&
-    !id.includes("/") &&
-    id !== "." &&
-    id !== ".." &&
-    !/^__.*__$/.test(id)
-  );
-}
-
 async function toView(
   id: string,
   data: unknown,
@@ -87,30 +72,20 @@ async function toView(
   return toDashboardEvent(id, doc, template?.template.package, now);
 }
 
-/** Every event of the host, in no order: callers sort for their own list. */
+/** Every event of the signed-in host, in no order: callers sort for their own list. */
 export const loadHostEvents = cache(async (): Promise<DashboardEvent[]> => {
   await connection();
+  const hostId = await requireHostId();
   const now = new Date();
   const snapshot = await db
     .collection(paths.events)
-    .where("hostId", "==", DEV_HOST_ID)
+    .where("hostId", "==", hostId)
     .get();
   const events = await Promise.all(
     snapshot.docs.map((doc) => toView(doc.id, doc.data(), now)),
   );
   return events.filter((event) => event !== null);
 });
-
-/** One of the host's events, or null: missing, someone else's, or unreadable. */
-export const loadEvent = cache(
-  async (id: string): Promise<DashboardEvent | null> => {
-    await connection();
-    if (!isCardId(id)) return null;
-    const snapshot = await db.doc(paths.event(id)).get();
-    if (snapshot.get("hostId") !== DEV_HOST_ID) return null;
-    return toView(id, snapshot.data(), new Date());
-  },
-);
 
 /**
  * The event a guest link points at, or null: no such link, a link still
@@ -131,8 +106,8 @@ export const loadEventBySlug = cache(
 );
 
 /** How many names the host pre-loaded, counted by Firestore, not read. */
-export async function guestListCount(eventId: string): Promise<number> {
+export async function guestListCount(event: DashboardEvent): Promise<number> {
   await connection();
-  const snapshot = await db.collection(paths.guestList(eventId)).count().get();
+  const snapshot = await db.collection(paths.guestList(event.id)).count().get();
   return snapshot.data().count;
 }

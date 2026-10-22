@@ -116,7 +116,8 @@
     "cartCount": "{count, plural, one {Cart, # invitation awaiting payment} other {Cart, # invitations awaiting payment}}",
     "account": "Your account",
     "menu": "Dashboard menu",
-    "more": "More"
+    "more": "More",
+    "signIn": "Sign in"
   },
   "Footer": {
     "search": "Search Festio",
@@ -529,7 +530,9 @@
     "printFallback": "Print · Festio",
     "template": "{name} · Templates · Festio",
     "templateFallback": "Templates · Festio",
-    "guests": "{title} · Guests · Festio"
+    "guests": "{title} · Guests · Festio",
+    "signIn": "Sign in · Festio",
+    "signUp": "Create your account · Festio"
   },
   "GuestList": {
     "sectionSummary": "Summary",
@@ -650,5 +653,34 @@
     "tabs": "Guest pages",
     "inviteList": "Invite list",
     "stopList": "Stop using list"
+  },
+  "Auth": {
+    "signInTitle": "Sign in",
+    "signUpTitle": "Create your account",
+    "name": "Your name",
+    "email": "Email",
+    "password": "Password",
+    "nameRequired": "Tell us your name.",
+    "emailInvalid": "Enter a valid email address.",
+    "passwordRequired": "Enter your password.",
+    "passwordShort": "Use at least {min} characters.",
+    "terms": "I agree to the Terms and the data processing agreement.",
+    "termsRequired": "Accept the Terms to create your account.",
+    "termsStep": "You don't have a Festio account yet. Accept the Terms to create one.",
+    "signIn": "Sign in",
+    "createAccount": "Create account",
+    "or": "or",
+    "google": "Continue with Google",
+    "noAccount": "New to Festio?",
+    "toSignUp": "Create an account",
+    "haveAccount": "Already have an account?",
+    "toSignIn": "Sign in",
+    "wrongLogin": "That email and password don't match.",
+    "emailTaken": "This email already has an account. Sign in, or continue with Google.",
+    "tooMany": "Too many tries. Please wait a few minutes and try again.",
+    "offline": "No connection. Check your internet and try again.",
+    "failed": "Something went wrong. Please try again.",
+    "passwordAccount": "This email already has a Festio account with a password. Sign in with your password.",
+    "again": "That took a while, so please sign in again."
   }
 }

@@ -9,7 +9,7 @@ import { replySchema } from "@/db/schemas/reply";
 import { seatingSchema, type SeatingDoc } from "@/db/schemas/seating";
 import { slugDocSchema } from "@/db/schemas/slug";
 import { userSchema } from "@/db/schemas/user";
-import { SLUG_BLOCK_DAYS } from "@/lib/config";
+import { SLUG_BLOCK_DAYS, TERMS_VERSION } from "@/lib/config";
 import { addDays, deletionDate } from "@/lib/event";
 import { buildRows, countRows, toGuestReplies } from "@/lib/guests";
 import { momentFromNow } from "./build";
@@ -132,12 +132,14 @@ async function seedHost(writer: BulkWriter) {
     email: HOST.email,
     password: HOST.password,
     displayName: HOST.name,
+    /* Verified, so trying Google on this email adds Google instead of replacing the password. */
+    emailVerified: true,
   });
   const user = userSchema.parse({
     name: HOST.name,
     language: "en",
     joinedAt: momentFromNow(-120),
-    terms: { version: "2026-01", acceptedAt: momentFromNow(-120) },
+    terms: { version: TERMS_VERSION, acceptedAt: momentFromNow(-120) },
   });
   writer.set(db.doc(paths.user(HOST.uid)), user);
 }

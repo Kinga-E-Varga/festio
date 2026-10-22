@@ -25,3 +25,9 @@ export const PASSWORD_PATTERN = /^[A-Za-z0-9]{4,}$/;
 
 /** The longest message a cancelled invitation shows. */
 export const CANCEL_MESSAGE_MAX = 300;
+
+/** The longest name a host's account takes. */
+export const HOST_NAME_MAX = 80;
+
+/** The shortest password a host's account takes. */
+export const ACCOUNT_PASSWORD_MIN = 8;

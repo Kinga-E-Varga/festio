@@ -116,7 +116,8 @@
     "cartCount": "{count, plural, one {Kosár, # meghívó fizetésre vár} other {Kosár, # meghívó fizetésre vár}}",
     "account": "Fiókod",
     "menu": "Vezérlőpult menü",
-    "more": "Továbbiak"
+    "more": "Továbbiak",
+    "signIn": "Bejelentkezés"
   },
   "Footer": {
     "search": "Keresés a Festióban",
@@ -529,7 +530,9 @@
     "printFallback": "Nyomtatás · Festio",
     "template": "{name} · Sablonok · Festio",
     "templateFallback": "Sablonok · Festio",
-    "guests": "{title} · Vendégek · Festio"
+    "guests": "{title} · Vendégek · Festio",
+    "signIn": "Bejelentkezés · Festio",
+    "signUp": "Fiók létrehozása · Festio"
   },
   "GuestList": {
     "sectionSummary": "Összegzés",
@@ -650,5 +653,34 @@
     "tabs": "Vendégoldalak",
     "inviteList": "Meghívólista",
     "stopList": "Lista kikapcsolása"
+  },
+  "Auth": {
+    "signInTitle": "Bejelentkezés",
+    "signUpTitle": "Hozd létre a fiókodat",
+    "name": "Neved",
+    "email": "E-mail",
+    "password": "Jelszó",
+    "nameRequired": "Add meg a neved.",
+    "emailInvalid": "Adj meg egy érvényes e-mail-címet.",
+    "passwordRequired": "Add meg a jelszavad.",
+    "passwordShort": "Legalább {min} karaktert használj.",
+    "terms": "Elfogadom a Feltételeket és az adatfeldolgozási megállapodást.",
+    "termsRequired": "A fiók létrehozásához fogadd el a Feltételeket.",
+    "termsStep": "Még nincs Festio-fiókod. Fogadd el a Feltételeket, és létrehozzuk.",
+    "signIn": "Bejelentkezés",
+    "createAccount": "Fiók létrehozása",
+    "or": "vagy",
+    "google": "Folytatás Google-fiókkal",
+    "noAccount": "Új vagy a Festión?",
+    "toSignUp": "Fiók létrehozása",
+    "haveAccount": "Már van fiókod?",
+    "toSignIn": "Bejelentkezés",
+    "wrongLogin": "Az e-mail-cím és a jelszó nem egyezik.",
+    "emailTaken": "Ehhez az e-mail-címhez már tartozik fiók. Jelentkezz be, vagy folytasd Google-fiókkal.",
+    "tooMany": "Túl sok próbálkozás. Várj néhány percet, és próbáld újra.",
+    "offline": "Nincs kapcsolat. Ellenőrizd az internetet, és próbáld újra.",
+    "failed": "Valami hiba történt. Próbáld újra.",
+    "passwordAccount": "Ehhez az e-mail-címhez már tartozik jelszavas Festio-fiók. Jelentkezz be a jelszavaddal.",
+    "again": "Eltelt egy kis idő, ezért jelentkezz be újra."
   }
 }

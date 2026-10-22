@@ -16,15 +16,18 @@ import type {
 /** The latest replies the side panel lists, across every event. */
 const LATEST_REPLIES = 20;
 
-export interface HostDashboard {
+export interface HostSummary {
   host: Host;
   events: DashboardEvent[];
   notices: AttentionNotice[];
   /** Waiting for payment: what sits in the cart. */
   unpaid: DashboardEvent[];
-  activity: RsvpActivity[];
   /** The strip's and the landing bar's initials and counts. */
   bar: BarData;
+}
+
+export interface HostDashboard extends HostSummary {
+  activity: RsvpActivity[];
 }
 
 /** Who on the list hasn't replied yet, read only for the events whose notice names them. */
@@ -40,25 +43,32 @@ async function waitingCounts(
   return Object.fromEntries(counted);
 }
 
-/** Everything the dashboard's shell and Home read, once per request. */
-export const loadDashboard = cache(async (): Promise<HostDashboard> => {
+/** The host, their events and what needs them, without the latest replies: the landing bar's read. */
+export const loadHostSummary = cache(async (): Promise<HostSummary> => {
   const [host, events] = await Promise.all([loadHost(), loadHostEvents()]);
-  const [waiting, activity] = await Promise.all([
-    waitingCounts(events),
-    loadRecentReplies(events, LATEST_REPLIES),
-  ]);
-  const notices = hostNotices(events, waiting);
+  const notices = hostNotices(events, await waitingCounts(events));
   const unpaid = events.filter(awaitingPayment);
   return {
     host,
     events,
     notices,
     unpaid,
-    activity,
     bar: {
       initials: host.initials,
       cart: unpaid.length,
       alerts: notices.length,
     },
   };
+});
+
+/** Everything the dashboard's shell and Home read, once per request. */
+export const loadDashboard = cache(async (): Promise<HostDashboard> => {
+  /* Both start from the host's events, read once (`cache`), so they run side by side. */
+  const [summary, activity] = await Promise.all([
+    loadHostSummary(),
+    loadHostEvents().then((events) =>
+      loadRecentReplies(events, LATEST_REPLIES),
+    ),
+  ]);
+  return { ...summary, activity };
 });

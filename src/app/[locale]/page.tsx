@@ -1,9 +1,11 @@
 import { LandingHeader } from "@/components/landing/LandingHeader";
 import { SiteFooter } from "@/components/landing/SiteFooter";
-import { loadDashboard } from "@/db/reads/dashboard";
+import { loadHostSummary } from "@/db/reads/dashboard";
+import { loadHostId } from "@/db/reads/session";
 
 export default async function Home() {
-  const { bar } = await loadDashboard();
+  /* Signed out, the bar offers sign-in instead of the host's counts. */
+  const bar = (await loadHostId()) ? (await loadHostSummary()).bar : null;
 
   return (
     <>

@@ -17,21 +17,21 @@ one) — see the comments in `[locale]/layout.tsx` and `invite/[invite]/layout.t
 **Host app**, locale-routed via `next-intl` (EN unprefixed, RO/HU under
 `/ro`, `/hu`):
 
-| Path                                              | Purpose                                                                                  |
-| ------------------------------------------------- | ---------------------------------------------------------------------------------------- |
-| `[locale]/layout.tsx`                             | Root layout for the host app — fonts, `NextIntlClientProvider`, global chrome            |
-| `[locale]/page.tsx`                               | Landing page                                                                             |
-| `globals.css`                                     | **All** Tailwind v4 theme config lives here (`@theme`). No JS config file.               |
-| `[locale]/invitations/[id]/page.tsx`              | Host-side invitation view/editor                                                         |
-| `[locale]/prints/[id]/page.tsx`                   | Host-side printable invitation                                                           |
-| `[locale]/templates/[id]/page.tsx`                | Template preview                                                                         |
-| `[locale]/dashboard/page.tsx`                     | Dashboard home                                                                           |
-| `[locale]/dashboard/layout.tsx`                   | Dashboard shell wrapper                                                                  |
-| `[locale]/dashboard/events/[id]/page.tsx`         | Event Overview — the event's own home (no events list: Home lists them all)              |
-| `[locale]/dashboard/events/[id]/load-event.ts`    | `openEvent` (not found, or Home once archived) and `eventMetadata`, for every event page |
-| `[locale]/dashboard/events/[id]/details/page.tsx` | Event editor (Event details)                                                             |
-| `[locale]/dashboard/events/[id]/guests/page.tsx`  | Event guest list                                                                         |
-| `[locale]/dashboard/events/[id]/report/page.tsx`  | Draft: report a flood of unexpected replies                                              |
+| Path                                              | Purpose                                                                       |
+| ------------------------------------------------- | ----------------------------------------------------------------------------- |
+| `[locale]/layout.tsx`                             | Root layout for the host app — fonts, `NextIntlClientProvider`, global chrome |
+| `[locale]/page.tsx`                               | Landing page                                                                  |
+| `globals.css`                                     | **All** Tailwind v4 theme config lives here (`@theme`). No JS config file.    |
+| `[locale]/invitations/[id]/page.tsx`              | Host-side invitation view/editor                                              |
+| `[locale]/prints/[id]/page.tsx`                   | Host-side printable invitation                                                |
+| `[locale]/templates/[id]/page.tsx`                | Template preview                                                              |
+| `[locale]/dashboard/page.tsx`                     | Dashboard home                                                                |
+| `[locale]/dashboard/layout.tsx`                   | Dashboard shell wrapper                                                       |
+| `[locale]/dashboard/events/[id]/page.tsx`         | Event Overview — the event's own home (no events list: Home lists them all)   |
+| `[locale]/dashboard/events/[id]/details/page.tsx` | Event editor (Event details)                                                  |
+| `[locale]/dashboard/events/[id]/guests/page.tsx`  | Event guest list                                                              |
+| `[locale]/dashboard/events/[id]/report/page.tsx`  | Draft: report a flood of unexpected replies                                   |
+| `[locale]/sign-in/page.tsx`, `sign-up/page.tsx`   | Sign in / sign up (`AuthPage`); signed in, they go to the dashboard           |
 
 **Guest invitation**, outside next-intl entirely, no language switch:
 
@@ -84,36 +84,43 @@ Two folders: `simple/` (basic invitations) and `modular/` (custom invitations). 
 
 Geometry (`.sheet`, `.sheet-view`, `.leaf`, `.flip`, `.fold`, `.sheet-form`) lives in `globals.css`.
 
+## Auth — `src/components/auth/`, `src/actions/auth.ts`
+
+- `AuthPage.tsx` — the sign-in and sign-up pages' card. `AuthForm.tsx` — email + password and Google, the Terms step for a new Google account.
+- `src/actions/auth.ts` — `startSession` (ID token → `users` card if new → `__session` cookie), `signOut`.
+- The browser signs in through `src/lib/firebase-client.ts`, in memory only; the cookie keeps the host signed in.
+
 ## Landing — `src/components/landing/`
 
-- `LandingHeader.tsx` — the landing page's dark top bar (`TOP_BAR`), once a copy of the dashboard's phone top bar.
+- `LandingHeader.tsx` — the landing page's dark top bar (`TOP_BAR`), once a copy of the dashboard's phone top bar. Signed out, a Sign in link instead of the counts.
 - `SiteFooter.tsx` — the site footer (links, search, language switcher); the landing page only, dashboards have none.
 
 ## Lib — `src/lib/`
 
-| File               | Holds                                                                                                                                                                                                                                                                     |
-| ------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `config.ts`        | `GUEST_DATA_RETENTION_DAYS` — the single GDPR retention parameter. Never inline it. Also the reply-cap margins, the replies-closing-soon window and `SLUG_BLOCK_DAYS`.                                                                                                    |
-| `event.ts`         | `eventPath` (an event's dashboard pages), `invitationLink`, `defaultReplyClose` (24h rule), `dateLocked` (from the event day), `deletionDate`, date formatting, expected-guests and reply-cap helpers, `replyClose` / `replyWindow`, `todayIn` / `spanFrom`, `shortTitle` |
-| `slug.ts`          | `RESERVED_SLUGS` (the one list), slug limits and `SLUG_PATTERN`, `normalizeSlug`, suggestions, the invite rewrite pattern. Relative imports only — `next.config.ts` reads it.                                                                                             |
-| `invitation.ts`    | Template vars, `invitationValues` (saved text over the template's fallbacks, the event's date), fallback values, `DATE_FORMATS`                                                                                                                                           |
-| `fonts.ts`         | Invitation fonts via `next/font/google` (per-template, not the app chrome — that's `src/app/fonts.ts`). Also the font pairs' faces (Gelasio, Arimo, Fraunces, Space Grotesk).                                                                                             |
-| `history.ts`       | Local visit tracking; `useLeaveFestio(fallback)` — the one BACK, with each page's own fallback when no Festio page is behind it                                                                                                                                           |
-| `guests.ts`        | Guest rows from list + replies: `toGuestReplies` (reply cards → rows, shared with the seed), matching, Unknown/Duplicate tags, grouping and splitting by category, counts, filters, repeat check. No React or Firebase.                                                   |
-| `leave-warning.ts` | `useLeaveWarning(active, message)` — while there are unsaved changes, asks before reload/close (the browser's prompt) and before in-app links or a `data-leaves` control (BACK)                                                                                           |
-| `language.ts`      | `LANGUAGES` (the one list, read by both `i18n/routing.ts` and an invitation's `language`), `LocalizedText`/`localized`, locale tags and names, `plainText` (case- and accent-blind search)                                                                                |
-| `picked-event.ts`  | The event the nav is on: `PICKED_EVENT_COOKIE` (read in the dashboard layout), `toPickerEvent`, `resolvePicked`, `writePickedEvent` — the one place it is written                                                                                                         |
-| `packages.ts`      | `PACKAGES` (prices, what each unlocks), `nextPackage`, `covers` (paid = bought covers the template's), `upgradePrice` (the difference)                                                                                                                                    |
-| `id.ts`            | `newId()` — a random UUID; falls back to `getRandomValues` where `crypto.randomUUID` is missing (pages not on HTTPS or localhost, e.g. a phone on the dev server)                                                                                                         |
+| File                 | Holds                                                                                                                                                                                                                                                                     |
+| -------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `config.ts`          | `GUEST_DATA_RETENTION_DAYS` — the single GDPR retention parameter. Never inline it. Also the reply-cap margins, the replies-closing-soon window, `SLUG_BLOCK_DAYS`, `TERMS_VERSION` and `SESSION_DAYS`.                                                                   |
+| `event.ts`           | `eventPath` (an event's dashboard pages), `invitationLink`, `defaultReplyClose` (24h rule), `dateLocked` (from the event day), `deletionDate`, date formatting, expected-guests and reply-cap helpers, `replyClose` / `replyWindow`, `todayIn` / `spanFrom`, `shortTitle` |
+| `slug.ts`            | `RESERVED_SLUGS` (the one list), slug limits and `SLUG_PATTERN`, `normalizeSlug`, suggestions, the invite rewrite pattern. Relative imports only — `next.config.ts` reads it.                                                                                             |
+| `invitation.ts`      | Template vars, `invitationValues` (saved text over the template's fallbacks, the event's date), fallback values, `DATE_FORMATS`                                                                                                                                           |
+| `fonts.ts`           | Invitation fonts via `next/font/google` (per-template, not the app chrome — that's `src/app/fonts.ts`). Also the font pairs' faces (Gelasio, Arimo, Fraunces, Space Grotesk).                                                                                             |
+| `history.ts`         | Local visit tracking; `useLeaveFestio(fallback)` — the one BACK, with each page's own fallback when no Festio page is behind it                                                                                                                                           |
+| `guests.ts`          | Guest rows from list + replies: `toGuestReplies` (reply cards → rows, shared with the seed), matching, Unknown/Duplicate tags, grouping and splitting by category, counts, filters, repeat check. No React or Firebase.                                                   |
+| `leave-warning.ts`   | `useLeaveWarning(active, message)` — while there are unsaved changes, asks before reload/close (the browser's prompt) and before in-app links or a `data-leaves` control (BACK)                                                                                           |
+| `language.ts`        | `LANGUAGES` (the one list, read by both `i18n/routing.ts` and an invitation's `language`), `LocalizedText`/`localized`, locale tags and names, `plainText` (case- and accent-blind search)                                                                                |
+| `picked-event.ts`    | The event the nav is on: `PICKED_EVENT_COOKIE` (read in the dashboard layout), `toPickerEvent`, `resolvePicked`, `writePickedEvent` — the one place it is written                                                                                                         |
+| `packages.ts`        | `PACKAGES` (prices, what each unlocks), `nextPackage`, `covers` (paid = bought covers the template's), `upgradePrice` (the difference)                                                                                                                                    |
+| `firebase-client.ts` | `clientAuth()` — the browser's Firebase Auth, in memory, on the emulator in dev. Sign-in only; never import `@/db/admin` in the browser                                                                                                                                   |
+| `id.ts`              | `newId()` — a random UUID; falls back to `getRandomValues` where `crypto.randomUUID` is missing (pages not on HTTPS or localhost, e.g. a phone on the dev server)                                                                                                         |
 
 ## Database — `src/db/` and `seed/`
 
-Every page reads it (server only, no writes yet). Shapes: `context/features/pending/database.md`.
+Every page reads it (server only; the only writes yet are sign-in's `users` card). Shapes: `context/features/pending/database.md`.
 
-- `src/db/reads/` — the pages' reads, Admin SDK, each card checked by its schema, each loader in React `cache()` and behind `connection()` (nothing read at build). `host.ts` (`DEV_HOST_ID`, the seed's host until sign-in; `loadHost`), `events.ts` (`toDashboardEvent` — countdown, paid, closes in worked out; `loadHostEvents`, `loadEvent`, `loadEventBySlug` through the slug card, `guestListCount`), `guests.ts` (`loadGuests`, once per event per request), `invitation.ts` (`loadInvitation`, `modularStart`), `activity.ts` (latest replies), `parse.ts` (`parseCard` / `parseCards`: a card failing its schema is logged and read as missing), `dashboard.ts` (`loadDashboard`: host, events, alerts, cart, latest replies).
+- `src/db/reads/` — the pages' reads, Admin SDK, each card checked by its schema, each loader in React `cache()` and behind `connection()` (nothing read at build). `session.ts` (`SESSION_COOKIE`, `loadHostId` — the signed-in uid or null, `requireHostId` — else to sign-in), `access.ts` (**the shared check**: `hostEvent` — one of the signed-in host's events or null, `openEvent` — not found, or Home once archived; `eventMetadata` — a host page's tab title; every host page and Server Action starts here), `host.ts` (`loadHost`), `events.ts` (`toDashboardEvent` — countdown, paid, closes in worked out; `loadHostEvents`, `loadEventBySlug` through the slug card, `guestListCount`), `guests.ts` (`loadGuests`, once per event per request), `invitation.ts` (`loadInvitation`, `modularStart`), `activity.ts` (latest replies), `parse.ts` (`parseCard` / `parseCards`: a card failing its schema is logged and read as missing), `dashboard.ts` (`loadHostSummary`: host, events, alerts, cart — the landing bar's; `loadDashboard`: that plus the latest replies). Reads that take a `DashboardEvent` (`loadGuests`, `loadInvitation`, `guestListCount`) only get one a check returned.
 
 - `src/db/schemas/` — one Zod schema per Firestore card (`event`, `invitation`, `reply`, `guest-list`, `user`, `slug`, `seating`, `payment`, `rate-limit`) plus `common`. Plain Zod, no Firebase import, so browser and server share them. The value lists (visibility, packages, age groups, diets, …) live here; `src/types/` derives its unions and `PrintSettings` / `AnswerValue` from them.
-- `src/db/limits.ts` — `EVENT_KINDS`, `TITLE_MIN`/`MAX`, `PASSWORD_PATTERN`, `CANCEL_MESSAGE_MAX`: no Zod, so client forms import them without shipping Zod.
+- `src/db/limits.ts` — `EVENT_KINDS`, `TITLE_MIN`/`MAX`, `PASSWORD_PATTERN`, `HOST_NAME_MAX`, `ACCOUNT_PASSWORD_MIN`, `CANCEL_MESSAGE_MAX`: no Zod, so client forms import them without shipping Zod.
 - `src/db/paths.ts` — every collection and document path.
 - `src/db/admin.ts` — the Admin SDK (`db`, `auth`). With `NEXT_PUBLIC_USE_EMULATORS=true` (`.env.development`) it talks to the local emulators, ports from `firebase.json`.
 - `seed/` — the emulators' seed data and runner: `npm run emulators` starts Firestore, Auth and Storage and seeds them; `npm run seed` resets the data. Host login `maria@festio.test` / `festio-dev`.
@@ -121,7 +128,7 @@ Every page reads it (server only, no writes yet). Shapes: `context/features/pend
 
 ## Other
 
-- `src/types/` — `envelope.ts` (the envelope's colour roles), `invitation.ts` (incl. `TemplateModule`, a union of simple and modular), `modular.ts` (sections, palettes, pairs, modular templates), `dashboard.ts`, `print.ts`, `guests.ts` (the guest list's view shapes)
+- `src/types/` — `actions.ts` (`ActionResult`, every Server Action's return), `envelope.ts` (the envelope's colour roles), `invitation.ts` (incl. `TemplateModule`, a union of simple and modular), `modular.ts` (sections, palettes, pairs, modular templates), `dashboard.ts`, `print.ts`, `guests.ts` (the guest list's view shapes)
 - `src/mock/dashboard.ts` — the nav, account and footer keys only; `src/mock/inv-img/` — the print preview's placeholder front
 - `src/components/icons.tsx` — app-wide icons
 - Config: `next.config.ts`, `tsconfig.json`, `eslint.config.mjs`, `postcss.config.mjs`

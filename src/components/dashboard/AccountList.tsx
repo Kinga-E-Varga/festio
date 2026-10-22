@@ -1,5 +1,5 @@
 import { useTranslations } from "next-intl";
-import { Link } from "@/i18n/navigation";
+import { signOut } from "@/actions/auth";
 import { Icon } from "@/components/icons";
 import { NavLink } from "@/components/dashboard/NavLink";
 import { QUIT_ITEM, SIDE_ICON } from "@/components/dashboard/styles";
@@ -23,13 +23,19 @@ export function AccountList() {
         ))}
       </ul>
 
-      {/* No accounts yet, so Log out leaves for the landing page, like Quit. */}
-      <div className="mt-3 border-t border-neutral-200 pt-3">
-        <Link href="/" className={`-mx-3 wide:-mx-4 ${QUIT_ITEM} wide:px-4`}>
+      {/* Log out ends the session and leaves for the landing page. */}
+      <form
+        action={signOut}
+        className="mt-3 flex flex-col border-t border-neutral-200 pt-3"
+      >
+        <button
+          type="submit"
+          className={`-mx-3 cursor-pointer wide:-mx-4 ${QUIT_ITEM} wide:px-4`}
+        >
           <Icon name="logout" {...SIDE_ICON} />
           <span>{t("logout")}</span>
-        </Link>
-      </div>
+        </button>
+      </form>
     </div>
   );
 }

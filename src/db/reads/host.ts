@@ -4,14 +4,7 @@ import { db } from "@/db/admin";
 import { paths } from "@/db/paths";
 import { parseCard } from "@/db/reads/parse";
 import { userSchema } from "@/db/schemas/user";
-
-/*
- * Server reads, Admin SDK only: it skips the security rules, so every read
- * here checks the card belongs to the host itself.
- */
-
-/** The seed's host, standing in for the signed-in one until sign-in exists (step 3). */
-export const DEV_HOST_ID = "host-maria";
+import { requireHostId } from "@/db/reads/session";
 
 export interface Host {
   id: string;
@@ -31,9 +24,11 @@ export function initials(name: string): string {
 
 export const loadHost = cache(async (): Promise<Host> => {
   await connection();
-  const snapshot = await db.doc(paths.user(DEV_HOST_ID)).get();
-  const user = parseCard(userSchema, paths.user(DEV_HOST_ID), snapshot.data());
-  /* Without its own card nothing can be shown as the host: a setup problem, not a guest's. */
-  if (!user) throw new Error(`No readable host card: run \`npm run seed\`.`);
-  return { id: DEV_HOST_ID, name: user.name, initials: initials(user.name) };
+  const uid = await requireHostId();
+  const snapshot = await db.doc(paths.user(uid)).get();
+  const user = parseCard(userSchema, paths.user(uid), snapshot.data());
+  /* Signing in creates the card, so a signed-in host without one is a data problem. */
+  if (!user)
+    throw new Error(`Signed in as ${uid}, but no readable users card.`);
+  return { id: uid, name: user.name, initials: initials(user.name) };
 });

@@ -25,7 +25,7 @@ export default async function InvitationPage({
 
   const [loaded, stored] = await Promise.all([
     loadSimpleTemplate(event.templateId),
-    loadInvitation(event.id),
+    loadInvitation(event),
   ]);
   if (!loaded) notFound();
 

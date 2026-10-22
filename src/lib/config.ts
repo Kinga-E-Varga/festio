@@ -17,3 +17,9 @@ export const REPLIES_CLOSING_SOON_DAYS = 7;
 
 /** Days a deleted event's link stays blocked, so old printed cards never open a stranger's invitation. */
 export const SLUG_BLOCK_DAYS = 365;
+
+/** The Terms (with the DPA) a new host accepts; a new version can be asked for again. */
+export const TERMS_VERSION = "2026-01";
+
+/** How long a host stays signed in: Firebase's longest session cookie. */
+export const SESSION_DAYS = 14;

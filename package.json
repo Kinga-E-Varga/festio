@@ -13,6 +13,7 @@
     "seed": "node --env-file=.env.development --import tsx seed/index.ts"
   },
   "dependencies": {
+    "firebase": "^13.1.0",
     "firebase-admin": "^14.5.0",
     "next": "16.3.4",
     "next-intl": "^4.14.6",

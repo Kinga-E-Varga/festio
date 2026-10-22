@@ -1,12 +1,13 @@
 import { z } from "zod";
 import { languageSchema, momentSchema } from "@/db/schemas/common";
+import { HOST_NAME_MAX } from "@/db/limits";
 
 /**
  * `users/{uid}` — what Festio needs on top of the Auth login. No list of
  * events: each event card names its host.
  */
 export const userSchema = z.object({
-  name: z.string().trim().min(1),
+  name: z.string().trim().min(1).max(HOST_NAME_MAX),
   /** The app language the host last chose. */
   language: languageSchema,
   joinedAt: momentSchema,

@@ -8,6 +8,7 @@ import {
   QUIT_ITEM,
   QUIT_RULE,
   SIDE_ICON,
+  LOCKUP,
 } from "@/components/dashboard/styles";
 import { NAV_ITEMS } from "@/mock/dashboard";
 import type { PickerEvent } from "@/types/dashboard";
@@ -38,7 +39,7 @@ export function SideNav({ events, storedEventId }: SideNavProps) {
       >
         <span
           aria-hidden="true"
-          className="block aspect-[148/32] h-[30px] bg-primary-800 nav:h-btn mask-[url(/festio-lockup-alt.svg)] mask-contain mask-center mask-no-repeat"
+          className={`h-[30px] bg-primary-800 nav:h-btn ${LOCKUP}`}
         />
       </Link>
 
