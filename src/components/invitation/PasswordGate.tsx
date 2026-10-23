@@ -4,6 +4,7 @@ import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { unlockInvitation } from "@/actions/guest";
+import { orFailed } from "@/lib/action";
 import {
   BOXED_INPUT,
   REPLY_LABEL,
@@ -35,7 +36,7 @@ export function PasswordGate({ slug }: { slug: string }) {
 
   async function open({ password }: { password: string }) {
     setError(null);
-    const result = await unlockInvitation(slug, password);
+    const result = await orFailed(unlockInvitation(slug, password));
     if (!result.success) setError(result.error);
   }
 
