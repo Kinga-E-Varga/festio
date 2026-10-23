@@ -528,6 +528,31 @@
   }
 }
 
+/*
+ * A quick label for an icon-only button, from its `data-tip`: shown at once on
+ * hover or keyboard focus, where the browser's own `title` waits about a
+ * second. It sits at the button's left, so a card's clipped edge never cuts
+ * it; a long label wraps. Mouse only: a tap would leave it stuck on.
+ */
+@utility icon-tip {
+  position: relative;
+
+  &[data-tip]::after {
+    content: attr(data-tip);
+    @apply pointer-events-none absolute top-1/2 right-full z-10 mr-1.5 w-max max-w-[220px] -translate-y-1/2 rounded-ui bg-neutral-950 px-2 py-1 text-left hint-face text-neutral-50 opacity-0 transition-opacity;
+  }
+
+  @media (hover: hover) {
+    &[data-tip]:hover::after {
+      @apply opacity-100 delay-150;
+    }
+  }
+
+  &[data-tip]:focus-visible::after {
+    @apply opacity-100;
+  }
+}
+
 @layer components {
   /*
    * A guest sees one designed object, so nothing of Festio's own palette may

@@ -21,6 +21,8 @@ interface FrameProps extends Pick<RowEditorProps, "onCancel" | "pending"> {
   onSubmit: FormEventHandler<HTMLFormElement>;
   /** In a `Dialog`: no box of its own, and Cancel / Save pinned to its bottom. */
   inDialog?: boolean;
+  /** The save is on its way: Save waits, so a second click sends nothing. */
+  saving?: boolean;
   children: ReactNode;
 }
 
@@ -30,6 +32,7 @@ export function RowEditor({
   onCancel,
   pending,
   inDialog = false,
+  saving = false,
   children,
 }: FrameProps) {
   const t = useTranslations("GuestList");
@@ -59,7 +62,7 @@ export function RowEditor({
           <button type="button" onClick={onCancel} className={BTN_GHOST_LIGHT}>
             {t("cancel")}
           </button>
-          <button type="submit" className={BTN_PRIMARY}>
+          <button type="submit" disabled={saving} className={BTN_PRIMARY}>
             {t("save")}
           </button>
         </div>

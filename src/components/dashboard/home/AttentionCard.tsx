@@ -16,7 +16,6 @@ const MARK: Record<NoticeTone, string> = {
   paused: "bg-danger-600",
   deadline: "bg-warning-400",
   deletion: "bg-warning-400",
-  billing: "bg-warning-400",
   hidden: "bg-warning-400",
 };
 

@@ -35,8 +35,8 @@ export function orderEvents(
  * the past latest first, each with its status worked out.
  */
 export function homeRows(events: DashboardEvent[]): HomeEventRow[] {
-  const past = events.filter(isPast);
-  const upcoming = events.filter((event) => !isPast(event));
+  const past = events.filter((event) => eventStatus(event) === "past");
+  const upcoming = events.filter((event) => eventStatus(event) !== "past");
   return [...orderEvents(upcoming, "active"), ...orderEvents(past, "past")].map(
     (event) => ({
       id: event.id,
@@ -59,23 +59,24 @@ export function isPast(event: { countdown: TimeSpan }): boolean {
   return event.countdown.value < 0;
 }
 
-/** Past and its guest data deleted: the record is a stub, with nothing to open. */
-export function isArchived(event: {
-  countdown: TimeSpan;
-  dataDeleted: boolean;
-}): boolean {
-  return isPast(event) && event.dataDeleted;
+/**
+ * Its data deleted, whatever the date (a cancelled event can be deleted
+ * before it): the record is a stub, with nothing to open.
+ */
+export function isArchived(event: { dataDeleted: boolean }): boolean {
+  return event.dataDeleted;
 }
 
 /**
  * Which pile an event is in. Active means guests can open the invitation:
- * paid for and not Hidden. Anything else still ahead is a draft.
+ * not Hidden. A saved event is always paid for. An archived event is past,
+ * even one deleted before its date.
  */
 export function eventStatus(
-  event: Pick<DashboardEvent, "countdown" | "paid" | "visibility">,
+  event: Pick<DashboardEvent, "countdown" | "visibility" | "dataDeleted">,
 ): EventStatus {
-  if (isPast(event)) return "past";
-  return event.paid && event.visibility !== "hidden" ? "active" : "draft";
+  if (isPast(event) || isArchived(event)) return "past";
+  return event.visibility !== "hidden" ? "active" : "hidden";
 }
 
 /** The guest-facing address as a route this app can navigate to. */

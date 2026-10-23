@@ -6,7 +6,7 @@ import { getLocale } from "next-intl/server";
 import { z } from "zod";
 import { auth, db } from "@/db/admin";
 import { paths } from "@/db/paths";
-import { SESSION_COOKIE } from "@/db/reads/session";
+import { FRESH_SIGN_IN_SECONDS, SESSION_COOKIE } from "@/db/reads/session";
 import { HOST_NAME_MAX } from "@/db/limits";
 import { languageSchema } from "@/db/schemas/common";
 import { userSchema } from "@/db/schemas/user";
@@ -15,9 +15,6 @@ import { SESSION_DAYS, TERMS_VERSION } from "@/lib/config";
 import { DAY_MS } from "@/lib/event";
 import type { Language } from "@/lib/language";
 import type { ActionResult } from "@/types/actions";
-
-/** Firebase's advice: only turn a fresh sign-in into a session, never an old token. */
-const FRESH_SIGN_IN_SECONDS = 5 * 60;
 
 /** gRPC's ALREADY_EXISTS, what `create()` throws when the card is there. */
 const ALREADY_EXISTS = 6;

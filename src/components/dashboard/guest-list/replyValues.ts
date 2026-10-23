@@ -100,16 +100,18 @@ export function personValues(
   };
 }
 
-/** One person's reply, as their row's editor opens it. */
+/**
+ * A saved reply as its editor opens it: everyone in it, one status, and the
+ * reply-wide answers (each person holds a copy; the first one's is shown).
+ */
 export function replyValues(
-  reply: GuestReply,
+  group: GuestReply[],
   questions: GuestQuestion[],
 ): ReplyValues {
   return {
-    status: reply.status,
-    people: [personValues(reply, questions)],
-    shared: answersIn(reply, sharedQuestions(questions)),
-    separate: false,
+    status: group[0].status,
+    people: group.map((reply) => personValues(reply, questions)),
+    shared: answersIn(group[0], sharedQuestions(questions)),
   };
 }
 
@@ -118,7 +120,6 @@ export function newReplyValues(questions: GuestQuestion[]): ReplyValues {
     status: "going",
     people: [personValues(null, questions)],
     shared: answersIn(null, sharedQuestions(questions)),
-    separate: false,
   };
 }
 
@@ -179,65 +180,73 @@ export function newReplies(
   ids: string[],
   repliedAt: string,
 ): GuestReply[] {
-  return values.people.map((person, at) => {
-    const blank: GuestReply = {
+  return values.people.map((person, at) =>
+    newPerson(values, person, questions, {
       id: ids[at],
       submissionId: ids[0],
-      name: "",
-      status: values.status,
-      note: null,
       repliedAt,
-      differentPerson: false,
-    };
-    const filled = applyPerson(blank, person, values.status, questions, true);
-    return values.status === "going"
-      ? applyShared(filled, values.shared, questions, true)
-      : filled;
-  });
+    }),
+  );
+}
+
+function newPerson(
+  values: ReplyValues,
+  person: PersonValues,
+  questions: GuestQuestion[],
+  card: Pick<GuestReply, "id" | "submissionId" | "repliedAt">,
+): GuestReply {
+  const blank: GuestReply = {
+    ...card,
+    name: "",
+    status: values.status,
+    note: null,
+    differentPerson: false,
+  };
+  const filled = applyPerson(blank, person, values.status, questions, true);
+  return values.status === "going"
+    ? applyShared(filled, values.shared, questions, true)
+    : filled;
 }
 
 /**
- * One person's edit. The reply-wide answers change for everyone who replied
- * with them. Switched to Coming, the person is asked like a new reply.
- *
- * Separated, the person moves to a reply of their own (`ownId`): they keep
- * their copy of the reply-wide answers, the others keep theirs, and the
- * message stays with the others, so it shows and counts once.
+ * A saved reply's edit: `group` is its people in the editor's order, the
+ * values' people after them are added to it (`newIds`). The status and the
+ * reply-wide answers are the whole reply's. Someone switched to Coming is
+ * asked like a new reply. People can't be removed here: they're separated
+ * first, then deleted on their own.
  */
 export function editReply(
   replies: GuestReply[],
-  id: string,
+  group: string[],
   values: ReplyValues,
   questions: GuestQuestion[],
-  ownId: string,
+  newIds: string[],
 ): GuestReply[] {
-  const target = replies.find((reply) => reply.id === id);
-  if (!target) return replies;
   const going = values.status === "going";
-  const asked = target.status !== "going" && going;
-  return replies.map((reply) => {
-    if (reply.id === id) {
-      const edited = applyPerson(
-        reply,
-        values.people[0],
-        values.status,
-        questions,
-        asked,
-      );
-      const moved = values.separate
-        ? { ...edited, submissionId: ownId, note: null }
-        : edited;
-      return going
-        ? applyShared(moved, values.shared, questions, asked)
-        : moved;
-    }
-    if (
-      going &&
-      !values.separate &&
-      reply.submissionId === target.submissionId
-    ) {
-      return applyShared(reply, values.shared, questions, false);
-    }
-    return reply;
+  const edited = replies.map((reply) => {
+    const at = group.indexOf(reply.id);
+    if (at === -1) return reply;
+    const asked = reply.status !== "going" && going;
+    const person = applyPerson(
+      reply,
+      values.people[at],
+      values.status,
+      questions,
+      asked,
+    );
+    return going
+      ? applyShared(person, values.shared, questions, asked)
+      : person;
   });
+  const first = replies.find((reply) => reply.id === group[0]);
+  if (!first) return edited;
+  /* Added people join the reply as if they had come with it. */
+  const added = values.people.slice(group.length).map((person, at) =>
+    newPerson(values, person, questions, {
+      id: newIds[at],
+      submissionId: first.submissionId,
+      repliedAt: first.repliedAt,
+    }),
+  );
+  return [...edited, ...added];
 }

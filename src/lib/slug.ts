@@ -48,13 +48,13 @@ export function isReservedSlug(slug: string): boolean {
 }
 
 /**
- * Free alternatives for a slug someone already has: the event's year first,
- * then a counter. Only ones that are free and still fit are offered.
+ * Alternatives for a slug someone already has: the event's year first, then a
+ * counter. Only ones that still fit and aren't reserved; whether each is free
+ * is the server's to check.
  */
 export function slugSuggestions(
   slug: string,
   year: string,
-  taken: readonly string[],
   count = 3,
 ): string[] {
   const base = slug.replace(/-+$/, "");
@@ -64,10 +64,7 @@ export function slugSuggestions(
   }
   return candidates
     .filter(
-      (candidate) =>
-        candidate.length <= SLUG_MAX &&
-        !taken.includes(candidate) &&
-        !isReservedSlug(candidate),
+      (candidate) => candidate.length <= SLUG_MAX && !isReservedSlug(candidate),
     )
     .slice(0, count);
 }

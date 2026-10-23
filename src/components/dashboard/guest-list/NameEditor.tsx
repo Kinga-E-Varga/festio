@@ -12,7 +12,8 @@ import { NAME_LIMIT } from "@/components/invitation/useRsvpForm";
 
 interface NameEditorProps extends RowEditorProps {
   initial: string;
-  onSave: (name: string) => void;
+  /** Resolves once saved; the form waits for it. */
+  onSave: (name: string) => Promise<unknown>;
 }
 
 /** A waiting name has no reply, so only the name to fix. */
@@ -39,6 +40,7 @@ export function NameEditor({
       onSubmit={handleSubmit((values) => onSave(values.name))}
       onCancel={onCancel}
       pending={pending}
+      saving={formState.isSubmitting}
     >
       <NameField
         registration={register("name", {

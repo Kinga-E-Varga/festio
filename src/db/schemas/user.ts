@@ -11,6 +11,8 @@ export const userSchema = z.object({
   /** The app language the host last chose. */
   language: languageSchema,
   joinedAt: momentSchema,
+  /** When the host last looked at the latest replies; missing = never. */
+  lastVisit: momentSchema.optional(),
   /** Proof of the DPA; a new version can be asked for again. */
   terms: z.object({ version: z.string().min(1), acceptedAt: momentSchema }),
 });

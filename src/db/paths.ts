@@ -8,7 +8,11 @@ export const paths = {
   event: (eventId: string) => `events/${eventId}`,
   invitation: (eventId: string) => `events/${eventId}/invitation/content`,
   replies: (eventId: string) => `events/${eventId}/replies`,
+  reply: (eventId: string, replyId: string) =>
+    `events/${eventId}/replies/${replyId}`,
   guestList: (eventId: string) => `events/${eventId}/guestList`,
+  listName: (eventId: string, nameId: string) =>
+    `events/${eventId}/guestList/${nameId}`,
   seating: (eventId: string) => `events/${eventId}/seating/chart`,
   slug: (slug: string) => `slugs/${slug}`,
   payments: "payments",

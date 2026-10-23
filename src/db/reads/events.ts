@@ -8,25 +8,19 @@ import { SLUG_PATTERN } from "@/lib/slug";
 import { requireHostId } from "@/db/reads/session";
 import { parseCard } from "@/db/reads/parse";
 import { replyClose, spanBetween, spanFrom, todayIn } from "@/lib/event";
-import { covers, PACKAGES } from "@/lib/packages";
-import { loadTemplate } from "@/templates";
-import type { DashboardEvent, PackageId } from "@/types/dashboard";
+import { PACKAGES } from "@/lib/packages";
+import type { DashboardEvent } from "@/types/dashboard";
 
 /**
  * An event card as the pages read it: plain values only, so it can go to a
- * client component, with everything that is worked out (countdown, paid,
+ * client component, with everything that is worked out (countdown,
  * closes in) worked out against `now`.
  */
 function toDashboardEvent(
   id: string,
   doc: EventDoc,
-  templatePackage: PackageId | undefined,
   now: Date,
 ): DashboardEvent {
-  const needed =
-    templatePackage && !covers(doc.package, templatePackage)
-      ? templatePackage
-      : doc.package;
   const today = new Date(`${todayIn(doc.timeZone, now)}T00:00`);
   return {
     id,
@@ -37,9 +31,7 @@ function toDashboardEvent(
     visibility: doc.visibility,
     package: doc.package,
     templateId: doc.templateId,
-    neededPackage: needed,
     language: doc.language,
-    paid: needed === doc.package,
     slug: doc.slug,
     password: doc.password,
     rsvp: {
@@ -56,20 +48,14 @@ function toDashboardEvent(
     repliesCloseIn: spanFrom(now, replyClose(doc)),
     dataDeleted: doc.dataDeleted,
     cancelled: Boolean(doc.cancelled),
+    print: doc.print,
+    version: doc.version,
   };
 }
 
-async function toView(
-  id: string,
-  data: unknown,
-  now: Date,
-): Promise<DashboardEvent | null> {
+function toView(id: string, data: unknown, now: Date): DashboardEvent | null {
   const doc = parseCard(eventSchema, paths.event(id), data);
-  if (!doc) return null;
-  const template = doc.templateId
-    ? await loadTemplate(doc.templateId)
-    : undefined;
-  return toDashboardEvent(id, doc, template?.template.package, now);
+  return doc ? toDashboardEvent(id, doc, now) : null;
 }
 
 /** Every event of the signed-in host, in no order: callers sort for their own list. */
@@ -81,15 +67,14 @@ export const loadHostEvents = cache(async (): Promise<DashboardEvent[]> => {
     .collection(paths.events)
     .where("hostId", "==", hostId)
     .get();
-  const events = await Promise.all(
-    snapshot.docs.map((doc) => toView(doc.id, doc.data(), now)),
-  );
+  const events = snapshot.docs.map((doc) => toView(doc.id, doc.data(), now));
   return events.filter((event) => event !== null);
 });
 
 /**
- * The event a guest link points at, or null: no such link, a link still
- * blocked after its event's data went, or nothing left to show.
+ * The event a guest link points at, or null: no such link, a blocked link
+ * (its event moved off it or its data went), an event that has since moved
+ * to another link, or nothing left to show.
  */
 export const loadEventBySlug = cache(
   async (slug: string): Promise<DashboardEvent | null> => {
@@ -100,8 +85,8 @@ export const loadEventBySlug = cache(
     if (!link || link.blockedUntil) return null;
     const { eventId } = link;
     const snapshot = await db.doc(paths.event(eventId)).get();
-    const event = await toView(eventId, snapshot.data(), new Date());
-    return event && !event.dataDeleted ? event : null;
+    const event = toView(eventId, snapshot.data(), new Date());
+    return event && event.slug === slug && !event.dataDeleted ? event : null;
   },
 );
 

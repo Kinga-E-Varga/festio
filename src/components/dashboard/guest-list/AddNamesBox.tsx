@@ -27,6 +27,8 @@ interface AddNamesBoxProps {
   repliedIds: ReadonlySet<string>;
   onSave: (added: ListName[], removedIds: string[]) => void;
   onCancel: () => void;
+  /** A save is on its way: Save waits for it. */
+  saving: boolean;
   /** Whether anything is waiting to be saved: a draft change or names still in the box. */
   onDirty: (dirty: boolean) => void;
   /** A change to the table was asked for with changes waiting here: the discard prompt asks, and Discard lets it through. */
@@ -42,6 +44,7 @@ export function AddNamesBox({
   repliedIds,
   onSave,
   onCancel,
+  saving,
   onDirty,
   ask,
 }: AddNamesBoxProps) {
@@ -124,7 +127,7 @@ export function AddNamesBox({
           <button
             type="button"
             onClick={save}
-            disabled={!draft.changed && names.length === 0}
+            disabled={saving || (!draft.changed && names.length === 0)}
             className={BTN_PRIMARY}
           >
             {t("save")}

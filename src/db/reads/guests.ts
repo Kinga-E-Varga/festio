@@ -17,9 +17,7 @@ const readGuests = cache(
       db.collection(paths.replies(eventId)).orderBy("sentAt").get(),
       db.collection(paths.guestList(eventId)).get(),
     ]);
-    const list: ListName[] = parseCards(guestListNameSchema, names.docs).map(
-      ({ id, name, sent }) => ({ id, name, sent }),
-    );
+    const list: ListName[] = parseCards(guestListNameSchema, names.docs);
     return {
       list,
       replies: toGuestReplies(parseCards(replySchema, replies.docs)),

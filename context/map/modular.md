@@ -16,7 +16,7 @@ Shared by every modular template, listed with Turbopack's `import.meta.glob` —
 ## Modular page — `src/components/modular/`
 
 - `ModularInvitation.tsx` — the guest page: the `header` section straight in the column, `SectionsDrawer`, the other sections via `SectionView` (loads a variant with `use`). `framed` for the editor.
-- `ModularEditor.tsx` + `ModularEditPanel.tsx` — the `/templates/<id>` editor for modular templates: working and saved state, the open tab and Content section, Save in memory (stopped by an empty required field, which it jumps to), leave warning, the preview's Design and Content buttons on each section.
+- `ModularEditor.tsx` + `ModularEditPanel.tsx` — the modular editor (the event's invitation page and the `/templates/<id>` preview): working and saved state, the open tab and Content section, Save to the event's invitation card through `saveInvitation` — in memory on the preview — (stopped by an empty required field, which it jumps to), leave warning, the preview's Design and Content buttons on each section.
 - `content/` — the Content tab: `ContentTab.tsx` (numbered section cards, one open), `SectionFields.tsx` (a section's fields, from `contentParts` in `src/modular/fields.ts` — the same list Save checks), `FieldInput.tsx` (one field, its required error), `IconPicker.tsx`, `ListFields.tsx` (lists and groups, Add / Remove), `NotesFields.tsx` (Helpful notes: Dress code / Gifts fields and custom notes).
 - `design/` — the Design tab: `DesignTab.tsx`, `TemplatePicker.tsx`, `LookPickers.tsx` (palette, pattern, font pair), `SectionsList.tsx` (section switches, styles, Helpful notes switches); `SectionBar.tsx` (a section card's top row) and `styles.ts` (the section card's classes) are shared with Content.
 

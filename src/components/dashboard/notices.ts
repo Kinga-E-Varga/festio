@@ -1,4 +1,4 @@
-import { useLocale, useTranslations } from "next-intl";
+import { useLocale } from "next-intl";
 import {
   countdownNow,
   defaultReplyClose,
@@ -8,13 +8,13 @@ import {
   floodReportPath,
   formatDeadline,
   formatDuration,
+  isArchived,
   isPast,
   replyClose,
   replyWindow,
   repliesPaused,
   shortTitle,
 } from "@/lib/event";
-import { awaitingPayment, upgradePrice } from "@/lib/packages";
 import type {
   AttentionNotice,
   DashboardEvent,
@@ -27,7 +27,6 @@ const TONE_ORDER: Record<NoticeTone, number> = {
   paused: 0,
   deadline: 1,
   deletion: 1,
-  billing: 2,
   hidden: 2,
 };
 
@@ -37,9 +36,7 @@ const NOTICE_HREF: Partial<Record<string, (eventId: string) => string>> = {
   paused: (eventId) => eventPath(eventId, "details"),
   repliesClosing: (eventId) => eventPath(eventId, "guests"),
   repliesClosed: (eventId) => eventPath(eventId, "guests"),
-  hiddenPaid: (eventId) => eventPath(eventId, "details"),
-  /* Paying is on the Overview, beside the package. */
-  unpaid: (eventId) => eventPath(eventId),
+  hidden: (eventId) => eventPath(eventId, "details"),
 };
 
 /** A notice's page — the same from the card, the rail and the event's to-dos. */
@@ -105,7 +102,7 @@ export function needsWaiting(event: DashboardEvent): boolean {
  * One event's notices. On the rail (`overview` false) only what still needs
  * the host now: active events for replies, nothing about a past one but its
  * deletion. Its Overview also lists what its own state says needs doing,
- * draft or not. `waiting` is who on its list hasn't replied yet.
+ * Hidden or not. `waiting` is who on its list hasn't replied yet.
  */
 function eventNotices(
   event: DashboardEvent,
@@ -140,12 +137,12 @@ function eventNotices(
     ? (replies === "closed" && !past) || replies === "soon"
     : closingOnRail(event);
   if (closing) notices.push(closingNotice(event, waiting));
-  /* Paid for, but set to Hidden: nobody can open it yet. */
-  if (event.paid && event.visibility === "hidden" && (overview || !past)) {
+  /* Set to Hidden: nobody can open it yet. */
+  if (event.visibility === "hidden" && (overview || !past)) {
     notices.push({
       ...base,
       id: `hidden-${event.id}`,
-      key: "hiddenPaid",
+      key: "hidden",
       tone: "hidden",
     });
   }
@@ -157,16 +154,6 @@ function eventNotices(
       key: "deleting",
       eventDate: event.date,
       tone: "deletion",
-    });
-  }
-  if (overview ? !event.paid : awaitingPayment(event)) {
-    notices.push({
-      ...base,
-      id: `unpaid-${event.id}`,
-      key: "unpaid",
-      package: event.neededPackage,
-      amount: upgradePrice(event),
-      tone: "billing",
     });
   }
   return notices;
@@ -183,10 +170,11 @@ export function hostNotices(
   events: DashboardEvent[],
   waiting: Record<string, number>,
 ): AttentionNotice[] {
+  /* An archived event has nothing left to act on. */
   return byUrgency(
-    events.flatMap((event) =>
-      eventNotices(event, waiting[event.id] ?? 0, false),
-    ),
+    events
+      .filter((event) => !isArchived(event))
+      .flatMap((event) => eventNotices(event, waiting[event.id] ?? 0, false)),
   );
 }
 
@@ -204,7 +192,6 @@ export function eventTodos(
  */
 export function useNoticeValues() {
   const locale = useLocale();
-  const tPackages = useTranslations("Packages");
 
   return (notice: AttentionNotice) => ({
     ...notice.values,
@@ -220,12 +207,6 @@ export function useNoticeValues() {
               : deletionDate(notice.eventDate),
             locale,
           ),
-        }
-      : {}),
-    ...(notice.package
-      ? {
-          package: tPackages(`${notice.package}.name`),
-          price: tPackages("price", { amount: notice.amount ?? 0 }),
         }
       : {}),
   });

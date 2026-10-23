@@ -7,12 +7,15 @@ import {
   useMessages,
   useTranslations,
 } from "next-intl";
-import { type ReactNode, Suspense, useState } from "react";
+import { type ReactNode, Suspense, useRef, useState } from "react";
+import { saveInvitation } from "@/actions/invitation";
+import { useSaveConfirm } from "@/components/dashboard/SaveConfirm";
 import { useToast } from "@/components/dashboard/Toast";
 import type { CardOpening } from "@/components/envelope/card";
 import { cardValues } from "@/lib/invitation";
 import type { Language } from "@/lib/language";
 import { TemplateCard } from "@/templates/TemplateCard";
+import type { InvitationSaving } from "@/types/dashboard";
 import type { InvitationTemplate, TemplateValues } from "@/types/invitation";
 import { EditPanel } from "./EditPanel";
 import { EditorFrame } from "./EditorFrame";
@@ -22,6 +25,8 @@ import { Invitation } from "./Invitation";
 interface HostInvitationEditorProps {
   template: InvitationTemplate;
   initial: TemplateValues;
+  /** The saved envelope switch; on for a card never saved. */
+  initialEnvelope?: boolean;
   /** The invitation's own language — what the card's date is written in. */
   language: Language;
   /**
@@ -31,6 +36,8 @@ interface HostInvitationEditorProps {
   guestMessages?: AbstractIntlMessages;
   /** Where BACK goes when no Festio page is behind this one: the event's Overview. */
   backTo?: string;
+  /** The event Save writes to. Absent (a template's preview), Save keeps it in memory. */
+  saving?: InvitationSaving;
 }
 
 /**
@@ -41,11 +48,14 @@ interface HostInvitationEditorProps {
 export function HostInvitationEditor({
   template,
   initial,
+  initialEnvelope = true,
   language,
   guestMessages,
   backTo,
+  saving,
 }: HostInvitationEditorProps) {
   const t = useTranslations("HostEditor");
+  const tError = useTranslations("SaveErrors");
   const hostLocale = useLocale();
   const hostMessages = useMessages();
   const [values, setValues] = useState(initial);
@@ -53,12 +63,21 @@ export function HostInvitationEditor({
   /* Closed on arrival: the host sees the invitation first and opens the panel from the strip. */
   const [editing, setEditing] = useState(false);
   const [tab, setTab] = useState<PanelTabId>("content");
-  const [envelope, setEnvelope] = useState(true);
-  const [savedEnvelope, setSavedEnvelope] = useState(true);
+  const [envelope, setEnvelope] = useState(initialEnvelope);
+  const [savedEnvelope, setSavedEnvelope] = useState(initialEnvelope);
+  /* The card's version this editor last saw: sent with each save. */
+  const [version, setVersion] = useState(saving?.version ?? 0);
+  /* A save is out: the ref is the instant guard, the state turns Save off. */
+  const busy = useRef(false);
+  const [sending, setSending] = useState(false);
   /* Not saved: only to compare the two ways out while they are tried. */
   const [opening, setOpening] = useState<CardOpening>("rise");
   const toast = useToast();
   const views = useTabViews();
+  const confirm = useSaveConfirm(
+    saving?.visibility ?? "hidden",
+    saving?.replied ?? 0,
+  );
 
   function change(id: string, value: string) {
     setValues((current) => ({ ...current, [id]: value }));
@@ -68,10 +87,44 @@ export function HostInvitationEditor({
     setEnvelope(on);
   }
 
-  function save() {
-    setSaved(values);
-    setSavedEnvelope(envelope);
+  function keep(nextValues: TemplateValues, nextEnvelope: boolean) {
+    setSaved(nextValues);
+    setSavedEnvelope(nextEnvelope);
     toast.show(t("saved"));
+  }
+
+  function save() {
+    if (!saving) {
+      keep(values, envelope);
+      return;
+    }
+    if (busy.current) return;
+    /* What is sent is what gets marked saved, even if the host types on meanwhile. */
+    const sent = { values, envelope };
+    confirm.ask(async () => {
+      if (busy.current) return;
+      busy.current = true;
+      setSending(true);
+      try {
+        const result = await saveInvitation(saving.eventId, {
+          kind: "simple",
+          ...sent,
+          version,
+        });
+        if (!result.success) {
+          toast.show(tError(result.error), "error");
+          return;
+        }
+        setVersion(result.data.version);
+        keep(sent.values, sent.envelope);
+      } catch {
+        /* The request itself failed, e.g. offline. */
+        toast.show(tError("failed"), "error");
+      } finally {
+        busy.current = false;
+        setSending(false);
+      }
+    });
   }
 
   const dirty =
@@ -127,26 +180,29 @@ export function HostInvitationEditor({
   );
 
   return (
-    <EditorFrame
-      backTo={backTo}
-      views={views}
-      view={tab}
-      open={editing}
-      onView={(id) => {
-        setTab(id);
-        setEditing(true);
-      }}
-      onClose={() => setEditing(false)}
-      action={{ kind: "save", dirty, onSave: save }}
-      toast={toast}
-    >
-      {guestMessages ? (
-        <NextIntlClientProvider locale={language} messages={guestMessages}>
-          {invitation}
-        </NextIntlClientProvider>
-      ) : (
-        invitation
-      )}
-    </EditorFrame>
+    <>
+      <EditorFrame
+        backTo={backTo}
+        views={views}
+        view={tab}
+        open={editing}
+        onView={(id) => {
+          setTab(id);
+          setEditing(true);
+        }}
+        onClose={() => setEditing(false)}
+        action={{ kind: "save", dirty: dirty && !sending, onSave: save }}
+        toast={toast}
+      >
+        {guestMessages ? (
+          <NextIntlClientProvider locale={language} messages={guestMessages}>
+            {invitation}
+          </NextIntlClientProvider>
+        ) : (
+          invitation
+        )}
+      </EditorFrame>
+      {confirm.dialog}
+    </>
   );
 }

@@ -8,7 +8,7 @@ import {
   BTN_PRIMARY,
   INPUT,
 } from "@/components/dashboard/event-editor/styles";
-import { Dialog } from "@/components/dashboard/guest-list/Dialog";
+import { Dialog } from "@/components/dashboard/Dialog";
 import { normalizeName } from "@/lib/guests";
 import type { ListName } from "@/types/guests";
 

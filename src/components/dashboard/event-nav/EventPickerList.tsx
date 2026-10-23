@@ -12,10 +12,10 @@ import { plainText } from "@/lib/language";
 import { writePickedEvent } from "@/lib/picked-event";
 import type { EventStatus, PickerEvent } from "@/types/dashboard";
 
-/** Each event's dot: live, still a draft, or over. */
+/** Each event's dot: live, Hidden, or over. */
 export const DOT: Record<EventStatus, string> = {
   active: "bg-primary-700",
-  draft: "bg-warning-400",
+  hidden: "bg-warning-400",
   past: "bg-neutral-500",
 };
 

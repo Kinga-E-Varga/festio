@@ -2,13 +2,13 @@ import type { EventDoc } from "@/db/schemas/event";
 import type { InvitationDoc } from "@/db/schemas/invitation";
 import type { SeatingDoc } from "@/db/schemas/seating";
 import { DEFAULT_DATE_FORMAT } from "@/lib/invitation";
-import type { ListName } from "@/types/guests";
 import * as anaVlad from "./ana-vlad";
 import {
   TIME_ZONE,
   dayFromNow,
   households,
   partyReply,
+  type SeedName,
   type SeedReply,
 } from "./build";
 
@@ -23,7 +23,7 @@ export interface SeedEvent {
   event: Omit<EventDoc, "hostId" | "counts" | "version" | "createdAt">;
   invitation?: InvitationDoc;
   replies: SeedReply[];
-  guestList: ListName[];
+  guestList: SeedName[];
   /** Seats as person ID → table ID; `index.ts` copies the names in. */
   seating?: Omit<SeatingDoc, "seats"> & { seats: Record<string, string> };
 }
@@ -114,6 +114,7 @@ export const SEED_EVENTS: SeedEvent[] = [
         text3: "Petrecerea | 19:00",
         text4: "Restaurant Cetate, Cluj-Napoca",
       },
+      envelope: true,
       version: 0,
     },
     ...crowd({
@@ -191,7 +192,7 @@ export const SEED_EVENTS: SeedEvent[] = [
     guestList: [],
   },
   {
-    /* A Custom template on a Free event: not paid for yet, so it sits in the cart. */
+    /* A Custom event on a modular template, still Hidden: not shared yet. */
     id: "revelion",
     event: {
       ...shared,
@@ -203,7 +204,7 @@ export const SEED_EVENTS: SeedEvent[] = [
       visibility: "hidden",
       expectedGuests: 80,
       preloaded: false,
-      package: "free",
+      package: "custom",
       templateId: "olive-garden",
     },
     replies: [],

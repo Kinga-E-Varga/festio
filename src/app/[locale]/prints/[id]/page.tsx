@@ -53,6 +53,8 @@ export default async function PrintPage({ params }: Props) {
 
   return (
     <PrintEditor
+      eventId={event.id}
+      initial={event.print}
       template={template}
       rsvpMessage={values.rsvpMessage ?? ""}
       link={invitationLink(event)}

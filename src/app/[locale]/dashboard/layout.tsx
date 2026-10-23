@@ -18,13 +18,13 @@ export default async function DashboardLayout({
 }: LayoutProps<"/[locale]/dashboard">) {
   // The event picked on an earlier visit, so the nav draws it straight away.
   const storedEventId = (await cookies()).get(PICKED_EVENT_COOKIE)?.value;
-  const { events: all, notices, unpaid, activity, bar } = await loadDashboard();
+  const { events: all, notices, activity, bar } = await loadDashboard();
   const events = orderEvents(all, "active").map(toPickerEvent);
 
   return (
     <DashboardShell
       nav={<SideNav events={events} storedEventId={storedEventId} />}
-      cart={<CartList unpaid={unpaid} />}
+      cart={<CartList />}
       alerts={<AlertsList notices={notices} />}
       replies={<RepliesList entries={activity} />}
       account={<AccountList />}

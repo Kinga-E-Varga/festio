@@ -40,10 +40,10 @@ export default async function InvitationPage({
       values={values}
       repliesPaused={repliesPaused(event)}
       /*
-       * Always on until the switch is saved with the event. A cancelled
+       * The host's saved switch, on for a card never saved. A cancelled
        * event will pass false; a Protected one shows it after the password.
        */
-      envelope
+      envelope={stored?.kind === "simple" ? stored.envelope : true}
     >
       <Card values={cardValues(values, language)} />
     </Invitation>

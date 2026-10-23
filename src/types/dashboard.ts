@@ -3,6 +3,7 @@ import type { packageSchema } from "@/db/schemas/common";
 import type { eventKindSchema, visibilitySchema } from "@/db/schemas/event";
 import type { Language } from "@/lib/language";
 import type { GuestQuestion } from "@/types/guests";
+import type { PrintSettings } from "@/types/print";
 
 export type IconName =
   | "home"
@@ -43,6 +44,7 @@ export type IconName =
   | "info"
   | "ban"
   | "trash"
+  | "leave"
   | "check"
   | "search"
   | "menu"
@@ -82,7 +84,7 @@ export type EventKind = z.infer<typeof eventKindSchema>;
 /** Per-invitation visibility (project spec: Hidden / Public / Protected). */
 export type Visibility = z.infer<typeof visibilitySchema>;
 
-export type EventStatus = "active" | "draft" | "past";
+export type EventStatus = "active" | "hidden" | "past";
 
 /** What Home's events box needs of an event: small enough to hand to the client. */
 export interface HomeEventRow extends Pick<
@@ -148,17 +150,11 @@ export interface DashboardEvent {
   /** Which template file draws this invitation; see `src/templates/`. */
   templateId?: string;
   /**
-   * The package the event needs: what was bought, or its template's when
-   * that is higher. Paid for = the two are the same.
-   */
-  neededPackage: PackageId;
-  /**
    * The language the invitation itself is written in — RSVP labels, Festio's
    * own section copy, the dates guests read. Never the host's app locale: a
    * host reading Festio in Hungarian may send a Romanian invitation.
    */
   language: Language;
-  paid: boolean;
   /** The whole guest link path; unique across Festio. */
   slug: string;
   /** Set only on Protected invitations; min 4 chars, letters or digits. */
@@ -186,10 +182,25 @@ export interface DashboardEvent {
   dataDeleted: boolean;
   /** Cancelled by the host: the reply form is closed and the invitation shows their message instead. */
   cancelled?: boolean;
+  /** The printable's last exported settings; missing until the first export. */
+  print?: PrintSettings;
+  /** The card's version when read; a save sends it back, so a newer save elsewhere is noticed. */
+  version: number;
+}
+
+/** What an invitation editor needs to save to its event: the card's version it opened at, and the confirm's facts. */
+export interface InvitationSaving {
+  eventId: string;
+  /** The invitation card's version (0 before its first save), not the event card's. */
+  version: number;
+  /** The saved visibility: Hidden saves without the confirm. */
+  visibility: Visibility;
+  /** Replies in so far, for the confirm. */
+  replied: number;
 }
 
 export type NoticeTone =
-  "attention" | "deadline" | "paused" | "billing" | "hidden" | "deletion";
+  "attention" | "deadline" | "paused" | "hidden" | "deletion";
 
 /**
  * A notice's title and body are the event editor's banner texts,
@@ -206,10 +217,6 @@ export interface AttentionNotice extends Message {
   eventDate?: string;
   /** A custom reply-form close; when set, `{date}` is this instead. */
   closesAt?: string;
-  /** Filled in as `{package}`, the package's own name in the reader's language. */
-  package?: PackageId;
-  /** Filled in as `{price}`: what that package costs this event, the difference on an upgrade. */
-  amount?: number;
   tone: NoticeTone;
   /** Set once replies pause at the cap: where the host reports a flood. */
   reportHref?: string;

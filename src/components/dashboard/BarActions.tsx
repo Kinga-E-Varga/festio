@@ -21,9 +21,9 @@ const BADGE = `absolute -top-0.5 -right-0.5 ${COUNT} transition-colors group-ari
 /** What the strip and the phone's top bar show of the host: initials and two counts. */
 export interface BarData {
   initials: string;
-  /** Events waiting for payment. */
-  cart: number;
   alerts: number;
+  /** Guests' replies sent since the host last opened the latest replies. */
+  replies: number;
 }
 
 /** One of the side panel's views on the strip: its icon, name and count. */
@@ -31,26 +31,24 @@ interface BarView {
   view: Exclude<SidePanelView, "account">;
   icon: IconName;
   /** Its count and the `TopBar` aria label that says it; none for a view with no count. */
-  count?: { key: "cartCount" | "alertsCount"; value: number };
+  count?: { key: "alertsCount" | "repliesCount"; value: number };
 }
 
-/**
- * The side panel's views in the strip's order. Latest replies has no count
- * until a last visit is stored to count new ones from.
- */
+/** The side panel's views in the strip's order. */
 export function countedViews(bar: BarData): BarView[] {
   return [
-    {
-      view: "cart",
-      icon: "cart",
-      count: { key: "cartCount", value: bar.cart },
-    },
+    /* The cart holds unsaved invitations, kept on the device: no count yet. */
+    { view: "cart", icon: "cart" },
     {
       view: "alerts",
       icon: "bell",
       count: { key: "alertsCount", value: bar.alerts },
     },
-    { view: "replies", icon: "guests" },
+    {
+      view: "replies",
+      icon: "guests",
+      count: { key: "repliesCount", value: bar.replies },
+    },
   ];
 }
 

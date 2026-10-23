@@ -111,9 +111,9 @@
     "alerts": "Értesítések",
     "alertsCount": "Értesítések, {count} elem igényel figyelmet",
     "replies": "Legutóbbi válaszok",
+    "repliesCount": "Legutóbbi válaszok, {count, plural, one {# új válasz} other {# új válasz}}",
     "closePanel": "Panel bezárása",
     "cart": "Kosár",
-    "cartCount": "{count, plural, one {Kosár, # meghívó fizetésre vár} other {Kosár, # meghívó fizetésre vár}}",
     "account": "Fiókod",
     "menu": "Vezérlőpult menü",
     "more": "Továbbiak",
@@ -155,13 +155,13 @@
     "filters": {
       "upcoming": "Közelgő ({count})",
       "live": "Élő ({count})",
-      "drafts": "Piszkozatok ({count})",
+      "hidden": "Rejtett ({count})",
       "past": "Korábbi ({count})",
       "all": "Minden esemény ({count})"
     },
     "status": {
       "active": "Élő",
-      "draft": "Piszkozat",
+      "hidden": "Rejtett",
       "past": "Korábbi"
     },
     "pageRange": "{from}–{to} / {total}",
@@ -169,9 +169,7 @@
     "nextPage": "Következő oldal"
   },
   "Rail": {
-    "cartEmpty": "Nincs fizetésre váró tétel.",
-    "cartTotal": "Összesen",
-    "cartHint": "Minden eseményt az Áttekintésében fizethetsz ki, a csomagja mellett. Nyiss meg egyet a fizetéshez.",
+    "cartEmpty": "Az elkezdett, de még nem mentett meghívók itt várnak rád.",
     "noReplies": "Még nincs válasz."
   },
   "Event": {
@@ -255,8 +253,7 @@
   "EventPage": {
     "repliesClosingBody": "A válaszűrlap {date} napon lezárul, {custom, select, yes {az általad megadott időpontban} other {az esemény előtti napon}}.",
     "repliesClosedBody": "A válaszűrlap {date} napon lezárult. A telefonon érkező válaszokat továbbra is felveheted a vendéglistára.",
-    "unpaidBody": "A(z) {package} csomag ára {price}. Az oldal rejtve, a válaszűrlap pedig zárva marad, amíg a fizetés meg nem érkezik.",
-    "hiddenPaidBody": "Ki van fizetve, de Rejtettre van állítva: senki sem nyithatja meg, még a linkkel rendelkező vendég sem.",
+    "hiddenBody": "Rejtettre van állítva: senki sem nyithatja meg, még a linkkel rendelkező vendég sem.",
     "deletingBody": "A meghívó és minden válasz törlődik: {date}. Ha meg szeretnéd őrizni, előtte exportáld.",
     "attentionBody": "Ismeretlen vagy ismétlődő nevek. A Vendégek oldal tetején rendezheted őket.",
     "pausedBody": "A vártnál jóval több válasz érkezett, ezért az űrlap szünetel. Valódi vendégek? Emeld meg a számot. Ha nem, jelentsd."
@@ -302,9 +299,6 @@
     "noindex": "Soha nem jelenik meg a Google-ban vagy más keresőkben, bármit is választasz.",
     "expectedHint": "Ebből mutatjuk meg, hogyan érkeznek a válaszok. A számot bármikor megemelheted.",
     "packagePaid": "{name} — {price} · kifizetve",
-    "packageUnpaid": "{name} — {price} · nincs kifizetve",
-    "payAndPublish": "{price} kifizetése és közzététel",
-    "payNote": "A piszkozat megosztható lesz. A láthatóság úgy marad, ahogy beállítottad, amíg magad meg nem változtatod.",
     "deletedOn": "Minden törlődik: {date}",
     "deletedOnPast": "Minden törlődött: {date}",
     "deletedBody": "A meghívó, minden válasz és minden feltöltött kép automatikusan törlődik, {days} nappal {date} után. A fiókodat ez nem érinti.",
@@ -323,20 +317,18 @@
     "deleteNow": "Törlés most",
     "pastKeep": "Adatok megtartása",
     "pastDeleted": "Az esemény és a vendégek adatai törölve",
-    "paidDeleteTitle": "Az esemény törlése",
-    "paidDeleteBody": "Egy kifizetett eseményt nem lehet törölni, amíg meg nem történt. Előbb mondd le.",
+    "liveDeleteTitle": "Az esemény törlése",
+    "liveDeleteBody": "Egy eseményt nem lehet törölni, amíg meg nem történt. Előbb mondd le.",
     "cancelTitle": "Az esemény lemondása",
     "cancelBody": "Lezárja a válaszűrlapot, és a meghívó helyére egy rövid üzenetedet teszi. {count, plural, =0 {Még egy vendég sem válaszolt.} other {Már # vendég válaszolt, és egyiküket sem értesítjük.}} A vendégek és az esemény adatait még {days} napig megőrizzük, és ezalatt bármikor újranyithatod az eseményt.",
     "cancelButton": "Esemény lemondása",
     "cancelled": "Esemény lemondva — a meghívón most az üzeneted látható",
     "cancelledTitle": "Ez az esemény le van mondva",
     "cancelledBody": "A vendégek a meghívó helyett az üzenetedet látják, és már nem válaszolhatnak. Az adatok maguktól törlődnek ekkor: {date}, vagy most is törölheted őket. Előbb exportáld, amit meg szeretnél tartani — törlés után nem lehet visszahozni.",
-    "draftTitle": "A piszkozat törlése",
-    "draftBody": "Ezt az oldalt senki sem látta, és semmit sem fizettél érte, így azonnal törölhető. Ez nem vonható vissza.",
-    "deleteDraft": "Piszkozat törlése",
-    "draftKeep": "Piszkozat megtartása",
-    "draftConfirm": "Biztos vagy benne? A piszkozat végleg törlődik.",
-    "draftDeleted": "Piszkozat törölve",
+    "reopenTitle": "Esemény újranyitása",
+    "reopenBody": "A meghívó újra látható, és a vendégek válaszolhatnak, amíg a válaszadás le nem zárul. Aki látta az üzenetedet, nem kap értesítést.",
+    "reopenButton": "Esemény újranyitása",
+    "reopened": "Esemény újranyitva — a meghívó újra látható",
     "acknowledge": "Értem — a vendégek értesítése az én dolgom.",
     "save": "Mentés",
     "saved": "Módosítások mentve — a vendégeidet nem értesítettük",
@@ -380,6 +372,8 @@
     "confirmPasswordLabel": "Megerősítés",
     "confirmPasswordPlaceholder": "Jelszó",
     "confirmPasswordHint": "A Festio-fiókod jelszava, hogy megerősítsd: te vagy az.",
+    "confirmGoogleNote": "Google-lel lépsz be, ezért megnyílik a Google ablaka, hogy megerősítsd, hogy te vagy az.",
+    "confirmGoogleWrong": "Ez nem az a Google-fiók, amellyel be vagy jelentkezve.",
     "cancelKeep": "Esemény megtartása"
   },
   "HostEditor": {
@@ -493,15 +487,10 @@
       "task": "Emeld a várt vendégek számát",
       "why": "A vártnál jóval több válasz érkezett, ezért a válaszűrlap szünetel."
     },
-    "unpaid": {
-      "action": "Fizetés és közzététel",
-      "task": "Fizess, hogy közzétehesd",
-      "why": "A meghívó rejtve marad, amíg nem fizeted ki a(z) {package} csomagot ({price})."
-    },
-    "hiddenPaid": {
+    "hidden": {
       "action": "Láthatóság módosítása",
       "task": "Tedd nyilvánossá a meghívót",
-      "why": "Ki van fizetve, de Rejtettre van állítva, így még senki sem nyithatja meg."
+      "why": "Rejtettre van állítva, így még senki sem nyithatja meg."
     },
     "deleting": {
       "action": "Minden adat exportálása",
@@ -552,6 +541,7 @@
     "listCount": "{count, plural, one {# név a listán} other {# név a listán}}",
     "editList": "Meghívólista szerkesztése",
     "addReply": "Új válasz",
+    "editReply": "Válasz szerkesztése",
     "export": "Válaszok exportálása",
     "search": "Keresés név szerint",
     "detailsFor": "{name} részletei",
@@ -583,16 +573,18 @@
     "cancel": "Mégse",
     "delete": "Törlés",
     "deleteConfirm": "Törlöd: {name}? Ez nem vonható vissza.",
+    "deleteReply": "Válasz törlése",
+    "deleteReplyConfirm": "Törlöd a választ ({names})? Mindenki törlődik belőle. Ez nem vonható vissza.",
+    "keepReply": "Válasz megtartása",
     "unsaved": "Mentetlen módosításaid vannak.",
     "discard": "Módosítások elvetése",
     "keepEditing": "Szerkesztés folytatása",
     "leaveUnsaved": "Mentetlen módosításaid vannak. Biztosan kilépsz?",
     "choose": "Válassz…",
-    "separateButton": "Leválasztás a csoportról",
-    "separateConfirm": "Leválasztod {name} nevét róluk: {names}? Mentés után ez nem vonható vissza.",
+    "separateLabel": "{name} leválasztása a csoportról",
+    "separateConfirm": "Leválasztod {name} nevét róluk: {names}? Ez nem vonható vissza.",
     "separateOk": "Leválasztás",
     "keepTogether": "Maradjon együtt",
-    "separatePending": "Mentéskor {name} külön válaszba kerül.",
     "toastSeparated": "Leválasztva",
     "addPerson": "Személy hozzáadása",
     "removePerson": "{number}. személy eltávolítása",
@@ -600,7 +592,6 @@
     "dietRequired": "Válassz étrendi igényt, vagy azt, hogy Nincs.",
     "dietOtherRequired": "Írd le az egyéb étrendi igényt.",
     "dietOtherInput": "Egyéb étrendi igény",
-    "sharedFor": "Az alábbi válaszok módosítása {names} válaszát is módosítja. Ezt elkerülheted, ha leválasztod ezt a személyt a csoportról.",
     "matchTo": "Párosítás egy névvel",
     "matchSearch": "Keresés a meghívólistában",
     "noWaiting": "Nincs válasz nélküli név, amivel párosíthatnád.",
@@ -682,5 +673,23 @@
     "failed": "Valami hiba történt. Próbáld újra.",
     "passwordAccount": "Ehhez az e-mail-címhez már tartozik jelszavas Festio-fiók. Jelentkezz be a jelszavaddal.",
     "again": "Eltelt egy kis idő, ezért jelentkezz be újra."
+  },
+  "SaveConfirm": {
+    "title": "Mented a módosításokat?",
+    "body": "{count, plural, =0 {Még senki nem válaszolt. A vendégeket nem értesítjük a módosításokról.} one {1 vendég válaszolt. Senkit nem értesítünk a módosításokról.} other {# vendég válaszolt. Senkit nem értesítünk a módosításokról.}}",
+    "cancel": "Mégse",
+    "agree": "Mentés mindenképp"
+  },
+  "SaveErrors": {
+    "stale": "Ezt egy másik eszközön módosították. Töltsd újra az oldalt a legfrissebb változatért.",
+    "notFound": "Az esemény nem található.",
+    "invalid": "Néhány adat nem érvényes. Ellenőrizd a mezőket, és próbáld újra.",
+    "failed": "Valami hiba történt mentés közben. Próbáld újra.",
+    "slugTaken": "Ez a link már foglalt. Válassz másikat.",
+    "dateLocked": "Az esemény napjától a dátum már nem módosítható.",
+    "expectedTooLow": "A várt vendégek száma nem lehet kevesebb a már beérkezett válaszoknál.",
+    "closeTooLate": "A válaszadásnak legkésőbb az esemény előtti napon le kell zárulnia.",
+    "wrongPassword": "A jelszó nem helyes.",
+    "notAllowed": "Ez ennél az eseménynél nem lehetséges."
   }
 }

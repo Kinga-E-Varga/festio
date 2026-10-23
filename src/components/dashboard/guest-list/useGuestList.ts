@@ -1,21 +1,38 @@
 "use client";
 
 import { useLocale } from "next-intl";
-import { useState } from "react";
+import { useRef, useState } from "react";
+import { saveGuestChanges, saveGuestListOn } from "@/actions/guests";
+import type { SaveError } from "@/db/writes/save";
 import {
   buildRows,
   countRows,
   filterGroup,
   groupRows,
+  guestChanges,
+  hasChanges,
   tallyGuests,
 } from "@/lib/guests";
 import type { EventGuests, GuestGroup } from "@/types/guests";
 
-/** The list, the view over it, and nothing that talks to the host. */
-export function useGuestList(initial: EventGuests, preloaded: boolean) {
+/**
+ * The list, the view over it, and its saves; nothing that talks to the host
+ * but `fail`, told why a save was turned down.
+ */
+export function useGuestList(
+  eventId: string,
+  initial: EventGuests,
+  preloaded: boolean,
+  fail: (error: SaveError) => void,
+) {
   const locale = useLocale();
   const [guests, setGuests] = useState(initial);
   const [useList, setUseList] = useState(preloaded);
+  /* The list as last saved: the next save starts from it. */
+  const saved = useRef(initial);
+  /* One save at a time: a second click while one runs is ignored. */
+  const busy = useRef(false);
+  const [saving, setSaving] = useState(false);
   const [query, setQuery] = useState("");
   const [addOpen, setAddOpen] = useState(false);
   /* The row open in the editor: a search never hides it mid-edit. */
@@ -29,6 +46,63 @@ export function useGuestList(initial: EventGuests, preloaded: boolean) {
     return shown ? [shown] : [];
   });
 
+  /** Runs one save unless another is running; false when it didn't save. */
+  async function once(run: () => Promise<boolean>): Promise<boolean> {
+    if (busy.current) return false;
+    busy.current = true;
+    setSaving(true);
+    try {
+      return await run();
+    } catch {
+      fail("failed");
+      return false;
+    } finally {
+      busy.current = false;
+      setSaving(false);
+    }
+  }
+
+  /** Saves what `recipe` changes, then shows it; false when it wasn't saved. */
+  async function save(
+    recipe: (current: EventGuests) => EventGuests,
+  ): Promise<boolean> {
+    const before = saved.current;
+    const next = recipe(before);
+    const changes = guestChanges(before, next);
+    if (!hasChanges(changes)) return true;
+    const result = await saveGuestChanges(eventId, changes);
+    if (!result.success) {
+      fail(result.error);
+      return false;
+    }
+    const { versions } = result.data;
+    saved.current = {
+      ...next,
+      list: next.list.map((name) =>
+        name.id in versions ? { ...name, version: versions[name.id] } : name,
+      ),
+    };
+    setGuests(saved.current);
+    return true;
+  }
+
+  function apply(recipe: (current: EventGuests) => EventGuests) {
+    return once(() => save(recipe));
+  }
+
+  /** The list switch, saved as the event's own before it shows. */
+  function switchList(on: boolean): Promise<boolean> {
+    return once(async () => {
+      const result = await saveGuestListOn(eventId, on);
+      if (!result.success) {
+        fail(result.error);
+        return false;
+      }
+      setUseList(on);
+      return true;
+    });
+  }
+
   return {
     guests,
     rows,
@@ -37,21 +111,24 @@ export function useGuestList(initial: EventGuests, preloaded: boolean) {
     groups,
     query,
     useList,
+    /** A save is on its way: Save buttons wait for it. */
+    saving,
     addOpen: useList && addOpen,
     waiting: rows.flatMap((row) =>
       row.kind === "waiting" ? [row.listName] : [],
     ),
     set: {
       query: setQuery,
-      useList: setUseList,
+      useList: switchList,
       addOpen: setAddOpen,
       keep: setKeep,
     },
-    openAddNames: () => {
-      setUseList(true);
+    /* With the list off, the box turns it on first. */
+    openAddNames: async () => {
+      if (!useList && !(await switchList(true))) return;
       setAddOpen(true);
     },
-    edit: (recipe: (current: EventGuests) => EventGuests) => setGuests(recipe),
+    apply,
   };
 }
 

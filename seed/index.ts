@@ -11,7 +11,7 @@ import { slugDocSchema } from "@/db/schemas/slug";
 import { userSchema } from "@/db/schemas/user";
 import { SLUG_BLOCK_DAYS, TERMS_VERSION } from "@/lib/config";
 import { addDays, deletionDate } from "@/lib/event";
-import { buildRows, countRows, toGuestReplies } from "@/lib/guests";
+import { countsOf } from "@/db/writes/counts";
 import { momentFromNow } from "./build";
 import { SEED_EVENTS, type SeedEvent } from "./events";
 
@@ -42,7 +42,8 @@ function checkEmulators() {
 
 /**
  * Empties Firestore and Auth through the emulators' own reset endpoints, at
- * the addresses `@/db/admin` pointed the SDK at.
+ * the addresses `@/db/admin` pointed the SDK at. One after the other, Auth
+ * last: a failed Firestore reset leaves the host's login in place.
  */
 async function clear() {
   const { FIRESTORE_EMULATOR_HOST, FIREBASE_AUTH_EMULATOR_HOST } = process.env;
@@ -50,33 +51,22 @@ async function clear() {
     `http://${FIRESTORE_EMULATOR_HOST}/emulator/v1/projects/${PROJECT}/databases/(default)/documents`,
     `http://${FIREBASE_AUTH_EMULATOR_HOST}/emulator/v1/projects/${PROJECT}/accounts`,
   ];
-  await Promise.all(
-    resets.map(async (url) => {
-      const response = await fetch(url, { method: "DELETE" });
-      if (!response.ok) throw new Error(`Reset failed: ${url}`);
-    }),
-  );
+  for (const url of resets) {
+    const response = await fetch(url, { method: "DELETE" });
+    if (!response.ok) throw new Error(`Reset failed: ${url}`);
+  }
 }
 
-/** The counters, worked out the way the guest list page will recount them. */
+/** The counters, by the same function the saves and the recount use. */
 function counts(seed: SeedEvent): EventDoc["counts"] {
-  const people = toGuestReplies(seed.replies);
-  const rows = buildRows(
-    { list: seed.guestList, replies: people, questions: seed.event.questions },
-    seed.event.preloaded,
+  return countsOf(
+    {
+      replies: seed.replies,
+      list: seed.guestList.map((name) => ({ ...name, version: 0 })),
+      seatedIds: Object.keys(seed.seating?.seats ?? {}),
+    },
+    seed.event,
   );
-  const { going, notGoing, attention } = countRows(rows);
-  const coming = new Set(
-    people.filter((person) => person.status === "going").map(({ id }) => id),
-  );
-  const seats = Object.keys(seed.seating?.seats ?? {});
-  return {
-    coming: going,
-    notComing: notGoing,
-    needsAttention: attention,
-    /* Seated but not coming (or gone). */
-    seatingWarnings: seats.filter((id) => !coming.has(id)).length,
-  };
 }
 
 /** A seat keeps a copy of the person's name at save time. */
@@ -160,14 +150,11 @@ function seedEvent(writer: BulkWriter, seed: SeedEvent) {
     writer.set(db.doc(paths.invitation(seed.id)), invitation);
   }
   for (const { id, ...reply } of seed.replies) {
-    writer.set(
-      db.doc(`${paths.replies(seed.id)}/${id}`),
-      replySchema.parse(reply),
-    );
+    writer.set(db.doc(paths.reply(seed.id, id)), replySchema.parse(reply));
   }
   for (const { id, ...name } of seed.guestList) {
     const card = guestListNameSchema.parse({ ...name, version: 0 });
-    writer.set(db.doc(`${paths.guestList(seed.id)}/${id}`), card);
+    writer.set(db.doc(paths.listName(seed.id, id)), card);
   }
   const chart = seating(seed);
   if (chart) writer.set(db.doc(paths.seating(seed.id)), chart);

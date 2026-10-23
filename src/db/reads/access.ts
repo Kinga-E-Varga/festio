@@ -9,8 +9,8 @@ import type { DashboardEvent } from "@/types/dashboard";
 /*
  * Server reads, Admin SDK only: it skips the security rules, so access is
  * checked here. The one check: signed in, and it's *their* event. Every host
- * page about an event starts with it, and so will every Server Action that
- * changes one (step 4).
+ * page about an event starts with it, and so does every Server Action that
+ * changes one.
  */
 
 /**

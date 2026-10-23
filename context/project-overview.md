@@ -49,7 +49,7 @@ Pick invitation → add event details → (modular) customize design → (modula
 
 ### Answer storage rules (decided)
 
-- Each attendee has a fixed core: name + RSVP status. Always present.
+- Each attendee has a fixed core: their name. Always present. The RSVP status is per reply: one for everyone the guest replied for.
 - Everything else is stored as answers keyed to **permanent question IDs**. Missing key = never asked. Null = asked and skipped.
 - Question definitions are **archived, never deleted**; archived questions stay visible and exportable.
 - A question's type and scope freeze once it's in use. Required is host-controlled but cannot be turned on once answers exist; turning it off is always allowed.

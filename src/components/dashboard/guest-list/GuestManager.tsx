@@ -33,14 +33,14 @@ const boxRoll = (leaving: boolean) =>
 /** Everyone the event knows about, in one list the host can read and fix. */
 export function GuestManager({ event, initial }: GuestManagerProps) {
   const t = useTranslations("GuestList");
+  const tError = useTranslations("SaveErrors");
   const toast = useToast();
-  /*
-   * Two tabs on one page, picked by `?view=`, so switching keeps the list's
-   * edits (they live here, in memory, until there is a store).
-   */
+  /* Two tabs on one page, picked by `?view=`. */
   const summary = useSearchParams().get("view") === "summary";
-  const list = useGuestList(initial, event.preloaded);
-  const actions = useGuestActions(list.edit, toast.show, {
+  const list = useGuestList(event.id, initial, event.preloaded, (error) =>
+    toast.show(tError(error), "error"),
+  );
+  const actions = useGuestActions(list.apply, toast.show, {
     guests: list.guests,
     useList: list.useList,
   });
@@ -107,9 +107,8 @@ export function GuestManager({ event, initial }: GuestManagerProps) {
     action?.();
   }
 
-  function saveList(added: ListName[], removedIds: string[]) {
-    actions.saveList(added, removedIds);
-    closeBox();
+  async function saveList(added: ListName[], removedIds: string[]) {
+    if (await actions.saveList(added, removedIds)) closeBox();
   }
 
   /* Replied = on the list but no longer waiting: the table's own reading. */
@@ -133,7 +132,8 @@ export function GuestManager({ event, initial }: GuestManagerProps) {
           />
         </div>
       ) : (
-        <div className={`@container mt-6 ${CONTENT_WIDTH.page}`}>
+        /* Named, so a row's status tag can follow the list's width even inside a duplicate card (`RowView`). */
+        <div className={`@container/guests mt-6 ${CONTENT_WIDTH.page}`}>
           {/*
            * The table's header: the list box when open, then the search and
            * the list's actions.
@@ -156,6 +156,7 @@ export function GuestManager({ event, initial }: GuestManagerProps) {
                       repliedIds={repliedIds}
                       onSave={saveList}
                       onCancel={closeBox}
+                      saving={list.saving}
                       onDirty={setBoxDirty}
                       ask={
                         boxPending

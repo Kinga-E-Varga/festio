@@ -87,50 +87,81 @@ export const eventCountsSchema = z.object({
   seatingWarnings: countSchema,
 });
 
-export const eventSchema = z
-  .object({
-    /** The host's Auth user ID. */
-    hostId: idSchema,
-    /** The host's side only; never copied into the invitation. */
-    title: z.string().trim().min(TITLE_MIN).max(TITLE_MAX),
-    kind: eventKindSchema,
-    /** The invitation's own language, never the host's app locale. */
-    language: languageSchema,
-    date: dateSchema,
-    /** From the host's browser, e.g. `Europe/Bucharest`; every time rule uses it. */
-    timeZone: timeZoneSchema,
-    /** The host's own closing time. Missing = the day before the event at 00:00. */
-    repliesCloseAt: localDateTimeSchema.optional(),
-    slug: slugSchema,
-    visibility: visibilitySchema,
-    /** Stored as typed: the host sees it and it's printed on the card. Only the server reads it. */
-    password: z.string().regex(PASSWORD_PATTERN).optional(),
-    expectedGuests: z.number().int().positive(),
-    /** A guest list is pre-loaded. */
-    preloaded: z.boolean(),
-    /** What has been bought. Paid for = the template's package is no higher. */
-    package: packageSchema,
-    /** Missing until the host picks a template. */
-    templateId: z.string().min(1).optional(),
-    questions: z.array(questionSchema),
-    print: printSettingsSchema.optional(),
-    counts: eventCountsSchema,
-    /** Missing = not cancelled. */
-    cancelled: z
-      .object({
-        message: z.string().trim().max(CANCEL_MESSAGE_MAX),
-        at: momentSchema,
-      })
-      .optional(),
-    /** Past the retention window: only a leftover of this card remains. */
-    dataDeleted: z.boolean(),
-    version: versionSchema,
-    createdAt: momentSchema,
+/** The card's fields, without its cross-field rules: other schemas pick from it. */
+export const eventFieldsSchema = z.object({
+  /** The host's Auth user ID. */
+  hostId: idSchema,
+  /** The host's side only; never copied into the invitation. */
+  title: z.string().trim().min(TITLE_MIN).max(TITLE_MAX),
+  kind: eventKindSchema,
+  /** The invitation's own language, never the host's app locale. */
+  language: languageSchema,
+  date: dateSchema,
+  /** From the host's browser, e.g. `Europe/Bucharest`; every time rule uses it. */
+  timeZone: timeZoneSchema,
+  /** The host's own closing time. Missing = the day before the event at 00:00. */
+  repliesCloseAt: localDateTimeSchema.optional(),
+  slug: slugSchema,
+  visibility: visibilitySchema,
+  /** Stored as typed: the host sees it and it's printed on the card. Only the server reads it. */
+  password: z.string().regex(PASSWORD_PATTERN).optional(),
+  expectedGuests: z.number().int().positive(),
+  /** A guest list is pre-loaded. */
+  preloaded: z.boolean(),
+  /** What has been bought. Paid for = the template's package is no higher. */
+  package: packageSchema,
+  /** Missing until the host picks a template. */
+  templateId: z.string().min(1).optional(),
+  questions: z.array(questionSchema),
+  print: printSettingsSchema.optional(),
+  counts: eventCountsSchema,
+  /** Missing = not cancelled. */
+  cancelled: z
+    .object({
+      message: z.string().trim().max(CANCEL_MESSAGE_MAX),
+      at: momentSchema,
+    })
+    .optional(),
+  /** Past the retention window: only a leftover of this card remains. */
+  dataDeleted: z.boolean(),
+  version: versionSchema,
+  createdAt: momentSchema,
+});
+
+/** A Protected invitation needs a password; the card and the settings save both check it. */
+const needsPassword = (event: { visibility: string; password?: string }) =>
+  event.visibility !== "protected" || Boolean(event.password);
+const NEEDS_PASSWORD = {
+  message: "A Protected invitation needs a password",
+  path: ["password"],
+};
+
+export const eventSchema = eventFieldsSchema.refine(
+  needsPassword,
+  NEEDS_PASSWORD,
+);
+
+/**
+ * What Event settings sends: the fields its form edits, and the card's
+ * version it started from. The package, template, questions, counters,
+ * cancel and print settings are never in it, so only the server changes them.
+ */
+export const eventSettingsSchema = eventFieldsSchema
+  .pick({
+    title: true,
+    kind: true,
+    language: true,
+    date: true,
+    repliesCloseAt: true,
+    slug: true,
+    visibility: true,
+    password: true,
+    expectedGuests: true,
+    preloaded: true,
   })
-  .refine((event) => event.visibility !== "protected" || event.password, {
-    message: "A Protected invitation needs a password",
-    path: ["password"],
-  });
+  .extend({ version: versionSchema })
+  .refine(needsPassword, NEEDS_PASSWORD);
 
 export type EventDoc = z.infer<typeof eventSchema>;
+export type EventSettings = z.infer<typeof eventSettingsSchema>;
 export type Question = z.infer<typeof questionSchema>;

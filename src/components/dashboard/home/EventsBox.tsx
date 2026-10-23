@@ -19,7 +19,7 @@ import type { HomeEventRow } from "@/types/dashboard";
 /** Events on one page of the box. */
 const PAGE_SIZE = 6;
 
-const FILTERS = ["upcoming", "live", "drafts", "past", "all"] as const;
+const FILTERS = ["upcoming", "live", "hidden", "past", "all"] as const;
 type Filter = (typeof FILTERS)[number];
 
 /** A page arrow: the quiet icon button, faded where there is no page to go to. */
@@ -31,7 +31,7 @@ function piles(events: HomeEventRow[]): Record<Filter, HomeEventRow[]> {
   return {
     upcoming,
     live: upcoming.filter((event) => event.status === "active"),
-    drafts: upcoming.filter((event) => event.status === "draft"),
+    hidden: upcoming.filter((event) => event.status === "hidden"),
     past: events.filter((event) => event.status === "past"),
     all: events,
   };

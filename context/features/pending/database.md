@@ -1,7 +1,7 @@
 # Database, hosting and environments
 
-The plan agreed in chat before connecting anything. Steps 1–2 are built: the app reads the
-local emulator (see Order). Fields and names are a sketch to build from, not a final
+The plan agreed in chat before connecting anything. Steps 1–4 are built: the app reads and
+saves to the local emulator (see Order). Fields and names are a sketch to build from, not a final
 schema. Each step still gets its own spec in `current-feature.md` when it's built.
 
 ## Platform
@@ -83,7 +83,7 @@ created; not shown or changeable in the event form for now. Every time rule uses
 place's clock: replies closing (00:00 the day before, or the host's own time), the 24h
 lock, the deletion date. Otherwise they'd follow the server's clock in the Netherlands.
 
-Worked out each time, never saved: countdown, locked / locks in, Active / Draft / Past,
+Worked out each time, never saved: countdown, locked / locks in, Active / Hidden / Past,
 closes in.
 
 - **Title** shows on the host's side (dashboard, editors) and as the invitation page's tab
@@ -100,9 +100,9 @@ Also on the event card:
   form but their answers still show and export.
 - **`print`** — the printable's settings: shape (flat / folded), tinted, headline, note.
   Saved when the printable is exported, so the print page opens with the last settings.
-- **`package`** — what has been bought, starting at Free. Whether the event is paid for is
-  worked out: the template's package is no higher than the event's. No separate paid flag,
-  so the two can never disagree.
+- **`package`** — what has been bought, starting at Free. It always covers the template: an
+  event is saved only once it's paid for (or Free on a Free template), and drafts live on
+  the host's device, never in the database. No paid flag.
 - **`cancelled`** — the host's short message and when it was cancelled; missing = not
   cancelled.
 
@@ -130,7 +130,7 @@ The invitation's look and text, on its own card inside the event (`invitation/co
 the dashboard never loads every invitation and the event and invitation editors each save
 their own card.
 
-- **Simple:** the field values (field ID → text).
+- **Simple:** the field values (field ID → text) and the envelope on/off switch.
 - **Modular:** palette, font pair, pattern, corners, each section on/off and its variant,
   every section's values (today's `ModularState`).
 
@@ -242,7 +242,9 @@ Admin SDK, which skips them, so the server does its own checks.
   *their* event. Written once, so no action can forget it.
 
 **Live updates for hosts:** the host's browser reads its own events straight from Firestore
-(`onSnapshot`), so new replies appear without a refresh.
+(`onSnapshot`), so new replies appear without a refresh. Once they're in, the guest list's
+saves can drop `refresh()` (`src/actions/guests.ts`): today it re-renders the whole
+dashboard on the server after every tick, only so the nav counts update.
 
 - **Dashboard:** listens only to the host's event cards; the counters there update for one
   read per change.
@@ -429,7 +431,8 @@ needs it). The real back-and-forth starts at step 6.
 
 ## Order
 
-The document shapes above are settled, apart from the Open list; don't re-open them. Start
+The document shapes above are a starting point: change one when a feature needs it, and say so
+before changing it. Start
 at step 1. Each step is its own feature: spec it in `current-feature.md`, then build it.
 
 Steps 1–5 run fully on your machine; the first big handoff is step 6.
@@ -460,21 +463,38 @@ Steps 1–5 run fully on your machine; the first big handoff is step 6.
      load per event; fine at a few events, worth a look as hosts get more.
    - Decided: the last visit lives on the `users` card (`lastVisit`). The badge is built
      with step 4, since setting it is a host save.
-4. **Host saves.** Event, invitation and guest list through Server Actions, with version
-   numbers and slug claiming.
-   - Once a link can change, `loadEventBySlug` should also check the event's `slug` still
-     equals the link, so a stale slug card never opens the event.
-   - Event settings checks a new link only against this host's other events
-     (`takenSlugs`). Links are unique across Festio, so the check reads the slug cards.
-   - A saved modular card keeps its own section list; sections added to the library later
-     need merging in when it's read (`modularStart`).
-   - The "new since your last visit" badge: add optional `lastVisit` to `userSchema`, set it
-     (Server Action) when the host opens the latest replies, and count guests' replies sent
-     after it on the strip's replies icon (`countedViews` in `BarActions.tsx`).
+4. **Host saves.** Done: event settings, link claiming, both invitation editors, the guest
+   list (names and the host's reply edits), cancel / reopen / delete now and print settings
+   save through Server Actions (`src/actions/` → `src/db/writes/`), with version numbers.
+   The counters have one function (`countsOf`, `src/db/writes/counts.ts`), shared with the
+   seed. Drafts live on the device; the guest list edits a reply whole (one status).
+   - **Cleanup, any time, on its own `chore/` branch** (found by the step-4 review; tidy-ups,
+     not bugs):
+     - The two invitation editors (`HostInvitationEditor`, `ModularEditor`) copy the same
+       save flow (version, busy guard, save confirm, error toast): one shared hook.
+     - "A request that failed becomes `failed` and an error toast" is written in 6–7 client
+       places (editors, Danger zone, print, guest list): one shared helper.
+     - The guest list's two delete confirms (row, Edit dialog) share their markup: one small
+       component.
+     - `GuestChanges` / `ReplyInput` (`src/types/guests.ts`) restate the save's Zod schema by
+       hand: move the schema to `src/db/schemas/` and derive the types from it.
+     - The event form's link check (`checkLink` in `useEventForm.ts`) repeats the slug rules:
+       one plain `isValidSlug` in `src/lib/slug.ts`, used by it and `slugSchema`.
 5. **Guest replies.** The reply transaction (cap, counters), the duplicate check, the
    closing time, rate limiting and the Protected password.
-   - One shared function for the event's counters, used by both the reply transaction and
-     the seed (`counts` in `seed/index.ts` today), so the two never disagree.
+   - The reply transaction counts with `countsOf` (`src/db/writes/counts.ts`), the same
+     function the host saves and the seed use.
+   - **Before the guest actions: one shared wrapper for Server Actions** (sign-in, parse,
+     refusal, refresh), and ownership checked once, by `ownEvent` inside the transaction.
+     Today every action also calls `hostEvent`, which reads all the host's events; on the
+     link check that's every pause in typing.
+   - **The guest page's recount** (`repairCounts`) reads every reply a second time. Work it
+     out from the replies the page already loaded; open the transaction only on a mismatch.
+   - **`writeGuestChanges`** (`src/db/writes/guests.ts`, ~95 lines) splits into its three
+     stages (names, reply cards, recount) before the guest reply reuses parts of it.
+   - Decide: the guest list's saves work out what changed by comparing reply cards before
+     and after (`guestChanges`, as JSON). Each action already knows what it does (separate,
+     match, delete…); sending that would be sturdier.
    - The guest page doesn't check visibility yet: Hidden, Protected and cancelled events
      all open as Public today.
    - The latest replies have no Unknown tag: working it out needs each event's guest list.
@@ -494,6 +514,9 @@ Steps 1–5 run fully on your machine; the first big handoff is step 6.
      password account drops the password.
 7. **CI:** lint, build and rules tests on every push; auto-deploy to dev.
 8. **GDPR cleanup.** The nightly deletion job and account deletion.
+   - The job reuses `src/db/writes/`. Move the rules that live only in the actions today
+     (past, cancelled) into the writes, so the job gets them too, with one "past" on the
+     event's clock (`todayIn`); the actions use the countdown worked out at read time.
    - Log out only deletes this browser's cookie; a copied cookie stays valid up to 14 days.
      Deleting an account must also end every session (`auth.revokeRefreshTokens(uid)`).
      Later, maybe: a "Log out of all devices" button in Settings, doing the same.

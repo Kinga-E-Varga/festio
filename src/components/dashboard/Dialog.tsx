@@ -10,7 +10,7 @@ interface DialogProps {
   children: ReactNode;
 }
 
-/** A modal box over the page: the match picker and New reply. It closes by unmounting. */
+/** A modal box over the page: the match picker, New reply and the save confirm. It closes by unmounting. */
 export function Dialog({ title, hint, onDismiss, children }: DialogProps) {
   const dialog = useRef<HTMLDialogElement>(null);
   const titleId = useId();
@@ -48,10 +48,12 @@ export function Dialog({ title, hint, onDismiss, children }: DialogProps) {
       }}
       aria-labelledby={titleId}
       /*
+       * At most 720px tall, so on a tall screen a long reply scrolls inside a
+       * box instead of filling the height.
        * Phones: the box's middle a third of the way down, above where the
        * keyboard comes up; a tall one stops 16px from the top and grows down.
        */
-      className="m-auto max-h-[calc(100dvh-32px)] max-sm:top-[33.33dvh] max-sm:bottom-auto max-sm:my-0 max-sm:translate-y-[max(-50%,calc(16px-33.33dvh))] w-[min(480px,calc(100vw-32px))] side-scroll overflow-y-auto overscroll-contain rounded-ui border border-neutral-400 bg-neutral-50 p-0 text-neutral-950 backdrop:bg-neutral-950/40 [--scroll-track:var(--color-neutral-50)]"
+      className="m-auto max-h-[min(calc(100dvh-32px),720px)] max-sm:top-[33.33dvh] max-sm:bottom-auto max-sm:my-0 max-sm:translate-y-[max(-50%,calc(16px-33.33dvh))] w-[min(480px,calc(100vw-32px))] side-scroll overflow-y-auto overscroll-contain rounded-ui border border-neutral-400 bg-neutral-50 p-0 text-neutral-950 backdrop:bg-neutral-950/40 [--scroll-track:var(--color-neutral-50)]"
     >
       {/* No bottom padding: each body ends with its own, so a pinned bar can sit flush. */}
       <div className="px-5 pt-5">

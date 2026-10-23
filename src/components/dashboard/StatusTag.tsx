@@ -3,10 +3,10 @@ import { TAG } from "@/components/dashboard/guest-list/styles";
 import { SUCCESS_DARK, WARNING_DARK } from "@/components/dashboard/styles";
 import type { EventStatus } from "@/types/dashboard";
 
-/** Each status's colours: live, still a draft, or over. */
+/** Each status's colours: live, Hidden, or over. */
 const TONE: Record<EventStatus, string> = {
   active: SUCCESS_DARK,
-  draft: WARNING_DARK,
+  hidden: WARNING_DARK,
   past: "border-neutral-400 bg-neutral-200 text-neutral-700",
 };
 

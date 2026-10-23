@@ -265,6 +265,14 @@ const PATHS: Record<IconName, ReactNode> = {
       <path d="m6.75 7.25 1 12.5h8.5l1-12.5" />
     </>
   ),
+  leave: (
+    <>
+      {/* A person stepping out, an arrow leading away. */}
+      <circle cx="7.5" cy="8.5" r="3.25" />
+      <path d="M1.75 20a5.75 5.75 0 0 1 11.5 0" />
+      <path d="M14 13h8.25M18 9l4.25 4-4.25 4" />
+    </>
+  ),
   check: (
     <>
       <path d="m5.25 12.5 4.5 4.5 9-10" />

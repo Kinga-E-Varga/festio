@@ -1,6 +1,7 @@
 import { getApps, initializeApp } from "firebase-admin/app";
 import { getAuth } from "firebase-admin/auth";
 import { getFirestore } from "firebase-admin/firestore";
+import { getStorage } from "firebase-admin/storage";
 import firebaseConfig from "../../firebase.json";
 
 /*
@@ -31,7 +32,11 @@ const app =
   getApps()[0] ??
   initializeApp(
     USE_EMULATORS
-      ? { projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID }
+      ? {
+          projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
+          /* The Storage emulator takes any bucket name; this is the default one's. */
+          storageBucket: `${process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID}.appspot.com`,
+        }
       : undefined,
   );
 
@@ -40,3 +45,6 @@ export const db = getFirestore(app);
 if (fresh) db.settings({ ignoreUndefinedProperties: true });
 
 export const auth = getAuth(app);
+
+/** Host uploads, one folder per event, in the default bucket (`storage.bucket()`). */
+export const storage = getStorage(app);

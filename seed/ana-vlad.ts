@@ -1,6 +1,5 @@
 import type { Question } from "@/db/schemas/event";
-import type { ListName } from "@/types/guests";
-import { momentFromNow, type SeedReply } from "./build";
+import { momentFromNow, type SeedName, type SeedReply } from "./build";
 
 /*
  * The engagement's guests, written by hand (from the old `src/mock/guests.ts`)
@@ -41,7 +40,7 @@ export const questions: Question[] = [
   },
 ];
 
-export const guestList: ListName[] = [
+export const guestList: SeedName[] = [
   { id: "n-maria", name: "Maria Popescu", sent: true },
   { id: "n-andrei", name: "Andrei Popescu", sent: true },
   { id: "n-elena", name: "Elena Ionescu", sent: true },

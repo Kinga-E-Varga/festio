@@ -1,3 +1,4 @@
+import { Timestamp } from "firebase-admin/firestore";
 import { connection } from "next/server";
 import { db } from "@/db/admin";
 import { paths } from "@/db/paths";
@@ -61,6 +62,30 @@ function toActivity(
         : { key: "replied" },
     details: going ? details(reply) : [],
   };
+}
+
+/**
+ * How many replies guests sent after `since` (never = all of them), across
+ * these events. Host-added replies don't count. Archived events have none left.
+ */
+export async function newReplyCount(
+  events: DashboardEvent[],
+  since: Date | undefined,
+): Promise<number> {
+  const counts = await Promise.all(
+    events
+      .filter((event) => !isArchived(event))
+      .map(async (event) => {
+        const guestReplies = db
+          .collection(paths.replies(event.id))
+          .where("createdBy", "==", "guest");
+        const query = since
+          ? guestReplies.where("sentAt", ">", Timestamp.fromDate(since))
+          : guestReplies;
+        return (await query.count().get()).data().count;
+      }),
+  );
+  return counts.reduce((sum, count) => sum + count, 0);
 }
 
 /**

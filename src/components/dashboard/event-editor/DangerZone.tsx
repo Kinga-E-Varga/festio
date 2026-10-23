@@ -1,10 +1,10 @@
 "use client";
 
 import { useLocale, useTranslations } from "next-intl";
+import { reopenEvent } from "@/actions/event";
 import { CancelEventForm } from "@/components/dashboard/event-editor/CancelEventForm";
 import { ExportLink } from "@/components/dashboard/ExportLink";
 import { DeleteRecordForm } from "@/components/dashboard/event-editor/DeleteRecordForm";
-import { RollOut } from "@/components/dashboard/event-editor/RollOut";
 import {
   ActionRow,
   SettingsCard,
@@ -16,12 +16,16 @@ import {
 import type { ToastTone } from "@/components/dashboard/Toast";
 import { ButtonIcon } from "@/components/icons";
 import { useState, type ReactNode } from "react";
+import type { HostLogin } from "@/db/reads/host";
+import { useRouter } from "@/i18n/navigation";
 import { GUEST_DATA_RETENTION_DAYS } from "@/lib/config";
 import { deletionDate, formatEventDate, isPast } from "@/lib/event";
 import type { DashboardEvent, IconName } from "@/types/dashboard";
 
 interface DangerZoneProps {
   event: DashboardEvent;
+  /** How the host confirms it's them: password, or Google. */
+  login: HostLogin;
   onAction: (message: string, tone: ToastTone) => void;
 }
 
@@ -37,6 +41,7 @@ interface RowProps {
     label: string;
     onClick: () => void;
     quiet?: boolean;
+    disabled?: boolean;
   };
 }
 
@@ -68,6 +73,7 @@ function Row({ title, children, below, aside, action }: RowProps) {
               type="button"
               className={action.quiet ? BTN_GHOST_LIGHT : BTN_DANGER}
               onClick={action.onClick}
+              disabled={action.disabled}
             >
               {action.icon ? <ButtonIcon name={action.icon} /> : null}
               {action.label}
@@ -82,22 +88,39 @@ function Row({ title, children, below, aside, action }: RowProps) {
   );
 }
 
-export function DangerZone({ event, onAction }: DangerZoneProps) {
+export function DangerZone({ event, login, onAction }: DangerZoneProps) {
   const t = useTranslations("EventEditor");
+  const tError = useTranslations("SaveErrors");
   const locale = useLocale();
+  const router = useRouter();
   const replied = event.rsvp.replied;
   const [cancelling, setCancelling] = useState(false);
-  const [deletingDraft, setDeletingDraft] = useState(false);
   const [deletingRecord, setDeletingRecord] = useState(false);
-  /* Until there is a store, cancelling here marks it cancelled for this visit. */
-  const [cancelled, setCancelled] = useState(event.cancelled ?? false);
+  /* While Reopen waits for the server. */
+  const [busy, setBusy] = useState(false);
   /* A cancelled event can be deleted, like a past one; its own row says why. */
-  const showCancelled = cancelled && event.paid;
-  /* A past draft was never paid for, so it shows only the delete row. */
-  const showPast = !cancelled && isPast(event) && event.paid;
-  /* A live paid event explains why it has no delete, under its cancel row. */
-  const showCancel = !cancelled && !isPast(event) && event.paid;
-  const showDraft = !event.paid;
+  const cancelled = event.cancelled ?? false;
+  /* Reopening only makes sense before the event day has passed. */
+  const showReopen = cancelled && !isPast(event);
+  const showPast = !cancelled && isPast(event);
+  /* A live event explains why it has no delete, under its cancel row. */
+  const showCancel = !cancelled && !isPast(event);
+
+  /** Reopens the event, no password; its outcome as a toast. */
+  async function reopen() {
+    setBusy(true);
+    const result = await reopenEvent(event.id).catch(() => ({
+      success: false as const,
+      error: "failed" as const,
+    }));
+    setBusy(false);
+    onAction(
+      result.success ? t("reopened") : tError(result.error),
+      result.success ? "neutral" : "error",
+    );
+  }
+
+  const errorToast = (message: string) => onAction(message, "error");
   /* The delete row's switch and its password form: a past event's and a cancelled one's. */
   const deleteRecord = {
     action: toggle(
@@ -110,9 +133,12 @@ export function DangerZone({ event, onAction }: DangerZoneProps) {
     below: (
       <DeleteRecordForm
         open={deletingRecord}
+        eventId={event.id}
+        login={login}
+        onError={errorToast}
         onDelete={() => {
-          setDeletingRecord(false);
           onAction(t("pastDeleted"), "neutral");
+          router.push("/dashboard");
         }}
       />
     ),
@@ -122,9 +148,9 @@ export function DangerZone({ event, onAction }: DangerZoneProps) {
   return (
     <SettingsCard title={t("dangerSection")}>
       <div>
-        {/* Why a live paid event has no delete, before the cancel it points to. */}
+        {/* Why a live event has no delete, before the cancel it points to. */}
         {showCancel ? (
-          <Row title={t("paidDeleteTitle")}>{t("paidDeleteBody")}</Row>
+          <Row title={t("liveDeleteTitle")}>{t("liveDeleteBody")}</Row>
         ) : null}
 
         {showCancel ? (
@@ -139,9 +165,11 @@ export function DangerZone({ event, onAction }: DangerZoneProps) {
             below={
               <CancelEventForm
                 open={cancelling}
+                eventId={event.id}
+                login={login}
+                onError={errorToast}
                 onCancel={() => {
                   setCancelling(false);
-                  setCancelled(true);
                   onAction(t("cancelled"), "neutral");
                 }}
               />
@@ -154,43 +182,23 @@ export function DangerZone({ event, onAction }: DangerZoneProps) {
           </Row>
         ) : null}
 
-        {showDraft ? (
-          <Row
-            title={t("draftTitle")}
-            action={toggle(
-              deletingDraft,
-              setDeletingDraft,
-              { icon: "trash", label: t("deleteDraft") },
-              t("draftKeep"),
-            )}
-            below={
-              <RollOut open={deletingDraft}>
-                <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-3">
-                  <p className="font-medium text-accent-700">
-                    {t("draftConfirm")}
-                  </p>
-                  <button
-                    type="button"
-                    className={BTN_DANGER}
-                    onClick={() => {
-                      setDeletingDraft(false);
-                      onAction(t("draftDeleted"), "neutral");
-                    }}
-                  >
-                    <ButtonIcon name="trash" />
-                    {t("deleteDraft")}
-                  </button>
-                </div>
-              </RollOut>
-            }
-          >
-            {t("draftBody")}
+        {cancelled ? (
+          <Row title={t("cancelledTitle")} {...deleteRecord}>
+            {t("cancelledBody", { date: deletionLabel })}
           </Row>
         ) : null}
 
-        {showCancelled ? (
-          <Row title={t("cancelledTitle")} {...deleteRecord}>
-            {t("cancelledBody", { date: deletionLabel })}
+        {showReopen ? (
+          <Row
+            title={t("reopenTitle")}
+            action={{
+              label: t("reopenButton"),
+              quiet: true,
+              disabled: busy,
+              onClick: reopen,
+            }}
+          >
+            {t("reopenBody")}
           </Row>
         ) : null}
 

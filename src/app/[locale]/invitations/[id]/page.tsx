@@ -42,6 +42,12 @@ export default async function HostInvitationPage({ params }: Props) {
    * chrome in the host's.
    */
   const { language } = event;
+  const saving = {
+    eventId: event.id,
+    version: stored?.version ?? 0,
+    visibility: event.visibility,
+    replied: event.rsvp.replied,
+  };
 
   if (template.kind === "modular") {
     const library = loadLibrary();
@@ -52,6 +58,7 @@ export default async function HostInvitationPage({ params }: Props) {
         templateId={template.id}
         basics={{ date: event.date }}
         language={language}
+        saving={saving}
       />
     );
   }
@@ -60,9 +67,11 @@ export default async function HostInvitationPage({ params }: Props) {
     <HostInvitationEditor
       template={template}
       initial={invitationValues(template, event, stored)}
+      initialEnvelope={stored?.kind === "simple" ? stored.envelope : true}
       language={language}
       guestMessages={await loadMessages(language)}
       backTo={eventPath(event.id)}
+      saving={saving}
     />
   );
 }

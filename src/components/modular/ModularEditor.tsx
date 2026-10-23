@@ -9,6 +9,8 @@ import {
   useRef,
   useState,
 } from "react";
+import { saveInvitation } from "@/actions/invitation";
+import { useSaveConfirm } from "@/components/dashboard/SaveConfirm";
 import { useToast } from "@/components/dashboard/Toast";
 import { envelopeGround } from "@/components/envelope/colors";
 import { EditorFrame } from "@/components/invitation/EditorFrame";
@@ -16,11 +18,13 @@ import {
   useTabViews,
   type PanelTabId,
 } from "@/components/invitation/PanelTabs";
+import { eventPath } from "@/lib/event";
 import type { Language } from "@/lib/language";
 import { useLeaveWarning } from "@/lib/leave-warning";
 import { firstMissing } from "@/modular/fields";
 import { applyTemplate, resolveDesign, sameState } from "@/modular/state";
 import { modularVars } from "@/modular/vars";
+import type { InvitationSaving } from "@/types/dashboard";
 import type {
   InvitationBasics,
   ModularLibrary,
@@ -79,15 +83,18 @@ interface ModularEditorProps {
   templateId: string;
   basics: InvitationBasics;
   language: Language;
+  /** The event Save writes to. Absent (a template's preview), Save keeps it in memory. */
+  saving?: InvitationSaving;
 }
 
 /**
- * The modular template page: the invitation as its shadowed column
- * on its own ground, with the edit panel beside it (the strip while it is
- * closed). Same frame, same panel shell, same toasts as the simple editor.
- * The Design tab edits `state` and the invitation follows it live; Save
- * keeps it in memory, and leaving with unsaved changes asks first. The RSVP
- * form works; a reply only ever shows the test toast.
+ * The modular editor, for an event's invitation or a template's preview:
+ * the invitation as its shadowed column on its own ground, with the edit
+ * panel beside it (the strip while it is closed). Same frame, same panel
+ * shell, same toasts as the simple editor. The Design tab edits `state` and
+ * the invitation follows it live; Save writes it to the event (in memory on
+ * a preview), and leaving with unsaved changes asks first. The RSVP form
+ * works; a reply only ever shows the test toast.
  */
 export function ModularEditor({
   library,
@@ -95,12 +102,19 @@ export function ModularEditor({
   templateId,
   basics,
   language,
+  saving,
 }: ModularEditorProps) {
   const t = useTranslations("HostEditor");
+  const tError = useTranslations("SaveErrors");
   /* Closed on arrival: the host sees the invitation first and opens the panel from the strip. */
   const [editing, setEditing] = useState(false);
   const [state, setState] = useState(initial);
   const [saved, setSaved] = useState(initial);
+  /* The card's version this editor last saw: sent with each save. */
+  const [version, setVersion] = useState(saving?.version ?? 0);
+  /* A save is out: the ref is the instant guard, the state turns Save off. */
+  const busy = useRef(false);
+  const [sending, setSending] = useState(false);
   /* Not stored: only which template the Design tab shows as current. */
   const [template, setTemplate] = useState(templateId);
   const views = useTabViews();
@@ -113,6 +127,10 @@ export function ModularEditor({
   const [showErrors, setShowErrors] = useState(false);
   const toast = useToast();
   const showToast = toast.show;
+  const confirm = useSaveConfirm(
+    saving?.visibility ?? "hidden",
+    saving?.replied ?? 0,
+  );
   /*
    * The preview draws a deferred copy of the state: typing in the panel
    * stays quick, and the invitation catches up as soon as React is free.
@@ -162,9 +180,9 @@ export function ModularEditor({
   }
 
   /*
-   * In memory only, like the simple editor: there is no event yet. An empty
-   * required field stops it: the host is taken there, and every such field
-   * says so.
+   * To the event's invitation card; on a template's preview (no event yet)
+   * in memory only. An empty required field stops it: the host is taken
+   * there, and every such field says so.
    */
   function save() {
     const missing = firstMissing(state, library);
@@ -179,8 +197,39 @@ export function ModularEditor({
       return;
     }
     setShowErrors(false);
-    setSaved(state);
-    toast.show(t("saved"));
+    if (!saving) {
+      setSaved(state);
+      toast.show(t("saved"));
+      return;
+    }
+    if (busy.current) return;
+    /* What is sent is what gets marked saved, even if the host edits on meanwhile. */
+    const sent = state;
+    confirm.ask(async () => {
+      if (busy.current) return;
+      busy.current = true;
+      setSending(true);
+      try {
+        const result = await saveInvitation(saving.eventId, {
+          kind: "modular",
+          ...sent,
+          version,
+        });
+        if (!result.success) {
+          toast.show(tError(result.error), "error");
+          return;
+        }
+        setVersion(result.data.version);
+        setSaved(sent);
+        toast.show(t("saved"));
+      } catch {
+        /* The request itself failed, e.g. offline. */
+        toast.show(tError("failed"), "error");
+      } finally {
+        busy.current = false;
+        setSending(false);
+      }
+    });
   }
 
   function pickTemplate(id: string) {
@@ -255,74 +304,78 @@ export function ModularEditor({
   );
 
   return (
-    <EditorFrame
-      views={views}
-      view={tab}
-      open={editing}
-      onView={(id) => {
-        setTab(id);
-        setEditing(true);
-      }}
-      onClose={() => setEditing(false)}
-      action={{ kind: "save", dirty, onSave: save }}
-      toast={toast}
-    >
-      {/*
-       * The envelope's ground (the palette's `ground`), the same as under
-       * the guest page's envelope. It spans the whole area, under the panel too, so a
-       * closing panel never drags the page behind it into view.
-       */}
-      <div
-        style={
-          design
-            ? {
-                ...modularVars(design.palette, design.fontPair),
-                ...envelopeGround(design.palette),
-              }
-            : undefined
-        }
-        className={`relative h-full ${design ? "bg-(--env-ground)" : ""}`}
+    <>
+      <EditorFrame
+        backTo={saving && eventPath(saving.eventId)}
+        views={views}
+        view={tab}
+        open={editing}
+        onView={(id) => {
+          setTab(id);
+          setEditing(true);
+        }}
+        onClose={() => setEditing(false)}
+        action={{ kind: "save", dirty: dirty && !sending, onSave: save }}
+        toast={toast}
       >
         {/*
-         * With the panel open above the breakpoint, the invitation gives up
-         * the panel's width, so the panel opens beside it rather than over
-         * it — same duration and easing as the panel.
+         * The envelope's ground (the palette's `ground`), the same as under
+         * the guest page's envelope. It spans the whole area, under the panel too, so a
+         * closing panel never drags the page behind it into view.
          */}
         <div
-          data-panel={editing ? "true" : undefined}
-          className="relative h-full transition-[margin] duration-[620ms] ease-[cubic-bezier(0.22,1,0.36,1)] invite:data-[panel=true]:mr-invite-panel"
+          style={
+            design
+              ? {
+                  ...modularVars(design.palette, design.fontPair),
+                  ...envelopeGround(design.palette),
+                }
+              : undefined
+          }
+          className={`relative h-full ${design ? "bg-(--env-ground)" : ""}`}
         >
-          {/* A state id that names nothing leaves the ground empty rather than failing the page. */}
-          {design ? (
-            <ModularInvitation
-              design={design}
-              basics={basics}
-              language={language}
-              framed
-              edit={edit}
-              onRsvp={testReply}
-            />
-          ) : null}
+          {/*
+           * With the panel open above the breakpoint, the invitation gives up
+           * the panel's width, so the panel opens beside it rather than over
+           * it — same duration and easing as the panel.
+           */}
+          <div
+            data-panel={editing ? "true" : undefined}
+            className="relative h-full transition-[margin] duration-[620ms] ease-[cubic-bezier(0.22,1,0.36,1)] invite:data-[panel=true]:mr-invite-panel"
+          >
+            {/* A state id that names nothing leaves the ground empty rather than failing the page. */}
+            {design ? (
+              <ModularInvitation
+                design={design}
+                basics={basics}
+                language={language}
+                framed
+                edit={edit}
+                onRsvp={testReply}
+              />
+            ) : null}
+          </div>
+          <ModularEditPanel
+            open={editing}
+            onClose={() => setEditing(false)}
+            tab={tab}
+            library={library}
+            state={state}
+            basics={basics}
+            openSection={openSection}
+            onOpenSection={openFields}
+            showErrors={showErrors}
+            templateId={template}
+            language={language}
+            onChange={change}
+            onTemplate={pickTemplate}
+            openStyles={openStyles}
+            onOpenStyles={openStylesOf}
+            onStylePicked={stylePicked}
+          />
         </div>
-        <ModularEditPanel
-          open={editing}
-          onClose={() => setEditing(false)}
-          tab={tab}
-          library={library}
-          state={state}
-          basics={basics}
-          openSection={openSection}
-          onOpenSection={openFields}
-          showErrors={showErrors}
-          templateId={template}
-          language={language}
-          onChange={change}
-          onTemplate={pickTemplate}
-          openStyles={openStyles}
-          onOpenStyles={openStylesOf}
-          onStylePicked={stylePicked}
-        />
-      </div>
-    </EditorFrame>
+      </EditorFrame>
+      {confirm.dialog}
+    </>
   );
 }

@@ -29,17 +29,45 @@ export const loadInvitation = cache(
   },
 );
 
-/** Where a modular editor starts: the saved card, else the template's own start. */
+/**
+ * Where a modular editor starts: the saved card, else the template's own
+ * start. A saved card keeps its own sections; one added to the library since
+ * comes in off, with its first variant, at its place in the fixed order, and
+ * a section with no saved values takes the fresh ones.
+ */
 export function modularStart(
   template: ModularTemplate,
   stored: InvitationDoc | null,
   library: ModularLibrary,
   language: Language,
 ): ModularState {
-  if (stored?.kind !== "modular") {
-    return initialState(template, library, language);
+  const fresh = initialState(template, library, language);
+  if (stored?.kind !== "modular") return fresh;
+
+  const sections = [...stored.sections];
+  let after = -1;
+  for (const definition of library.sections) {
+    const at = sections.findIndex(({ section }) => section === definition.id);
+    if (at >= 0) {
+      after = at;
+      continue;
+    }
+    after += 1;
+    sections.splice(after, 0, {
+      section: definition.id,
+      variant: definition.variants[0].id,
+      on: Boolean(definition.required),
+    });
   }
-  const { palette, fontPair, pattern, corners, envelope, sections, values } =
-    stored;
-  return { palette, fontPair, pattern, corners, envelope, sections, values };
+
+  const { palette, fontPair, pattern, corners, envelope, values } = stored;
+  return {
+    palette,
+    fontPair,
+    pattern,
+    corners,
+    envelope,
+    sections,
+    values: { ...fresh.values, ...values },
+  };
 }

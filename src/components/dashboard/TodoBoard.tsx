@@ -12,7 +12,6 @@ const TONE_ICON: Record<NoticeTone, IconName> = {
   attention: "alert",
   paused: "ban",
   deadline: "clock",
-  billing: "billing",
   hidden: "eyeOff",
   deletion: "download",
 };

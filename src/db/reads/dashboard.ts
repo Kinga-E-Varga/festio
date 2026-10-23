@@ -1,11 +1,10 @@
 import { cache } from "react";
 import type { BarData } from "@/components/dashboard/BarActions";
 import { hostNotices, needsWaiting } from "@/components/dashboard/notices";
-import { loadRecentReplies } from "@/db/reads/activity";
+import { loadRecentReplies, newReplyCount } from "@/db/reads/activity";
 import { loadHostEvents } from "@/db/reads/events";
 import { loadGuests } from "@/db/reads/guests";
 import { loadHost, type Host } from "@/db/reads/host";
-import { awaitingPayment } from "@/lib/packages";
 import { buildRows, countRows } from "@/lib/guests";
 import type {
   AttentionNotice,
@@ -20,8 +19,6 @@ export interface HostSummary {
   host: Host;
   events: DashboardEvent[];
   notices: AttentionNotice[];
-  /** Waiting for payment: what sits in the cart. */
-  unpaid: DashboardEvent[];
   /** The strip's and the landing bar's initials and counts. */
   bar: BarData;
 }
@@ -46,17 +43,19 @@ async function waitingCounts(
 /** The host, their events and what needs them, without the latest replies: the landing bar's read. */
 export const loadHostSummary = cache(async (): Promise<HostSummary> => {
   const [host, events] = await Promise.all([loadHost(), loadHostEvents()]);
-  const notices = hostNotices(events, await waitingCounts(events));
-  const unpaid = events.filter(awaitingPayment);
+  const [waiting, replies] = await Promise.all([
+    waitingCounts(events),
+    newReplyCount(events, host.lastVisit),
+  ]);
+  const notices = hostNotices(events, waiting);
   return {
     host,
     events,
     notices,
-    unpaid,
     bar: {
       initials: host.initials,
-      cart: unpaid.length,
       alerts: notices.length,
+      replies,
     },
   };
 });

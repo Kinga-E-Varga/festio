@@ -1,8 +1,10 @@
 "use client";
 
 import { useLocale, useTranslations } from "next-intl";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm, useWatch } from "react-hook-form";
+import { saveEventSettings } from "@/actions/event";
+import { checkSlug } from "@/actions/slug";
 import {
   dateLocked,
   defaultReplyClose,
@@ -18,6 +20,7 @@ import {
   normalizeSlug,
   SLUG_MAX,
   SLUG_MIN,
+  SLUG_PATTERN,
   slugSuggestions,
 } from "@/lib/slug";
 import type { DashboardEvent, EventKind, Visibility } from "@/types/dashboard";
@@ -57,11 +60,17 @@ interface EventFieldValues {
   preloaded: boolean;
 }
 
-/** `takenSlugs` holds every other event's slug; a link must be unique. */
-export function useEventForm(
-  event: DashboardEvent,
-  takenSlugs: readonly string[],
-) {
+/** The server's answer for one typed link. */
+interface SlugAnswer {
+  slug: string;
+  free: boolean;
+  suggestions: string[];
+}
+
+/** How long typing has to pause before a link is checked with the server. */
+const SLUG_CHECK_DELAY = 300;
+
+export function useEventForm(event: DashboardEvent) {
   const t = useTranslations("EventEditor");
   /* The host reads these dates, so they follow the host's locale. */
   const locale = useLocale();
@@ -102,6 +111,11 @@ export function useEventForm(
 
   const [acknowledged, setAcknowledged] =
     useState<Record<WarningId, boolean>>(NONE_ACKNOWLEDGED);
+  /* The card's version this form last read or saved; the server checks it. */
+  const [version, setVersion] = useState(event.version);
+  const [saving, setSaving] = useState(false);
+  /* The last link the server checked; links are unique across Festio, so only it knows. */
+  const [slugAnswer, setSlugAnswer] = useState<SlugAnswer | null>(null);
 
   /** From the event day on, the date stays put; the rest stays editable. */
   const lockDate = dateLocked(event);
@@ -168,9 +182,46 @@ export function useEventForm(
   let expectedError: string | null = null;
   if (expectedValue < 1) {
     expectedError = t("expectedRequired");
-  } else if (expectedValue < event.rsvp.replied) {
+  } else if (
+    /* Raised or left alone is fine, even under the replies; lowered below them isn't. */
+    expectedValue < event.expectedGuests &&
+    expectedValue < event.rsvp.replied
+  ) {
     expectedError = t("expectedTooLow", { count: event.rsvp.replied });
   }
+
+  /* Only a new, well-formed link is worth asking about. */
+  const checkLink =
+    cleanSlug !== original.slug &&
+    cleanSlug.length >= SLUG_MIN &&
+    cleanSlug.length <= SLUG_MAX &&
+    SLUG_PATTERN.test(cleanSlug) &&
+    !isReservedSlug(cleanSlug);
+
+  useEffect(() => {
+    if (!checkLink) return;
+    /* An answer that comes back after the host typed on is dropped. */
+    let current = true;
+    const timer = setTimeout(async () => {
+      try {
+        const result = await checkSlug(event.id, cleanSlug);
+        if (current && result.success) {
+          setSlugAnswer({ slug: cleanSlug, ...result.data });
+        }
+      } catch {
+        /* Offline: no hint, the save still checks. */
+      }
+    }, SLUG_CHECK_DELAY);
+    return () => {
+      current = false;
+      clearTimeout(timer);
+    };
+  }, [checkLink, cleanSlug, event.id]);
+
+  const taken =
+    checkLink && slugAnswer?.slug === cleanSlug && !slugAnswer.free
+      ? slugAnswer
+      : null;
 
   let slugError: string | null = null;
   if (slug.trim().length > 0 && cleanSlug.length < SLUG_MIN) {
@@ -179,13 +230,16 @@ export function useEventForm(
     slugError = t("slugTooLong", { max: SLUG_MAX });
   } else if (isReservedSlug(cleanSlug)) {
     slugError = t("slugReserved");
-  } else if (takenSlugs.includes(cleanSlug)) {
+  } else if (taken) {
     slugError = t("slugTaken");
   }
-  const slugOptions =
-    slugError && cleanSlug.length >= SLUG_MIN
-      ? slugSuggestions(cleanSlug, effectiveDate.slice(0, 4), takenSlugs)
-      : [];
+  let slugOptions: string[] = [];
+  if (taken) {
+    slugOptions = taken.suggestions;
+  } else if (slugError && cleanSlug.length >= SLUG_MIN) {
+    /* A reserved name: these are unchecked, so the save may still find one taken. */
+    slugOptions = slugSuggestions(cleanSlug, effectiveDate.slice(0, 4));
+  }
 
   const passwordError =
     password.length > 0 && !PASSWORD_PATTERN.test(password)
@@ -193,12 +247,38 @@ export function useEventForm(
       : null;
 
   /* Every card needs a name, so a missing or short one keeps Save shut. */
-  const canSave = formState.isDirty && pending === 0 && !titleError;
+  const canSave = formState.isDirty && pending === 0 && !titleError && !saving;
 
-  function save() {
-    if (!canSave) return;
-    reset(getValues());
-    setAcknowledged(NONE_ACKNOWLEDGED);
+  /** Sends the form to the server; saved, its values become the new starting point. */
+  async function save() {
+    const values = getValues();
+    setSaving(true);
+    try {
+      const result = await saveEventSettings(event.id, {
+        title: values.title,
+        kind: values.kind,
+        language: values.language,
+        date: values.date,
+        repliesCloseAt: (values.closeEarly && values.closeAt) || undefined,
+        slug: normalizeSlug(values.slug),
+        visibility: values.visibility,
+        password: values.password || undefined,
+        expectedGuests: Number.parseInt(values.expected, 10),
+        preloaded: values.preloaded,
+        version,
+      });
+      if (result.success) {
+        reset(values);
+        setVersion(result.data.version);
+        setAcknowledged(NONE_ACKNOWLEDGED);
+      }
+      return result;
+    } catch {
+      /* The request itself failed, e.g. offline. */
+      return { success: false, error: "failed" } as const;
+    } finally {
+      setSaving(false);
+    }
   }
 
   /** Back to the last saved values, every warning forgotten. */

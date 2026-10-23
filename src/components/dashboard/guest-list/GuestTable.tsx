@@ -7,8 +7,9 @@ import {
   ATTENTION_TAG,
   fold,
   SMALL_BTN,
+  STATUS_FILL,
 } from "@/components/dashboard/guest-list/styles";
-import { Dialog } from "@/components/dashboard/guest-list/Dialog";
+import { Dialog } from "@/components/dashboard/Dialog";
 import { NameEditor } from "@/components/dashboard/guest-list/NameEditor";
 import { ReplyEditor } from "@/components/dashboard/guest-list/ReplyEditor";
 import { RowView } from "@/components/dashboard/guest-list/RowView";
@@ -44,7 +45,7 @@ const CATEGORY = {
   going: {
     title: "categoryGoing",
     ink: "border-primary-700",
-    fill: "bg-primary-700",
+    fill: STATUS_FILL.going,
     line: "bg-primary-500",
     dashed: "border-primary-500",
     split: "border-primary-700",
@@ -52,7 +53,7 @@ const CATEGORY = {
   notGoing: {
     title: "categoryNotGoing",
     ink: "border-warning-500",
-    fill: "bg-warning-500",
+    fill: STATUS_FILL.not_going,
     line: "bg-warning-400",
     dashed: "border-warning-400",
     split: "border-warning-500",
@@ -92,29 +93,50 @@ export function GuestTable({
 }: GuestTableProps) {
   const t = useTranslations("GuestList");
   const adding = editor.editing === NEW_ROW;
+  const editing = list.guests.replies.find(
+    (reply) => reply.id === editor.editing,
+  );
+  /* The whole reply, from whichever of its people was picked, even ones elsewhere in the table. */
+  const group = editing
+    ? list.guests.replies.filter(
+        (reply) => reply.submissionId === editing.submissionId,
+      )
+    : [];
 
-  /* In a dialog over the page: a new reply has no place in the list yet. */
-  const newReply = adding ? (
-    <Dialog title={t("addReply")} onDismiss={() => editor.guard(editor.close)}>
-      <ReplyEditor
-        reply={null}
-        questions={list.guests.questions}
-        party={[]}
-        onSave={(values) => {
-          actions.saveReply(null, values);
-          editor.close();
-        }}
-        onCancel={editor.close}
-        onDirty={editor.reportDirty}
-        pending={editor.pendingPrompt}
-      />
-    </Dialog>
-  ) : null;
+  /* In a dialog over the page: a new reply has no place in the list yet, and a saved one may be split across cards. */
+  const replyDialog =
+    adding || editing ? (
+      <Dialog
+        title={t(adding ? "addReply" : "editReply")}
+        onDismiss={() => editor.guard(editor.close)}
+      >
+        <ReplyEditor
+          group={group}
+          questions={list.guests.questions}
+          start={editing ? group.indexOf(editing) : 0}
+          onSave={async (values) => {
+            const ids = adding ? null : group.map((reply) => reply.id);
+            if (await actions.saveReply(ids, values)) editor.close();
+          }}
+          onDelete={
+            adding
+              ? undefined
+              : async () => {
+                  const ids = group.map((reply) => reply.id);
+                  if (await actions.removeReplies(ids)) editor.close();
+                }
+          }
+          onCancel={editor.close}
+          onDirty={editor.reportDirty}
+          pending={editor.pendingPrompt}
+        />
+      </Dialog>
+    ) : null;
 
   if (list.rows.length === 0) {
     return (
       <>
-        {newReply}
+        {replyDialog}
         <div className="rounded-ui border border-dashed border-neutral-400 px-6 py-10 text-center">
           <p className="small-title">{t("emptyTitle")}</p>
           {list.useList ? null : (
@@ -134,7 +156,7 @@ export function GuestTable({
   /* A card per status, each folding on its own; search narrows them all. */
   return (
     <>
-      {newReply}
+      {replyDialog}
       {list.groups.length === 0 ? (
         <p className={`${CARD_FRAME} py-8 text-center muted-text`}>
           {t("noResults")}
@@ -314,7 +336,15 @@ function SameNameReply({ row, list, actions, editor }: SameNameReplyProps) {
   return (
     <div className="@container rounded-ui border border-neutral-400 bg-neutral-50 px-3 py-2">
       <p className="hint-text">{t("repliedOn", { date })}</p>
-      <RowItem row={row} list={list} actions={actions} editor={editor} inCard />
+      {/* Standing alone to compare, each one keeps its status and edit. */}
+      <RowItem
+        row={row}
+        lead
+        list={list}
+        actions={actions}
+        editor={editor}
+        inCard
+      />
       {party.length > 0 ? (
         <p className="py-1 muted-text">
           <RepliedWith names={party} />
@@ -383,7 +413,13 @@ function GroupView({ group, list, actions, editor }: GroupViewProps) {
           at="person"
           mark={<span className={statusDot(row, category)} />}
         >
-          <RowItem row={row} list={list} actions={actions} editor={editor} />
+          <RowItem
+            row={row}
+            lead={at === 0}
+            list={list}
+            actions={actions}
+            editor={editor}
+          />
         </Strand>
       ))}
       {group.with.length > 0 ? (
@@ -470,6 +506,8 @@ function Strand({
 
 interface RowItemProps {
   row: GuestRow;
+  /** See `RowView`. */
+  lead: boolean;
   list: GuestListState;
   actions: GuestActions;
   editor: RowEditorState;
@@ -477,11 +515,30 @@ interface RowItemProps {
   inCard?: boolean;
 }
 
-function RowItem({ row, list, actions, editor, inCard = false }: RowItemProps) {
-  if (editor.editing !== row.id) {
+function RowItem({
+  row,
+  lead,
+  list,
+  actions,
+  editor,
+  inCard = false,
+}: RowItemProps) {
+  /* A reply is edited in a dialog (`GuestTable`); its row stays as it is. */
+  if (editor.editing !== row.id || row.kind === "reply") {
+    const party =
+      row.kind === "reply"
+        ? list.guests.replies.flatMap((other) =>
+            other.id !== row.reply.id &&
+            other.submissionId === row.reply.submissionId
+              ? [other.name]
+              : [],
+          )
+        : [];
     return (
       <RowView
         row={row}
+        party={party}
+        lead={lead}
         waiting={list.waiting}
         questions={list.guests.questions}
         actions={actions}
@@ -492,41 +549,14 @@ function RowItem({ row, list, actions, editor, inCard = false }: RowItemProps) {
     );
   }
 
-  const shared = {
-    onCancel: editor.close,
-    onDirty: editor.reportDirty,
-    pending: editor.pendingPrompt,
-  };
-
-  if (row.kind === "waiting") {
-    return (
-      <NameEditor
-        {...shared}
-        initial={row.listName.name}
-        onSave={(name) => {
-          actions.renameListName(row.listName.id, name);
-          editor.close();
-        }}
-      />
-    );
-  }
-
-  const { reply } = row;
-  const party = list.guests.replies.flatMap((other) =>
-    other.id !== reply.id && other.submissionId === reply.submissionId
-      ? [other.name]
-      : [],
-  );
-
   return (
-    <ReplyEditor
-      {...shared}
-      reply={reply}
-      questions={list.guests.questions}
-      party={party}
-      onSave={(values) => {
-        actions.saveReply(reply.id, values);
-        editor.close();
+    <NameEditor
+      onCancel={editor.close}
+      onDirty={editor.reportDirty}
+      pending={editor.pendingPrompt}
+      initial={row.listName.name}
+      onSave={async (name) => {
+        if (await actions.renameListName(row.listName.id, name)) editor.close();
       }}
     />
   );

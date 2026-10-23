@@ -1,3 +1,4 @@
+import { after } from "next/server";
 import { getTranslations } from "next-intl/server";
 import { EventPageHeader } from "@/components/dashboard/EventPageHeader";
 import { BTN_LIST_OUTLINE } from "@/components/dashboard/guest-list/styles";
@@ -7,6 +8,7 @@ import { GUEST_DATA_RETENTION_DAYS } from "@/lib/config";
 import { eventPath } from "@/lib/event";
 import { loadGuests } from "@/db/reads/guests";
 import { eventMetadata, openEvent } from "@/db/reads/access";
+import { repairCounts } from "@/db/writes/counts";
 
 type Props = PageProps<"/[locale]/dashboard/events/[id]/guests">;
 
@@ -24,6 +26,8 @@ export default async function GuestsPage({ params, searchParams }: Props) {
     getTranslations("Nav"),
     event.dataDeleted ? null : loadGuests(event),
   ]);
+  /* Safety net: after the page is sent, fix any counter that drifted. */
+  if (!event.dataDeleted) after(() => repairCounts(event.id));
   const guests = eventPath(event.id, "guests");
 
   return (

@@ -2,6 +2,7 @@ import { Timestamp } from "firebase-admin/firestore";
 import type { Person } from "@/db/schemas/reply";
 import { DAY_MS, todayIn } from "@/lib/event";
 import type { StoredReply } from "@/lib/guests";
+import type { ListName } from "@/types/guests";
 
 /*
  * Helpers for the seed. Dates are counted from the day it runs, so the
@@ -12,6 +13,9 @@ export const TIME_ZONE = "Europe/Bucharest";
 
 /** A reply card with the ID it is saved under. */
 export type SeedReply = StoredReply;
+
+/** A pre-loaded name; every card starts at version 0. */
+export type SeedName = Omit<ListName, "version">;
 
 /** A calendar day `days` from today, `YYYY-MM-DD`, in the seed's time zone. */
 export function dayFromNow(days: number): string {

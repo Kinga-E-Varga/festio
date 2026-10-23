@@ -3,12 +3,15 @@
  * pre-loaded names and the replies. No React or Firebase, so a plain Node
  * script (the seed) can load this file.
  */
+import type { EventDoc } from "@/db/schemas/event";
 import type { ReplyDoc } from "@/db/schemas/reply";
 import { toDateTimeLocal } from "@/lib/event";
 import type {
+  AnswerValue,
   AttentionItem,
   EventGuests,
   GuestCategory,
+  GuestChanges,
   GuestCounts,
   GuestGroup,
   GuestQuestion,
@@ -18,6 +21,7 @@ import type {
   ListName,
   NameRepeat,
   QuestionTally,
+  ReplyInput,
 } from "@/types/guests";
 
 /** A reply card with the ID it is saved under. */
@@ -43,6 +47,123 @@ export function toGuestReplies(replies: StoredReply[]): GuestReply[] {
       differentPerson: person.differentPerson ?? false,
       listNameId: person.listNameId,
     })),
+  );
+}
+
+type Answers = Record<string, AnswerValue | null>;
+
+/** The answers `keep` lets through, keys sorted so two copies compare as text; missing when none. */
+function pickAnswers(
+  answers: Answers | undefined,
+  keep: (questionId: string) => boolean,
+): Answers | undefined {
+  const keys = Object.keys(answers ?? {})
+    .filter(keep)
+    .sort();
+  if (!answers || keys.length === 0) return undefined;
+  return Object.fromEntries(keys.map((key) => [key, answers[key]]));
+}
+
+/**
+ * The rows back into reply cards, the way `toGuestReplies` read them: one
+ * per `submissionId`, in order. A reply-wide answer is taken once, from the
+ * first person; the rest stay with each person.
+ */
+export function fromGuestReplies(
+  people: GuestReply[],
+  questions: GuestQuestion[],
+): ReplyInput[] {
+  const perReply = new Set(
+    questions.flatMap((question) =>
+      question.scope === "reply" ? [question.id] : [],
+    ),
+  );
+  const cards = new Map<string, ReplyInput>();
+  for (const person of people) {
+    const stored = {
+      id: person.id,
+      name: person.name,
+      ageGroup: person.ageGroup,
+      diet: person.diet,
+      dietOther: person.dietOther,
+      answers: pickAnswers(person.answers, (id) => !perReply.has(id)),
+      listNameId: person.listNameId,
+      differentPerson: person.differentPerson || undefined,
+    };
+    const card = cards.get(person.submissionId);
+    if (card) card.people.push(stored);
+    else
+      cards.set(person.submissionId, {
+        id: person.submissionId,
+        isNew: false,
+        status: person.status,
+        message: person.note,
+        answers: pickAnswers(person.answers, (id) => perReply.has(id)),
+        people: [stored],
+      });
+  }
+  return [...cards.values()];
+}
+
+/**
+ * What a guest-list edit changed, as the save sends it: the reply cards and
+ * list names that are new or differ, and the ones gone. A new card whose
+ * people all came from one card (Separate from group) names it in `from`.
+ */
+export function guestChanges(
+  before: EventGuests,
+  after: EventGuests,
+): GuestChanges {
+  const old = new Map(
+    fromGuestReplies(before.replies, before.questions).map((card) => [
+      card.id,
+      JSON.stringify(card),
+    ]),
+  );
+  const cards = fromGuestReplies(after.replies, after.questions);
+  const cameFrom = new Map(
+    before.replies.map((person) => [person.id, person.submissionId]),
+  );
+  const put = cards.flatMap((card): ReplyInput[] => {
+    const was = old.get(card.id);
+    if (was !== undefined) return was === JSON.stringify(card) ? [] : [card];
+    const sources = new Set(
+      card.people.map((person) => cameFrom.get(person.id)),
+    );
+    const [from] = sources;
+    const added = { ...card, isNew: true };
+    return [
+      sources.size === 1 && from !== undefined ? { ...added, from } : added,
+    ];
+  });
+  const kept = new Set(cards.map((card) => card.id));
+
+  const names = new Map(before.list.map((name) => [name.id, name]));
+  const listed = new Set(after.list.map((name) => name.id));
+  return {
+    replies: { put, remove: [...old.keys()].filter((id) => !kept.has(id)) },
+    list: {
+      put: after.list.flatMap((name): GuestChanges["list"]["put"] => {
+        const was = names.get(name.id);
+        if (!was) return [{ ...name, isNew: true }];
+        return was.name !== name.name || was.sent !== name.sent
+          ? [{ ...name, isNew: false }]
+          : [];
+      }),
+      remove: before.list.flatMap(({ id, version }) =>
+        listed.has(id) ? [] : [{ id, version }],
+      ),
+    },
+  };
+}
+
+/** Whether a save would send anything at all. */
+export function hasChanges(changes: GuestChanges): boolean {
+  return (
+    changes.replies.put.length > 0 ||
+    changes.replies.remove.length > 0 ||
+    changes.list.put.length > 0 ||
+    changes.list.remove.length > 0
   );
 }
 
@@ -419,7 +540,10 @@ export function addReplyToList(
   if (!reply) return guests;
   const added = {
     ...guests,
-    list: [...guests.list, { id: newId, name: reply.name, sent: true }],
+    list: [
+      ...guests.list,
+      { id: newId, name: reply.name, sent: true, version: 0 },
+    ],
   };
   return updateReply(added, replyId, { listNameId: newId });
 }
@@ -447,9 +571,52 @@ export function openRow(
   return rows.some((row) => row.id === editing) ? editing : null;
 }
 
+/**
+ * The person moves to a reply of their own (`submissionId`): they keep their
+ * copy of the reply-wide answers, the others keep theirs, and the message
+ * stays with the others, so it shows and counts once.
+ */
+export function separateReply(
+  guests: EventGuests,
+  replyId: string,
+  submissionId: string,
+): EventGuests {
+  return updateReply(guests, replyId, { submissionId, note: null });
+}
+
 export function markDifferent(
   guests: EventGuests,
   replyId: string,
 ): EventGuests {
   return updateReply(guests, replyId, { differentPerson: true });
+}
+
+/** The event card's counters. */
+export type EventCounts = EventDoc["counts"];
+
+/**
+ * The counters the event card keeps, worked out from the cards. The one
+ * place they are counted: every save that changes replies, the seed and the
+ * guest list's recount all call it.
+ */
+export function eventCounts(input: {
+  replies: GuestReply[];
+  list: ListName[];
+  preloaded: boolean;
+  questions: GuestQuestion[];
+  seatedIds: string[];
+}): EventCounts {
+  const { replies, list, preloaded, questions, seatedIds } = input;
+  const rows = buildRows({ list, replies, questions }, preloaded);
+  const { going, notGoing, attention } = countRows(rows);
+  const coming = new Set(
+    replies.filter((person) => person.status === "going").map(({ id }) => id),
+  );
+  return {
+    coming: going,
+    notComing: notGoing,
+    needsAttention: attention,
+    /* Seated but not coming (or gone). */
+    seatingWarnings: seatedIds.filter((id) => !coming.has(id)).length,
+  };
 }

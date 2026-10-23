@@ -10,6 +10,8 @@ import { idSchema, versionSchema } from "@/db/schemas/common";
 const simpleInvitationSchema = z.object({
   kind: z.literal("simple"),
   values: z.record(z.string(), z.string()),
+  /** Guests open an envelope first. A card saved before the switch reads as on. */
+  envelope: z.boolean().default(true),
   version: versionSchema,
 });
 

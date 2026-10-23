@@ -2,6 +2,7 @@
 
 import { useTranslations } from "next-intl";
 import { type CSSProperties, useState } from "react";
+import { savePrintSettings } from "@/actions/event";
 import { useToast } from "@/components/dashboard/Toast";
 import { EditorFrame } from "@/components/invitation/EditorFrame";
 import { printVars, templateFontVars } from "@/lib/invitation";
@@ -31,6 +32,9 @@ const PRINT_PALETTE = {
 } as CSSProperties;
 
 interface PrintEditorProps {
+  eventId: string;
+  /** The settings saved at the last export; without them, the defaults. */
+  initial?: PrintSettings;
   template: InvitationTemplate;
   /**
    * The invitation's own RSVP message — where the printable's larger line
@@ -58,9 +62,11 @@ interface PrintEditorProps {
  * rather than the invitation itself, and the panel beside it settles the
  * paper rather than the copy.
  *
- * Export does nothing yet beyond saying so.
+ * Export keeps the settings on the event; the file itself is not made yet.
  */
 export function PrintEditor({
+  eventId,
+  initial,
   template,
   rsvpMessage,
   link,
@@ -68,12 +74,14 @@ export function PrintEditor({
   defaultNote,
   backTo,
 }: PrintEditorProps) {
-  const [settings, setSettings] = useState<PrintSettings>({
-    shape: "flat",
-    tinted: true,
-    headline: rsvpMessage,
-    note: defaultNote,
-  });
+  const [settings, setSettings] = useState<PrintSettings>(
+    initial ?? {
+      shape: "flat",
+      tinted: true,
+      headline: rsvpMessage,
+      note: defaultNote,
+    },
+  );
   /*
    * Answered at every width. Below the breakpoint the form covers the
    * paper; above it the form sits beside the paper and closing it hands the
@@ -82,7 +90,22 @@ export function PrintEditor({
    */
   const [editing, setEditing] = useState(false);
   const t = useTranslations("HostEditor");
+  const tError = useTranslations("SaveErrors");
   const toast = useToast();
+
+  async function exportPrint() {
+    try {
+      const result = await savePrintSettings(eventId, settings);
+      if (!result.success) {
+        toast.show(tError(result.error), "error");
+        return;
+      }
+      toast.show(t("exported"));
+    } catch {
+      /* The request itself failed, e.g. offline. */
+      toast.show(tError("failed"), "error");
+    }
+  }
 
   function change<Key extends keyof PrintSettings>(
     key: Key,
@@ -99,7 +122,7 @@ export function PrintEditor({
       open={editing}
       onView={() => setEditing(true)}
       onClose={() => setEditing(false)}
-      action={{ kind: "export", onExport: () => toast.show(t("exported")) }}
+      action={{ kind: "export", onExport: exportPrint }}
       toast={toast}
     >
       <div

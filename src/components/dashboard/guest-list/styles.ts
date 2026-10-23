@@ -23,25 +23,30 @@ export const SMALL_BTN_WARN_SOLID = `${SMALL_BTN_SHAPE} border-warning-700 bg-wa
 export const SMALL_BTN_KEEP = `${SMALL_BTN_SHAPE} border-warning-300 bg-warning-300 text-warning-800 hover:border-warning-400 hover:bg-warning-400 hover:text-warning-900`;
 export const SMALL_BTN_DISCARD = `${SMALL_BTN_SHAPE} border-transparent text-warning-800 hover:text-warning-950`;
 
-/** A small flag beside a name: Unknown, Duplicate. Its own whole-pixel line, so every tag is 18px tall wherever it sits and its edges land on whole pixels. */
-export const TAG =
-  "rounded-ui border px-1.5 py-px text-[10px] leading-[14px] font-semibold tracking-[0.12em] whitespace-nowrap uppercase";
+/**
+ * A tag's words: its own whole-pixel line, so every tag is 18px tall wherever
+ * it sits and its edges land on whole pixels. The letter spacing also trails
+ * the last letter; an indent as wide puts the same before the first, so the
+ * words sit centred.
+ */
+export const TAG_TEXT =
+  "text-[10px] leading-[14px] font-semibold tracking-[0.12em] indent-[0.12em] whitespace-nowrap uppercase";
+/** Their padding inside the tag's 1px border. */
+export const TAG_PAD = "px-1.5 py-px";
+/** A small flag: Unknown, Duplicate beside a name, a reply's Coming / Not coming, a waiting name's invite. */
+export const TAG = `rounded-ui border ${TAG_PAD} ${TAG_TEXT}`;
 /** Unknown and Duplicate: the tags that mark a reply needing attention. */
 export const ATTENTION_TAG = `${TAG} ${DANGER_DARK}`;
 
-/** A row's one status: its reply, or where a waiting name's invitation stands. */
-const BADGE_TYPE =
-  "inline-flex rounded-ui border button-text whitespace-nowrap";
-const BADGE_PAD = "px-2.5 py-[3px]";
-/** A reply's Coming / Not coming: 26px tall, its words centred in it. */
-export const BADGE = `${BADGE_TYPE} h-[26px] items-center gap-1.5 px-2.5`;
-/** The same badge with a full-height box as its left side; its words go in `BADGE_TEXT`. */
-export const BOX_BADGE = `${BADGE_TYPE} items-stretch overflow-hidden`;
-export const BADGE_TEXT = BADGE_PAD;
+/** A reply's status as a dot's fill: the Confirmed and Declined cards' own colours. */
+export const STATUS_FILL = {
+  going: "bg-primary-700",
+  not_going: "bg-warning-500",
+} as const;
 
-/** The quiet icon-only actions at the end of a row. */
+/** The quiet icon-only actions at the end of a row; a `data-tip` gives one its quick label. */
 const ICON_BASE =
-  "grid size-8 cursor-pointer place-items-center rounded-ui text-neutral-600 transition-colors";
+  "icon-tip grid size-8 cursor-pointer place-items-center rounded-ui text-neutral-600 transition-colors";
 export const ICON_BTN = `${ICON_BASE} hover:bg-neutral-200 hover:text-neutral-950`;
 /** Delete: the same button, turning danger on hover. */
 export const ICON_BTN_DANGER = `${ICON_BASE} hover:bg-danger-200 hover:text-danger-600`;

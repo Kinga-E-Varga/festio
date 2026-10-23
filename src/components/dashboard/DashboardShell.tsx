@@ -8,6 +8,7 @@ import {
   type MouseEvent,
   type ReactNode,
 } from "react";
+import { markRepliesSeen } from "@/actions/host";
 import { BarActions, type BarData } from "@/components/dashboard/BarActions";
 import { NAV_DOCKED } from "@/components/dashboard/media";
 import { SidePanel } from "@/components/dashboard/SidePanel";
@@ -62,13 +63,19 @@ export function DashboardShell({
   alerts,
   replies,
   account,
-  bar,
+  bar: serverBar,
   children,
 }: DashboardShellProps) {
   const t = useTranslations("TopBar");
   const sidePanel = useSidePanel();
   const [navOpen, setNavOpen] = useState(false);
   const navPanelRef = useRef<HTMLDivElement>(null);
+  /* The server's bar the host has seen. Any re-render from the server brings a new object with the true count. */
+  const [seenBar, setSeenBar] = useState<BarData | null>(null);
+  const bar = {
+    ...serverBar,
+    replies: serverBar === seenBar ? 0 : serverBar.replies,
+  };
 
   /*
    * On a phone the nav drawer and the side panel would cover each other, so
@@ -78,6 +85,11 @@ export function DashboardShell({
     ...sidePanel,
     select: (view: SidePanelView) => {
       setNavOpen(false);
+      /* Opening the latest replies is looking at them: save it and clear the badge. */
+      if (view === "replies" && bar.replies > 0) {
+        setSeenBar(serverBar);
+        void markRepliesSeen();
+      }
       sidePanel.select(view);
     },
   };

@@ -17,7 +17,7 @@ const ICON_BUTTON =
 const TOP_BAR =
   "flex h-topbar shrink-0 items-center gap-3.5 bg-primary-900 px-4 font-sans text-secondary-100 sm:px-6";
 
-/** Count bubbles on the bell and the cart share everything but their colour. */
+/** The bell's count bubble. */
 const BADGE =
   "absolute top-0.5 right-0.5 grid h-4 min-w-4 place-items-center rounded-full px-1 text-[10px] font-bold text-primary-900";
 
@@ -55,13 +55,10 @@ export function LandingHeader({ bar }: { bar: BarData | null }) {
 
             <button
               type="button"
-              aria-label={t("cartCount", { count: bar.cart })}
+              aria-label={t("cart")}
               className={ICON_BUTTON}
             >
               <Icon name="cart" className="size-5" />
-              <span aria-hidden="true" className={`${BADGE} bg-secondary-400`}>
-                {bar.cart}
-              </span>
             </button>
 
             <Link

@@ -111,9 +111,9 @@
     "alerts": "Alerts",
     "alertsCount": "Alerts, {count} items need attention",
     "replies": "Latest replies",
+    "repliesCount": "Latest replies, {count, plural, one {# new reply} other {# new replies}}",
     "closePanel": "Close panel",
     "cart": "Cart",
-    "cartCount": "{count, plural, one {Cart, # invitation awaiting payment} other {Cart, # invitations awaiting payment}}",
     "account": "Your account",
     "menu": "Dashboard menu",
     "more": "More",
@@ -155,13 +155,13 @@
     "filters": {
       "upcoming": "Upcoming ({count})",
       "live": "Live ({count})",
-      "drafts": "Drafts ({count})",
+      "hidden": "Hidden ({count})",
       "past": "Past ({count})",
       "all": "All events ({count})"
     },
     "status": {
       "active": "Live",
-      "draft": "Draft",
+      "hidden": "Hidden",
       "past": "Past"
     },
     "pageRange": "{from}–{to} of {total}",
@@ -169,9 +169,7 @@
     "nextPage": "Next page"
   },
   "Rail": {
-    "cartEmpty": "Nothing is waiting for payment.",
-    "cartTotal": "Total",
-    "cartHint": "Each event is paid for on its Overview, beside its package. Open one to pay.",
+    "cartEmpty": "Invitations you start but haven't saved yet wait here.",
     "noReplies": "No replies yet."
   },
   "Event": {
@@ -255,8 +253,7 @@
   "EventPage": {
     "repliesClosingBody": "The reply form closes on {date}, {custom, select, yes {the time you set} other {the day before the event}}.",
     "repliesClosedBody": "The reply form closed on {date}. You can still add replies that reach you in any other way.",
-    "unpaidBody": "The {package} package costs {price}. The page stays hidden and the reply form stays closed until payment clears.",
-    "hiddenPaidBody": "It's paid for, but set to Hidden: nobody can open it, not even a guest with the link.",
+    "hiddenBody": "It's set to Hidden: nobody can open it, not even a guest with the link.",
     "deletingBody": "The invitation and every reply are deleted on {date}. Export them first if you want to keep them.",
     "attentionBody": "Unknown or repeated names. Sort them out at the top of Guests.",
     "pausedBody": "Far more replies than expected, so the form is paused. Real guests? Raise the number. If not, report it."
@@ -302,9 +299,6 @@
     "noindex": "Never shown on Google or other search engines, whatever you pick.",
     "expectedHint": "We use this to show how your replies are coming in. You can raise the number anytime.",
     "packagePaid": "{name} — {price} · paid",
-    "packageUnpaid": "{name} — {price} · unpaid",
-    "payAndPublish": "Pay {price} and publish",
-    "payNote": "Clears the draft for sharing. Visibility stays where you set it until you change it yourself.",
     "deletedOn": "Everything is deleted on {date}",
     "deletedOnPast": "Everything was deleted on {date}",
     "deletedBody": "The invitation, every reply and any image you uploaded go automatically, {days} days after {date}. Your account is not affected.",
@@ -323,20 +317,18 @@
     "deleteNow": "Delete now",
     "pastKeep": "Keep the data",
     "pastDeleted": "Event and guest data deleted",
-    "paidDeleteTitle": "Delete the event",
-    "paidDeleteBody": "A paid event can't be deleted before it happens. Cancel it first.",
+    "liveDeleteTitle": "Delete the event",
+    "liveDeleteBody": "An event can't be deleted before it happens. Cancel it first.",
     "cancelTitle": "Cancel the event",
     "cancelBody": "Closes the reply form and replaces the invitation with a short message from you. {count, plural, =0 {No guest has replied yet.} one {# guest has already replied and will not be notified.} other {# guests have already replied and none of them will be notified.}} Guest and event data are kept for another {days} days, and you can reopen the event at any point in that window.",
     "cancelButton": "Cancel event",
     "cancelled": "Event cancelled — the invitation now shows your message",
     "cancelledTitle": "This event is cancelled",
     "cancelledBody": "Guests see your message in place of the invitation and can no longer reply. The record is deleted on its own on {date}, or you can delete it now. Export anything you want to keep first — once deleted, it is gone for good.",
-    "draftTitle": "Delete the draft",
-    "draftBody": "Nobody has seen this page and nothing has been paid for, so it can be removed outright. This can't be undone.",
-    "deleteDraft": "Delete draft",
-    "draftKeep": "Keep the draft",
-    "draftConfirm": "Are you sure? The draft is deleted for good.",
-    "draftDeleted": "Draft deleted",
+    "reopenTitle": "Reopen the event",
+    "reopenBody": "The invitation shows again and guests can reply until replies close. Guests who saw your message are not notified.",
+    "reopenButton": "Reopen event",
+    "reopened": "Event reopened — the invitation is back",
     "acknowledge": "I understand — telling my guests is up to me.",
     "save": "Save changes",
     "saved": "Changes saved — your guests were not notified",
@@ -380,6 +372,8 @@
     "confirmPasswordLabel": "Confirm",
     "confirmPasswordPlaceholder": "Password",
     "confirmPasswordHint": "Your Festio account password, to confirm it's you.",
+    "confirmGoogleNote": "You sign in with Google, so Google's window opens to confirm it's you.",
+    "confirmGoogleWrong": "That isn't the Google account you're signed in with.",
     "cancelKeep": "Keep the event"
   },
   "HostEditor": {
@@ -493,15 +487,10 @@
       "task": "Raise your expected guests",
       "why": "Far more replies came in than you expected, so the reply form is paused."
     },
-    "unpaid": {
-      "action": "Pay & publish",
-      "task": "Pay to publish",
-      "why": "The invitation stays hidden until the {package} package is paid ({price})."
-    },
-    "hiddenPaid": {
+    "hidden": {
       "action": "Change visibility",
       "task": "Make your invitation public",
-      "why": "It's paid for, but set to Hidden, so nobody can open it yet."
+      "why": "It's set to Hidden, so nobody can open it yet."
     },
     "deleting": {
       "action": "Export all event data",
@@ -552,6 +541,7 @@
     "listCount": "{count, plural, one {# name on list} other {# names on list}}",
     "editList": "Edit invite list",
     "addReply": "New reply",
+    "editReply": "Edit reply",
     "export": "Export replies",
     "search": "Search by name",
     "detailsFor": "Details for {name}",
@@ -583,16 +573,18 @@
     "cancel": "Cancel",
     "delete": "Delete",
     "deleteConfirm": "Delete {name}? This can't be undone.",
+    "deleteReply": "Delete reply",
+    "deleteReplyConfirm": "Delete the reply from {names}? Everyone in it is removed. This can't be undone.",
+    "keepReply": "Keep reply",
     "unsaved": "You have unsaved changes.",
     "discard": "Discard changes",
     "keepEditing": "Keep editing",
     "leaveUnsaved": "You have unsaved changes. Leave anyway?",
     "choose": "Choose…",
-    "separateButton": "Separate from group",
-    "separateConfirm": "Separate {name} from {names}? Once you save, this can't be undone.",
+    "separateLabel": "Separate {name} from the group",
+    "separateConfirm": "Separate {name} from {names}? This can't be undone.",
     "separateOk": "Separate",
     "keepTogether": "Keep together",
-    "separatePending": "When you save, {name} gets a reply of their own.",
     "toastSeparated": "Separated",
     "addPerson": "Add person",
     "removePerson": "Remove person {number}",
@@ -600,7 +592,6 @@
     "dietRequired": "Pick a dietary need, or None.",
     "dietOtherRequired": "Describe the other dietary need.",
     "dietOtherInput": "Other dietary need",
-    "sharedFor": "Changing the following answers also changes them for {names}. Avoid that by separating this person from the group.",
     "matchTo": "Match to a name",
     "matchSearch": "Search your invite list",
     "noWaiting": "No names without a reply to match.",
@@ -682,5 +673,23 @@
     "failed": "Something went wrong. Please try again.",
     "passwordAccount": "This email already has a Festio account with a password. Sign in with your password.",
     "again": "That took a while, so please sign in again."
+  },
+  "SaveConfirm": {
+    "title": "Save changes?",
+    "body": "{count, plural, =0 {Nobody has replied yet. Guests won't be told about your changes.} one {1 guest has replied. Nobody is told about your changes.} other {# guests have replied. Nobody is told about your changes.}}",
+    "cancel": "Cancel",
+    "agree": "Save anyway"
+  },
+  "SaveErrors": {
+    "stale": "This was changed on another device. Reload to see the latest version.",
+    "notFound": "This event couldn't be found.",
+    "invalid": "Some details aren't valid. Check the fields and try again.",
+    "failed": "Something went wrong while saving. Please try again.",
+    "slugTaken": "This link is already taken. Pick another one.",
+    "dateLocked": "The date can't change from the day of the event.",
+    "expectedTooLow": "Expected guests can't be fewer than the replies already in.",
+    "closeTooLate": "Replies must close by the day before the event.",
+    "wrongPassword": "That password isn't right.",
+    "notAllowed": "This can't be done for this event."
   }
 }

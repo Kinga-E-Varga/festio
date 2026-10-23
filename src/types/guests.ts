@@ -5,6 +5,7 @@ import type {
   ageGroupSchema,
   answerSchema,
   dietNeedSchema,
+  Person,
 } from "@/db/schemas/reply";
 
 /*
@@ -19,6 +20,8 @@ export interface ListName {
   name: string;
   /** Whether the host has sent this person an invitation. */
   sent: boolean;
+  /** The card's version the page read; a new name is 0. */
+  version: number;
 }
 
 /** The age question every form asks, for each person coming. */
@@ -159,6 +162,30 @@ export interface ReplyValues {
   status: RsvpStatus;
   people: PersonValues[];
   shared: Record<string, string>;
-  /** Take this person out of the reply they came with, into one of their own. */
-  separate: boolean;
+}
+
+/**
+ * A reply card as the host's save sends it: no `sentAt`, `createdBy` or
+ * `editedAt`, which only the server sets.
+ */
+export interface ReplyInput {
+  id: string;
+  /** A card not saved yet; otherwise the card must still be there. */
+  isNew: boolean;
+  /** The card its people came from, for a new card made by Separate from group. */
+  from?: string;
+  status: RsvpStatus;
+  message: string | null;
+  answers?: Record<string, AnswerValue | null>;
+  people: Person[];
+}
+
+/** One guest-list save: the reply cards and list names to write or remove. */
+export interface GuestChanges {
+  replies: { put: ReplyInput[]; remove: string[] };
+  list: {
+    /** `isNew`: the card must not exist yet; otherwise it must, at `version`. */
+    put: (ListName & { isNew: boolean })[];
+    remove: { id: string; version: number }[];
+  };
 }
