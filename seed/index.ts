@@ -12,6 +12,7 @@ import { userSchema } from "@/db/schemas/user";
 import { SLUG_BLOCK_DAYS, TERMS_VERSION } from "@/lib/config";
 import { addDays, deletionDate } from "@/lib/event";
 import { countsOf } from "@/db/writes/counts";
+import { replyRef } from "@/db/writes/reply-ref";
 import { momentFromNow } from "./build";
 import { SEED_EVENTS, type SeedEvent } from "./events";
 
@@ -150,7 +151,7 @@ function seedEvent(writer: BulkWriter, seed: SeedEvent) {
     writer.set(db.doc(paths.invitation(seed.id)), invitation);
   }
   for (const { id, ...reply } of seed.replies) {
-    writer.set(db.doc(paths.reply(seed.id, id)), replySchema.parse(reply));
+    writer.set(replyRef(seed.id, id), replySchema.parse(reply));
   }
   if (seed.guestList.length > 0) {
     const list = guestListSchema.parse({ names: seed.guestList, version: 0 });

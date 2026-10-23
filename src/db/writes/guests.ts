@@ -4,6 +4,7 @@ import { paths } from "@/db/paths";
 import type { GuestChanges } from "@/db/schemas/guest-changes";
 import { countsAfter, countsOf, readCountInputs } from "@/db/writes/counts";
 import { ownEvent } from "@/db/writes/event";
+import { replyRef } from "@/db/writes/reply-ref";
 import { expectVersion, SaveRefused } from "@/db/writes/save";
 import type { StoredReply } from "@/lib/guests";
 
@@ -67,10 +68,8 @@ export async function writeGuestChanges(
     );
 
     /* Every read is done: the writes. */
-    for (const { id, ...card } of replies)
-      tx.set(db.doc(paths.reply(eventId, id)), card);
-    for (const id of changes.replies.remove)
-      tx.delete(db.doc(paths.reply(eventId, id)));
+    for (const { id, ...card } of replies) tx.set(replyRef(eventId, id), card);
+    for (const id of changes.replies.remove) tx.delete(replyRef(eventId, id));
     if (list) tx.set(db.doc(paths.guestList(eventId)), list);
 
     const counts = countsAfter(

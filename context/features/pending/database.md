@@ -122,8 +122,10 @@ list and are worked out.
   replying together is never cut off halfway.
 - **Safety net:** the guest list page loads every reply anyway, so it recounts and quietly
   fixes the counters if they've drifted.
-- **Planned soon:** a guest's reply adds only the difference it makes, read from the cards
-  that share a name with it, instead of recounting the whole event (see Do later, item 2).
+- **A guest's reply adds only the difference it makes** (`readReplyGroup`,
+  `countsWithReply`): it reads the replies sharing one of its names, the ones the host matched
+  to a list name spelled like them, the list and the seating chart, and counts that group
+  before and after. Host saves still recount the whole event.
 
 **Protected password:** stored as it is (not hashed), because the host sees it in the share
 fields and it's printed on the card. It guards a page, not an account. Only the server ever
@@ -161,6 +163,10 @@ One guest fills in the form once → one card, with everyone they answered for i
   ID, so their seat follows them.
 - Answer rules from the project overview hold: missing = never asked, empty = asked and skipped.
 - **Unknown and Duplicate tags are not stored.** They're worked out live.
+- **`nameKeys`** (its people's names, normalized) and **`listNameIds`** (the list names the
+  host matched them to): added on every write by `replyRef` (`src/db/writes/reply-ref.ts`), so
+  a new reply can find the cards its names can change. Not part of the reply's schema: the
+  pages never read them.
 
 ### Guest list card
 
@@ -544,7 +550,7 @@ Work steps 1–5 left open, in the order to build them. Load one at a time
    - Also here, since the names part changes shape: `GuestChanges` / `ReplyInput`
      (`src/types/guests.ts`) restate the save's Zod schema by hand. Move the schema to
      `src/db/schemas/` and derive the types from it.
-2. **To do — count only what a reply changes** (`chore/`, after item 1, so the list part is
+2. **Done (`chore: count only what a reply changes`) — count only what a reply changes** (`chore/`, after item 1, so the list part is
    one read). A guest's reply recounts the whole event inside its transaction
    (`readCountInputs`: every reply, the list, the seating chart). Names only affect cards
    with the same name, so:

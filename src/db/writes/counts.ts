@@ -6,8 +6,10 @@ import { eventSchema, type EventDoc } from "@/db/schemas/event";
 import { guestListSchema, type GuestListDoc } from "@/db/schemas/guest-list";
 import { replySchema } from "@/db/schemas/reply";
 import { seatingSchema } from "@/db/schemas/seating";
+import { replyKeys, type ReplyKeys } from "@/db/writes/reply-ref";
 import {
   eventCounts,
+  normalizeName,
   toGuestReplies,
   type EventCounts,
   type StoredReply,
@@ -58,6 +60,81 @@ export async function readCountInputs(
     listVersion: list.version,
     seatedIds: seatedIdsOf(seating),
   };
+}
+
+/**
+ * The reply cards whose `field` holds any of `values`, read inside a
+ * transaction. At most 10 names a reply, and list names spelled like them,
+ * so always under Firestore's 30 values.
+ */
+async function repliesWithAny(
+  tx: Transaction,
+  eventId: string,
+  field: keyof ReplyKeys,
+  values: string[],
+): Promise<StoredReply[]> {
+  if (values.length === 0) return [];
+  const snapshot = await tx.get(
+    db
+      .collection(paths.replies(eventId))
+      .where(field, "array-contains-any", values),
+  );
+  return parseCards(replySchema, snapshot.docs);
+}
+
+/**
+ * The cards a new reply can change the counters of, read inside a
+ * transaction: the replies sharing one of its names and the seating chart;
+ * with the list on, also the list and the replies the host matched to a list
+ * name spelled like one of them (they hold those names). Every other reply
+ * counts the same before and after it, so it is left out.
+ */
+export async function readReplyGroup(
+  tx: Transaction,
+  eventId: string,
+  reply: StoredReply,
+  preloaded: boolean,
+): Promise<CountInputs> {
+  const { nameKeys } = replyKeys(reply.people);
+  const [named, names, seating] = await Promise.all([
+    repliesWithAny(tx, eventId, "nameKeys", nameKeys),
+    preloaded ? tx.get(db.doc(paths.guestList(eventId))) : null,
+    tx.get(db.doc(paths.seating(eventId))),
+  ]);
+  const list = names ? guestListOf(names).names : [];
+  const keys = new Set(nameKeys);
+  const listed = list.flatMap((name) =>
+    keys.has(normalizeName(name.name)) ? [name.id] : [],
+  );
+  const matched = await repliesWithAny(tx, eventId, "listNameIds", listed);
+  return {
+    replies: applied(named, { put: matched, remove: [] }),
+    list,
+    seatedIds: seatedIdsOf(seating),
+  };
+}
+
+/**
+ * The event's counters once a new reply is saved: the difference it makes to
+ * its group (`readReplyGroup`), counted by `countsOf` before and after, added
+ * to the stored ones. Never below zero: counters that drifted are fixed by
+ * the guest list page's recount (`repairCounts`), and a negative one would
+ * fail the event card's schema.
+ */
+export function countsWithReply(
+  stored: EventCounts,
+  group: CountInputs,
+  reply: StoredReply,
+  event: Pick<EventDoc, "preloaded" | "questions">,
+): EventCounts {
+  const before = countsOf(group, event);
+  const after = countsAfter(group, { put: [reply], remove: [] }, event);
+  return Object.fromEntries(
+    (Object.keys(stored) as (keyof EventCounts)[]).map((key) => [
+      key,
+      Math.max(0, stored[key] + after[key] - before[key]),
+    ]),
+  ) as EventCounts;
 }
 
 /** Replies in Firestore's order: by when they came, then by card ID. */
