@@ -194,12 +194,69 @@ export const PICKER_DATE_PARTS: Intl.DateTimeFormatOptions = {
   month: "short",
 };
 
+/** An ISO `YYYY-MM-DD` day, `days` calendar days on. Plain calendar maths: no clock involved. */
+export function shiftDay(date: string, days: number): string {
+  const day = new Date(`${date}T00:00Z`);
+  day.setUTCDate(day.getUTCDate() + days);
+  return day.toISOString().slice(0, 10);
+}
+
+/** How far `timeZone`'s clock is ahead of UTC at the moment `at`, in ms. */
+function zoneOffset(at: number, timeZone: string): number {
+  const parts = Object.fromEntries(
+    new Intl.DateTimeFormat("en-US", {
+      timeZone,
+      hourCycle: "h23",
+      year: "numeric",
+      month: "numeric",
+      day: "numeric",
+      hour: "numeric",
+      minute: "numeric",
+      second: "numeric",
+    })
+      .formatToParts(at)
+      .map((part) => [part.type, Number(part.value)]),
+  );
+  const wall = Date.UTC(
+    parts.year,
+    parts.month - 1,
+    parts.day,
+    parts.hour,
+    parts.minute,
+    parts.second,
+  );
+  return wall - Math.floor(at / 1000) * 1000;
+}
+
 /**
- * The reply form's default close: midnight on the day before the event —
- * the project's 24h rule, expressed as a wall-clock cut-off.
+ * The real moment a wall-clock time (`YYYY-MM-DDTHH:MM`) is in `timeZone`,
+ * whatever clock runs this. The offset is checked again at the answer, so a
+ * time just after a clock change lands right.
+ */
+function zonedTime(local: string, timeZone: string): Date {
+  const [day, time] = local.split("T");
+  const [year, month, date] = day.split("-").map(Number);
+  const [hour, minute, second = 0] = time.split(":").map(Number);
+  const wall = Date.UTC(year, month - 1, date, hour, minute, second);
+  const guess = wall - zoneOffset(wall, timeZone);
+  return new Date(wall - zoneOffset(guess, timeZone));
+}
+
+/**
+ * The reply form's default close as a wall-clock time: midnight on the day
+ * before the event — the project's 24h rule.
+ */
+function defaultCloseTime(date: string): string {
+  return `${shiftDay(date, -1)}T00:00`;
+}
+
+/**
+ * The reply form's default close, on the clock that reads it: for showing it
+ * and for comparing it with other wall-clock times. Against the real now, use
+ * `replyCloseAt`.
  */
 export function defaultReplyClose(date: string): Date {
-  return addDays(new Date(`${date}T00:00`), -1);
+  return new Date(defaultCloseTime(date));
 }
 
 /**
@@ -218,14 +275,29 @@ export function deletionDate(date: string): Date {
   return addDays(new Date(`${date}T00:00`), GUEST_DATA_RETENTION_DAYS);
 }
 
-/** When the reply form closes: the host's own time, else the day before. */
+/** When the reply form closes as a wall-clock time: the host's own, else the default. */
+function closeTime(event: { date: string; repliesCloseAt?: string }): string {
+  return event.repliesCloseAt ?? defaultCloseTime(event.date);
+}
+
+/**
+ * When the reply form closes: the host's own time, else the day before. On the
+ * clock that reads it, like `defaultReplyClose`: the time the host typed.
+ */
 export function replyClose(event: {
   date: string;
   repliesCloseAt?: string;
 }): Date {
-  return event.repliesCloseAt
-    ? new Date(event.repliesCloseAt)
-    : defaultReplyClose(event.date);
+  return new Date(closeTime(event));
+}
+
+/** The real moment the reply form closes, on the event's own clock: for checking against now. */
+export function replyCloseAt(event: {
+  date: string;
+  repliesCloseAt?: string;
+  timeZone: string;
+}): Date {
+  return zonedTime(closeTime(event), event.timeZone);
 }
 
 /**

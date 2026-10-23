@@ -519,6 +519,8 @@ Steps 1–5 run fully on your machine; the first big handoff is step 6.
      (past, cancelled: `eventForRules` in `src/actions/event.ts`, the last `hostEvent` reads
      in an action) into the writes, so the job gets them too, with one "past" on the
      event's clock (`todayIn`); the actions use the countdown worked out at read time.
+   - The job picks events by calendar day, not `deletionDate` (a wall-clock value on the
+     server's clock): `shiftDay(date, GUEST_DATA_RETENTION_DAYS) <= todayIn(timeZone, now)`.
    - Log out only deletes this browser's cookie; a copied cookie stays valid up to 14 days.
      Deleting an account must also end every session (`auth.revokeRefreshTokens(uid)`).
      Later, maybe: a "Log out of all devices" button in Settings, doing the same.
@@ -591,7 +593,7 @@ Work steps 1–5 left open, in the order to build them. Load one at a time
    replies, and the feed loads on every dashboard page, so: reuse `loadGuests` where it's
    already read, work the tags out only where the feed shows, and only for the events left
    in the feed.
-6. **To do — every time rule on the event's own clock** (`fix/`, any time, or with step 8).
+6. **Done (`fix: reply closing on the event's own clock`) — every time rule on the event's own clock** (`fix/`, any time, or with step 8).
    Replies closing, the date lock and the deletion date (`replyClose`, `defaultReplyClose`,
    `dateLocked`, `deletionDate` in `src/lib/event.ts`) use the server's clock, not the
    event's `timeZone`. Today only the countdown's "today" and the save's date lock

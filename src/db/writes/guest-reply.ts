@@ -15,7 +15,7 @@ import { countAttempt, limitFor, readAttempts } from "@/db/writes/rate-limit";
 import { replyRef } from "@/db/writes/reply-ref";
 import { SaveRefused } from "@/db/writes/save";
 import { REPLY_LIMIT_PER_HOUR } from "@/lib/config";
-import { replyCap, replyClose } from "@/lib/event";
+import { replyCap, replyCloseAt } from "@/lib/event";
 import type { StoredReply } from "@/lib/guests";
 import { newId } from "@/lib/id";
 
@@ -85,7 +85,7 @@ export async function writeGuestReply(
     ) {
       throw new SaveRefused("locked");
     }
-    if (doc.cancelled || now >= replyClose(doc)) {
+    if (doc.cancelled || now >= replyCloseAt(doc)) {
       throw new SaveRefused("closed");
     }
     if (attempts >= REPLY_LIMIT_PER_HOUR) throw new SaveRefused("tooMany");

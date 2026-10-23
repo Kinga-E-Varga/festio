@@ -8,7 +8,7 @@ import { SLUG_PATTERN } from "@/lib/slug";
 import { requireHostId } from "@/db/reads/session";
 import { parseCard } from "@/db/reads/parse";
 import { readGuestList } from "@/db/reads/guests";
-import { replyClose, spanBetween, spanFrom, todayIn } from "@/lib/event";
+import { replyCloseAt, spanBetween, spanFrom, todayIn } from "@/lib/event";
 import { PACKAGES } from "@/lib/packages";
 import type { DashboardEvent } from "@/types/dashboard";
 
@@ -46,7 +46,7 @@ function toDashboardEvent(
     questions: doc.questions,
     seatingAvailable: PACKAGES[doc.package].seating,
     repliesCloseAt: doc.repliesCloseAt,
-    repliesCloseIn: spanFrom(now, replyClose(doc)),
+    repliesCloseIn: spanFrom(now, replyCloseAt(doc)),
     dataDeleted: doc.dataDeleted,
     cancelled: Boolean(doc.cancelled),
     cancelMessage: doc.cancelled?.message,
