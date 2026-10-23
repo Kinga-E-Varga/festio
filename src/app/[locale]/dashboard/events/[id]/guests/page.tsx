@@ -27,7 +27,7 @@ export default async function GuestsPage({ params, searchParams }: Props) {
     event.dataDeleted ? null : loadGuests(event),
   ]);
   /* Safety net: after the page is sent, fix any counter that drifted. */
-  if (!event.dataDeleted) after(() => repairCounts(event.id));
+  if (initial) after(() => repairCounts(event.id, initial));
   const guests = eventPath(event.id, "guests");
 
   return (

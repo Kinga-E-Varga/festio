@@ -43,7 +43,16 @@
     "privacy": "Numele și răspunsul tău ajung doar la gazdele acestui eveniment și sunt șterse la {days} zile după eveniment. Nimic nu este partajat cu altcineva.",
     "sentTitle": "Mulțumim — răspunsul tău a ajuns la gazde.",
     "sentNote": "Vrei să schimbi ceva? Gazdele pot corecta orice răspuns pentru tine.",
-    "paused": "Răspunsurile sunt închise deocamdată. Te rugăm să iei legătura cu gazda."
+    "paused": "Răspunsurile sunt închise deocamdată. Te rugăm să iei legătura cu gazda.",
+    "sending": "Se trimite…",
+    "tooMany": "Prea multe încercări. Te rugăm să încerci din nou în câteva minute.",
+    "tryAgain": "Ceva n-a mers. Te rugăm să încerci din nou.",
+    "passwordTitle": "Această invitație este protejată",
+    "passwordHint": "Scrie parola tipărită pe invitația ta.",
+    "passwordLabel": "Parolă",
+    "passwordSubmit": "Deschide invitația",
+    "passwordWrong": "Parola nu este corectă.",
+    "cancelledTitle": "Acest eveniment a fost anulat"
   },
   "Print": {
     "defaultNote": "Te rugăm să răspunzi până pe 5 august 2024 la linkul de mai jos.",
@@ -521,7 +530,8 @@
     "templateFallback": "Șabloane · Festio",
     "guests": "{title} · Invitați · Festio",
     "signIn": "Autentificare · Festio",
-    "signUp": "Creează-ți contul · Festio"
+    "signUp": "Creează-ți contul · Festio",
+    "invited": "Ai primit o invitație"
   },
   "GuestList": {
     "sectionSummary": "Rezumat",

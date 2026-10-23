@@ -14,7 +14,12 @@ export type SaveError =
   | "expectedTooLow"
   | "closeTooLate"
   | "wrongPassword"
-  | "notAllowed";
+  | "notAllowed"
+  /* A guest's reply only: their words are in `Rsvp`, not `SaveErrors`. */
+  | "locked"
+  | "closed"
+  | "paused"
+  | "tooMany";
 
 /** Thrown inside a save to stop it with a reason; nothing it was about to write is written. */
 export class SaveRefused extends Error {

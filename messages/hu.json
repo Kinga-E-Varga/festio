@@ -43,7 +43,16 @@
     "privacy": "A neved és a válaszod csak az esemény házigazdáihoz jut el, és az esemény után {days} nappal töröljük. Semmit nem osztunk meg mással.",
     "sentTitle": "Köszönjük — a válaszod megérkezett a házigazdákhoz.",
     "sentNote": "Módosítanál valamit? A házigazdák bármelyik választ ki tudják javítani helyetted.",
-    "paused": "A válaszadás egyelőre zárva. Kérjük, vedd fel a kapcsolatot a házigazdával."
+    "paused": "A válaszadás egyelőre zárva. Kérjük, vedd fel a kapcsolatot a házigazdával.",
+    "sending": "Küldés…",
+    "tooMany": "Túl sok próbálkozás. Kérjük, próbáld újra néhány perc múlva.",
+    "tryAgain": "Valami hiba történt. Kérjük, próbáld újra.",
+    "passwordTitle": "Ez a meghívó jelszóval védett",
+    "passwordHint": "Írd be a meghívódon szereplő jelszót.",
+    "passwordLabel": "Jelszó",
+    "passwordSubmit": "Meghívó megnyitása",
+    "passwordWrong": "Ez a jelszó nem helyes.",
+    "cancelledTitle": "Ezt az eseményt lemondták"
   },
   "Print": {
     "defaultNote": "Kérjük, 2024. augusztus 5-ig válaszolj az alábbi linken.",
@@ -521,7 +530,8 @@
     "templateFallback": "Sablonok · Festio",
     "guests": "{title} · Vendégek · Festio",
     "signIn": "Bejelentkezés · Festio",
-    "signUp": "Fiók létrehozása · Festio"
+    "signUp": "Fiók létrehozása · Festio",
+    "invited": "Meghívót kaptál"
   },
   "GuestList": {
     "sectionSummary": "Összegzés",

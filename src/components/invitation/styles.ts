@@ -145,7 +145,20 @@ const REMOVE_NAME =
   "text-[color:var(--c4)] transition-colors hover:text-[color:var(--c3)]";
 
 /** The one warning above Send, in the palette's warning colour `--c6`. */
-const WARNING = "text-[12px] text-center leading-[1.45] text-[color:var(--c6)]";
+export const WARNING =
+  "text-[12px] text-center leading-[1.45] text-[color:var(--c6)]";
+
+/** The reply panel's heading line, and the password and cancelled pages' title: the invitation's primary face in `--c3`. */
+export const REPLY_TITLE =
+  "font-[family-name:var(--font-primary)] text-[24px] text-center text-balance leading-[1.5] text-[color:var(--c3)]";
+
+/** A guest-facing line in its own right (replies closed, the host's cancel message), in `--c3`. */
+export const REPLY_LINE =
+  "text-center text-[14px] leading-[1.45] text-[color:var(--c3)]";
+
+/** A short line under a title or a field, in `--c3`. */
+export const REPLY_NOTE =
+  "text-[12px] leading-[1.45] text-[color:var(--c3)] text-center text-balance";
 
 /** A simple invitation's reply form, every part in the template's `--c*`. */
 export const SIMPLE_RSVP_SKIN: RsvpSkin = {

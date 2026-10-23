@@ -12,17 +12,12 @@ import {
   MultiSelect,
   type MultiSelectSkin,
 } from "@/components/dashboard/guest-list/MultiSelect";
-import { ANSWER_LIMIT } from "@/components/dashboard/guest-list/replyValues";
 import { GUEST_DATA_RETENTION_DAYS } from "@/lib/config";
 import type { RsvpStatus } from "@/types/invitation";
 import { PlusIcon, XIcon } from "./icons";
 import { INVITE_SCROLL, PERSON } from "./styles";
-import {
-  NAME_LIMIT,
-  NOTE_LIMIT,
-  type RsvpFormState,
-  type RsvpProblem,
-} from "./useRsvpForm";
+import { RSVP_ANSWER_MAX, RSVP_NAME_MAX, RSVP_NOTE_MAX } from "@/db/limits";
+import type { RsvpFormState, RsvpProblem } from "./useRsvpForm";
 
 /** Ids only — what each choice is called is the invitation's language. */
 const CHOICES: { id: RsvpStatus; key: "going" | "notGoing" }[] = [
@@ -72,10 +67,16 @@ export interface RsvpSkin {
   diet: MultiSelectSkin;
 }
 
+/** Why the last Send didn't go through, as an `Rsvp` message key. */
+export type RsvpFailure = "tooMany" | "tryAgain";
+
 interface RsvpFormProps {
   form: RsvpFormState;
   skin: RsvpSkin;
   onSubmit: () => void;
+  /** The reply is on its way: Send waits, so a second tap sends nothing. */
+  sending?: boolean;
+  failure?: RsvpFailure | null;
 }
 
 /**
@@ -90,7 +91,13 @@ interface RsvpFormProps {
  * of the invitation's own `language` — the provider around this tree, never
  * the locale the host happens to read the dashboard in.
  */
-export function RsvpForm({ form, skin, onSubmit }: RsvpFormProps) {
+export function RsvpForm({
+  form,
+  skin,
+  onSubmit,
+  sending = false,
+  failure = null,
+}: RsvpFormProps) {
   const t = useTranslations("Rsvp");
   /*
    * Element ids come from `useId` and the row's place, never the row's own
@@ -110,7 +117,7 @@ export function RsvpForm({ form, skin, onSubmit }: RsvpFormProps) {
       onSubmit={(control) => {
         control.preventDefault();
         setAttempted(true);
-        if (derived.problem) return;
+        if (derived.problem || sending) return;
         onSubmit();
       }}
     >
@@ -152,7 +159,7 @@ export function RsvpForm({ form, skin, onSubmit }: RsvpFormProps) {
                   id={`${formId}-name-${index}`}
                   type="text"
                   value={row.value}
-                  maxLength={NAME_LIMIT}
+                  maxLength={RSVP_NAME_MAX}
                   placeholder={t("fullName")}
                   aria-label={t("nameNumber", { number: index + 1 })}
                   onChange={(control) => set.name(row.id, control.target.value)}
@@ -199,7 +206,7 @@ export function RsvpForm({ form, skin, onSubmit }: RsvpFormProps) {
           id="rsvp-note"
           rows={3}
           value={values.note}
-          maxLength={NOTE_LIMIT}
+          maxLength={RSVP_NOTE_MAX}
           placeholder={t("notePlaceholder")}
           onChange={(control) => set.note(control.target.value)}
           className={`${skin.input} resize-none ${INVITE_SCROLL}`}
@@ -209,10 +216,14 @@ export function RsvpForm({ form, skin, onSubmit }: RsvpFormProps) {
       <div className={`${skin.space.send} flex flex-col gap-3`}>
         {warning ? (
           <p className={skin.warning}>{t(WARNING_KEY[warning])}</p>
+        ) : failure ? (
+          <p role="alert" className={skin.warning}>
+            {t(failure)}
+          </p>
         ) : null}
 
-        <button type="submit" className={skin.submit}>
-          {t("submit")}
+        <button type="submit" disabled={sending} className={skin.submit}>
+          {t(sending ? "sending" : "submit")}
         </button>
 
         <p className={skin.privacy}>
@@ -267,7 +278,7 @@ function PersonQuestions({
           <input
             type="text"
             value={row.dietOther}
-            maxLength={ANSWER_LIMIT}
+            maxLength={RSVP_ANSWER_MAX}
             placeholder={t("dietOtherInput")}
             aria-label={t("dietOtherInput")}
             onChange={(control) => set.dietOther(row.id, control.target.value)}

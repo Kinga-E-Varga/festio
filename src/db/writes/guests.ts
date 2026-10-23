@@ -5,11 +5,11 @@ import { paths } from "@/db/paths";
 import { idSchema, versionSchema } from "@/db/schemas/common";
 import { guestListNameSchema } from "@/db/schemas/guest-list";
 import { replySchema } from "@/db/schemas/reply";
-import { countsOf, readCountInputs } from "@/db/writes/counts";
+import { countsAfter, countsOf, readCountInputs } from "@/db/writes/counts";
 import { ownEvent } from "@/db/writes/event";
 import { expectVersion, SaveRefused } from "@/db/writes/save";
 import type { StoredReply } from "@/lib/guests";
-import type { GuestChanges } from "@/types/guests";
+import type { GuestChanges, ListName } from "@/types/guests";
 
 /** A reply card as the host sends it: the server sets when, by whom and the edit time. */
 const replyInputSchema = replySchema
@@ -34,6 +34,64 @@ export const guestChangesSchema = z.object({
 });
 
 /**
+ * The names to save, each at its next version. A new one must not exist
+ * yet; any other must still be there, at the version the page read.
+ * Otherwise another device got there first.
+ */
+function checkNames(
+  list: GuestChanges["list"],
+  names: Map<string, ListName>,
+): ListName[] {
+  for (const { id, isNew, version } of list.put) {
+    const card = names.get(id);
+    if (isNew ? card : !card) throw new SaveRefused("stale");
+    if (card) expectVersion(card, version);
+  }
+  for (const { id, version } of list.remove) {
+    const card = names.get(id);
+    if (!card) throw new SaveRefused("stale");
+    expectVersion(card, version);
+  }
+  return list.put.map(({ id, name, sent }) => ({
+    id,
+    name,
+    sent,
+    version: (names.get(id)?.version ?? 0) + 1,
+  }));
+}
+
+/**
+ * The reply cards to write. Replies keep when they came in and who sent
+ * them. A card split off from another (`from`) takes that card's; a brand
+ * new one is the host's. A card edited here but deleted on another device is
+ * not brought back.
+ */
+function replyCards(
+  replies: GuestChanges["replies"],
+  stored: Map<string, StoredReply>,
+  at: Timestamp,
+): StoredReply[] {
+  return replies.put.map(({ isNew, from, ...input }): StoredReply => {
+    const own = stored.get(input.id);
+    if (isNew ? own : !own) throw new SaveRefused("stale");
+    if (!isNew && from) throw new SaveRefused("invalid");
+    const source = own ?? (from ? stored.get(from) : undefined);
+    if (from && !source) throw new SaveRefused("stale");
+    /* Separate only moves people who were on the card it names. */
+    const ids = new Set(source?.people.map((person) => person.id));
+    if (from && !input.people.every((person) => ids.has(person.id)))
+      throw new SaveRefused("invalid");
+    if (!source) return { ...input, sentAt: at, createdBy: "host" };
+    return {
+      ...input,
+      sentAt: source.sentAt,
+      createdBy: source.createdBy,
+      editedAt: at,
+    };
+  });
+}
+
+/**
  * Saves the host's guest-list changes and recounts the event, in one
  * transaction. Names are saved from the version the page read; reply cards
  * have none, the last save wins. The host can always add replies: no cap.
@@ -47,79 +105,35 @@ export async function writeGuestChanges(
 ): Promise<{ versions: Record<string, number> }> {
   return db.runTransaction(async (tx) => {
     const { ref, doc } = await ownEvent(tx, hostId, eventId);
-    /* Only a leftover is kept once the data is deleted: nothing left to edit. */
     const inputs = await readCountInputs(tx, eventId);
-
-    /*
-     * Names: a new one must not exist yet; any other must still be there, at
-     * the version the page read. Otherwise another device got there first.
-     */
-    const names = new Map(inputs.list.map((name) => [name.id, name]));
-    for (const { id, isNew, version } of changes.list.put) {
-      const card = names.get(id);
-      if (isNew ? card : !card) throw new SaveRefused("stale");
-      if (card) expectVersion(card, version);
-    }
-    for (const { id, version } of changes.list.remove) {
-      const card = names.get(id);
-      if (!card) throw new SaveRefused("stale");
-      expectVersion(card, version);
-    }
-
-    /*
-     * Replies keep when they came in and who sent them. A card split off
-     * from another (`from`) takes that card's; a brand new one is the host's.
-     * A card edited here but deleted on another device is not brought back.
-     */
-    const stored = new Map(inputs.replies.map((reply) => [reply.id, reply]));
-    const at = Timestamp.fromDate(now);
-    const written = changes.replies.put.map(
-      ({ isNew, from, ...input }): StoredReply => {
-        const own = stored.get(input.id);
-        if (isNew ? own : !own) throw new SaveRefused("stale");
-        if (!isNew && from) throw new SaveRefused("invalid");
-        const source = own ?? (from ? stored.get(from) : undefined);
-        if (from && !source) throw new SaveRefused("stale");
-        /* Separate only moves people who were on the card it names. */
-        const ids = new Set(source?.people.map((person) => person.id));
-        if (from && !input.people.every((person) => ids.has(person.id)))
-          throw new SaveRefused("invalid");
-        if (!source) return { ...input, sentAt: at, createdBy: "host" };
-        return {
-          ...input,
-          sentAt: source.sentAt,
-          createdBy: source.createdBy,
-          editedAt: at,
-        };
-      },
+    const names = checkNames(
+      changes.list,
+      new Map(inputs.list.map((name) => [name.id, name])),
     );
-    const savedNames = changes.list.put.map(({ id, name, sent }) => ({
-      id,
-      name,
-      sent,
-      version: (names.get(id)?.version ?? 0) + 1,
-    }));
+    const replies = replyCards(
+      changes.replies,
+      new Map(inputs.replies.map((reply) => [reply.id, reply])),
+      Timestamp.fromDate(now),
+    );
 
     /* Every read is done: the writes. */
-    for (const { id, ...card } of written)
+    for (const { id, ...card } of replies)
       tx.set(db.doc(paths.reply(eventId, id)), card);
     for (const id of changes.replies.remove)
       tx.delete(db.doc(paths.reply(eventId, id)));
-    for (const { id, ...card } of savedNames)
+    for (const { id, ...card } of names)
       tx.set(db.doc(paths.listName(eventId, id)), card);
     for (const { id } of changes.list.remove)
       tx.delete(db.doc(paths.listName(eventId, id)));
 
-    /* The counters over the cards as they now stand. */
-    for (const id of changes.replies.remove) stored.delete(id);
-    for (const reply of written) stored.set(reply.id, reply);
-    for (const { id } of changes.list.remove) names.delete(id);
-    for (const name of savedNames) names.set(name.id, name);
-    const counts = countsOf(
+    const counts = countsAfter(
+      inputs,
       {
-        replies: [...stored.values()],
-        list: [...names.values()],
-        seatedIds: inputs.seatedIds,
+        replies: { put: replies, remove: changes.replies.remove },
+        list: {
+          put: names,
+          remove: changes.list.remove.map(({ id }) => id),
+        },
       },
       doc,
     );
@@ -127,7 +141,7 @@ export async function writeGuestChanges(
 
     return {
       versions: Object.fromEntries(
-        savedNames.map(({ id, version }) => [id, version]),
+        names.map(({ id, version }) => [id, version]),
       ),
     };
   });

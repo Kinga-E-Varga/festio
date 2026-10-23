@@ -4,7 +4,7 @@ import { useMemo, type ReactNode } from "react";
 import { PREVIEW_EDGE } from "@/components/dashboard/styles";
 import { ScaledStage } from "@/components/invitation/ScaledStage";
 import { ModularInvitation } from "@/components/modular/ModularInvitation";
-import { pageBackground, templateVars } from "@/lib/invitation";
+import { inviteTheme } from "@/lib/invitation";
 import type { Language } from "@/lib/language";
 import { resolveDesign } from "@/modular/state";
 import type { InvitationTemplate } from "@/types/invitation";
@@ -38,18 +38,14 @@ export function SimplePreview({
   children: ReactNode;
 }) {
   const { width, height, shadow } = template.design;
-  const ground = pageBackground(template);
+  const theme = inviteTheme(template);
 
   return (
     <div
       role="img"
       aria-label={label}
-      style={{
-        ...templateVars(template),
-        ...ground.style,
-        aspectRatio: `${width} / ${height}`,
-      }}
-      className={`invite ${FRAME} flex ${template.fonts.primary.className} ${template.fonts.secondary.className} ${ground.className}`}
+      style={{ ...theme.style, aspectRatio: `${width} / ${height}` }}
+      className={`${theme.className} ${FRAME} flex`}
     >
       <div inert className="flex min-h-0 min-w-0 flex-1">
         <ScaledStage width={width} height={height} minScale={0} shadow={shadow}>

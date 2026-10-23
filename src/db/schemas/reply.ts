@@ -1,5 +1,11 @@
 import { z } from "zod";
 import { idSchema, momentSchema, rsvpStatusSchema } from "@/db/schemas/common";
+import {
+  RSVP_ANSWER_MAX,
+  RSVP_NAME_MAX,
+  RSVP_NOTE_MAX,
+  RSVP_PEOPLE_MAX,
+} from "@/db/limits";
 
 /**
  * `events/{eventId}/replies/{replyId}` — one card per form a guest (or the
@@ -59,5 +65,33 @@ export const replySchema = z.object({
   people: z.array(personSchema).min(1),
 });
 
+/**
+ * What a guest's browser sends: the reply's answers and its ID, never the
+ * people's IDs, times or who sent it — the server sets those. Age and diet are kept only for a
+ * reply that is coming.
+ */
+export const guestReplySchema = z.object({
+  /** Made once by the form, so a reply sent twice is saved once. */
+  id: z.uuid(),
+  status: rsvpStatusSchema,
+  message: z.string().trim().max(RSVP_NOTE_MAX).nullable(),
+  people: z
+    .array(
+      z.object({
+        name: z.string().trim().min(1).max(RSVP_NAME_MAX),
+        ageGroup: ageGroupSchema.optional(),
+        diet: z
+          .array(dietNeedSchema)
+          .max(dietNeedSchema.options.length)
+          .optional(),
+        dietOther: z.string().trim().max(RSVP_ANSWER_MAX).optional(),
+      }),
+    )
+    .min(1)
+    .max(RSVP_PEOPLE_MAX),
+});
+
 export type ReplyDoc = z.infer<typeof replySchema>;
+export type GuestReplyInput = z.infer<typeof guestReplySchema>;
+export type GuestPersonInput = GuestReplyInput["people"][number];
 export type Person = z.infer<typeof personSchema>;

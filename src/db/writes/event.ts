@@ -2,6 +2,7 @@ import {
   FieldValue,
   Timestamp,
   type DocumentReference,
+  type DocumentSnapshot,
   type Transaction,
 } from "firebase-admin/firestore";
 import { db } from "@/db/admin";
@@ -30,13 +31,28 @@ export async function ownEvent(
   eventId: string,
 ): Promise<{ ref: DocumentReference; doc: EventDoc }> {
   const ref = db.doc(paths.event(eventId));
-  const snap = await tx.get(ref);
+  return { ref, doc: ownedCard(await tx.get(ref), hostId) };
+}
+
+/**
+ * The same card, read plainly, for an action that needs one of its fields
+ * before its save (the link check, the invitation's template). The save's
+ * own `ownEvent` still checks it again inside its transaction.
+ */
+export async function readOwnEvent(
+  hostId: string,
+  eventId: string,
+): Promise<EventDoc> {
+  return ownedCard(await db.doc(paths.event(eventId)).get(), hostId);
+}
+
+function ownedCard(snap: DocumentSnapshot, hostId: string): EventDoc {
   const doc = snap.exists
-    ? parseCard(eventSchema, ref.path, snap.data())
+    ? parseCard(eventSchema, snap.ref.path, snap.data())
     : null;
   if (!doc || doc.hostId !== hostId) throw new SaveRefused("notFound");
   if (doc.dataDeleted) throw new SaveRefused("notAllowed");
-  return { ref, doc };
+  return doc;
 }
 
 /**

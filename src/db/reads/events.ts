@@ -48,6 +48,7 @@ function toDashboardEvent(
     repliesCloseIn: spanFrom(now, replyClose(doc)),
     dataDeleted: doc.dataDeleted,
     cancelled: Boolean(doc.cancelled),
+    cancelMessage: doc.cancelled?.message,
     print: doc.print,
     version: doc.version,
   };
@@ -71,6 +72,15 @@ export const loadHostEvents = cache(async (): Promise<DashboardEvent[]> => {
   return events.filter((event) => event !== null);
 });
 
+/** The event a guest link names, from its slug card alone: null for no such link or a blocked one. */
+export async function eventIdBySlug(slug: string): Promise<string | null> {
+  await connection();
+  if (!SLUG_PATTERN.test(slug)) return null;
+  const card = await db.doc(paths.slug(slug)).get();
+  const link = parseCard(slugDocSchema, paths.slug(slug), card.data());
+  return link && !link.blockedUntil ? link.eventId : null;
+}
+
 /**
  * The event a guest link points at, or null: no such link, a blocked link
  * (its event moved off it or its data went), an event that has since moved
@@ -78,12 +88,8 @@ export const loadHostEvents = cache(async (): Promise<DashboardEvent[]> => {
  */
 export const loadEventBySlug = cache(
   async (slug: string): Promise<DashboardEvent | null> => {
-    await connection();
-    if (!SLUG_PATTERN.test(slug)) return null;
-    const card = await db.doc(paths.slug(slug)).get();
-    const link = parseCard(slugDocSchema, paths.slug(slug), card.data());
-    if (!link || link.blockedUntil) return null;
-    const { eventId } = link;
+    const eventId = await eventIdBySlug(slug);
+    if (!eventId) return null;
     const snapshot = await db.doc(paths.event(eventId)).get();
     const event = toView(eventId, snapshot.data(), new Date());
     return event && event.slug === slug && !event.dataDeleted ? event : null;

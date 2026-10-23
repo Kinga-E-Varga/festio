@@ -155,7 +155,10 @@ export function HostInvitationEditor({
        * The host can try the form out, every check included, but the editor
        * never saves a reply — only the guest page will.
        */
-      onSubmit={() => toast.show(t("testReply"), "warning")}
+      onSubmit={async () => {
+        toast.show(t("testReply"), "warning");
+        return { success: true, data: undefined };
+      }}
       host={asHost(
         <EditPanel
           template={template}

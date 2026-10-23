@@ -115,6 +115,23 @@ export function pageBackground(template: InvitationTemplate): {
 }
 
 /**
+ * What an invitation's root wears: the template's palette and fonts as vars,
+ * its faces' classes and its page ground. Every guest-facing page and the
+ * dashboard's preview start from it, so the look is set in one place.
+ */
+export function inviteTheme(template: InvitationTemplate): {
+  className: string;
+  style: CSSProperties;
+} {
+  const ground = pageBackground(template);
+  const { primary, secondary } = template.fonts;
+  return {
+    className: `invite ${primary.className} ${secondary.className} ${ground.className}`,
+    style: { ...templateVars(template), ...ground.style },
+  };
+}
+
+/**
  * The values an invitation's card is drawn from: the host's saved text (a
  * simple card's) for each field the template declares, else that field's fallback, so a card is
  * never blank before a host types. Saved keys the template no longer has are

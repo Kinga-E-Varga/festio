@@ -1,11 +1,9 @@
 "use server";
 
-import { refresh } from "next/cache";
-import { hostEvent } from "@/db/reads/access";
-import { requireHostId } from "@/db/reads/session";
 import { invitationSchema, type InvitationDoc } from "@/db/schemas/invitation";
 import { writeInvitation } from "@/db/writes/invitation";
-import { refusal, type SaveError } from "@/db/writes/save";
+import { SaveRefused, type SaveError } from "@/db/writes/save";
+import { hostSave } from "@/actions/host-save";
 import { loadTemplate } from "@/templates";
 import type { ActionResult } from "@/types/actions";
 
@@ -18,31 +16,22 @@ export async function saveInvitation(
   eventId: string,
   input: InvitationDoc,
 ): Promise<ActionResult<{ version: number }, SaveError>> {
-  const hostId = await requireHostId();
-  const event = await hostEvent(eventId);
-  if (!event) return { success: false, error: "notFound" };
-  const parsed = invitationSchema.safeParse(input);
-  if (!parsed.success) return { success: false, error: "invalid" };
-
-  const loaded = event.templateId ? await loadTemplate(event.templateId) : null;
-  if (!loaded || loaded.template.kind !== parsed.data.kind) {
-    return { success: false, error: "invalid" };
-  }
-
-  let card = parsed.data;
-  if (card.kind === "simple" && loaded.template.kind === "simple") {
-    const ids = new Set(loaded.template.fields.map(({ id }) => id));
-    const values = Object.fromEntries(
-      Object.entries(card.values).filter(([id]) => ids.has(id)),
-    );
-    card = { ...card, values };
-  }
-
-  try {
-    const data = await writeInvitation(hostId, eventId, card);
-    refresh();
-    return { success: true, data };
-  } catch (error) {
-    return refusal(error);
-  }
+  return hostSave(invitationSchema, input, (hostId, data) =>
+    writeInvitation(hostId, eventId, async (event) => {
+      const loaded = event.templateId
+        ? await loadTemplate(event.templateId)
+        : null;
+      if (!loaded || loaded.template.kind !== data.kind) {
+        throw new SaveRefused("invalid");
+      }
+      if (data.kind !== "simple" || loaded.template.kind !== "simple") {
+        return data;
+      }
+      const ids = new Set(loaded.template.fields.map(({ id }) => id));
+      const values = Object.fromEntries(
+        Object.entries(data.values).filter(([id]) => ids.has(id)),
+      );
+      return { ...data, values };
+    }),
+  );
 }

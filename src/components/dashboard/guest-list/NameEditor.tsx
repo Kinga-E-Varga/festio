@@ -8,7 +8,7 @@ import {
   RowEditor,
   type RowEditorProps,
 } from "@/components/dashboard/guest-list/RowEditor";
-import { NAME_LIMIT } from "@/components/invitation/useRsvpForm";
+import { RSVP_NAME_MAX } from "@/db/limits";
 
 interface NameEditorProps extends RowEditorProps {
   initial: string;
@@ -45,7 +45,7 @@ export function NameEditor({
       <NameField
         registration={register("name", {
           validate: (value) => value.trim() !== "" || t("nameRequired"),
-          maxLength: NAME_LIMIT,
+          maxLength: RSVP_NAME_MAX,
         })}
         error={formState.errors.name?.message}
       />

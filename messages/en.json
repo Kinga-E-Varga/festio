@@ -43,7 +43,16 @@
     "privacy": "Your name and reply go only to the hosts of this event, and are deleted {days} days after it. Nothing is shared with anyone else.",
     "sentTitle": "Thank you — your reply is with the hosts.",
     "sentNote": "Need to change something? The hosts can correct any reply for you.",
-    "paused": "Replies are closed for now. Please contact the host."
+    "paused": "Replies are closed for now. Please contact the host.",
+    "sending": "Sending…",
+    "tooMany": "Too many tries. Please try again in a few minutes.",
+    "tryAgain": "Something went wrong. Please try again.",
+    "passwordTitle": "This invitation is protected",
+    "passwordHint": "Type the password printed on your invitation.",
+    "passwordLabel": "Password",
+    "passwordSubmit": "Open invitation",
+    "passwordWrong": "That password isn't right.",
+    "cancelledTitle": "This event has been cancelled"
   },
   "Print": {
     "defaultNote": "Please reply before the 5th of august 2024 on the link provided below.",
@@ -521,7 +530,8 @@
     "templateFallback": "Templates · Festio",
     "guests": "{title} · Guests · Festio",
     "signIn": "Sign in · Festio",
-    "signUp": "Create your account · Festio"
+    "signUp": "Create your account · Festio",
+    "invited": "You're invited"
   },
   "GuestList": {
     "sectionSummary": "Summary",

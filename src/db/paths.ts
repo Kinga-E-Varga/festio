@@ -16,4 +16,5 @@ export const paths = {
   seating: (eventId: string) => `events/${eventId}/seating/chart`,
   slug: (slug: string) => `slugs/${slug}`,
   payments: "payments",
+  rateLimit: (key: string) => `rateLimits/${key}`,
 };

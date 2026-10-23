@@ -3,11 +3,10 @@
 import { useState } from "react";
 import { useFieldArray, useForm, useWatch } from "react-hook-form";
 import { pickDiet } from "@/components/dashboard/guest-list/labels";
+import { newId } from "@/lib/id";
 import type { AgeGroup, DietNeed, DietPick } from "@/types/guests";
-import type { RsvpAttendee, RsvpPayload, RsvpStatus } from "@/types/invitation";
-
-export const NOTE_LIMIT = 300;
-export const NAME_LIMIT = 60;
+import type { GuestPersonInput } from "@/db/schemas/reply";
+import type { RsvpPayload, RsvpStatus } from "@/types/invitation";
 
 interface RsvpRow {
   value: string;
@@ -54,31 +53,28 @@ function firstProblem(
 }
 
 /** One person's answers as sent: age and diet only for someone coming. */
-function attendee(row: RsvpRow, status: RsvpStatus): RsvpAttendee {
+function person(row: RsvpRow, status: RsvpStatus): GuestPersonInput {
   const name = row.value.trim();
-  if (status !== "going" || row.ageGroup === "") return { name, status };
+  if (status !== "going" || row.ageGroup === "") return { name };
   const needs = row.diet.filter((pick): pick is DietNeed => pick !== "none");
   const other = row.dietOther.trim();
   return {
     name,
-    status,
     ageGroup: row.ageGroup,
     diet: needs,
     ...(needs.includes("other") && other !== "" ? { dietOther: other } : {}),
   };
 }
 
-/**
- * One reply, covering everyone the guest is answering for. The going choice
- * is single and submission-level; storage copies it onto each attendee, so
- * the simpler form costs the data model nothing.
- */
+/** One reply, covering everyone the guest is answering for, with one going choice for them all. */
 export function useRsvpForm() {
   const { control, setValue, getValues } = useForm<RsvpFieldValues>({
     defaultValues: { rows: [EMPTY_ROW], status: null, note: "" },
   });
   const { fields, append, remove } = useFieldArray({ control, name: "rows" });
   const [sent, setSent] = useState(false);
+  /* One ID for this reply, however many times Send is tried: it's saved once. */
+  const [replyId] = useState(newId);
 
   const rows = useWatch({ control, name: "rows" });
   const status = useWatch({ control, name: "status" });
@@ -133,8 +129,10 @@ export function useRsvpForm() {
     if (problem !== null || status === null) return null;
     const trimmed = note.trim();
     return {
-      attendees: rows.map((row) => attendee(row, status)),
-      answers: { q_note_host: trimmed === "" ? null : trimmed },
+      id: replyId,
+      status,
+      message: trimmed === "" ? null : trimmed,
+      people: rows.map((row) => person(row, status)),
     };
   }
 

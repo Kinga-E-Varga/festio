@@ -17,12 +17,11 @@ import {
   pickDiet,
   STATUS_KEY,
 } from "@/components/dashboard/guest-list/labels";
-import { ANSWER_LIMIT } from "@/components/dashboard/guest-list/replyValues";
 import {
   CHOICE_OFF,
   CHOICE_ON,
 } from "@/components/dashboard/guest-list/styles";
-import { NAME_LIMIT } from "@/components/invitation/useRsvpForm";
+import { RSVP_ANSWER_MAX, RSVP_NAME_MAX } from "@/db/limits";
 import type { GuestQuestion, ReplyValues } from "@/types/guests";
 
 interface NameFieldProps {
@@ -35,7 +34,7 @@ export function NameField({ registration, error }: NameFieldProps) {
   return (
     <label className="block min-w-[200px] flex-1">
       <span className="mb-1.5 block label-caps">{t("name")}</span>
-      <input {...registration} maxLength={NAME_LIMIT} className={INPUT} />
+      <input {...registration} maxLength={RSVP_NAME_MAX} className={INPUT} />
       {error ? <span className={`mt-1 block ${ERROR}`}>{error}</span> : null}
     </label>
   );
@@ -212,7 +211,7 @@ export function PersonFields({
         {withOther ? (
           <input
             {...dietOther}
-            maxLength={ANSWER_LIMIT}
+            maxLength={RSVP_ANSWER_MAX}
             aria-label={t("dietOtherInput")}
             placeholder={t("dietOtherInput")}
             className={`mt-2 ${INPUT}`}
@@ -259,7 +258,7 @@ export function QuestionField({ control, name, question }: QuestionFieldProps) {
                 value={value}
                 onChange={field.onChange}
                 onBlur={field.onBlur}
-                maxLength={ANSWER_LIMIT}
+                maxLength={RSVP_ANSWER_MAX}
                 className={INPUT}
               />
             </label>

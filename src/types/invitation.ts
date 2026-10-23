@@ -1,9 +1,9 @@
 import type { z } from "zod";
 import type { rsvpStatusSchema } from "@/db/schemas/common";
+import type { GuestReplyInput } from "@/db/schemas/reply";
 import type { LocalizedText } from "@/lib/language";
 import type { PackageId, EventKind } from "@/types/dashboard";
 import type { EnvelopeColors } from "@/types/envelope";
-import type { AgeGroup, DietNeed } from "@/types/guests";
 import type { ModularTemplateModule } from "@/types/modular";
 
 /** How deep the card's shadow is; `null` for none. */
@@ -187,25 +187,8 @@ export type TemplateModule = SimpleTemplateModule | ModularTemplateModule;
 export type RsvpStatus = z.infer<typeof rsvpStatusSchema>;
 
 /**
- * Age and diet are asked only of people coming — left out otherwise, as
- * never asked. Shaped like the guest list's `GuestReply`.
+ * What the reply form sends: one status for the whole reply, everyone it
+ * answers for, and the note. The same shape the server checks a guest's
+ * reply against.
  */
-export interface RsvpAttendee {
-  name: string;
-  status: RsvpStatus;
-  ageGroup?: AgeGroup;
-  /** Empty = no needs (None). */
-  diet?: DietNeed[];
-  /** What the guest wrote for `other`. */
-  dietOther?: string;
-}
-
-/**
- * What the form hands to the write layer. Storage splits this into one
- * document per attendee and copies the note onto each, so the submission
- * shape here stays the way the guest filled it in.
- */
-export interface RsvpPayload {
-  attendees: RsvpAttendee[];
-  answers: { q_note_host: string | null };
-}
+export type RsvpPayload = GuestReplyInput;

@@ -12,9 +12,6 @@ import type {
  * spec's rule: missing = never asked, null = asked and skipped.
  */
 
-/** The longest text answer, and the longest Other diet. */
-export const ANSWER_LIMIT = 200;
-
 export const personQuestions = (questions: GuestQuestion[]) =>
   questions.filter((question) => question.scope === "person");
 export const sharedQuestions = (questions: GuestQuestion[]) =>

@@ -1,14 +1,13 @@
 "use server";
 
-import { refresh } from "next/cache";
-import { hostEvent } from "@/db/reads/access";
-import { requireHostId } from "@/db/reads/session";
+import { z } from "zod";
 import {
   guestChangesSchema,
   setGuestListOn,
   writeGuestChanges,
 } from "@/db/writes/guests";
-import { refusal, type SaveError } from "@/db/writes/save";
+import type { SaveError } from "@/db/writes/save";
+import { hostSave } from "@/actions/host-save";
 import type { ActionResult } from "@/types/actions";
 import type { GuestChanges } from "@/types/guests";
 
@@ -17,23 +16,9 @@ export async function saveGuestChanges(
   eventId: string,
   changes: GuestChanges,
 ): Promise<ActionResult<{ versions: Record<string, number> }, SaveError>> {
-  const hostId = await requireHostId();
-  if (!(await hostEvent(eventId))) return { success: false, error: "notFound" };
-  const parsed = guestChangesSchema.safeParse(changes);
-  if (!parsed.success) return { success: false, error: "invalid" };
-
-  try {
-    const data = await writeGuestChanges(
-      hostId,
-      eventId,
-      parsed.data,
-      new Date(),
-    );
-    refresh();
-    return { success: true, data };
-  } catch (error) {
-    return refusal(error);
-  }
+  return hostSave(guestChangesSchema, changes, (hostId, data) =>
+    writeGuestChanges(hostId, eventId, data, new Date()),
+  );
 }
 
 /** The guest page's list switch, saved as the event's `preloaded`. */
@@ -41,15 +26,7 @@ export async function saveGuestListOn(
   eventId: string,
   on: boolean,
 ): Promise<ActionResult<undefined, SaveError>> {
-  const hostId = await requireHostId();
-  if (!(await hostEvent(eventId))) return { success: false, error: "notFound" };
-  if (typeof on !== "boolean") return { success: false, error: "invalid" };
-
-  try {
-    await setGuestListOn(hostId, eventId, on);
-    refresh();
-    return { success: true, data: undefined };
-  } catch (error) {
-    return refusal(error);
-  }
+  return hostSave(z.boolean(), on, (hostId, data) =>
+    setGuestListOn(hostId, eventId, data),
+  );
 }

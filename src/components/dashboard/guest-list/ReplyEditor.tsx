@@ -27,7 +27,7 @@ import {
   SMALL_BTN_EDITOR,
 } from "@/components/dashboard/guest-list/styles";
 import { ButtonIcon, Icon } from "@/components/icons";
-import { NAME_LIMIT } from "@/components/invitation/useRsvpForm";
+import { RSVP_NAME_MAX } from "@/db/limits";
 import type { GuestQuestion, GuestReply, ReplyValues } from "@/types/guests";
 
 interface ReplyEditorProps extends RowEditorProps {
@@ -108,7 +108,7 @@ export function ReplyEditor({
         <NameField
           registration={register(`people.${index}.name`, {
             validate: (value) => value.trim() !== "" || t("nameRequired"),
-            maxLength: NAME_LIMIT,
+            maxLength: RSVP_NAME_MAX,
           })}
           error={errors.people?.[index]?.name?.message}
         />

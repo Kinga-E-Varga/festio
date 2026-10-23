@@ -1,5 +1,6 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { type ReactNode, useState } from "react";
 import type {
@@ -7,19 +8,30 @@ import type {
   RsvpPayload,
   TemplateValues,
 } from "@/types/invitation";
+import type { SaveError } from "@/db/writes/save";
+import type { ActionResult } from "@/types/actions";
 import { XIcon } from "./icons";
-import { RsvpForm } from "./RsvpForm";
-import { INVITE_SCROLL, PANEL, SIMPLE_RSVP_SKIN } from "./styles";
+import { RsvpForm, type RsvpFailure } from "./RsvpForm";
+import {
+  INVITE_SCROLL,
+  PANEL,
+  REPLY_LINE,
+  REPLY_NOTE,
+  REPLY_TITLE,
+  SIMPLE_RSVP_SKIN,
+} from "./styles";
 import { useRsvpForm, type RsvpFormState } from "./useRsvpForm";
 
-const TITLE =
-  "font-[family-name:var(--font-primary)] text-[24px] text-center text-balance leading-[1.5] text-[color:var(--c3)] mb-8 ";
+const TITLE = `${REPLY_TITLE} mb-8`;
 
-interface RsvpPanelProps {
+export interface RsvpPanelProps {
   template: InvitationTemplate;
   /** Host-entered content; only `rsvpMessage` concerns this panel. */
   values: TemplateValues;
-  onSubmit?: (payload: RsvpPayload) => void;
+  /** Sends the reply and answers how it went; the host's preview answers sent without saving. */
+  onSubmit?: (
+    payload: RsvpPayload,
+  ) => Promise<ActionResult<undefined, SaveError>>;
   /** True while the host's edit panel is covering this one, so it can't be tabbed into. */
   inert?: boolean;
   /** Replies are closed for now; a neutral line stands in for the form. */
@@ -43,7 +55,12 @@ export function RsvpPanel({
 }: RsvpPanelProps) {
   const t = useTranslations("Rsvp");
   const form = useRsvpForm();
+  const router = useRouter();
   const [open, setOpen] = useState(false);
+  const [sending, setSending] = useState(false);
+  const [failure, setFailure] = useState<RsvpFailure | null>(null);
+  /* The server found replies closed (time, cap) since the page loaded. */
+  const [closed, setClosed] = useState(false);
   /*
    * The standing line is host-editable, like the card's text: templates
    * declare it as the `rsvpMessage` field. Festio's own line stands in for a
@@ -58,12 +75,14 @@ export function RsvpPanel({
    * Guests are told only that replies are closed — never why. The bar keeps
    * its resting height, so the card above it doesn't move.
    */
-  if (paused) {
+  if (paused || closed) {
     return (
       <Shell edge={template.edge} open={false} inert={inert}>
         <div className="flex flex-1 flex-col justify-center bg-[var(--c1)] px-5 invite:p-8">
           <p className={`${TITLE} hidden invite:block`}>{message}</p>
-          <p className="flex min-h-[50px] items-center justify-center text-center text-[14px] leading-[1.45] text-[color:var(--c3)] invite:min-h-0">
+          <p
+            className={`${REPLY_LINE} flex min-h-[50px] items-center justify-center invite:min-h-0`}
+          >
             {t("paused")}
           </p>
         </div>
@@ -71,11 +90,29 @@ export function RsvpPanel({
     );
   }
 
-  function send() {
+  async function send() {
     const payload = form.buildPayload();
     if (!payload) return;
-    onSubmit?.(payload);
-    form.markSent();
+    setSending(true);
+    setFailure(null);
+    try {
+      const result = await onSubmit?.(payload);
+      if (!result || result.success) {
+        form.markSent();
+      } else if (result.error === "closed" || result.error === "paused") {
+        setClosed(true);
+      } else if (result.error === "locked" || result.error === "notFound") {
+        /* Locked or taken down since it opened: the page now shows the password, or not found. */
+        router.refresh();
+      } else {
+        setFailure(result.error === "tooMany" ? "tooMany" : "tryAgain");
+      }
+    } catch {
+      /* The request itself failed (offline, a new deploy): what was typed stays. */
+      setFailure("tryAgain");
+    } finally {
+      setSending(false);
+    }
   }
 
   return (
@@ -155,7 +192,12 @@ export function RsvpPanel({
           <div className="reveal contents invite:grid" data-open={shown}>
             <div>
               <div className="invite:pt-6" inert={!shown}>
-                <Reply form={form} onSend={send} />
+                <Reply
+                  form={form}
+                  onSend={send}
+                  sending={sending}
+                  failure={failure}
+                />
               </div>
             </div>
           </div>
@@ -199,18 +241,34 @@ function Shell({
 }
 
 /** The form, or what stands in its place once the reply is in. */
-function Reply({ form, onSend }: { form: RsvpFormState; onSend: () => void }) {
+function Reply({
+  form,
+  onSend,
+  sending,
+  failure,
+}: {
+  form: RsvpFormState;
+  onSend: () => void;
+  sending: boolean;
+  failure: RsvpFailure | null;
+}) {
   const t = useTranslations("Rsvp");
 
   if (form.derived.sent) {
     return (
       <div className="flex flex-col gap-2">
         <p className={TITLE}>{t("sentTitle")}</p>
-        <p className="text-[12px] leading-[1.45] text-[color:var(--c3)] text-center text-balance">
-          {t("sentNote")}
-        </p>
+        <p className={REPLY_NOTE}>{t("sentNote")}</p>
       </div>
     );
   }
-  return <RsvpForm form={form} skin={SIMPLE_RSVP_SKIN} onSubmit={onSend} />;
+  return (
+    <RsvpForm
+      form={form}
+      skin={SIMPLE_RSVP_SKIN}
+      onSubmit={onSend}
+      sending={sending}
+      failure={failure}
+    />
+  );
 }

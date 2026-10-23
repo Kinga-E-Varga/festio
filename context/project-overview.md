@@ -62,7 +62,7 @@ Lists active events with edit / print / guest list actions.
 
 - Full CRUD; the host is the only one who can ever correct an RSVP. Add from scratch (phone RSVPs), edit every field, delete any RSVP.
 - Optional pre-loaded guest list by name; incoming RSVPs are matched against it, unmatched names get an `UNKNOWN` tag. Host can add the unknown guest or match them to an existing (mistyped) name.
-- Duplicate name on submit → don't create an entry; ask the guest whether they already RSVP'd. "Yes, it's me" = no new entry. "No, add mine" = new entry flagged `UNKNOWN`.
+- Same name as an earlier reply → saved as sent, shown to the host as `DUPLICATE` to sort out. The guest is never told: they must not learn who already replied.
 
 ## Print
 

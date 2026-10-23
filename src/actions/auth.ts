@@ -6,7 +6,11 @@ import { getLocale } from "next-intl/server";
 import { z } from "zod";
 import { auth, db } from "@/db/admin";
 import { paths } from "@/db/paths";
-import { FRESH_SIGN_IN_SECONDS, SESSION_COOKIE } from "@/db/reads/session";
+import {
+  FRESH_SIGN_IN_SECONDS,
+  PRIVATE_COOKIE,
+  SESSION_COOKIE,
+} from "@/db/reads/session";
 import { HOST_NAME_MAX } from "@/db/limits";
 import { languageSchema } from "@/db/schemas/common";
 import { userSchema } from "@/db/schemas/user";
@@ -87,10 +91,7 @@ export async function startSession(
     const expiresIn = SESSION_DAYS * DAY_MS;
     const session = await auth.createSessionCookie(idToken, { expiresIn });
     (await cookies()).set(SESSION_COOKIE, session, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV !== "development",
-      sameSite: "lax",
-      path: "/",
+      ...PRIVATE_COOKIE,
       maxAge: expiresIn / 1000,
     });
     return { success: true, data: undefined };

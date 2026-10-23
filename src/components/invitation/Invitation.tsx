@@ -4,13 +4,9 @@ import { type ReactNode, useRef } from "react";
 import type { CardOpening } from "@/components/envelope/card";
 import { Envelope } from "@/components/envelope/Envelope";
 import { useSealed } from "@/components/envelope/useSealed";
-import { pageBackground, templateVars } from "@/lib/invitation";
-import type {
-  InvitationTemplate,
-  RsvpPayload,
-  TemplateValues,
-} from "@/types/invitation";
-import { RsvpPanel } from "./RsvpPanel";
+import { inviteTheme, pageBackground } from "@/lib/invitation";
+import type { InvitationTemplate, TemplateValues } from "@/types/invitation";
+import { RsvpPanel, type RsvpPanelProps } from "./RsvpPanel";
 import { ScaledStage } from "./ScaledStage";
 
 interface InvitationProps {
@@ -36,7 +32,8 @@ interface InvitationProps {
   replyInert?: boolean;
   /** The hidden reply cap is reached; the panel says so instead of taking replies. */
   repliesPaused?: boolean;
-  onSubmit?: (payload: RsvpPayload) => void;
+  /** Sends the reply; see `RsvpPanel`. */
+  onSubmit?: RsvpPanelProps["onSubmit"];
   /** The closed envelope over the invitation until the guest opens it. */
   envelope?: boolean;
   /** How the card comes out of it; a new one seals it again. */
@@ -73,14 +70,15 @@ export function Invitation({
 }: InvitationProps) {
   const { width, height, minScale, maxScale, shadow } = template.design;
   const ground = pageBackground(template);
+  const theme = inviteTheme(template);
   const [sealed, unseal, page] = useSealed<HTMLDivElement>(envelope, opening);
   const root = useRef<HTMLDivElement>(null);
 
   return (
     <div
       ref={root}
-      style={{ ...templateVars(template), ...ground.style }}
-      className={`invite relative overflow-hidden ${template.fonts.primary.className} ${template.fonts.secondary.className} ${ground.className} flex ${fill ? "h-full" : "h-dvh"} flex-col invite:flex-row`}
+      style={theme.style}
+      className={`${theme.className} relative overflow-hidden flex ${fill ? "h-full" : "h-dvh"} flex-col invite:flex-row`}
     >
       {/*
        * The padding lives here rather than on the stage: `clientWidth`

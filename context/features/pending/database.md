@@ -1,6 +1,6 @@
 # Database, hosting and environments
 
-The plan agreed in chat before connecting anything. Steps 1–4 are built: the app reads and
+The plan agreed in chat before connecting anything. Steps 1–5 are built: the app reads and
 saves to the local emulator (see Order). Fields and names are a sketch to build from, not a final
 schema. Each step still gets its own spec in `current-feature.md` when it's built.
 
@@ -116,8 +116,13 @@ list and are worked out.
 - The same for the host adding, editing, deleting or separating a reply.
 - **The cap is for safety only.** It pauses the guest form; the host can always add replies,
   paused or not, and the counts keep going up.
+- **A reply is checked against the count before it**, like the form's pause: one reply that
+  arrives just under the cap is saved whole, so it can pass the cap by up to 9 people. A family
+  replying together is never cut off halfway.
 - **Safety net:** the guest list page loads every reply anyway, so it recounts and quietly
   fixes the counters if they've drifted.
+- **Planned soon:** a guest's reply adds only the difference it makes, read from the cards
+  that share a name with it, instead of recounting the whole event (see Order, step 5).
 
 **Protected password:** stored as it is (not hashed), because the host sees it in the share
 fields and it's printed on the card. It guards a page, not an account. Only the server ever
@@ -232,8 +237,9 @@ Admin SDK, which skips them, so the server does its own checks.
 **The server does almost everything:**
 
 - **Guests always go through the server:** opening the invitation, the password, replying.
-  A reply needs the cap transaction, the duplicate check, rate limiting and the closing
-  date, and the password never reaches the browser. A guest's browser never touches the
+  A reply needs the cap transaction, rate limiting and the closing date, and the password
+  never reaches the browser. There is no duplicate check for guests: telling a guest a name
+  already replied would leak who replied. The guest list shows it as Duplicate. A guest's browser never touches the
   database.
 - **Every host save goes through the server** (Server Actions): event, invitation,
   replies, guest list, seating. One place for every check: the 24h lock, Required not
@@ -292,6 +298,14 @@ several copies of the server and restarts them, so the count lives in Firestore.
   policy deletes them by itself after the hour.
 - **GDPR:** only a scrambled (hashed) IP is stored, never the real one, and it's gone within
   the hour.
+- **Which IP:** the last `x-forwarded-for` entry, the one Google's front end adds
+  (`visitorKey`, `src/db/reads/visitor.ts`). Earlier entries are whatever the caller sent.
+- **The hour is the clock's hour**, not the last 60 minutes, so someone can get about twice the
+  tries across an hour boundary (10 at 10:59, 10 more at 11:00). Fine at these limits; if abuse
+  shows up, also check the previous hour's card.
+- **Decide later: a per-link cap on wrong passwords across all visitors** (e.g. 100 an hour).
+  It stops a botnet of real IPs guessing a short password, but anyone could use it to lock
+  real guests out for an hour. Not built; revisit if guessing shows up in the logs.
 - Over the limit, the guest sees a friendly "too many tries, please try again in a few
   minutes".
 - Some mobile networks put many phones behind one IP, so unrelated guests can rarely share a
@@ -480,28 +494,49 @@ Steps 1–5 run fully on your machine; the first big handoff is step 6.
        hand: move the schema to `src/db/schemas/` and derive the types from it.
      - The event form's link check (`checkLink` in `useEventForm.ts`) repeats the slug rules:
        one plain `isValidSlug` in `src/lib/slug.ts`, used by it and `slugSchema`.
-5. **Guest replies.** The reply transaction (cap, counters), the duplicate check, the
-   closing time, rate limiting and the Protected password.
-   - The reply transaction counts with `countsOf` (`src/db/writes/counts.ts`), the same
-     function the host saves and the seed use.
-   - **Before the guest actions: one shared wrapper for Server Actions** (sign-in, parse,
-     refusal, refresh), and ownership checked once, by `ownEvent` inside the transaction.
-     Today every action also calls `hostEvent`, which reads all the host's events; on the
-     link check that's every pause in typing.
-   - **The guest page's recount** (`repairCounts`) reads every reply a second time. Work it
-     out from the replies the page already loaded; open the transaction only on a mismatch.
-   - **`writeGuestChanges`** (`src/db/writes/guests.ts`, ~95 lines) splits into its three
-     stages (names, reply cards, recount) before the guest reply reuses parts of it.
-   - Decide: the guest list's saves work out what changed by comparing reply cards before
-     and after (`guestChanges`, as JSON). Each action already knows what it does (separate,
-     match, delete…); sending that would be sturdier.
-   - The guest page doesn't check visibility yet: Hidden, Protected and cancelled events
-     all open as Public today.
-   - The latest replies have no Unknown tag: working it out needs each event's guest list.
-     Decide whether it's worth that read.
+5. **Guest replies.** Done: the guest reply saves in one transaction (`writeGuestReply`:
+   link, template, visibility, Protected cookie, closing time, 5 an hour per visitor, the
+   cap, then the reply and the counters), saved once however often it's resent (the form
+   makes its ID). The guest page respects Hidden (not found), Protected (a password screen,
+   10 wrong tries an hour, an `unlock-<slug>` cookie signed with `FESTIO_SECRET`) and
+   cancelled (the host's message). Host actions share `hostSave`; ownership is `ownEvent`'s,
+   inside each transaction. The guest list page recounts from the replies it loaded.
+   - Decided: the guest list's saves keep comparing reply cards before and after
+     (`guestChanges`). Switch to sending each action only if the comparing causes a real bug.
+   - **Later:** Unknown and Duplicate tags in the latest replies, worked out live. They need
+     each event's guest list and all its replies, and the feed loads on every dashboard page,
+     so: reuse `loadGuests` where it's already read, work the tags out only where the feed
+     shows, and only for the events left in the feed.
    - Who is waiting is worked out, not stored, so the dashboard reads the whole guest list
      of each active event whose form is closing. Fine at a few events; revisit only if it
      gets slow.
+   - **Next, on its own `chore/` branch: the guest list on one card.** Today each pre-loaded
+     name is its own card (`guestList/<id>`), so a guest's reply, the guest list page and the
+     dashboard read every name. Instead: one card (e.g. `guestList/names`) holding every name
+     with its permanent ID, name and sent flag. About 120 bytes a name, so roughly 8,000 fit
+     in a card's 1 MB. Seating and matching keep pointing at the IDs.
+     - One `version` for the whole list: two devices editing different names at once now get
+       "changed on another device" for the second save. Host-only, so rare.
+     - Touches the guest list schema and path, `readGuests`, `guestListCount`, the names
+       stage of `writeGuestChanges`, `readCountInputs`, the seed, and the guest list page's
+       per-name versions (they become one). No real data yet: a new seed, no script.
+   - **Soon after, on its own `chore/` branch: count only what a reply changes.** A guest's
+     reply recounts the whole event inside its transaction (`readCountInputs`: every reply,
+     the list, the seating chart). Names only affect cards with the same name, so:
+     - Each reply card stores its people's names normalized (`normalizeName`: case, accents,
+       spaces) as `nameKeys`; each list name the same.
+     - The reply's transaction reads only the replies whose `nameKeys` share one of the new
+       reply's (`array-contains-any`, at most 10 names a reply, under Firestore's 30), the
+       list names with those keys, any reply matched (`listNameId`) to those names, and the
+       seating chart. Coming / not coming just go up by the reply's people.
+     - It counts that small group with `countsOf` before and after the new reply and adds
+       the difference to the event's `counts`. Same function, so the two ways can't count
+       differently; the guest list page's recount (`repairCounts`) stays as the safety net.
+     - A data-shape change (new fields on reply and list cards, the seed, a one-off script
+       if real data exists by then). Best done after the one-card list, so the list part is
+       one read either way.
+     - Doesn't help guests replying at the same second: every reply writes the event card's
+       counts, so they queue either way.
 6. **`festio-dev`**, Firestore and Storage rules, and rules tests.
    - **Google on a password account:** the emulator can't produce
      `auth/account-exists-with-different-credential`. Check on the real project that it shows
@@ -509,13 +544,19 @@ Steps 1–5 run fully on your machine; the first big handoff is step 6.
    - **The login check's cost:** `loadHostId` (`src/db/reads/session.ts`) checks the cookie
      with Firebase on every host request (`verifySessionCookie(…, true)`, to catch revoked
      sessions). Measure it; if it's slow, check revocation less often.
+   - **Rate limits' IP:** check which `x-forwarded-for` entry App Hosting adds. Send a fake
+     header, log the raw value. `visitorKey` takes the last one; if that's a proxy's, every
+     guest shares one limit.
+   - **`FESTIO_SECRET`** into Secret Manager (dev has a dummy in `.env.development`), and the
+     `rateLimits` TTL policy (`firestore.indexes.json`) deployed.
    - **Email verification** needs real email sending, so it can only be finished here:
      `context/fixes/pending/email-verification.md`. Until then, Google on an unverified
      password account drops the password.
 7. **CI:** lint, build and rules tests on every push; auto-deploy to dev.
 8. **GDPR cleanup.** The nightly deletion job and account deletion.
    - The job reuses `src/db/writes/`. Move the rules that live only in the actions today
-     (past, cancelled) into the writes, so the job gets them too, with one "past" on the
+     (past, cancelled: `eventForRules` in `src/actions/event.ts`, the last `hostEvent` reads
+     in an action) into the writes, so the job gets them too, with one "past" on the
      event's clock (`todayIn`); the actions use the countdown worked out at read time.
    - Log out only deletes this browser's cookie; a copied cookie stays valid up to 14 days.
      Deleting an account must also end every session (`auth.revokeRefreshTokens(uid)`).

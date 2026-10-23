@@ -8,6 +8,14 @@ import { redirect } from "@/i18n/navigation";
 /** The signed-in host's Firebase session cookie; the one name Firebase hosting forwards. */
 export const SESSION_COOKIE = "__session";
 
+/** How Festio's own cookies are set: never read by page scripts, sent only over HTTPS outside dev. */
+export const PRIVATE_COOKIE = {
+  httpOnly: true,
+  secure: process.env.NODE_ENV !== "development",
+  sameSite: "lax",
+  path: "/",
+} as const;
+
 /** Firebase's advice: only trust a sign-in made in the last few minutes, never an old token. */
 export const FRESH_SIGN_IN_SECONDS = 5 * 60;
 

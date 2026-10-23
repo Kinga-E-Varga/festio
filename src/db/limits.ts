@@ -31,3 +31,15 @@ export const HOST_NAME_MAX = 80;
 
 /** The shortest password a host's account takes. */
 export const ACCOUNT_PASSWORD_MIN = 8;
+
+/** The longest name in a reply, guest's or host's. */
+export const RSVP_NAME_MAX = 60;
+
+/** The longest note a guest leaves the host. */
+export const RSVP_NOTE_MAX = 300;
+
+/** The longest text answer, and the longest Other diet. */
+export const RSVP_ANSWER_MAX = 200;
+
+/** The most people one reply answers for. */
+export const RSVP_PEOPLE_MAX = 10;

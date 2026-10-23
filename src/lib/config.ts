@@ -23,3 +23,12 @@ export const TERMS_VERSION = "2026-01";
 
 /** How long a host stays signed in: Firebase's longest session cookie. */
 export const SESSION_DAYS = 14;
+
+/** Replies one visitor can send to one link in an hour; more get "too many tries". */
+export const REPLY_LIMIT_PER_HOUR = 5;
+
+/** Wrong passwords one visitor can try on one Protected link in an hour. */
+export const PASSWORD_LIMIT_PER_HOUR = 10;
+
+/** How long a browser keeps a Protected invitation open once its password is typed. */
+export const UNLOCK_DAYS = 30;

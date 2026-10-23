@@ -182,6 +182,8 @@ export interface DashboardEvent {
   dataDeleted: boolean;
   /** Cancelled by the host: the reply form is closed and the invitation shows their message instead. */
   cancelled?: boolean;
+  /** The host's message to guests, which the invitation page shows once cancelled. */
+  cancelMessage?: string;
   /** The printable's last exported settings; missing until the first export. */
   print?: PrintSettings;
   /** The card's version when read; a save sends it back, so a newer save elsewhere is noticed. */
