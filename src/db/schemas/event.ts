@@ -6,7 +6,7 @@ import {
   TITLE_MAX,
   TITLE_MIN,
 } from "@/db/limits";
-import { isReservedSlug, SLUG_MAX, SLUG_MIN, SLUG_PATTERN } from "@/lib/slug";
+import { isValidSlug } from "@/lib/slug";
 import {
   countSchema,
   dateSchema,
@@ -25,12 +25,7 @@ export const eventKindSchema = z.enum(EVENT_KINDS);
 
 export const visibilitySchema = z.enum(["hidden", "public", "protected"]);
 
-export const slugSchema = z
-  .string()
-  .min(SLUG_MIN)
-  .max(SLUG_MAX)
-  .regex(SLUG_PATTERN)
-  .refine((slug) => !isReservedSlug(slug), "Taken by an app route");
+export const slugSchema = z.string().refine(isValidSlug, "Not a valid link");
 
 export const questionScopeSchema = z.enum(["person", "reply"]);
 

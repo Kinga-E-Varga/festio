@@ -567,7 +567,7 @@ Work steps 1–5 left open, in the order to build them. Load one at a time
      real data exists by then.
    - Doesn't help guests replying at the same second: every reply writes the event card's
      counts, so they queue either way.
-3. **To do — step-4 cleanup** (`chore/`; found by the step-4 review; tidy-ups, not bugs):
+3. **Done (`chore: step-4 cleanup`) — step-4 cleanup** (`chore/`; found by the step-4 review; tidy-ups, not bugs):
    - The two invitation editors (`HostInvitationEditor`, `ModularEditor`) copy the same save
      flow (version, busy guard, save confirm, error toast): one shared hook.
    - "A request that failed becomes `failed` and an error toast" is written in 6–7 client
@@ -579,12 +579,19 @@ Work steps 1–5 left open, in the order to build them. Load one at a time
    - "The card exists ? parse it : missing" is written in five places (`writes/event.ts`,
      `writes/invitation.ts`, `writes/guest-reply.ts`, `seatedIdsOf` and `guestListOf` in
      `writes/counts.ts`): one `parseSnap(schema, snapshot)` in `src/db/reads/parse.ts`.
-4. **To do — Unknown and Duplicate tags in the latest replies** (after item 1, so each
+4. **To do — dashboard-wide button and field styles** (`chore/`; found by the step-4
+   cleanup's simplify review). `event-editor/styles.ts` is in practice the dashboard's shared
+   form styles: about 20 files outside `event-editor/` import its `BUTTON`, `BTN_*` and
+   `INPUT` (guest list, modular, auth, print, invitation, `SaveConfirm`, `TodoBoard`), and
+   `guest-list/styles.ts` builds on it. The styling rule says a bundle used outside its
+   folder moves up to `src/components/dashboard/styles.ts`. Move the shared ones there and
+   point every import at it; what only the event editor uses stays.
+5. **To do — Unknown and Duplicate tags in the latest replies** (after item 1, so each
    event's list is one read), worked out live. They need each event's guest list and all its
    replies, and the feed loads on every dashboard page, so: reuse `loadGuests` where it's
    already read, work the tags out only where the feed shows, and only for the events left
    in the feed.
-5. **To do — every time rule on the event's own clock** (`fix/`, any time, or with step 8).
+6. **To do — every time rule on the event's own clock** (`fix/`, any time, or with step 8).
    Replies closing, the date lock and the deletion date (`replyClose`, `defaultReplyClose`,
    `dateLocked`, `deletionDate` in `src/lib/event.ts`) use the server's clock, not the
    event's `timeZone`. Today only the countdown's "today" and the save's date lock

@@ -5,7 +5,7 @@ import {
 } from "firebase-admin/firestore";
 import { db } from "@/db/admin";
 import { paths } from "@/db/paths";
-import { parseCard } from "@/db/reads/parse";
+import { parseSnap } from "@/db/reads/parse";
 import { rateLimitSchema, type RateLimitDoc } from "@/db/schemas/rate-limit";
 import { PASSWORD_LIMIT_PER_HOUR } from "@/lib/config";
 import { HOUR_MS } from "@/lib/event";
@@ -37,9 +37,7 @@ export async function readAttempts(
   tx: Transaction,
   limit: Limit,
 ): Promise<number> {
-  const snap = await tx.get(limit.ref);
-  if (!snap.exists) return 0;
-  return parseCard(rateLimitSchema, limit.ref.path, snap.data())?.count ?? 0;
+  return parseSnap(rateLimitSchema, await tx.get(limit.ref))?.count ?? 0;
 }
 
 /** Counts one more try. The card goes (TTL on `expiresAt`) when its hour ends. */

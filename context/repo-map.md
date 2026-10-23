@@ -77,6 +77,7 @@ Two folders: `simple/` (basic invitations) and `modular/` (custom invitations). 
 - `RsvpPanel.tsx` / `RsvpForm.tsx` / `useRsvpForm.ts` — guest RSVP.
 - `InviteNotice.tsx` — a guest page in the invitation's look standing in for it: `PasswordGate.tsx` (Protected), `CancelledNotice.tsx` (cancelled).
 - `ScaledStage.tsx` — scales the invitation to its container.
+- `useInvitationSave.ts` — Save for both invitation editors: the confirm, one save at a time, the version, the toast.
 - `PanelTabs.tsx` — the Design / Content / Replies tabs (`TABS`, `useTabViews` for the strip), shared by both invitation editors.
 - `PanelSwitch.tsx` — the side panel's on/off switch; `Switch`, the switch alone (`md`, or `sm` on Content's head bars).
 - `styles.ts`, `icons.tsx` — local to invitations.
@@ -128,6 +129,7 @@ Host actions go through `host-save.ts` (`hostSave`: signed in, the card's schema
 | `picked-event.ts`    | The event the nav is on: `PICKED_EVENT_COOKIE` (read in the dashboard layout), `toPickerEvent`, `resolvePicked`, `writePickedEvent` — the one place it is written                                                                                                                                                                                                   |
 | `packages.ts`        | `PACKAGES` (prices, what each unlocks), `nextPackage`. A saved event is always paid for: no unpaid or draft state (drafts live on the device)                                                                                                                                                                                                                       |
 | `firebase-client.ts` | `clientAuth()` — the browser's Firebase Auth, in memory, on the emulator in dev. Sign-in only; never import `@/db/admin` in the browser                                                                                                                                                                                                                             |
+| `action.ts`          | `orFailed(request)` — a Server Action's result, or `failed` when the request itself got no answer (offline)                                                                                                                                                                                                                                                         |
 | `id.ts`              | `newId()` — a random UUID; falls back to `getRandomValues` where `crypto.randomUUID` is missing (pages not on HTTPS or localhost, e.g. a phone on the dev server)                                                                                                                                                                                                   |
 
 ## Database — `src/db/` and `seed/`

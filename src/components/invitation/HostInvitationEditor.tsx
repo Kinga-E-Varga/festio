@@ -7,9 +7,7 @@ import {
   useMessages,
   useTranslations,
 } from "next-intl";
-import { type ReactNode, Suspense, useRef, useState } from "react";
-import { saveInvitation } from "@/actions/invitation";
-import { useSaveConfirm } from "@/components/dashboard/SaveConfirm";
+import { type ReactNode, Suspense, useState } from "react";
 import { useToast } from "@/components/dashboard/Toast";
 import type { CardOpening } from "@/components/envelope/card";
 import { cardValues } from "@/lib/invitation";
@@ -21,6 +19,7 @@ import { EditPanel } from "./EditPanel";
 import { EditorFrame } from "./EditorFrame";
 import { useTabViews, type PanelTabId } from "./PanelTabs";
 import { Invitation } from "./Invitation";
+import { useInvitationSave } from "./useInvitationSave";
 
 interface HostInvitationEditorProps {
   template: InvitationTemplate;
@@ -55,7 +54,6 @@ export function HostInvitationEditor({
   saving,
 }: HostInvitationEditorProps) {
   const t = useTranslations("HostEditor");
-  const tError = useTranslations("SaveErrors");
   const hostLocale = useLocale();
   const hostMessages = useMessages();
   const [values, setValues] = useState(initial);
@@ -65,19 +63,11 @@ export function HostInvitationEditor({
   const [tab, setTab] = useState<PanelTabId>("content");
   const [envelope, setEnvelope] = useState(initialEnvelope);
   const [savedEnvelope, setSavedEnvelope] = useState(initialEnvelope);
-  /* The card's version this editor last saw: sent with each save. */
-  const [version, setVersion] = useState(saving?.version ?? 0);
-  /* A save is out: the ref is the instant guard, the state turns Save off. */
-  const busy = useRef(false);
-  const [sending, setSending] = useState(false);
   /* Not saved: only to compare the two ways out while they are tried. */
   const [opening, setOpening] = useState<CardOpening>("rise");
   const toast = useToast();
   const views = useTabViews();
-  const confirm = useSaveConfirm(
-    saving?.visibility ?? "hidden",
-    saving?.replied ?? 0,
-  );
+  const { save, sending, dialog } = useInvitationSave(saving, toast);
 
   function change(id: string, value: string) {
     setValues((current) => ({ ...current, [id]: value }));
@@ -85,46 +75,6 @@ export function HostInvitationEditor({
 
   function switchEnvelope(on: boolean) {
     setEnvelope(on);
-  }
-
-  function keep(nextValues: TemplateValues, nextEnvelope: boolean) {
-    setSaved(nextValues);
-    setSavedEnvelope(nextEnvelope);
-    toast.show(t("saved"));
-  }
-
-  function save() {
-    if (!saving) {
-      keep(values, envelope);
-      return;
-    }
-    if (busy.current) return;
-    /* What is sent is what gets marked saved, even if the host types on meanwhile. */
-    const sent = { values, envelope };
-    confirm.ask(async () => {
-      if (busy.current) return;
-      busy.current = true;
-      setSending(true);
-      try {
-        const result = await saveInvitation(saving.eventId, {
-          kind: "simple",
-          ...sent,
-          version,
-        });
-        if (!result.success) {
-          toast.show(tError(result.error), "error");
-          return;
-        }
-        setVersion(result.data.version);
-        keep(sent.values, sent.envelope);
-      } catch {
-        /* The request itself failed, e.g. offline. */
-        toast.show(tError("failed"), "error");
-      } finally {
-        busy.current = false;
-        setSending(false);
-      }
-    });
   }
 
   const dirty =
@@ -194,7 +144,15 @@ export function HostInvitationEditor({
           setEditing(true);
         }}
         onClose={() => setEditing(false)}
-        action={{ kind: "save", dirty: dirty && !sending, onSave: save }}
+        action={{
+          kind: "save",
+          dirty: dirty && !sending,
+          onSave: () =>
+            save({ kind: "simple", values, envelope }, () => {
+              setSaved(values);
+              setSavedEnvelope(envelope);
+            }),
+        }}
         toast={toast}
       >
         {guestMessages ? (
@@ -205,7 +163,7 @@ export function HostInvitationEditor({
           invitation
         )}
       </EditorFrame>
-      {confirm.dialog}
+      {dialog}
     </>
   );
 }

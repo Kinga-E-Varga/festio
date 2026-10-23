@@ -1,7 +1,7 @@
 import { Timestamp } from "firebase-admin/firestore";
 import { db } from "@/db/admin";
 import { paths } from "@/db/paths";
-import { parseCard } from "@/db/reads/parse";
+import { parseSnap } from "@/db/reads/parse";
 import { eventSchema } from "@/db/schemas/event";
 import type {
   GuestPersonInput,
@@ -69,9 +69,7 @@ export async function writeGuestReply(
       tx.get(newReply),
     ]);
     if (existing.exists) return;
-    const doc = snap.exists
-      ? parseCard(eventSchema, ref.path, snap.data())
-      : null;
+    const doc = parseSnap(eventSchema, snap);
     if (
       !doc ||
       doc.dataDeleted ||

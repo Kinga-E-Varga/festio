@@ -2,7 +2,7 @@ import { cache } from "react";
 import { connection } from "next/server";
 import { db } from "@/db/admin";
 import { paths } from "@/db/paths";
-import { parseCard } from "@/db/reads/parse";
+import { parseSnap } from "@/db/reads/parse";
 import { invitationSchema, type InvitationDoc } from "@/db/schemas/invitation";
 import type { Language } from "@/lib/language";
 import type { DashboardEvent } from "@/types/dashboard";
@@ -22,10 +22,8 @@ import type {
 export const loadInvitation = cache(
   async (event: DashboardEvent): Promise<InvitationDoc | null> => {
     await connection();
-    const path = paths.invitation(event.id);
-    const snapshot = await db.doc(path).get();
-    if (!snapshot.exists) return null;
-    return parseCard(invitationSchema, path, snapshot.data());
+    const snapshot = await db.doc(paths.invitation(event.id)).get();
+    return parseSnap(invitationSchema, snapshot);
   },
 );
 

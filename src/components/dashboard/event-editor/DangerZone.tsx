@@ -18,6 +18,7 @@ import { ButtonIcon } from "@/components/icons";
 import { useState, type ReactNode } from "react";
 import type { HostLogin } from "@/db/reads/host";
 import { useRouter } from "@/i18n/navigation";
+import { orFailed } from "@/lib/action";
 import { GUEST_DATA_RETENTION_DAYS } from "@/lib/config";
 import { deletionDate, formatEventDate, isPast } from "@/lib/event";
 import type { DashboardEvent, IconName } from "@/types/dashboard";
@@ -109,10 +110,7 @@ export function DangerZone({ event, login, onAction }: DangerZoneProps) {
   /** Reopens the event, no password; its outcome as a toast. */
   async function reopen() {
     setBusy(true);
-    const result = await reopenEvent(event.id).catch(() => ({
-      success: false as const,
-      error: "failed" as const,
-    }));
+    const result = await orFailed(reopenEvent(event.id));
     setBusy(false);
     onAction(
       result.success ? t("reopened") : tError(result.error),

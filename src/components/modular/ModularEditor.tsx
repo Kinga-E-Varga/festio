@@ -9,8 +9,6 @@ import {
   useRef,
   useState,
 } from "react";
-import { saveInvitation } from "@/actions/invitation";
-import { useSaveConfirm } from "@/components/dashboard/SaveConfirm";
 import { useToast } from "@/components/dashboard/Toast";
 import { envelopeGround } from "@/components/envelope/colors";
 import { EditorFrame } from "@/components/invitation/EditorFrame";
@@ -18,6 +16,7 @@ import {
   useTabViews,
   type PanelTabId,
 } from "@/components/invitation/PanelTabs";
+import { useInvitationSave } from "@/components/invitation/useInvitationSave";
 import { eventPath } from "@/lib/event";
 import type { Language } from "@/lib/language";
 import { useLeaveWarning } from "@/lib/leave-warning";
@@ -105,16 +104,10 @@ export function ModularEditor({
   saving,
 }: ModularEditorProps) {
   const t = useTranslations("HostEditor");
-  const tError = useTranslations("SaveErrors");
   /* Closed on arrival: the host sees the invitation first and opens the panel from the strip. */
   const [editing, setEditing] = useState(false);
   const [state, setState] = useState(initial);
   const [saved, setSaved] = useState(initial);
-  /* The card's version this editor last saw: sent with each save. */
-  const [version, setVersion] = useState(saving?.version ?? 0);
-  /* A save is out: the ref is the instant guard, the state turns Save off. */
-  const busy = useRef(false);
-  const [sending, setSending] = useState(false);
   /* Not stored: only which template the Design tab shows as current. */
   const [template, setTemplate] = useState(templateId);
   const views = useTabViews();
@@ -127,10 +120,7 @@ export function ModularEditor({
   const [showErrors, setShowErrors] = useState(false);
   const toast = useToast();
   const showToast = toast.show;
-  const confirm = useSaveConfirm(
-    saving?.visibility ?? "hidden",
-    saving?.replied ?? 0,
-  );
+  const { save: send, sending, dialog } = useInvitationSave(saving, toast);
   /*
    * The preview draws a deferred copy of the state: typing in the panel
    * stays quick, and the invitation catches up as soon as React is free.
@@ -197,39 +187,7 @@ export function ModularEditor({
       return;
     }
     setShowErrors(false);
-    if (!saving) {
-      setSaved(state);
-      toast.show(t("saved"));
-      return;
-    }
-    if (busy.current) return;
-    /* What is sent is what gets marked saved, even if the host edits on meanwhile. */
-    const sent = state;
-    confirm.ask(async () => {
-      if (busy.current) return;
-      busy.current = true;
-      setSending(true);
-      try {
-        const result = await saveInvitation(saving.eventId, {
-          kind: "modular",
-          ...sent,
-          version,
-        });
-        if (!result.success) {
-          toast.show(tError(result.error), "error");
-          return;
-        }
-        setVersion(result.data.version);
-        setSaved(sent);
-        toast.show(t("saved"));
-      } catch {
-        /* The request itself failed, e.g. offline. */
-        toast.show(tError("failed"), "error");
-      } finally {
-        busy.current = false;
-        setSending(false);
-      }
-    });
+    send({ kind: "modular", ...state }, () => setSaved(state));
   }
 
   function pickTemplate(id: string) {
@@ -375,7 +333,7 @@ export function ModularEditor({
           />
         </div>
       </EditorFrame>
-      {confirm.dialog}
+      {dialog}
     </>
   );
 }

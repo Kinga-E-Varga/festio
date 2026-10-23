@@ -7,7 +7,7 @@ import {
 } from "firebase-admin/firestore";
 import { db } from "@/db/admin";
 import { paths } from "@/db/paths";
-import { parseCard } from "@/db/reads/parse";
+import { parseSnap } from "@/db/reads/parse";
 import {
   eventSchema,
   type EventDoc,
@@ -47,9 +47,7 @@ export async function readOwnEvent(
 }
 
 function ownedCard(snap: DocumentSnapshot, hostId: string): EventDoc {
-  const doc = snap.exists
-    ? parseCard(eventSchema, snap.ref.path, snap.data())
-    : null;
+  const doc = parseSnap(eventSchema, snap);
   if (!doc || doc.hostId !== hostId) throw new SaveRefused("notFound");
   if (doc.dataDeleted) throw new SaveRefused("notAllowed");
   return doc;

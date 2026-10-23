@@ -34,7 +34,7 @@ export class SaveRefused extends Error {
  * between. A card not written yet counts as version 0.
  */
 export function expectVersion(
-  stored: { version: number } | undefined,
+  stored: { version: number } | null | undefined,
   expected: number,
 ): void {
   if ((stored?.version ?? 0) !== expected) throw new SaveRefused("stale");

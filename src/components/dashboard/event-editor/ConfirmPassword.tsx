@@ -6,6 +6,7 @@ import type { UseFormRegisterReturn } from "react-hook-form";
 import { ERROR, INPUT } from "@/components/dashboard/event-editor/styles";
 import type { HostLogin } from "@/db/reads/host";
 import type { SaveError } from "@/db/writes/save";
+import { orFailed } from "@/lib/action";
 import { confirmIdentity } from "@/lib/reauth";
 import type { ActionResult } from "@/types/actions";
 
@@ -50,12 +51,7 @@ export function useConfirmIdentity(
     setWrong(false);
     setBusy(true);
     const idToken = await signInAgain(password);
-    const result = idToken
-      ? await action(idToken).catch(() => ({
-          success: false as const,
-          error: "failed" as const,
-        }))
-      : null;
+    const result = idToken ? await orFailed(action(idToken)) : null;
     /* Done, it stays busy: the page moves on (Home, or the cancelled row). */
     if (result?.success) return true;
     setBusy(false);

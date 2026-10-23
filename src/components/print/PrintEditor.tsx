@@ -3,6 +3,7 @@
 import { useTranslations } from "next-intl";
 import { type CSSProperties, useState } from "react";
 import { savePrintSettings } from "@/actions/event";
+import { orFailed } from "@/lib/action";
 import { useToast } from "@/components/dashboard/Toast";
 import { EditorFrame } from "@/components/invitation/EditorFrame";
 import { printVars, templateFontVars } from "@/lib/invitation";
@@ -94,17 +95,12 @@ export function PrintEditor({
   const toast = useToast();
 
   async function exportPrint() {
-    try {
-      const result = await savePrintSettings(eventId, settings);
-      if (!result.success) {
-        toast.show(tError(result.error), "error");
-        return;
-      }
-      toast.show(t("exported"));
-    } catch {
-      /* The request itself failed, e.g. offline. */
-      toast.show(tError("failed"), "error");
+    const result = await orFailed(savePrintSettings(eventId, settings));
+    if (!result.success) {
+      toast.show(tError(result.error), "error");
+      return;
     }
+    toast.show(t("exported"));
   }
 
   function change<Key extends keyof PrintSettings>(

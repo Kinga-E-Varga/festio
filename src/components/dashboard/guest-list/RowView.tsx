@@ -1,6 +1,5 @@
 "use client";
 
-import { BTN_PRIMARY } from "@/components/dashboard/event-editor/styles";
 import { useLocale, useTranslations } from "next-intl";
 import { type MouseEvent, useState } from "react";
 import { SUCCESS_DARK, WARNING_DARK } from "@/components/dashboard/styles";
@@ -13,7 +12,6 @@ import {
   ALERT,
   ATTENTION_TAG,
   fold,
-  GUEST_BTN_DANGER,
   ICON_BTN,
   ICON_BTN_DANGER,
   SMALL_BTN_WARN,
@@ -24,6 +22,7 @@ import {
   STATUS_FILL,
 } from "@/components/dashboard/guest-list/styles";
 import type { GuestActions } from "@/components/dashboard/guest-list/useGuestActions";
+import { DeleteConfirm } from "@/components/dashboard/guest-list/DeleteConfirm";
 import { UnknownFix } from "@/components/dashboard/guest-list/UnknownFix";
 import { Icon, FoldChevron } from "@/components/icons";
 import { rowName, showsUnknown } from "@/lib/guests";
@@ -314,24 +313,12 @@ export function RowView({
       ) : null}
 
       {confirming === "delete" ? (
-        <div
-          role="alert"
-          className="flex flex-wrap items-center gap-2.5 pb-2 meta-face text-danger-800"
-        >
-          <span className="mr-auto">{t("deleteConfirm", { name })}</span>
-          <div className="flex shrink-0 gap-2.5">
-            <button
-              type="button"
-              onClick={() => setConfirming(null)}
-              className={BTN_PRIMARY}
-            >
-              {t("cancel")}
-            </button>
-            <button type="button" onClick={remove} className={GUEST_BTN_DANGER}>
-              {t("delete")}
-            </button>
-          </div>
-        </div>
+        <DeleteConfirm
+          message={t("deleteConfirm", { name })}
+          keepLabel={t("cancel")}
+          onKeep={() => setConfirming(null)}
+          onDelete={remove}
+        />
       ) : null}
 
       {/* Can't be undone, so it asks first. */}

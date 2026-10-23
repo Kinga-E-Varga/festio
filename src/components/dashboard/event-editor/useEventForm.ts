@@ -14,13 +14,14 @@ import {
   toDateTimeLocal,
 } from "@/lib/event";
 import { PASSWORD_PATTERN, TITLE_MIN } from "@/db/limits";
+import { orFailed } from "@/lib/action";
 import type { Language } from "@/lib/language";
 import {
   isReservedSlug,
+  isValidSlug,
   normalizeSlug,
   SLUG_MAX,
   SLUG_MIN,
-  SLUG_PATTERN,
   slugSuggestions,
 } from "@/lib/slug";
 import type { DashboardEvent, EventKind, Visibility } from "@/types/dashboard";
@@ -191,12 +192,7 @@ export function useEventForm(event: DashboardEvent) {
   }
 
   /* Only a new, well-formed link is worth asking about. */
-  const checkLink =
-    cleanSlug !== original.slug &&
-    cleanSlug.length >= SLUG_MIN &&
-    cleanSlug.length <= SLUG_MAX &&
-    SLUG_PATTERN.test(cleanSlug) &&
-    !isReservedSlug(cleanSlug);
+  const checkLink = cleanSlug !== original.slug && isValidSlug(cleanSlug);
 
   useEffect(() => {
     if (!checkLink) return;
@@ -253,8 +249,8 @@ export function useEventForm(event: DashboardEvent) {
   async function save() {
     const values = getValues();
     setSaving(true);
-    try {
-      const result = await saveEventSettings(event.id, {
+    const result = await orFailed(
+      saveEventSettings(event.id, {
         title: values.title,
         kind: values.kind,
         language: values.language,
@@ -266,19 +262,15 @@ export function useEventForm(event: DashboardEvent) {
         expectedGuests: Number.parseInt(values.expected, 10),
         preloaded: values.preloaded,
         version,
-      });
-      if (result.success) {
-        reset(values);
-        setVersion(result.data.version);
-        setAcknowledged(NONE_ACKNOWLEDGED);
-      }
-      return result;
-    } catch {
-      /* The request itself failed, e.g. offline. */
-      return { success: false, error: "failed" } as const;
-    } finally {
-      setSaving(false);
+      }),
+    );
+    setSaving(false);
+    if (result.success) {
+      reset(values);
+      setVersion(result.data.version);
+      setAcknowledged(NONE_ACKNOWLEDGED);
     }
+    return result;
   }
 
   /** Back to the last saved values, every warning forgotten. */

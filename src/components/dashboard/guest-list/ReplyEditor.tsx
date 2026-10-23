@@ -3,6 +3,7 @@
 import { useLocale, useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 import { useFieldArray, useForm, useWatch } from "react-hook-form";
+import { DeleteConfirm } from "@/components/dashboard/guest-list/DeleteConfirm";
 import {
   NameField,
   PersonFields,
@@ -20,9 +21,7 @@ import {
   replyValues,
   sharedQuestions,
 } from "@/components/dashboard/guest-list/replyValues";
-import { BTN_PRIMARY } from "@/components/dashboard/event-editor/styles";
 import {
-  GUEST_BTN_DANGER,
   ICON_BTN_EDITOR,
   SMALL_BTN_EDITOR,
 } from "@/components/dashboard/guest-list/styles";
@@ -222,33 +221,16 @@ function DeleteReply({ names, onDelete }: DeleteReplyProps) {
   return (
     <div className="border-t border-neutral-200 pt-4">
       {confirming ? (
-        <div
-          role="alert"
-          className="flex flex-col gap-2.5 meta-face text-danger-800"
-        >
-          <span>
-            {t("deleteReplyConfirm", {
-              names: new Intl.ListFormat(locale).format(names),
-            })}
-          </span>
-          <div className="flex gap-2.5">
-            <button
-              type="button"
-              onClick={() => setConfirming(false)}
-              className={BTN_PRIMARY}
-            >
-              {/* Not "Cancel": the form's own Cancel sits right below. */}
-              {t("keepReply")}
-            </button>
-            <button
-              type="button"
-              onClick={onDelete}
-              className={GUEST_BTN_DANGER}
-            >
-              {t("delete")}
-            </button>
-          </div>
-        </div>
+        <DeleteConfirm
+          message={t("deleteReplyConfirm", {
+            names: new Intl.ListFormat(locale).format(names),
+          })}
+          /* Not "Cancel": the form's own Cancel sits right below. */
+          keepLabel={t("keepReply")}
+          onKeep={() => setConfirming(false)}
+          onDelete={onDelete}
+          stacked
+        />
       ) : (
         <button
           type="button"

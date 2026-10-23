@@ -1,6 +1,6 @@
 import { db } from "@/db/admin";
 import { paths } from "@/db/paths";
-import { parseCard } from "@/db/reads/parse";
+import { parseSnap } from "@/db/reads/parse";
 import type { EventDoc } from "@/db/schemas/event";
 import { invitationSchema, type InvitationDoc } from "@/db/schemas/invitation";
 import { ownEvent } from "@/db/writes/event";
@@ -24,9 +24,7 @@ export async function writeInvitation(
       tx.get(ref),
     ]);
     const input = await fit(event);
-    const stored = snap.exists
-      ? (parseCard(invitationSchema, ref.path, snap.data()) ?? undefined)
-      : undefined;
+    const stored = parseSnap(invitationSchema, snap);
     expectVersion(stored, input.version);
 
     const version = (stored?.version ?? 0) + 1;

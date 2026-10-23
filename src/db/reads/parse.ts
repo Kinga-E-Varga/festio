@@ -26,3 +26,11 @@ export function parseCards<T>(
     return card ? [{ ...card, id: doc.id }] : [];
   });
 }
+
+/** A read card checked against its schema, or null when it is missing or fails. */
+export function parseSnap<T>(
+  schema: z.ZodType<T>,
+  snap: { exists: boolean; ref: { path: string }; data(): unknown },
+): T | null {
+  return snap.exists ? parseCard(schema, snap.ref.path, snap.data()) : null;
+}

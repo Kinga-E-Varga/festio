@@ -4,6 +4,7 @@ import { useLocale } from "next-intl";
 import { useRef, useState } from "react";
 import { saveGuestChanges, saveGuestListOn } from "@/actions/guests";
 import type { SaveError } from "@/db/writes/save";
+import { orFailed } from "@/lib/action";
 import {
   buildRows,
   countRows,
@@ -53,9 +54,6 @@ export function useGuestList(
     setSaving(true);
     try {
       return await run();
-    } catch {
-      fail("failed");
-      return false;
     } finally {
       busy.current = false;
       setSaving(false);
@@ -70,7 +68,7 @@ export function useGuestList(
     const next = recipe(before);
     const changes = guestChanges(before, next);
     if (!hasChanges(changes)) return true;
-    const result = await saveGuestChanges(eventId, changes);
+    const result = await orFailed(saveGuestChanges(eventId, changes));
     if (!result.success) {
       fail(result.error);
       return false;
@@ -87,7 +85,7 @@ export function useGuestList(
   /** The list switch, saved as the event's own before it shows. */
   function switchList(on: boolean): Promise<boolean> {
     return once(async () => {
-      const result = await saveGuestListOn(eventId, on);
+      const result = await orFailed(saveGuestListOn(eventId, on));
       if (!result.success) {
         fail(result.error);
         return false;

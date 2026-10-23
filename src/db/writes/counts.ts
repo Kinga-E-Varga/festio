@@ -1,7 +1,7 @@
 import type { DocumentSnapshot, Transaction } from "firebase-admin/firestore";
 import { db } from "@/db/admin";
 import { paths } from "@/db/paths";
-import { parseCard, parseCards } from "@/db/reads/parse";
+import { parseCards, parseSnap } from "@/db/reads/parse";
 import { eventSchema, type EventDoc } from "@/db/schemas/event";
 import { guestListSchema, type GuestListDoc } from "@/db/schemas/guest-list";
 import { replySchema } from "@/db/schemas/reply";
@@ -25,18 +25,13 @@ export interface CountInputs {
 
 /** Who has a seat, from the seating chart's card (missing = nobody). */
 function seatedIdsOf(seating: DocumentSnapshot): string[] {
-  const chart = seating.exists
-    ? parseCard(seatingSchema, seating.ref.path, seating.data())
-    : null;
+  const chart = parseSnap(seatingSchema, seating);
   return Object.keys(chart?.seats ?? {});
 }
 
 /** The list card, or an empty list at version 0 while it is missing. */
 export function guestListOf(list: DocumentSnapshot): GuestListDoc {
-  const card = list.exists
-    ? parseCard(guestListSchema, list.ref.path, list.data())
-    : null;
-  return card ?? { names: [], version: 0 };
+  return parseSnap(guestListSchema, list) ?? { names: [], version: 0 };
 }
 
 /**
@@ -234,8 +229,7 @@ export async function repairCounts(
     ref.get(),
     db.doc(paths.seating(eventId)).get(),
   ]);
-  if (!snap.exists) return;
-  const event = parseCard(eventSchema, ref.path, snap.data());
+  const event = parseSnap(eventSchema, snap);
   if (!event) return;
   const quick = countRows(
     { ...loaded, seatedIds: seatedIdsOf(seating) },
@@ -244,9 +238,7 @@ export async function repairCounts(
   if (sameCounts(quick, event.counts)) return;
 
   await db.runTransaction(async (tx) => {
-    const fresh = await tx.get(ref);
-    if (!fresh.exists) return;
-    const current = parseCard(eventSchema, ref.path, fresh.data());
+    const current = parseSnap(eventSchema, await tx.get(ref));
     if (!current) return;
     const counts = countsOf(await readCountInputs(tx, eventId), current);
     if (!sameCounts(counts, current.counts)) tx.update(ref, { counts });

@@ -47,6 +47,16 @@ export function isReservedSlug(slug: string): boolean {
   return RESERVED_SLUGS.includes(slug);
 }
 
+/** A link a host may take: the right length and shape, and not an app route. */
+export function isValidSlug(slug: string): boolean {
+  return (
+    slug.length >= SLUG_MIN &&
+    slug.length <= SLUG_MAX &&
+    SLUG_PATTERN.test(slug) &&
+    !isReservedSlug(slug)
+  );
+}
+
 /**
  * Alternatives for a slug someone already has: the event's year first, then a
  * counter. Only ones that still fit and aren't reserved; whether each is free
