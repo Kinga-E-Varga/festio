@@ -85,6 +85,9 @@ export type GuestRow =
     }
   | { kind: "waiting"; id: string; listName: ListName };
 
+/** A flag on a reply needing the host: a name not on the list, or one an earlier reply sent. */
+export type AttentionTag = "unknown" | "duplicate";
+
 /** The table's blocks, in the order they show. */
 export type GuestCategory = "attention" | "going" | "notGoing" | "waiting";
 

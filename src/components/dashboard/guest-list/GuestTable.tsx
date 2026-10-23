@@ -4,11 +4,11 @@ import { useLocale, useTranslations } from "next-intl";
 import { type ReactNode, useId, useState } from "react";
 import { STATUS_KEY } from "@/components/dashboard/guest-list/labels";
 import {
-  ATTENTION_TAG,
   fold,
   SMALL_BTN,
   STATUS_FILL,
 } from "@/components/dashboard/guest-list/styles";
+import { AttentionTag } from "@/components/dashboard/AttentionTag";
 import { Dialog } from "@/components/dashboard/Dialog";
 import { NameEditor } from "@/components/dashboard/guest-list/NameEditor";
 import { ReplyEditor } from "@/components/dashboard/guest-list/ReplyEditor";
@@ -296,7 +296,7 @@ function AttentionCard({ item, list, actions, editor }: AttentionCardProps) {
       >
         <div className="flex min-h-10 flex-wrap items-center gap-2 py-1">
           <span className="min-w-0 truncate name-text">{item.name}</span>
-          <span className={ATTENTION_TAG}>{t("duplicateTag")}</span>
+          <AttentionTag tag="duplicate" />
         </div>
       </Strand>
       <p className="pb-2 muted-text">

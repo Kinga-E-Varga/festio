@@ -1,6 +1,12 @@
 import { useLocale, useTranslations } from "next-intl";
+import { Fragment } from "react";
 import { formatRelative } from "@/lib/event";
-import { BOX_ROW, SUCCESS_DARK } from "@/components/dashboard/styles";
+import { AttentionTag } from "@/components/dashboard/AttentionTag";
+import {
+  BOX_ROW,
+  DANGER_DARK,
+  SUCCESS_DARK,
+} from "@/components/dashboard/styles";
 import type { RsvpActivity } from "@/types/dashboard";
 
 /**
@@ -33,7 +39,9 @@ export function RepliesList({
         >
           <span
             aria-hidden="true"
-            className={`grid size-6 shrink-0 place-items-center wide:size-7 rounded-full border text-[10px] font-semibold ${SUCCESS_DARK}`}
+            className={`grid size-6 shrink-0 place-items-center wide:size-7 rounded-full border text-[10px] font-semibold ${
+              entry.tags.length > 0 ? DANGER_DARK : SUCCESS_DARK
+            }`}
           >
             {entry.initials}
           </span>
@@ -45,6 +53,15 @@ export function RepliesList({
                 actor: entry.actor ?? "",
                 b: (chunks) => <span className="strong-text">{chunks}</span>,
               })}
+              {entry.tags.map((tag) => (
+                <Fragment key={tag}>
+                  {" "}
+                  <AttentionTag
+                    tag={tag}
+                    className="inline-block align-[1px]"
+                  />
+                </Fragment>
+              ))}
             </p>
             <p className="mt-0.5 hint-text">
               {[

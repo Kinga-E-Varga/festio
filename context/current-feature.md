@@ -1,4 +1,4 @@
-# Current Feature: Dashboard-wide button and field styles
+# Current Feature: Unknown and Duplicate tags in the latest replies
 
 ## Status
 
@@ -6,30 +6,34 @@ Completed
 
 ## Goals
 
-- **Shared form styles live in `src/components/dashboard/styles.ts`.** Every bundle in
-  `src/components/dashboard/event-editor/styles.ts` that is used outside `event-editor/`
-  moves up: `FIELD`, `INPUT`, `ERROR`, `SOFT_BTN`, `SOFT_ACTION_SHAPE`, `SOFT_ACTION`,
-  `SOFT_OUTLINE`, `SOFT_PICK`, `BUTTON`, `BTN_PRIMARY`, `BTN_GHOST_LIGHT`, `MINI`, `SUBBOX`,
-  `BANNER_TITLE`, `BANNER_TONE` (with its `BannerTone` type).
-- **Only the event editor's own styles stay** in `event-editor/styles.ts`: `BTN_DANGER`,
-  `INSET_INPUT`, `BANNER_ICON`. They import what they build on from the shared file.
-- **Every import points at the right file.** The ~21 files outside `event-editor/` that
-  import `event-editor/styles` (guest list, modular, auth, print, invitation, `SaveConfirm`,
-  `TodoBoard`, …) import from `@/components/dashboard/styles` instead. `guest-list/styles.ts`
-  builds on the shared file. No file outside `event-editor/` imports `event-editor/styles`.
-- **Nothing looks different.** Each value moves as it is; no class changes.
+- A guest's reply in the latest replies shows an **Unknown** tag when its name isn't on the
+  event's pre-loaded guest list, and a **Duplicate** tag when the same name already replied.
+  Same rules as the guest list page (`buildRows`, `showsUnknown` in `src/lib/guests.ts`), so
+  the two can never disagree.
+- Both places that show the feed get the tags: the dashboard's side panel (all events,
+  `loadRecentReplies` via `loadDashboard`) and an event's Overview (`RepliesBox`).
+- Tags are worked out live, never stored.
+- Cheap: the feed loads on every dashboard page, so
+  - work the tags out only for the events left in the feed after the cut to `LATEST_REPLIES`;
+  - reuse `loadGuests` where it is already read in the request (the Overview page,
+    `waitingCounts`), since it is in React `cache()`;
+- The tag looks like the guest list's tag (`TAG`, danger colours), worded in all three
+  languages (`messages/{en,ro,hu}.json`).
 
 ## Notes
 
-- Source: `context/features/pending/database.md`, Do later item 4 (found by the step-4
-  cleanup's simplify review).
-- Branch: `chore/dashboard-form-styles`.
-- The rule: `context/coding-standards.md` → Styling, "a bundle lives in the `styles.ts` of
-  the folder that uses it; used outside that folder, it moves up to the shared one".
-- Re-check the outside-use list against the code when starting; the counts above are from
-  a grep on 2026-10-23.
-- Check in the browser: event settings, guest list, an invitation editor, print, sign-in —
-  each looks as before. Then `npm run build`.
-- Update `context/map/dashboard.md` if it names where these styles live.
-- At `/feature complete`: mark item 4 in `database.md` as `Done (<commit message>)`.
+- Source: `context/features/pending/database.md`, Do later item 5. At `/feature complete`,
+  change its `To do` to `Done (<commit message>)`.
+- Today `toActivity` (`src/db/reads/activity.ts`) notes the Unknown tag is left out because
+  the lists don't read the guest list. The mock had `tag?: "UNKNOWN"` on `RsvpActivity` and
+  an `unknownTag` label in `RepliesList`, removed in `febd7d8` (step 2 reads) — a starting
+  point for the markup.
+- Decided: host-added replies (phone RSVPs) get tags too, as on the guest list.
+- Decided: a reply for several people is tagged if any of its names is Unknown / Duplicate.
+- Duplicate goes on the later reply only (`row.later`): the one that repeats an earlier name.
+- `loadGuests` reads the list card even for an event with no pre-loaded list (one small
+  card); kept so the cached read is shared.
+- The tag styles (`TAG_TEXT`, `TAG_PAD`, `TAG`, `ATTENTION_TAG`) moved from
+  `guest-list/styles.ts` to the dashboard's `styles.ts`, now used outside the guest list.
+- Archived events have no replies left, so nothing to tag.
 - Simplify: ran 2026-10-23

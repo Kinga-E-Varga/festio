@@ -10,6 +10,7 @@ import { toDateTimeLocal } from "@/lib/event";
 import type {
   AnswerValue,
   AttentionItem,
+  AttentionTag,
   EventGuests,
   GuestCategory,
   GuestCounts,
@@ -261,6 +262,18 @@ export function needsAttention(row: GuestRow): boolean {
 /** The Unknown tag and its fixes wait until an identical name is told apart. */
 export function showsUnknown(row: GuestRow): boolean {
   return row.kind === "reply" && row.unlisted && !row.identical;
+}
+
+/**
+ * A reply's tags from its people's rows: Unknown as the rows show it,
+ * Duplicate on a name an earlier reply already sent.
+ */
+export function replyTags(people: GuestRow[]): AttentionTag[] {
+  const tags: AttentionTag[] = [];
+  if (people.some(showsUnknown)) tags.push("unknown");
+  if (people.some((row) => row.kind === "reply" && row.later))
+    tags.push("duplicate");
+  return tags;
 }
 
 export const CATEGORIES: GuestCategory[] = [

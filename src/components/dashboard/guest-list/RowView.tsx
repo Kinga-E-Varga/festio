@@ -2,7 +2,13 @@
 
 import { useLocale, useTranslations } from "next-intl";
 import { type MouseEvent, useState } from "react";
-import { SUCCESS_DARK, WARNING_DARK } from "@/components/dashboard/styles";
+import {
+  SUCCESS_DARK,
+  TAG,
+  TAG_PAD,
+  TAG_TEXT,
+  WARNING_DARK,
+} from "@/components/dashboard/styles";
 import {
   AGE_KEY,
   DIET_KEY,
@@ -10,18 +16,15 @@ import {
 } from "@/components/dashboard/guest-list/labels";
 import {
   ALERT,
-  ATTENTION_TAG,
   fold,
   ICON_BTN,
   ICON_BTN_DANGER,
   SMALL_BTN_WARN,
   SMALL_BTN_WARN_SOLID,
-  TAG,
-  TAG_PAD,
-  TAG_TEXT,
   STATUS_FILL,
 } from "@/components/dashboard/guest-list/styles";
 import type { GuestActions } from "@/components/dashboard/guest-list/useGuestActions";
+import { AttentionTag } from "@/components/dashboard/AttentionTag";
 import { DeleteConfirm } from "@/components/dashboard/guest-list/DeleteConfirm";
 import { UnknownFix } from "@/components/dashboard/guest-list/UnknownFix";
 import { Icon, FoldChevron } from "@/components/icons";
@@ -186,9 +189,7 @@ export function RowView({
               </button>
             ) : null}
           </span>
-          {unknown ? (
-            <span className={ATTENTION_TAG}>{t("unknownTag")}</span>
-          ) : null}
+          {unknown ? <AttentionTag tag="unknown" /> : null}
         </div>
 
         {row.kind === "reply" ? (

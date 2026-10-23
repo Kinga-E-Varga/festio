@@ -1,8 +1,8 @@
 import { useTranslations } from "next-intl";
-import { TAG } from "@/components/dashboard/guest-list/styles";
 import {
   NEUTRAL_SOFT,
   SUCCESS_SOFT,
+  TAG,
   WARNING_SOFT,
 } from "@/components/dashboard/styles";
 import type { EventStatus } from "@/types/dashboard";

@@ -6,9 +6,9 @@ import {
 } from "@/components/dashboard/overview/InvitationPreview";
 import { eventTodos } from "@/components/dashboard/notices";
 import { loadRecentReplies } from "@/db/reads/activity";
-import { loadGuests } from "@/db/reads/guests";
+import { loadGuestRows, loadGuests } from "@/db/reads/guests";
 import { loadInvitation, modularStart } from "@/db/reads/invitation";
-import { buildRows, countRows } from "@/lib/guests";
+import { countRows } from "@/lib/guests";
 import { cardValues, invitationValues } from "@/lib/invitation";
 import { loadLibrary } from "@/modular";
 import { loadTemplate } from "@/templates";
@@ -60,12 +60,13 @@ async function invitationPreview(event: DashboardEvent) {
 
 export default async function EventOverviewPage({ params }: Props) {
   const event = await openEvent((await params).id);
-  const [guests, latest, preview] = await Promise.all([
+  const [guests, rows, latest, preview] = await Promise.all([
     loadGuests(event),
+    loadGuestRows(event),
     loadRecentReplies([event], LATEST),
     invitationPreview(event),
   ]);
-  const { waiting } = countRows(buildRows(guests, event.preloaded));
+  const { waiting } = countRows(rows);
 
   return (
     <EventOverview

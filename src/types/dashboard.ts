@@ -2,7 +2,7 @@ import type { z } from "zod";
 import type { packageSchema } from "@/db/schemas/common";
 import type { eventKindSchema, visibilitySchema } from "@/db/schemas/event";
 import type { Language } from "@/lib/language";
-import type { GuestQuestion } from "@/types/guests";
+import type { AttentionTag, GuestQuestion } from "@/types/guests";
 import type { PrintSettings } from "@/types/print";
 
 export type IconName =
@@ -240,6 +240,8 @@ export interface RsvpActivity {
   event: string;
   /** Anything worth knowing about the reply, as keys into `Activity`. */
   details?: Message[];
+  /** What the guest list flags on its people, as it does there. */
+  tags: AttentionTag[];
   /** When it happened, counted back from now. */
   when: TimeSpan;
 }

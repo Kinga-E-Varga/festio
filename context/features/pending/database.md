@@ -586,7 +586,7 @@ Work steps 1–5 left open, in the order to build them. Load one at a time
    `guest-list/styles.ts` builds on it. The styling rule says a bundle used outside its
    folder moves up to `src/components/dashboard/styles.ts`. Move the shared ones there and
    point every import at it; what only the event editor uses stays.
-5. **To do — Unknown and Duplicate tags in the latest replies** (after item 1, so each
+5. **Done (`feat: unknown and duplicate tags in the latest replies`) — Unknown and Duplicate tags in the latest replies** (after item 1, so each
    event's list is one read), worked out live. They need each event's guest list and all its
    replies, and the feed loads on every dashboard page, so: reuse `loadGuests` where it's
    already read, work the tags out only where the feed shows, and only for the events left

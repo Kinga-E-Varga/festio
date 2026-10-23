@@ -1,5 +1,4 @@
 import {
-  DANGER_DARK,
   WARNING_DARK,
   BUTTON,
   SOFT_BTN,
@@ -23,21 +22,6 @@ export const SMALL_BTN_WARN_SOLID = `${SMALL_BTN_SHAPE} border-warning-700 bg-wa
 /** The unsaved-changes bar's pair, in one ink: Keep editing filled in the light warning, Discard as its words alone (the edge kept clear, so both stand the same size). */
 export const SMALL_BTN_KEEP = `${SMALL_BTN_SHAPE} border-warning-300 bg-warning-300 text-warning-800 hover:border-warning-400 hover:bg-warning-400 hover:text-warning-900`;
 export const SMALL_BTN_DISCARD = `${SMALL_BTN_SHAPE} border-transparent text-warning-800 hover:text-warning-950`;
-
-/**
- * A tag's words: its own whole-pixel line, so every tag is 18px tall wherever
- * it sits and its edges land on whole pixels. The letter spacing also trails
- * the last letter; an indent as wide puts the same before the first, so the
- * words sit centred.
- */
-export const TAG_TEXT =
-  "text-[10px] leading-[14px] font-semibold tracking-[0.12em] indent-[0.12em] whitespace-nowrap uppercase";
-/** Their padding inside the tag's 1px border. */
-export const TAG_PAD = "px-1.5 py-px";
-/** A small flag: Unknown, Duplicate beside a name, a reply's Coming / Not coming, a waiting name's invite. */
-export const TAG = `rounded-ui border ${TAG_PAD} ${TAG_TEXT}`;
-/** Unknown and Duplicate: the tags that mark a reply needing attention. */
-export const ATTENTION_TAG = `${TAG} ${DANGER_DARK}`;
 
 /** A reply's status as a dot's fill: the Confirmed and Declined cards' own colours. */
 export const STATUS_FILL = {

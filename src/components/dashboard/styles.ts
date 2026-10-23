@@ -24,6 +24,21 @@ export const INFO_DARK = "border-info-700/50 bg-info-100 text-info-700";
 /** The danger colouring (Unknown and Duplicate tags, the danger zone): the dark warning's shades in brick, its fill and ink a step darker. */
 export const DANGER_DARK = "border-danger-800/50 bg-danger-150 text-danger-800";
 
+/**
+ * A tag's words: its own whole-pixel line, so every tag is 18px tall wherever
+ * it sits and its edges land on whole pixels. The letter spacing also trails
+ * the last letter; an indent as wide puts the same before the first, so the
+ * words sit centred.
+ */
+export const TAG_TEXT =
+  "text-[10px] leading-[14px] font-semibold tracking-[0.12em] indent-[0.12em] whitespace-nowrap uppercase";
+/** Their padding inside the tag's 1px border. */
+export const TAG_PAD = "px-1.5 py-px";
+/** A small flag: Unknown, Duplicate beside a name or in the latest replies, a reply's Coming / Not coming, a waiting name's invite. */
+export const TAG = `rounded-ui border ${TAG_PAD} ${TAG_TEXT}`;
+/** Unknown and Duplicate: the tags that mark a reply needing attention. */
+export const ATTENTION_TAG = `${TAG} ${DANGER_DARK}`;
+
 /** A text link without its colour, for a link coloured by what it acts on. Size is the caller's. */
 export const TEXT_LINK_SHAPE =
   "font-semibold underline-offset-[3px] transition-colors hover:underline";

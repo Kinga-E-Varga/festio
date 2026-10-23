@@ -3,9 +3,9 @@ import type { BarData } from "@/components/dashboard/BarActions";
 import { hostNotices, needsWaiting } from "@/components/dashboard/notices";
 import { loadRecentReplies, newReplyCount } from "@/db/reads/activity";
 import { loadHostEvents } from "@/db/reads/events";
-import { loadGuests } from "@/db/reads/guests";
+import { loadGuestRows } from "@/db/reads/guests";
 import { loadHost, type Host } from "@/db/reads/host";
-import { buildRows, countRows } from "@/lib/guests";
+import { countRows } from "@/lib/guests";
 import type {
   AttentionNotice,
   DashboardEvent,
@@ -33,8 +33,7 @@ async function waitingCounts(
 ): Promise<Record<string, number>> {
   const counted = await Promise.all(
     events.filter(needsWaiting).map(async (event) => {
-      const rows = buildRows(await loadGuests(event), event.preloaded);
-      return [event.id, countRows(rows).waiting] as const;
+      return [event.id, countRows(await loadGuestRows(event)).waiting] as const;
     }),
   );
   return Object.fromEntries(counted);

@@ -2,12 +2,14 @@ import { Timestamp } from "firebase-admin/firestore";
 import { connection } from "next/server";
 import { db } from "@/db/admin";
 import { paths } from "@/db/paths";
+import { loadGuestRows } from "@/db/reads/guests";
 import { parseCards } from "@/db/reads/parse";
 import { replySchema } from "@/db/schemas/reply";
 import { initials } from "@/db/reads/host";
-import type { StoredReply } from "@/lib/guests";
+import { replyTags, type StoredReply } from "@/lib/guests";
 import { isArchived, shortTitle, spanFrom } from "@/lib/event";
 import type { DashboardEvent, Message, RsvpActivity } from "@/types/dashboard";
+import type { AttentionTag } from "@/types/guests";
 
 /** The needs the latest replies name, by their key in `Activity`. */
 const NAMED_DIETS = ["vegetarian", "glutenFree"] as const;
@@ -25,13 +27,11 @@ function details(reply: StoredReply): Message[] {
   ];
 }
 
-/**
- * One reply as the latest replies read it. The Unknown tag is left out: it
- * needs the event's guest list, which these lists don't read.
- */
+/** One reply as the latest replies read it. */
 function toActivity(
   reply: StoredReply,
   event: DashboardEvent,
+  tags: AttentionTag[],
   now: Date,
 ): RsvpActivity {
   const [first] = reply.people;
@@ -40,6 +40,7 @@ function toActivity(
     eventId: event.id,
     event: shortTitle(event),
     when: spanFrom(now, reply.sentAt.toDate()),
+    tags,
   };
   /* Added by the host: the sentence names "you", and the guest as its subject. */
   if (reply.createdBy === "host") {
@@ -90,7 +91,8 @@ export async function newReplyCount(
 
 /**
  * The newest replies across these events, newest first: `limit` from each
- * event, then cut to `limit` in all. Archived events have none left.
+ * event, then cut to `limit` in all. Archived events have none left. Only the
+ * events still in the list read their guest list, for the tags.
  */
 export async function loadRecentReplies(
   events: DashboardEvent[],
@@ -109,13 +111,23 @@ export async function loadRecentReplies(
           .get();
         return parseCards(replySchema, snapshot.docs).map((reply) => ({
           at: reply.sentAt.toDate().getTime(),
-          entry: toActivity(reply, event, now),
+          reply,
+          event,
         }));
       }),
   );
-  return lists
+  const latest = lists
     .flat()
     .sort((first, second) => second.at - first.at)
-    .slice(0, limit)
-    .map(({ entry }) => entry);
+    .slice(0, limit);
+  /* Each event's rows are built once (`loadGuestRows`), however many of its replies show. */
+  return Promise.all(
+    latest.map(async ({ reply, event }) => {
+      const ids = new Set(reply.people.map((person) => person.id));
+      const people = (await loadGuestRows(event)).filter((row) =>
+        ids.has(row.id),
+      );
+      return toActivity(reply, event, replyTags(people), now);
+    }),
+  );
 }
