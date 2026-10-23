@@ -14,7 +14,6 @@ export function useListDraft(list: ListName[]) {
       id: newId(),
       name,
       sent: false,
-      version: 0,
     }));
     setAdded((current) => [...current, ...batch]);
   }

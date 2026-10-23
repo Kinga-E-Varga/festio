@@ -75,13 +75,7 @@ export function useGuestList(
       fail(result.error);
       return false;
     }
-    const { versions } = result.data;
-    saved.current = {
-      ...next,
-      list: next.list.map((name) =>
-        name.id in versions ? { ...name, version: versions[name.id] } : name,
-      ),
-    };
+    saved.current = { ...next, listVersion: result.data.listVersion };
     setGuests(saved.current);
     return true;
   }

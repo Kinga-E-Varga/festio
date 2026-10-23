@@ -1,4 +1,5 @@
 import type { EventDoc } from "@/db/schemas/event";
+import type { ListName } from "@/types/guests";
 import type { InvitationDoc } from "@/db/schemas/invitation";
 import type { SeatingDoc } from "@/db/schemas/seating";
 import { DEFAULT_DATE_FORMAT } from "@/lib/invitation";
@@ -8,7 +9,6 @@ import {
   dayFromNow,
   households,
   partyReply,
-  type SeedName,
   type SeedReply,
 } from "./build";
 
@@ -23,7 +23,7 @@ export interface SeedEvent {
   event: Omit<EventDoc, "hostId" | "counts" | "version" | "createdAt">;
   invitation?: InvitationDoc;
   replies: SeedReply[];
-  guestList: SeedName[];
+  guestList: ListName[];
   /** Seats as person ID → table ID; `index.ts` copies the names in. */
   seating?: Omit<SeatingDoc, "seats"> & { seats: Record<string, string> };
 }

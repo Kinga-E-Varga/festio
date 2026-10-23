@@ -3,23 +3,32 @@ import { connection } from "next/server";
 import { db } from "@/db/admin";
 import { paths } from "@/db/paths";
 import { parseCards } from "@/db/reads/parse";
-import { guestListNameSchema } from "@/db/schemas/guest-list";
+import type { GuestListDoc } from "@/db/schemas/guest-list";
 import { replySchema } from "@/db/schemas/reply";
+import { guestListOf } from "@/db/writes/counts";
 import { toGuestReplies } from "@/lib/guests";
 import type { DashboardEvent } from "@/types/dashboard";
-import type { EventGuests, ListName } from "@/types/guests";
+import type { EventGuests } from "@/types/guests";
+
+/** The event's pre-loaded names, one card; missing = none yet, at version 0. Once per request per event. */
+export const readGuestList = cache(
+  async (eventId: string): Promise<GuestListDoc> => {
+    await connection();
+    return guestListOf(await db.doc(paths.guestList(eventId)).get());
+  },
+);
 
 /** The event's replies, oldest first, and its pre-loaded names; once per request per event. */
 const readGuests = cache(
   async (eventId: string): Promise<Omit<EventGuests, "questions">> => {
     await connection();
-    const [replies, names] = await Promise.all([
+    const [replies, list] = await Promise.all([
       db.collection(paths.replies(eventId)).orderBy("sentAt").get(),
-      db.collection(paths.guestList(eventId)).get(),
+      readGuestList(eventId),
     ]);
-    const list: ListName[] = parseCards(guestListNameSchema, names.docs);
     return {
-      list,
+      list: list.names,
+      listVersion: list.version,
       replies: toGuestReplies(parseCards(replySchema, replies.docs)),
     };
   },

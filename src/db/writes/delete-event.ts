@@ -18,7 +18,7 @@ function eventParts(eventId: string) {
   return [
     db.doc(paths.invitation(eventId)).parent,
     db.collection(paths.replies(eventId)),
-    db.collection(paths.guestList(eventId)),
+    db.doc(paths.guestList(eventId)).parent,
     db.doc(paths.seating(eventId)).parent,
   ];
 }

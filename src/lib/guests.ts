@@ -4,6 +4,7 @@
  * script (the seed) can load this file.
  */
 import type { EventDoc } from "@/db/schemas/event";
+import type { GuestChanges, ReplyInput } from "@/db/schemas/guest-changes";
 import type { ReplyDoc } from "@/db/schemas/reply";
 import { toDateTimeLocal } from "@/lib/event";
 import type {
@@ -11,7 +12,6 @@ import type {
   AttentionItem,
   EventGuests,
   GuestCategory,
-  GuestChanges,
   GuestCounts,
   GuestGroup,
   GuestQuestion,
@@ -21,7 +21,6 @@ import type {
   ListName,
   NameRepeat,
   QuestionTally,
-  ReplyInput,
 } from "@/types/guests";
 
 /** A reply card with the ID it is saved under. */
@@ -106,9 +105,10 @@ export function fromGuestReplies(
 }
 
 /**
- * What a guest-list edit changed, as the save sends it: the reply cards and
- * list names that are new or differ, and the ones gone. A new card whose
- * people all came from one card (Separate from group) names it in `from`.
+ * What a guest-list edit changed, as the save sends it: the reply cards that
+ * are new or differ and the ones gone, and the whole list if any name
+ * changed. A new card whose people all came from one card (Separate from
+ * group) names it in `from`.
  */
 export function guestChanges(
   before: EventGuests,
@@ -138,22 +138,13 @@ export function guestChanges(
   });
   const kept = new Set(cards.map((card) => card.id));
 
-  const names = new Map(before.list.map((name) => [name.id, name]));
-  const listed = new Set(after.list.map((name) => name.id));
+  const listChanged =
+    JSON.stringify(before.list) !== JSON.stringify(after.list);
   return {
     replies: { put, remove: [...old.keys()].filter((id) => !kept.has(id)) },
-    list: {
-      put: after.list.flatMap((name): GuestChanges["list"]["put"] => {
-        const was = names.get(name.id);
-        if (!was) return [{ ...name, isNew: true }];
-        return was.name !== name.name || was.sent !== name.sent
-          ? [{ ...name, isNew: false }]
-          : [];
-      }),
-      remove: before.list.flatMap(({ id, version }) =>
-        listed.has(id) ? [] : [{ id, version }],
-      ),
-    },
+    list: listChanged
+      ? { names: after.list, version: before.listVersion }
+      : null,
   };
 }
 
@@ -162,8 +153,7 @@ export function hasChanges(changes: GuestChanges): boolean {
   return (
     changes.replies.put.length > 0 ||
     changes.replies.remove.length > 0 ||
-    changes.list.put.length > 0 ||
-    changes.list.remove.length > 0
+    changes.list !== null
   );
 }
 
@@ -225,7 +215,10 @@ function markIdentical(rows: GuestRow[]): GuestRow[] {
  * is unlisted; a name nobody claimed is Waiting. Replies claim in reply
  * order, so a later reply with the same name finds its name taken.
  */
-export function buildRows(guests: EventGuests, useList: boolean): GuestRow[] {
+export function buildRows(
+  guests: Pick<EventGuests, "list" | "replies" | "questions">,
+  useList: boolean,
+): GuestRow[] {
   if (!useList)
     return markIdentical(guests.replies.map((reply) => replyRow(reply, false)));
 
@@ -540,10 +533,7 @@ export function addReplyToList(
   if (!reply) return guests;
   const added = {
     ...guests,
-    list: [
-      ...guests.list,
-      { id: newId, name: reply.name, sent: true, version: 0 },
-    ],
+    list: [...guests.list, { id: newId, name: reply.name, sent: true }],
   };
   return updateReply(added, replyId, { listNameId: newId });
 }

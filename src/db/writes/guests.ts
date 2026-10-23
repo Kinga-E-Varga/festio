@@ -1,64 +1,11 @@
 import { Timestamp } from "firebase-admin/firestore";
-import { z } from "zod";
 import { db } from "@/db/admin";
 import { paths } from "@/db/paths";
-import { idSchema, versionSchema } from "@/db/schemas/common";
-import { guestListNameSchema } from "@/db/schemas/guest-list";
-import { replySchema } from "@/db/schemas/reply";
+import type { GuestChanges } from "@/db/schemas/guest-changes";
 import { countsAfter, countsOf, readCountInputs } from "@/db/writes/counts";
 import { ownEvent } from "@/db/writes/event";
 import { expectVersion, SaveRefused } from "@/db/writes/save";
 import type { StoredReply } from "@/lib/guests";
-import type { GuestChanges, ListName } from "@/types/guests";
-
-/** A reply card as the host sends it: the server sets when, by whom and the edit time. */
-const replyInputSchema = replySchema
-  .omit({ sentAt: true, createdBy: true, editedAt: true })
-  .extend({ id: idSchema, isNew: z.boolean(), from: idSchema.optional() });
-
-const listNameInputSchema = guestListNameSchema.extend({
-  id: idSchema,
-  isNew: z.boolean(),
-});
-
-/** One guest-list save, checked before anything is read. */
-export const guestChangesSchema = z.object({
-  replies: z.object({
-    put: z.array(replyInputSchema),
-    remove: z.array(idSchema),
-  }),
-  list: z.object({
-    put: z.array(listNameInputSchema),
-    remove: z.array(z.object({ id: idSchema, version: versionSchema })),
-  }),
-});
-
-/**
- * The names to save, each at its next version. A new one must not exist
- * yet; any other must still be there, at the version the page read.
- * Otherwise another device got there first.
- */
-function checkNames(
-  list: GuestChanges["list"],
-  names: Map<string, ListName>,
-): ListName[] {
-  for (const { id, isNew, version } of list.put) {
-    const card = names.get(id);
-    if (isNew ? card : !card) throw new SaveRefused("stale");
-    if (card) expectVersion(card, version);
-  }
-  for (const { id, version } of list.remove) {
-    const card = names.get(id);
-    if (!card) throw new SaveRefused("stale");
-    expectVersion(card, version);
-  }
-  return list.put.map(({ id, name, sent }) => ({
-    id,
-    name,
-    sent,
-    version: (names.get(id)?.version ?? 0) + 1,
-  }));
-}
 
 /**
  * The reply cards to write. Replies keep when they came in and who sent
@@ -93,23 +40,26 @@ function replyCards(
 
 /**
  * Saves the host's guest-list changes and recounts the event, in one
- * transaction. Names are saved from the version the page read; reply cards
+ * transaction. The list is saved from the version the page read; reply cards
  * have none, the last save wins. The host can always add replies: no cap.
- * Returns each saved name's new version.
+ * Returns the list's version after the save.
  */
 export async function writeGuestChanges(
   hostId: string,
   eventId: string,
   changes: GuestChanges,
   now: Date,
-): Promise<{ versions: Record<string, number> }> {
+): Promise<{ listVersion: number }> {
   return db.runTransaction(async (tx) => {
     const { ref, doc } = await ownEvent(tx, hostId, eventId);
     const inputs = await readCountInputs(tx, eventId);
-    const names = checkNames(
-      changes.list,
-      new Map(inputs.list.map((name) => [name.id, name])),
-    );
+    /* The list is saved whole, from the version the page read: otherwise another device got there first. */
+    if (changes.list)
+      expectVersion({ version: inputs.listVersion }, changes.list.version);
+    const list = changes.list && {
+      names: changes.list.names,
+      version: inputs.listVersion + 1,
+    };
     const replies = replyCards(
       changes.replies,
       new Map(inputs.replies.map((reply) => [reply.id, reply])),
@@ -121,29 +71,16 @@ export async function writeGuestChanges(
       tx.set(db.doc(paths.reply(eventId, id)), card);
     for (const id of changes.replies.remove)
       tx.delete(db.doc(paths.reply(eventId, id)));
-    for (const { id, ...card } of names)
-      tx.set(db.doc(paths.listName(eventId, id)), card);
-    for (const { id } of changes.list.remove)
-      tx.delete(db.doc(paths.listName(eventId, id)));
+    if (list) tx.set(db.doc(paths.guestList(eventId)), list);
 
     const counts = countsAfter(
-      inputs,
-      {
-        replies: { put: replies, remove: changes.replies.remove },
-        list: {
-          put: names,
-          remove: changes.list.remove.map(({ id }) => id),
-        },
-      },
+      { ...inputs, list: list?.names ?? inputs.list },
+      { put: replies, remove: changes.replies.remove },
       doc,
     );
     tx.update(ref, { counts });
 
-    return {
-      versions: Object.fromEntries(
-        names.map(({ id, version }) => [id, version]),
-      ),
-    };
+    return { listVersion: list?.version ?? inputs.listVersion };
   });
 }
 

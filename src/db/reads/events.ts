@@ -7,6 +7,7 @@ import { slugDocSchema } from "@/db/schemas/slug";
 import { SLUG_PATTERN } from "@/lib/slug";
 import { requireHostId } from "@/db/reads/session";
 import { parseCard } from "@/db/reads/parse";
+import { readGuestList } from "@/db/reads/guests";
 import { replyClose, spanBetween, spanFrom, todayIn } from "@/lib/event";
 import { PACKAGES } from "@/lib/packages";
 import type { DashboardEvent } from "@/types/dashboard";
@@ -96,9 +97,7 @@ export const loadEventBySlug = cache(
   },
 );
 
-/** How many names the host pre-loaded, counted by Firestore, not read. */
+/** How many names the host pre-loaded. */
 export async function guestListCount(event: DashboardEvent): Promise<number> {
-  await connection();
-  const snapshot = await db.collection(paths.guestList(event.id)).count().get();
-  return snapshot.data().count;
+  return (await readGuestList(event.id)).names.length;
 }

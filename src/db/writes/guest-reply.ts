@@ -109,11 +109,7 @@ export async function writeGuestReply(
 
     tx.set(replyRef, card);
     tx.update(ref, {
-      counts: countsAfter(
-        inputs,
-        { replies: { put: [reply], remove: [] } },
-        doc,
-      ),
+      counts: countsAfter(inputs, { put: [reply], remove: [] }, doc),
     });
     countAttempt(tx, limit, attempts, now);
   });

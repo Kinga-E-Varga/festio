@@ -3,19 +3,18 @@
 import { z } from "zod";
 import {
   guestChangesSchema,
-  setGuestListOn,
-  writeGuestChanges,
-} from "@/db/writes/guests";
+  type GuestChanges,
+} from "@/db/schemas/guest-changes";
+import { setGuestListOn, writeGuestChanges } from "@/db/writes/guests";
 import type { SaveError } from "@/db/writes/save";
 import { hostSave } from "@/actions/host-save";
 import type { ActionResult } from "@/types/actions";
-import type { GuestChanges } from "@/types/guests";
 
-/** Saves the guest list's changes; on success, each saved name's new version. */
+/** Saves the guest list's changes; on success, the list's version after it. */
 export async function saveGuestChanges(
   eventId: string,
   changes: GuestChanges,
-): Promise<ActionResult<{ versions: Record<string, number> }, SaveError>> {
+): Promise<ActionResult<{ listVersion: number }, SaveError>> {
   return hostSave(guestChangesSchema, changes, (hostId, data) =>
     writeGuestChanges(hostId, eventId, data, new Date()),
   );

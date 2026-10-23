@@ -2,7 +2,7 @@ import { Timestamp, type BulkWriter } from "firebase-admin/firestore";
 import { auth, db, USE_EMULATORS } from "@/db/admin";
 import { paths } from "@/db/paths";
 import { eventSchema, type EventDoc } from "@/db/schemas/event";
-import { guestListNameSchema } from "@/db/schemas/guest-list";
+import { guestListSchema } from "@/db/schemas/guest-list";
 import { invitationSchema } from "@/db/schemas/invitation";
 import { paymentSchema, type PaymentDoc } from "@/db/schemas/payment";
 import { replySchema } from "@/db/schemas/reply";
@@ -62,7 +62,7 @@ function counts(seed: SeedEvent): EventDoc["counts"] {
   return countsOf(
     {
       replies: seed.replies,
-      list: seed.guestList.map((name) => ({ ...name, version: 0 })),
+      list: seed.guestList,
       seatedIds: Object.keys(seed.seating?.seats ?? {}),
     },
     seed.event,
@@ -152,9 +152,9 @@ function seedEvent(writer: BulkWriter, seed: SeedEvent) {
   for (const { id, ...reply } of seed.replies) {
     writer.set(db.doc(paths.reply(seed.id, id)), replySchema.parse(reply));
   }
-  for (const { id, ...name } of seed.guestList) {
-    const card = guestListNameSchema.parse({ ...name, version: 0 });
-    writer.set(db.doc(paths.listName(seed.id, id)), card);
+  if (seed.guestList.length > 0) {
+    const list = guestListSchema.parse({ names: seed.guestList, version: 0 });
+    writer.set(db.doc(paths.guestList(seed.id)), list);
   }
   const chart = seating(seed);
   if (chart) writer.set(db.doc(paths.seating(seed.id)), chart);

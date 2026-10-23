@@ -1,7 +1,7 @@
 # Database, hosting and environments
 
 The plan agreed in chat before connecting anything. Steps 1–5 are built: the app reads and
-saves to the local emulator (see Order). Fields and names are a sketch to build from, not a final
+saves to the local emulator (see Order); what they left open is under Do later. Fields and names are a sketch to build from, not a final
 schema. Each step still gets its own spec in `current-feature.md` when it's built.
 
 ## Platform
@@ -64,7 +64,8 @@ users/            one card per host
 events/           one card per event
   └ <event>
       replies/    one card per reply a guest (or the host) sends
-      guestList/  one card per name the host pre-loads
+      guestList/
+        └ names   every name the host pre-loads
       seating/
         └ chart   the whole seating chart
 slugs/            one card per link name, pointing to its event
@@ -122,7 +123,7 @@ list and are worked out.
 - **Safety net:** the guest list page loads every reply anyway, so it recounts and quietly
   fixes the counters if they've drifted.
 - **Planned soon:** a guest's reply adds only the difference it makes, read from the cards
-  that share a name with it, instead of recounting the whole event (see Order, step 5).
+  that share a name with it, instead of recounting the whole event (see Do later, item 2).
 
 **Protected password:** stored as it is (not hashed), because the host sees it in the share
 fields and it's printed on the card. It guards a page, not an account. Only the server ever
@@ -163,9 +164,10 @@ One guest fills in the form once → one card, with everyone they answered for i
 
 ### Guest list card
 
-One pre-loaded name: a permanent ID, the name, and whether the invitation was sent. Its ID
-lets it be seated before the guest replies; when a reply is matched to it, the seat carries
-over to that person.
+One card per event (`guestList/names`) holding every pre-loaded name, in the host's order,
+with one `version` for the whole list. Each name: a permanent ID, the name, and whether the
+invitation was sent. Its ID lets it be seated before the guest replies; when a reply is
+matched to it, the seat carries over to that person.
 
 ### User card
 
@@ -457,12 +459,8 @@ Steps 1–5 run fully on your machine; the first big handoff is step 6.
 2. **Reads.** Done: every page reads the emulator through `src/db/reads/`. An event with no
    invitation card opens on its template's own start; the Overview draws the invitation
    live; the latest replies come from the reply cards.
-   - **Fix next, on its own `fix/` branch:** the deletion date and the default reply close
-     add or take away 24-hour blocks (`DAY_MS`), so across a clock change they land an hour
-     off, on the day before (Majorat: "6 December, 23:00" instead of 7 December). Count
-     calendar days instead.
-   - **Later, with the time-zone work:** every time rule on the event's own clock
-     (`timeZone`), not the server's. Today only "today" for the countdown uses it.
+   - **Fixed (`fc2f96f`):** the deletion date and the default reply close count calendar
+     days (`addDays`), not 24-hour blocks, so a clock change no longer moves them an hour.
 3. **Auth.** Sign in and sign up (email + password, Google), the `users` card, and the one
    shared check every server action starts with: logged in, and it's their event.
    - Replace `DEV_HOST_ID` (`src/db/reads/host.ts`, the seed's host) with the signed-in one.
@@ -482,18 +480,6 @@ Steps 1–5 run fully on your machine; the first big handoff is step 6.
    save through Server Actions (`src/actions/` → `src/db/writes/`), with version numbers.
    The counters have one function (`countsOf`, `src/db/writes/counts.ts`), shared with the
    seed. Drafts live on the device; the guest list edits a reply whole (one status).
-   - **Cleanup, any time, on its own `chore/` branch** (found by the step-4 review; tidy-ups,
-     not bugs):
-     - The two invitation editors (`HostInvitationEditor`, `ModularEditor`) copy the same
-       save flow (version, busy guard, save confirm, error toast): one shared hook.
-     - "A request that failed becomes `failed` and an error toast" is written in 6–7 client
-       places (editors, Danger zone, print, guest list): one shared helper.
-     - The guest list's two delete confirms (row, Edit dialog) share their markup: one small
-       component.
-     - `GuestChanges` / `ReplyInput` (`src/types/guests.ts`) restate the save's Zod schema by
-       hand: move the schema to `src/db/schemas/` and derive the types from it.
-     - The event form's link check (`checkLink` in `useEventForm.ts`) repeats the slug rules:
-       one plain `isValidSlug` in `src/lib/slug.ts`, used by it and `slugSchema`.
 5. **Guest replies.** Done: the guest reply saves in one transaction (`writeGuestReply`:
    link, template, visibility, Protected cookie, closing time, 5 an hour per visitor, the
    cap, then the reply and the counters), saved once however often it's resent (the form
@@ -503,40 +489,9 @@ Steps 1–5 run fully on your machine; the first big handoff is step 6.
    inside each transaction. The guest list page recounts from the replies it loaded.
    - Decided: the guest list's saves keep comparing reply cards before and after
      (`guestChanges`). Switch to sending each action only if the comparing causes a real bug.
-   - **Later:** Unknown and Duplicate tags in the latest replies, worked out live. They need
-     each event's guest list and all its replies, and the feed loads on every dashboard page,
-     so: reuse `loadGuests` where it's already read, work the tags out only where the feed
-     shows, and only for the events left in the feed.
    - Who is waiting is worked out, not stored, so the dashboard reads the whole guest list
      of each active event whose form is closing. Fine at a few events; revisit only if it
      gets slow.
-   - **Next, on its own `chore/` branch: the guest list on one card.** Today each pre-loaded
-     name is its own card (`guestList/<id>`), so a guest's reply, the guest list page and the
-     dashboard read every name. Instead: one card (e.g. `guestList/names`) holding every name
-     with its permanent ID, name and sent flag. About 120 bytes a name, so roughly 8,000 fit
-     in a card's 1 MB. Seating and matching keep pointing at the IDs.
-     - One `version` for the whole list: two devices editing different names at once now get
-       "changed on another device" for the second save. Host-only, so rare.
-     - Touches the guest list schema and path, `readGuests`, `guestListCount`, the names
-       stage of `writeGuestChanges`, `readCountInputs`, the seed, and the guest list page's
-       per-name versions (they become one). No real data yet: a new seed, no script.
-   - **Soon after, on its own `chore/` branch: count only what a reply changes.** A guest's
-     reply recounts the whole event inside its transaction (`readCountInputs`: every reply,
-     the list, the seating chart). Names only affect cards with the same name, so:
-     - Each reply card stores its people's names normalized (`normalizeName`: case, accents,
-       spaces) as `nameKeys`; each list name the same.
-     - The reply's transaction reads only the replies whose `nameKeys` share one of the new
-       reply's (`array-contains-any`, at most 10 names a reply, under Firestore's 30), the
-       list names with those keys, any reply matched (`listNameId`) to those names, and the
-       seating chart. Coming / not coming just go up by the reply's people.
-     - It counts that small group with `countsOf` before and after the new reply and adds
-       the difference to the event's `counts`. Same function, so the two ways can't count
-       differently; the guest list page's recount (`repairCounts`) stays as the safety net.
-     - A data-shape change (new fields on reply and list cards, the seed, a one-off script
-       if real data exists by then). Best done after the one-card list, so the list part is
-       one read either way.
-     - Doesn't help guests replying at the same second: every reply writes the event card's
-       counts, so they queue either way.
 6. **`festio-dev`**, Firestore and Storage rules, and rules tests.
    - **Google on a password account:** the emulator can't produce
      `auth/account-exists-with-different-credential`. Check on the real project that it shows
@@ -567,3 +522,64 @@ Steps 1–5 run fully on your machine; the first big handoff is step 6.
     Hosting.
 11. **Payments**, once the Merchant of Record is chosen.
 12. **`festio-prod`** with backups and the manual release button, close to launch.
+
+## Do later
+
+Work steps 1–5 left open, in the order to build them. Load one at a time
+(`/feature load`), each on its own branch.
+
+**When one is finished** (at `/feature complete`), mark it here: change its `To do` to
+`Done (<commit message>)`, so this list never needs rechecking against the code.
+
+1. **Done (`chore: guest list on one card`) — the guest list on one card** (`chore/`). Today each pre-loaded name is its own
+   card (`guestList/<id>`), so a guest's reply, the guest list page and the dashboard read
+   every name. Instead: one card (e.g. `guestList/names`) holding every name with its
+   permanent ID, name and sent flag. About 120 bytes a name, so roughly 8,000 fit in a
+   card's 1 MB. Seating and matching keep pointing at the IDs.
+   - One `version` for the whole list: two devices editing different names at once now get
+     "changed on another device" for the second save. Host-only, so rare.
+   - Touches the guest list schema and path, `readGuests`, `guestListCount`, the names stage
+     of `writeGuestChanges`, `readCountInputs`, the seed, and the guest list page's per-name
+     versions (they become one). No real data yet: a new seed, no script.
+   - Also here, since the names part changes shape: `GuestChanges` / `ReplyInput`
+     (`src/types/guests.ts`) restate the save's Zod schema by hand. Move the schema to
+     `src/db/schemas/` and derive the types from it.
+2. **To do — count only what a reply changes** (`chore/`, after item 1, so the list part is
+   one read). A guest's reply recounts the whole event inside its transaction
+   (`readCountInputs`: every reply, the list, the seating chart). Names only affect cards
+   with the same name, so:
+   - Each reply card stores its people's names normalized (`normalizeName`: case, accents,
+     spaces) as `nameKeys`; each list name the same.
+   - The reply's transaction reads only the replies whose `nameKeys` share one of the new
+     reply's (`array-contains-any`, at most 10 names a reply, under Firestore's 30), the list
+     names with those keys, any reply matched (`listNameId`) to those names, and the seating
+     chart. Coming / not coming just go up by the reply's people.
+   - It counts that small group with `countsOf` before and after the new reply and adds the
+     difference to the event's `counts`. Same function, so the two ways can't count
+     differently; the guest list page's recount (`repairCounts`) stays as the safety net.
+   - A data-shape change: new fields on reply and list cards, the seed, a one-off script if
+     real data exists by then.
+   - Doesn't help guests replying at the same second: every reply writes the event card's
+     counts, so they queue either way.
+3. **To do — step-4 cleanup** (`chore/`; found by the step-4 review; tidy-ups, not bugs):
+   - The two invitation editors (`HostInvitationEditor`, `ModularEditor`) copy the same save
+     flow (version, busy guard, save confirm, error toast): one shared hook.
+   - "A request that failed becomes `failed` and an error toast" is written in 6–7 client
+     places (editors, Danger zone, print, guest list): one shared helper.
+   - The guest list's two delete confirms (`RowView`, `ReplyEditor`) share their markup: one
+     small component.
+   - The event form's link check (`checkLink` in `useEventForm.ts`) repeats the slug rules:
+     one plain `isValidSlug` in `src/lib/slug.ts`, used by it and `slugSchema`.
+   - "The card exists ? parse it : missing" is written in five places (`writes/event.ts`,
+     `writes/invitation.ts`, `writes/guest-reply.ts`, `seatedIdsOf` and `guestListOf` in
+     `writes/counts.ts`): one `parseSnap(schema, snapshot)` in `src/db/reads/parse.ts`.
+4. **To do — Unknown and Duplicate tags in the latest replies** (after item 1, so each
+   event's list is one read), worked out live. They need each event's guest list and all its
+   replies, and the feed loads on every dashboard page, so: reuse `loadGuests` where it's
+   already read, work the tags out only where the feed shows, and only for the events left
+   in the feed.
+5. **To do — every time rule on the event's own clock** (`fix/`, any time, or with step 8).
+   Replies closing, the date lock and the deletion date (`replyClose`, `defaultReplyClose`,
+   `dateLocked`, `deletionDate` in `src/lib/event.ts`) use the server's clock, not the
+   event's `timeZone`. Today only the countdown's "today" and the save's date lock
+   (`todayIn`) use it.
