@@ -1,10 +1,11 @@
-import { DANGER_DARK, WARNING_DARK } from "@/components/dashboard/styles";
 import {
+  DANGER_DARK,
+  WARNING_DARK,
   BUTTON,
   SOFT_BTN,
   SOFT_ACTION_SHAPE,
   SOFT_OUTLINE,
-} from "@/components/dashboard/event-editor/styles";
+} from "@/components/dashboard/styles";
 
 /** Guest-list controls, on top of the event editor's shared form styles. */
 

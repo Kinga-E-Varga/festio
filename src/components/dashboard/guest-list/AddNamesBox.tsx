@@ -6,11 +6,11 @@ import { UnsavedPrompt } from "@/components/dashboard/UnsavedPrompt";
 import { type ChangeEvent, useEffect, useRef, useState } from "react";
 import { useForm, useWatch } from "react-hook-form";
 import {
+  BOX_PAD,
   BTN_GHOST_LIGHT,
   BTN_PRIMARY,
   INPUT,
-} from "@/components/dashboard/event-editor/styles";
-import { BOX_PAD } from "@/components/dashboard/styles";
+} from "@/components/dashboard/styles";
 import { DraftNameList } from "@/components/dashboard/guest-list/DraftNameList";
 import {
   ALERT,

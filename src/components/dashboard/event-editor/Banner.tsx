@@ -1,11 +1,11 @@
 import type { ReactNode } from "react";
 import { Icon } from "@/components/icons";
+import { BANNER_ICON } from "@/components/dashboard/event-editor/styles";
 import {
-  BANNER_ICON,
   BANNER_TITLE,
   BANNER_TONE,
   type BannerTone,
-} from "@/components/dashboard/event-editor/styles";
+} from "@/components/dashboard/styles";
 import type { IconName } from "@/types/dashboard";
 
 interface BannerProps {

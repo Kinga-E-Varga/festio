@@ -579,7 +579,7 @@ Work steps 1–5 left open, in the order to build them. Load one at a time
    - "The card exists ? parse it : missing" is written in five places (`writes/event.ts`,
      `writes/invitation.ts`, `writes/guest-reply.ts`, `seatedIdsOf` and `guestListOf` in
      `writes/counts.ts`): one `parseSnap(schema, snapshot)` in `src/db/reads/parse.ts`.
-4. **To do — dashboard-wide button and field styles** (`chore/`; found by the step-4
+4. **Done (`chore: dashboard-wide button and field styles`) — dashboard-wide button and field styles** (`chore/`; found by the step-4
    cleanup's simplify review). `event-editor/styles.ts` is in practice the dashboard's shared
    form styles: about 20 files outside `event-editor/` import its `BUTTON`, `BTN_*` and
    `INPUT` (guest list, modular, auth, print, invitation, `SaveConfirm`, `TodoBoard`), and

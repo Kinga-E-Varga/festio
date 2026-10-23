@@ -3,9 +3,8 @@
 import { useTranslations } from "next-intl";
 import { useRef, useState } from "react";
 import { useDismiss } from "@/components/dashboard/event-nav/useDismiss";
-import { BTN_PRIMARY } from "@/components/dashboard/event-editor/styles";
 import { BTN_LIST_OUTLINE } from "@/components/dashboard/guest-list/styles";
-import { MENU_BOX } from "@/components/dashboard/styles";
+import { MENU_BOX, BTN_PRIMARY } from "@/components/dashboard/styles";
 import { ButtonIcon, FoldChevron } from "@/components/icons";
 
 interface GuestToolbarProps {

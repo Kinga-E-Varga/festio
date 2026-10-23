@@ -1,5 +1,5 @@
 import { useTranslations } from "next-intl";
-import { BTN_PRIMARY } from "@/components/dashboard/event-editor/styles";
+import { BTN_PRIMARY } from "@/components/dashboard/styles";
 import { GUEST_BTN_DANGER } from "@/components/dashboard/guest-list/styles";
 
 interface DeleteConfirmProps {

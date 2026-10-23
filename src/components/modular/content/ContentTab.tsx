@@ -2,7 +2,7 @@
 
 import { useLocale, useTranslations } from "next-intl";
 import { EditorHeading } from "@/components/dashboard/event-editor/EditorSection";
-import { SUBBOX } from "@/components/dashboard/event-editor/styles";
+import { SUBBOX } from "@/components/dashboard/styles";
 import { pad } from "@/lib/event";
 import { localized, type Language } from "@/lib/language";
 import type {

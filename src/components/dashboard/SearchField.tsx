@@ -1,6 +1,6 @@
 "use client";
 
-import { INPUT } from "@/components/dashboard/event-editor/styles";
+import { INPUT } from "@/components/dashboard/styles";
 import { SearchClear } from "@/components/dashboard/SearchClear";
 import { Icon } from "@/components/icons";
 

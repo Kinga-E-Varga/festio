@@ -1,7 +1,7 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { SOFT_PICK } from "@/components/dashboard/event-editor/styles";
+import { SOFT_PICK } from "@/components/dashboard/styles";
 import { ICON_NAMES, Icon } from "@/modular/icons";
 
 /**

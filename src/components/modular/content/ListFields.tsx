@@ -2,7 +2,7 @@
 
 import { useLocale, useTranslations } from "next-intl";
 import { memo, useLayoutEffect, useMemo, useRef, type ReactNode } from "react";
-import { SOFT_BTN, INPUT } from "@/components/dashboard/event-editor/styles";
+import { SOFT_BTN, INPUT } from "@/components/dashboard/styles";
 import { localized, type Language } from "@/lib/language";
 import {
   emptyItem,

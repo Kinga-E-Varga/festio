@@ -1,8 +1,7 @@
 "use client";
 
 import { type KeyboardEvent, useEffect, useId, useRef, useState } from "react";
-import { ERROR, INPUT } from "@/components/dashboard/event-editor/styles";
-import { MENU_SURFACE } from "@/components/dashboard/styles";
+import { MENU_SURFACE, ERROR, INPUT } from "@/components/dashboard/styles";
 import { FoldChevron } from "@/components/icons";
 
 /** The classes a dropdown is drawn with, so an invitation can dress it in its own palette. */

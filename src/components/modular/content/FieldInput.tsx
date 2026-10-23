@@ -4,11 +4,7 @@ import { Select } from "@/components/dashboard/event-editor/Select";
 import Image from "next/image";
 import { useLocale, useTranslations } from "next-intl";
 import { useState } from "react";
-import {
-  ERROR,
-  SOFT_ACTION,
-  INPUT,
-} from "@/components/dashboard/event-editor/styles";
+import { ERROR, SOFT_ACTION, INPUT } from "@/components/dashboard/styles";
 import { PanelSwitch } from "@/components/invitation/PanelSwitch";
 import { localized, type Language } from "@/lib/language";
 import { imageSrc } from "@/modular/content";

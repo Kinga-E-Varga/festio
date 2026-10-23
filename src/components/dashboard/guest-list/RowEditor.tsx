@@ -3,10 +3,7 @@
 import { useTranslations } from "next-intl";
 import { UnsavedPrompt } from "@/components/dashboard/UnsavedPrompt";
 import type { FormEventHandler, ReactNode } from "react";
-import {
-  BTN_GHOST_LIGHT,
-  BTN_PRIMARY,
-} from "@/components/dashboard/event-editor/styles";
+import { BTN_GHOST_LIGHT, BTN_PRIMARY } from "@/components/dashboard/styles";
 import { FADE_IN } from "@/components/dashboard/guest-list/styles";
 
 export interface RowEditorProps {

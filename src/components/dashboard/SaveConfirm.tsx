@@ -3,10 +3,7 @@
 import { useTranslations } from "next-intl";
 import { type ReactNode, useState } from "react";
 import { Dialog, DialogActions } from "@/components/dashboard/Dialog";
-import {
-  BTN_GHOST_LIGHT,
-  BTN_PRIMARY,
-} from "@/components/dashboard/event-editor/styles";
+import { BTN_GHOST_LIGHT, BTN_PRIMARY } from "@/components/dashboard/styles";
 import type { Visibility } from "@/types/dashboard";
 
 interface SaveConfirmProps {

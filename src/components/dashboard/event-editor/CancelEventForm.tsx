@@ -2,7 +2,8 @@
 
 import { useTranslations } from "next-intl";
 import { useForm, useWatch } from "react-hook-form";
-import { BTN_DANGER, INPUT } from "@/components/dashboard/event-editor/styles";
+import { BTN_DANGER } from "@/components/dashboard/event-editor/styles";
+import { INPUT } from "@/components/dashboard/styles";
 import {
   ConfirmPassword,
   useConfirmIdentity,

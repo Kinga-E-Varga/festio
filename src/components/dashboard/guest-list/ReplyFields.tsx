@@ -7,7 +7,7 @@ import {
   Controller,
   type UseFormRegisterReturn,
 } from "react-hook-form";
-import { ERROR, INPUT } from "@/components/dashboard/event-editor/styles";
+import { ERROR, INPUT } from "@/components/dashboard/styles";
 import { MultiSelect } from "@/components/dashboard/guest-list/MultiSelect";
 import {
   AGE_KEY,

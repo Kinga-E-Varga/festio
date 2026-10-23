@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import { SOFT_ACTION } from "@/components/dashboard/event-editor/styles";
+import { SOFT_ACTION } from "@/components/dashboard/styles";
 import { Icon } from "@/components/icons";
 import type { IconName } from "@/types/dashboard";
 

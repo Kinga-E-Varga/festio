@@ -7,7 +7,7 @@ import {
   BTN_GHOST_LIGHT,
   BTN_PRIMARY,
   INPUT,
-} from "@/components/dashboard/event-editor/styles";
+} from "@/components/dashboard/styles";
 import { Dialog, DialogActions } from "@/components/dashboard/Dialog";
 import { normalizeName } from "@/lib/guests";
 import type { ListName } from "@/types/guests";

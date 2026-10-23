@@ -1,5 +1,5 @@
 import type { ComponentProps } from "react";
-import { INPUT } from "@/components/dashboard/event-editor/styles";
+import { INPUT } from "@/components/dashboard/styles";
 import { Icon } from "@/components/icons";
 
 /** A dropdown field with the app's chevron, the same as `MultiSelect`'s. */

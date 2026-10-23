@@ -5,12 +5,13 @@ import type { ReactNode } from "react";
 import { BoxHead } from "@/components/dashboard/BoxHead";
 import { UnsavedPrompt } from "@/components/dashboard/UnsavedPrompt";
 import {
+  BOX_PAD,
+  BOX_ROW,
   BTN_GHOST_LIGHT,
   BTN_PRIMARY,
   BUTTON,
   ERROR,
-} from "@/components/dashboard/event-editor/styles";
-import { BOX_PAD, BOX_ROW } from "@/components/dashboard/styles";
+} from "@/components/dashboard/styles";
 
 /** Edit, in a card's head: edged and filled in the cards' edge colour. */
 const EDIT = `${BUTTON} border-neutral-300 bg-neutral-300 text-neutral-800 hover:border-neutral-400 hover:bg-neutral-400 hover:text-neutral-900`;

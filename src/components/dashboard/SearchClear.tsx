@@ -1,7 +1,7 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { MINI } from "@/components/dashboard/event-editor/styles";
+import { MINI } from "@/components/dashboard/styles";
 import { Icon } from "@/components/icons";
 
 /**

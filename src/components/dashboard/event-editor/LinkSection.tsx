@@ -12,11 +12,8 @@ import {
   SettingsCard,
   type CardEditing,
 } from "@/components/dashboard/event-editor/SettingsCard";
-import {
-  ERROR,
-  INSET_INPUT,
-  MINI,
-} from "@/components/dashboard/event-editor/styles";
+import { INSET_INPUT } from "@/components/dashboard/event-editor/styles";
+import { ERROR, MINI } from "@/components/dashboard/styles";
 import type { EventForm } from "@/components/dashboard/event-editor/useEventForm";
 import { Icon } from "@/components/icons";
 import type { DashboardEvent, Visibility } from "@/types/dashboard";

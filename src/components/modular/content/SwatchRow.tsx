@@ -10,7 +10,7 @@ import {
   replaceAt,
 } from "@/modular/fields";
 import type { ListField, ListItem } from "@/types/modular";
-import { SOFT_BTN } from "@/components/dashboard/event-editor/styles";
+import { SOFT_BTN } from "@/components/dashboard/styles";
 import { Icon } from "@/components/icons";
 import { ColorWell } from "./ColorWell";
 

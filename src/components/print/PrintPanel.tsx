@@ -1,7 +1,7 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { BANNER_TONE, INPUT } from "@/components/dashboard/event-editor/styles";
+import { BANNER_TONE, INPUT } from "@/components/dashboard/styles";
 import {
   CHOICE_OFF,
   CHOICE_ON,

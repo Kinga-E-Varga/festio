@@ -11,7 +11,7 @@ import {
   SettingsCard,
   type CardEditing,
 } from "@/components/dashboard/event-editor/SettingsCard";
-import { INPUT } from "@/components/dashboard/event-editor/styles";
+import { INPUT } from "@/components/dashboard/styles";
 import type { EventForm } from "@/components/dashboard/event-editor/useEventForm";
 import { EVENT_KINDS, TITLE_MAX, TITLE_MIN } from "@/db/limits";
 import { formatDay } from "@/lib/event";

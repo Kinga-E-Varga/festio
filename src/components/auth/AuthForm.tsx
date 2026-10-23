@@ -14,12 +14,12 @@ import { useState, type ComponentProps, type ReactNode } from "react";
 import { useForm } from "react-hook-form";
 import { startSession } from "@/actions/auth";
 import {
+  LINK_TEXT,
   BTN_GHOST_LIGHT,
   BTN_PRIMARY,
   ERROR,
   INPUT,
-} from "@/components/dashboard/event-editor/styles";
-import { LINK_TEXT } from "@/components/dashboard/styles";
+} from "@/components/dashboard/styles";
 import { Checkbox } from "@/components/dashboard/event-editor/Checkbox";
 import { ACCOUNT_PASSWORD_MIN, HOST_NAME_MAX } from "@/db/limits";
 import { Link, useRouter } from "@/i18n/navigation";

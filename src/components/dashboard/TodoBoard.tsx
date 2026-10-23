@@ -1,8 +1,7 @@
 import { useTranslations } from "next-intl";
 import { Icon } from "@/components/icons";
 import { NoticeAction } from "@/components/dashboard/NoticeAction";
-import { WARNING_SOFT } from "@/components/dashboard/styles";
-import { BANNER_TITLE } from "@/components/dashboard/event-editor/styles";
+import { WARNING_SOFT, BANNER_TITLE } from "@/components/dashboard/styles";
 import { useNoticeValues } from "@/components/dashboard/notices";
 import { Link } from "@/i18n/navigation";
 import type { AttentionNotice, IconName, NoticeTone } from "@/types/dashboard";

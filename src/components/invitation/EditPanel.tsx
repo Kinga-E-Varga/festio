@@ -15,7 +15,7 @@ import {
   INPUT,
   SOFT_ACTION_SHAPE,
   SOFT_PICK,
-} from "@/components/dashboard/event-editor/styles";
+} from "@/components/dashboard/styles";
 import { CARD_OPENINGS, type CardOpening } from "@/components/envelope/card";
 import { PanelSwitch } from "./PanelSwitch";
 import { SidePanel } from "./SidePanel";

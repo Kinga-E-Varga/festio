@@ -9,10 +9,8 @@ import {
   ActionRow,
   SettingsCard,
 } from "@/components/dashboard/event-editor/SettingsCard";
-import {
-  BTN_DANGER,
-  BTN_GHOST_LIGHT,
-} from "@/components/dashboard/event-editor/styles";
+import { BTN_DANGER } from "@/components/dashboard/event-editor/styles";
+import { BTN_GHOST_LIGHT } from "@/components/dashboard/styles";
 import type { ToastTone } from "@/components/dashboard/Toast";
 import { ButtonIcon } from "@/components/icons";
 import { useState, type ReactNode } from "react";

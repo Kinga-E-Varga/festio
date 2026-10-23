@@ -3,7 +3,7 @@
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import type { UseFormRegisterReturn } from "react-hook-form";
-import { ERROR, INPUT } from "@/components/dashboard/event-editor/styles";
+import { ERROR, INPUT } from "@/components/dashboard/styles";
 import type { HostLogin } from "@/db/reads/host";
 import type { SaveError } from "@/db/writes/save";
 import { orFailed } from "@/lib/action";

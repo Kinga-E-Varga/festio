@@ -9,9 +9,8 @@ import {
   SettingsCard,
   type CardEditing,
 } from "@/components/dashboard/event-editor/SettingsCard";
-import { INPUT } from "@/components/dashboard/event-editor/styles";
 import { RepliesMeter } from "@/components/dashboard/RepliesMeter";
-import { TEXT_LINK } from "@/components/dashboard/styles";
+import { TEXT_LINK, INPUT } from "@/components/dashboard/styles";
 import { Switch } from "@/components/invitation/PanelSwitch";
 import { Link } from "@/i18n/navigation";
 import type { EventForm } from "@/components/dashboard/event-editor/useEventForm";

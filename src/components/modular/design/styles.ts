@@ -1,4 +1,4 @@
-import { FIELD } from "@/components/dashboard/event-editor/styles";
+import { FIELD } from "@/components/dashboard/styles";
 import { SUMMARY_SURFACE } from "@/components/dashboard/event-editor/SummarySwitch";
 
 /**
