@@ -20,7 +20,11 @@ import {
   type RowEditorState,
 } from "@/components/dashboard/guest-list/useRowEditor";
 import { FoldChevron } from "@/components/icons";
-import { CARD_FRAME, LINK_TEXT } from "@/components/dashboard/styles";
+import {
+  BOX_PAD_SIZE,
+  CARD_FRAME,
+  LINK_TEXT,
+} from "@/components/dashboard/styles";
 import { attentionItems, CATEGORIES, groupCategory } from "@/lib/guests";
 import type {
   AttentionItem,
@@ -137,8 +141,8 @@ export function GuestTable({
     return (
       <>
         {replyDialog}
-        <div className="rounded-ui border border-dashed border-neutral-400 px-6 py-10 text-center">
-          <p className="small-title">{t("emptyTitle")}</p>
+        <div className="rounded-ui border border-dashed border-neutral-300 px-6 py-10 text-center">
+          <p className="card-title">{t("emptyTitle")}</p>
           {list.useList ? null : (
             <button
               type="button"
@@ -203,7 +207,7 @@ function Category({ category, groups, list, actions, editor }: CategoryProps) {
   const { title, fill } = CATEGORY[category];
 
   return (
-    <section className={`overflow-hidden ${CARD_FRAME}`}>
+    <section className={`overflow-hidden ${CARD_FRAME} ${BOX_PAD_SIZE}`}>
       {/* The whole head is the button, so a click anywhere on it folds the card. */}
       <h2>
         <button
@@ -211,39 +215,43 @@ function Category({ category, groups, list, actions, editor }: CategoryProps) {
           aria-expanded={open}
           aria-controls={body}
           onClick={() => setOpen(!open)}
-          className={`flex w-full cursor-pointer items-center gap-2.5 px-4 py-3 text-left transition-colors hover:bg-neutral-200 ${open ? "border-b border-neutral-200" : ""}`}
+          className={`flex w-full cursor-pointer items-center gap-2.5 px-(--box-pad) py-(--box-head-y) text-left transition-colors hover:bg-neutral-200 ${open ? "border-b border-neutral-200" : ""}`}
         >
           <span
             aria-hidden="true"
             className={`size-3 shrink-0 rounded-full ${open ? "invisible" : fill}`}
           />
-          <span className="card-face">{t(title)}</span>
+          <span className="card-title">{t(title)}</span>
           <span className="meta-face tabular-nums opacity-75">{people}</span>
           <FoldChevron open={open} className="ml-auto size-5" strokeWidth={2} />
         </button>
       </h2>
       {/* Grows from and shrinks to nothing; `inert` keeps a folded category out of reach. */}
       <div id={body} inert={!open} className={fold(open)}>
-        <div className="min-h-0 divide-y divide-neutral-200 overflow-hidden">
-          {category === "attention"
-            ? attentionItems(groups).map((item) => (
-                <AttentionCard
-                  key={item.id}
-                  item={item}
-                  list={list}
-                  actions={actions}
-                  editor={editor}
-                />
-              ))
-            : groups.map((group) => (
-                <GroupView
-                  key={group.id}
-                  group={group}
-                  list={list}
-                  actions={actions}
-                  editor={editor}
-                />
-              ))}
+        {/* The fold squeezes this to nothing; the padding goes inside, where it hides too. */}
+        <div className="min-h-0 overflow-hidden">
+          {/* The page boxes' padding, all round. */}
+          <div className="divide-y divide-neutral-200 p-(--box-pad)">
+            {category === "attention"
+              ? attentionItems(groups).map((item) => (
+                  <AttentionCard
+                    key={item.id}
+                    item={item}
+                    list={list}
+                    actions={actions}
+                    editor={editor}
+                  />
+                ))
+              : groups.map((group) => (
+                  <GroupView
+                    key={group.id}
+                    group={group}
+                    list={list}
+                    actions={actions}
+                    editor={editor}
+                  />
+                ))}
+          </div>
         </div>
       </div>
     </section>
@@ -334,7 +342,7 @@ function SameNameReply({ row, list, actions, editor }: SameNameReplyProps) {
   }).format(new Date(row.reply.repliedAt));
 
   return (
-    <div className="@container rounded-ui border border-neutral-400 bg-neutral-50 px-3 py-2">
+    <div className="@container rounded-ui border border-neutral-200 bg-neutral-50 px-3 py-2">
       <p className="hint-text">{t("repliedOn", { date })}</p>
       {/* Standing alone to compare, each one keeps its status and edit. */}
       <RowItem
@@ -375,8 +383,14 @@ function RepliedWith({ names }: { names: string[] }) {
 
 const DOT = "size-3 -translate-y-1/2 rounded-full border-2";
 
-/** A group's padding: the room on the left holds its thread and dots. */
-const GROUP = "py-1.5 pr-3 pl-10 @min-[720px]:pr-5 @min-[720px]:pl-13";
+/**
+ * A group's padding: 6px off the rules between groups (none at the box's
+ * edges), and room on the left for its thread and dots. `--thread` is how far
+ * left of the rows the thread runs (`THREAD_X`); the room is that plus half a
+ * dot (`DOT`'s 12px), so the dots' left edge sits on the box's padding.
+ */
+const GROUP =
+  "py-1.5 first:pt-0 last:pb-0 [--thread:20px] pl-[calc(var(--thread)+6px)] @min-[720px]:[--thread:28px]";
 
 /** Filled once there's something to show for it — a reply, or an invite sent; dashed while the invite isn't. */
 function statusDot(row: GuestRow, category: GuestCategory): string {
@@ -460,8 +474,8 @@ const STRAND = {
   with: { mark: "top-1/2", above: "h-1/2", below: "top-1/2" },
 } as const;
 
-/** The thread's x, 20px (wide: 28px) left of the rows; the line and every mark centre on it. */
-const THREAD_X = "-left-5 -translate-x-1/2 @min-[720px]:-left-7";
+/** The thread's x, `--thread` (set by `GROUP`) left of the rows; the line and every mark centre on it. */
+const THREAD_X = "-left-(--thread) -translate-x-1/2";
 const LINE = `absolute w-px ${THREAD_X}`;
 
 interface StrandProps {

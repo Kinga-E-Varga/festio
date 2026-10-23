@@ -46,6 +46,9 @@ Libre Baskerville), shared by both root layouts.
 `ReactGrab.tsx` — dev-only React Grab script, also in both root layouts.
 Lives in `app/` because `beforeInteractive` scripts belong to a root layout.
 
+`PaletteSwitcher.tsx` / `PalettePicker.tsx` — dev-only palette switcher, host
+layout only, off until `?palette=on` (`context/dev-tools/palette-switcher.md`).
+
 ## i18n — `src/i18n/` and `messages/`
 
 - `src/i18n/routing.ts` — `next-intl`'s locale list/default/prefix strategy.

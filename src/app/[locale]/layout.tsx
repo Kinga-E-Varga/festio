@@ -5,6 +5,7 @@ import { notFound } from "next/navigation";
 import { routing } from "@/i18n/routing";
 import { HistoryTracker } from "@/components/HistoryTracker";
 import { ReactGrab } from "@/app/ReactGrab";
+import { PaletteSwitcher } from "@/app/PaletteSwitcher";
 import { appFontClassName } from "@/app/fonts";
 import "@/app/globals.css";
 
@@ -36,6 +37,7 @@ export default async function LocaleRootLayout({
           <ReactGrab />
           <HistoryTracker />
           {children}
+          <PaletteSwitcher />
         </NextIntlClientProvider>
       </body>
     </html>

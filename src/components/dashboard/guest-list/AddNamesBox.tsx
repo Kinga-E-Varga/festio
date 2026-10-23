@@ -1,6 +1,7 @@
 "use client";
 
 import { useTranslations } from "next-intl";
+import { BoxHead } from "@/components/dashboard/BoxHead";
 import { UnsavedPrompt } from "@/components/dashboard/UnsavedPrompt";
 import { type ChangeEvent, useEffect, useRef, useState } from "react";
 import { useForm, useWatch } from "react-hook-form";
@@ -8,8 +9,8 @@ import {
   BTN_GHOST_LIGHT,
   BTN_PRIMARY,
   INPUT,
-  SUBBOX,
 } from "@/components/dashboard/event-editor/styles";
+import { BOX_PAD } from "@/components/dashboard/styles";
 import { DraftNameList } from "@/components/dashboard/guest-list/DraftNameList";
 import {
   ALERT,
@@ -116,102 +117,110 @@ export function AddNamesBox({
     <div
       ref={box}
       id="list"
-      className={`scroll-mt-24 ${SUBBOX} border-neutral-400! bg-neutral-50`}
+      className={`-mt-px scroll-mt-24 rounded-b-ui border border-neutral-300 bg-neutral-50 @container ${BOX_PAD}`}
     >
-      <div className="flex flex-wrap items-center gap-x-4 gap-y-3">
-        <h3 className="mr-auto card-title">{t("listTitle")}</h3>
-        <div className="flex gap-2.5">
-          <button type="button" onClick={cancel} className={BTN_GHOST_LIGHT}>
-            {t("cancel")}
-          </button>
-          <button
-            type="button"
-            onClick={save}
-            disabled={saving || (!draft.changed && names.length === 0)}
-            className={BTN_PRIMARY}
-          >
-            {t("save")}
-          </button>
-        </div>
-      </div>
-
-      {notice === "unadded" ? (
-        <div
-          role="alert"
-          className={`mt-3 ${ALERT} flex flex-wrap items-center gap-2.5`}
-        >
-          <span className="mr-auto">{t("unaddedTitle")}</span>
-          <button type="button" onClick={add} className={SMALL_BTN_WARN_SOLID}>
-            {t("addThem")}
-          </button>
-        </div>
-      ) : null}
-      {notice === "discard" || ask ? (
-        <UnsavedPrompt
-          className="mt-3"
-          title={t("discardTitle")}
-          discardLabel={t("discard")}
-          keepLabel={t("keepEditing")}
-          onDiscard={ask ? ask.onDiscard : onCancel}
-          onKeep={() => {
-            setNotice(null);
-            ask?.onKeep();
-          }}
-          asked={ask?.asked}
-        />
-      ) : null}
-
-      {repeats ? (
-        <div role="alert" className={`mt-3 ${ALERT}`}>
-          <b className="block">{t("repeatsTitle")}</b>
-          <ul className="mt-1.5 list-disc pl-5">
-            {repeats.map((repeat) => (
-              <li key={repeat.name}>
-                {t("repeatsItem", { name: repeat.name, count: repeat.count })}
-              </li>
-            ))}
-          </ul>
-          <div className="mt-3 flex gap-2.5">
+      <BoxHead
+        as="h3"
+        title={t("listTitle")}
+        actions={
+          <>
+            <button type="button" onClick={cancel} className={BTN_GHOST_LIGHT}>
+              {t("cancel")}
+            </button>
             <button
               type="button"
-              onClick={keep}
+              onClick={save}
+              disabled={saving || (!draft.changed && names.length === 0)}
+              className={BTN_PRIMARY}
+            >
+              {t("save")}
+            </button>
+          </>
+        }
+      />
+
+      <div className="flex flex-col gap-3">
+        {notice === "unadded" ? (
+          <div
+            role="alert"
+            className={`${ALERT} flex flex-wrap items-center gap-2.5`}
+          >
+            <span className="mr-auto">{t("unaddedTitle")}</span>
+            <button
+              type="button"
+              onClick={add}
               className={SMALL_BTN_WARN_SOLID}
             >
-              {t("keepThem")}
-            </button>
-            <button type="button" onClick={back} className={SMALL_BTN_WARN}>
-              {t("backToEdit")}
+              {t("addThem")}
             </button>
           </div>
-        </div>
-      ) : (
-        <form onSubmit={handleSubmit(add)} className="mt-4">
-          <p className="mb-2 hint-text">{t("addNamesHint")}</p>
-          <textarea
-            {...register("text", { onChange: clearUnadded })}
-            rows={5}
-            aria-label={t("addNamesTitle")}
-            className={`${INPUT} resize-y`}
+        ) : null}
+        {notice === "discard" || ask ? (
+          <UnsavedPrompt
+            title={t("discardTitle")}
+            discardLabel={t("discard")}
+            keepLabel={t("keepEditing")}
+            onDiscard={ask ? ask.onDiscard : onCancel}
+            onKeep={() => {
+              setNotice(null);
+              ask?.onKeep();
+            }}
+            asked={ask?.asked}
           />
-          <div className="mt-3 flex justify-end gap-2.5">
-            <button
-              type="button"
-              onClick={clearInput}
-              disabled={text.length === 0}
-              className={BTN_LIST_OUTLINE}
-            >
-              {t("clearInput")}
-            </button>
-            <button
-              type="submit"
-              disabled={names.length === 0}
-              className={BTN_LIST}
-            >
-              {t("addNamesSubmit", { count: names.length })}
-            </button>
+        ) : null}
+
+        {repeats ? (
+          <div role="alert" className={ALERT}>
+            <b className="block">{t("repeatsTitle")}</b>
+            <ul className="mt-1.5 list-disc pl-5">
+              {repeats.map((repeat) => (
+                <li key={repeat.name}>
+                  {t("repeatsItem", { name: repeat.name, count: repeat.count })}
+                </li>
+              ))}
+            </ul>
+            <div className="mt-3 flex gap-2.5">
+              <button
+                type="button"
+                onClick={keep}
+                className={SMALL_BTN_WARN_SOLID}
+              >
+                {t("keepThem")}
+              </button>
+              <button type="button" onClick={back} className={SMALL_BTN_WARN}>
+                {t("backToEdit")}
+              </button>
+            </div>
           </div>
-        </form>
-      )}
+        ) : (
+          <form onSubmit={handleSubmit(add)}>
+            <p className="mb-2 hint-text">{t("addNamesHint")}</p>
+            <textarea
+              {...register("text", { onChange: clearUnadded })}
+              rows={5}
+              aria-label={t("addNamesTitle")}
+              className={`${INPUT} resize-y`}
+            />
+            <div className="mt-3 flex justify-end gap-2.5">
+              <button
+                type="button"
+                onClick={clearInput}
+                disabled={text.length === 0}
+                className={BTN_LIST_OUTLINE}
+              >
+                {t("clearInput")}
+              </button>
+              <button
+                type="submit"
+                disabled={names.length === 0}
+                className={BTN_LIST}
+              >
+                {t("addNamesSubmit", { count: names.length })}
+              </button>
+            </div>
+          </form>
+        )}
+      </div>
 
       <DraftNameList
         names={draft.names}

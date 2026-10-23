@@ -8,7 +8,7 @@ import {
   AGES,
   DIET_KEY,
 } from "@/components/dashboard/guest-list/labels";
-import { LINK_TEXT } from "@/components/dashboard/styles";
+import { LINK_TEXT, PAGE_BOX } from "@/components/dashboard/styles";
 import { Link } from "@/i18n/navigation";
 import type {
   DietNeed,
@@ -74,7 +74,7 @@ export function ReplySummary({
 
   return (
     /* The sheet, edged like the event cards. */
-    <div className="rounded-ui border border-neutral-400 bg-neutral-50 px-4 py-4 @min-[720px]:px-5">
+    <div className={PAGE_BOX}>
       <div className={GRID}>
         <Block
           title={t("summaryReplies")}

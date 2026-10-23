@@ -38,7 +38,9 @@ export function NextEventCard({ event }: { event?: DashboardEvent }) {
           ? tEvent("today")
           : t("countdown", { time: formatDuration(event.countdown, locale) })}
       </span>
-      <span className="mt-3 block meta-text leading-[1.4]">{event.title}</span>
+      <span className="mt-(--box-pad) block meta-text leading-[1.4]">
+        {event.title}
+      </span>
       <span className="block meta-text leading-[1.4]">
         {formatDay(event.date, locale)}
       </span>

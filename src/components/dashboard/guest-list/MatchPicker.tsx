@@ -8,7 +8,7 @@ import {
   BTN_PRIMARY,
   INPUT,
 } from "@/components/dashboard/event-editor/styles";
-import { Dialog } from "@/components/dashboard/Dialog";
+import { Dialog, DialogActions } from "@/components/dashboard/Dialog";
 import { normalizeName } from "@/lib/guests";
 import type { ListName } from "@/types/guests";
 
@@ -42,10 +42,10 @@ export function MatchPicker({
       onDismiss={onClose}
     >
       {waiting.length === 0 ? (
-        <p className="mt-4 hint-text">{t("noWaiting")}</p>
+        <p className="hint-text">{t("noWaiting")}</p>
       ) : (
         <>
-          <div className="relative mt-4">
+          <div className="relative">
             <input
               type="search"
               autoFocus
@@ -61,10 +61,11 @@ export function MatchPicker({
             <p className="mt-2 hint-text">{t("noMatches")}</p>
           ) : (
             <div className="mt-2 max-h-60 side-scroll overflow-y-auto rounded-ui border border-neutral-400 [--scroll-track:var(--color-neutral-50)]">
+              {/* `relative`: each hidden radio stays in its row, or the far rows' would stretch the dialog. */}
               {options.map((entry) => (
                 <label
                   key={entry.id}
-                  className="flex cursor-pointer items-center gap-2.5 border-neutral-200 px-3 py-2 field-text transition-colors not-first:border-t hover:bg-neutral-100 has-checked:bg-neutral-200 has-checked:font-medium has-focus-visible:outline-2 has-focus-visible:-outline-offset-2 has-focus-visible:outline-neutral-500"
+                  className="relative flex cursor-pointer items-center gap-2.5 border-neutral-200 px-3 py-2 field-text transition-colors not-first:border-t hover:bg-neutral-100 has-checked:bg-neutral-200 has-checked:font-medium has-focus-visible:outline-2 has-focus-visible:-outline-offset-2 has-focus-visible:outline-neutral-500"
                 >
                   <input
                     type="radio"
@@ -84,7 +85,7 @@ export function MatchPicker({
         </>
       )}
 
-      <div className="mt-5 flex flex-wrap justify-end gap-2 pb-5">
+      <DialogActions>
         <button type="button" onClick={onClose} className={BTN_GHOST_LIGHT}>
           {t("cancel")}
         </button>
@@ -96,7 +97,7 @@ export function MatchPicker({
         >
           {picked ? t("matchToName", { name: picked.name }) : t("match")}
         </button>
-      </div>
+      </DialogActions>
     </Dialog>
   );
 }

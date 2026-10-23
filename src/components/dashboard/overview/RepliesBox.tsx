@@ -80,7 +80,7 @@ export function RepliesBox({
     <section className={PAGE_BOX}>
       <BoxHead title={tGuests("summaryReplies")} />
       {/* The numbers, then the latest replies under them, past a rule. */}
-      <RepliesSummary event={event} className="mt-5" />
+      <RepliesSummary event={event} />
 
       <div className="mt-5 flex flex-col gap-1.5 border-t border-neutral-200 pt-4 meta-text leading-[1.5]">
         {facts.length > 0 ? (

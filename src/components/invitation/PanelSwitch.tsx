@@ -1,7 +1,6 @@
 "use client";
 
 import type { ReactNode } from "react";
-import { LABEL } from "@/components/dashboard/event-editor/styles";
 
 interface PanelSwitchProps {
   id: string;
@@ -120,7 +119,7 @@ export function PanelSwitch({
           tone={tone}
         />
         {/* Not a `<label>`: only the switch itself flips, never its name. */}
-        {heading ?? <span className={LABEL}>{label}</span>}
+        {heading ?? <span className="label-caps">{label}</span>}
       </div>
       <div className="flex shrink-0 items-center gap-3">{end}</div>
     </div>

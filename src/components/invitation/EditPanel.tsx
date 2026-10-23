@@ -12,7 +12,6 @@ import { localized, type Language } from "@/lib/language";
 import { DateFormatSelect } from "./DateFormatSelect";
 import { TAB_LABEL, type PanelTabId } from "./PanelTabs";
 import {
-  LABEL,
   INPUT,
   SOFT_ACTION_SHAPE,
   SOFT_PICK,
@@ -120,7 +119,7 @@ export function EditPanel({
                 aria-labelledby="envelope-opening"
                 className="mb-6 flex flex-col gap-2"
               >
-                <span id="envelope-opening" className={LABEL}>
+                <span id="envelope-opening" className="label-caps">
                   {tDesign("opening")}
                 </span>
                 <div className="flex gap-2">
@@ -167,7 +166,7 @@ function Field({
   return (
     // Festio's own form, the event editor's fields — never the invitation's palette.
     <div className="mb-6 flex flex-col gap-1.5">
-      <label htmlFor={`field-${field.id}`} className={LABEL}>
+      <label htmlFor={`field-${field.id}`} className="label-caps">
         {localized(field.label, hostLocale)}
       </label>
       {field.type === "dateFormat" ? (

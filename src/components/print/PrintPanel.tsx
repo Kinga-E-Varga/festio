@@ -1,11 +1,7 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import {
-  BANNER_TONE,
-  LABEL,
-  INPUT,
-} from "@/components/dashboard/event-editor/styles";
+import { BANNER_TONE, INPUT } from "@/components/dashboard/event-editor/styles";
 import {
   CHOICE_OFF,
   CHOICE_ON,
@@ -65,7 +61,7 @@ export function PrintPanel({
        */}
       <div className="flex flex-col w-full max-w-[640px] mx-auto">
         <fieldset className="flex flex-col mb-6">
-          <legend className={`${LABEL} mb-2`}>{t("cardStyle")}</legend>
+          <legend className="label-caps mb-2">{t("cardStyle")}</legend>
           {/* Equal columns, each as wide as the longer label. */}
           <div className="grid w-fit grid-cols-2 gap-1.5">
             {SHAPES.map((shape) => (
@@ -83,7 +79,7 @@ export function PrintPanel({
         </fieldset>
 
         <fieldset className="flex flex-col mb-6">
-          <legend className={`${LABEL} mb-2`}>{t("background")}</legend>
+          <legend className="label-caps mb-2">{t("background")}</legend>
           <PanelSwitch
             id="print-tinted"
             label={t("tinted")}
@@ -172,7 +168,7 @@ function LineField({
 }: LineFieldProps) {
   return (
     <div className="mb-6 flex flex-col gap-1.5">
-      <label htmlFor={id} className={LABEL}>
+      <label htmlFor={id} className="label-caps">
         {label}
       </label>
       <textarea

@@ -18,7 +18,6 @@ import {
   BTN_PRIMARY,
   ERROR,
   INPUT,
-  LABEL,
 } from "@/components/dashboard/event-editor/styles";
 import { LINK_TEXT } from "@/components/dashboard/styles";
 import { Checkbox } from "@/components/dashboard/event-editor/Checkbox";
@@ -84,7 +83,7 @@ function Field({
 }) {
   return (
     <div className="flex flex-col gap-1.5">
-      <label htmlFor={id} className={LABEL}>
+      <label htmlFor={id} className="label-caps">
         {label}
       </label>
       {children}

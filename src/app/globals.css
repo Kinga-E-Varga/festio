@@ -68,34 +68,34 @@
   --color-current: currentColor;
   --color-inherit: inherit;
 
-  /* Primary — the brand colour: focus ring, links, dark actions. Now deep green. */
-  --color-primary-50: #f6f9f7;
-  --color-primary-100: #eef3ef;
-  --color-primary-150: #e6ede7;
-  --color-primary-200: #d8e3da;
-  --color-primary-300: #c7d5ca;
-  --color-primary-400: #acc1b2;
-  --color-primary-500: #87a392;
-  --color-primary-600: #638773;
-  --color-primary-700: #3c6854;
-  --color-primary-800: #2e5745;
-  --color-primary-900: #1a3d2e;
-  --color-primary-950: #0f2a21;
+  /* Primary — the brand colour: focus ring, links, dark actions. Now moss green. */
+  --color-primary-50: #f8f9f4;
+  --color-primary-100: #f1f3eb;
+  --color-primary-150: #e9ece1;
+  --color-primary-200: #dee2d2;
+  --color-primary-300: #ced4be;
+  --color-primary-400: #b7bfa2;
+  --color-primary-500: #96a17b;
+  --color-primary-600: #768456;
+  --color-primary-700: #566430;
+  --color-primary-800: #465425;
+  --color-primary-900: #30391b;
+  --color-primary-950: #202712;
 
-  /* Neutral — page, text and most borders. Now warm linen. */
-  --color-neutral-50: #fbfaf5;
-  --color-neutral-100: #f4f2e9;
-  --color-neutral-125: #f2efe5;
-  --color-neutral-150: #efebe0;
-  --color-neutral-200: #e5e0d1;
-  --color-neutral-300: #dad3be;
-  --color-neutral-400: #c5bda4;
-  --color-neutral-500: #a29b85;
-  --color-neutral-600: #827d6e;
-  --color-neutral-700: #666359;
-  --color-neutral-800: #4f4d46;
-  --color-neutral-900: #3a3832;
-  --color-neutral-950: #26241f;
+  /* Neutral — page, text and most borders. Now khaki linen. */
+  --color-neutral-50: #fbfaf6;
+  --color-neutral-100: #f5f3eb;
+  --color-neutral-125: #f1efe6;
+  --color-neutral-150: #eeece1;
+  --color-neutral-200: #e5e2d0;
+  --color-neutral-300: #d9d4bc;
+  --color-neutral-400: #c3bea4;
+  --color-neutral-500: #a09c87;
+  --color-neutral-600: #817d6e;
+  --color-neutral-700: #666358;
+  --color-neutral-800: #4f4d45;
+  --color-neutral-900: #3a3831;
+  --color-neutral-950: #25241f;
 
   /*
    * Shadow — mixed from the page ground (neutral-100): same hue, much darker
@@ -103,84 +103,81 @@
    */
   --color-shadow: oklch(from var(--color-neutral-100) 0.4 0.05 h);
 
-  /* The dashboard's cards, at rest. */
-  /* --shadow-card: 0 3px 5px 0
-    color-mix(in oklab, var(--color-shadow) 15%, transparent);
-  --shadow-card-hover: 0 5px 7px 0
-    color-mix(in oklab, var(--color-shadow) 15%, transparent); */
-  --shadow-card: 0;
+  /* The floating menus' (pickers, the bars' menus): a soft lift off what they lie over. */
+  --shadow-menu: 0 4px 12px 0
+    color-mix(in oklab, var(--color-shadow) 18%, transparent);
   /* The nav drawer's and the side panel's, lying over the page on phones. */
   --shadow-drawer: 0 0 40px rgb(47 40 31 / 0.2);
 
-  /* Accent — what should stand out: the main button, dates that matter. Now burgundy. */
-  --color-accent-50: #fff6f7;
-  --color-accent-100: #fdedf0;
-  --color-accent-150: #fae5e9;
-  --color-accent-200: #f5d7dc;
-  --color-accent-300: #ecc5cc;
-  --color-accent-400: #deabb4;
-  --color-accent-500: #c78692;
-  --color-accent-600: #af6371;
-  --color-accent-700: #994355;
-  --color-accent-800: #84253d;
-  --color-accent-900: #63172f;
-  --color-accent-950: #430b20;
+  /* Accent — what should stand out: the main button, dates that matter. Now mauve. */
+  --color-accent-50: #fef6fa;
+  --color-accent-100: #fcedf5;
+  --color-accent-150: #f9e4f0;
+  --color-accent-200: #f2d6e6;
+  --color-accent-300: #e8c5d9;
+  --color-accent-400: #d7acc5;
+  --color-accent-500: #bc8aa7;
+  --color-accent-600: #a97494;
+  --color-accent-700: #8a4a72;
+  --color-accent-800: #712758;
+  --color-accent-900: #551641;
+  --color-accent-950: #3b0b2c;
 
   /* Secondary — quiet surfaces and borders: nav, panels, switches. Now olive. */
-  --color-secondary-50: #faf9f1;
-  --color-secondary-100: #f5f2e5;
-  --color-secondary-150: #efecdb;
-  --color-secondary-200: #e4e1c8;
-  --color-secondary-300: #d6d3b2;
-  --color-secondary-400: #bdba8d;
-  --color-secondary-500: #a29d75;
-  --color-secondary-600: #847e5a;
-  --color-secondary-700: #6a6444;
-  --color-secondary-800: #544d31;
-  --color-secondary-900: #3f381f;
-  --color-secondary-950: #2a230e;
+  --color-secondary-50: #faf9f0;
+  --color-secondary-100: #f3f3e4;
+  --color-secondary-150: #eeedd9;
+  --color-secondary-200: #e3e2c6;
+  --color-secondary-300: #d6d4ae;
+  --color-secondary-400: #bdba89;
+  --color-secondary-500: #a29e63;
+  --color-secondary-600: #84803e;
+  --color-secondary-700: #6a662b;
+  --color-secondary-800: #524f1f;
+  --color-secondary-900: #3c3a15;
+  --color-secondary-950: #26250b;
 
-  /* Info — neutral notices like billing and tips. Now slate blue. */
-  --color-info-50: #f6f9fb;
-  --color-info-100: #edf3f6;
-  --color-info-150: #e5ecf2;
-  --color-info-200: #d7e1e9;
-  --color-info-300: #c5d3dd;
-  --color-info-400: #abbdcb;
-  --color-info-500: #889fb1;
-  --color-info-600: #668197;
-  --color-info-700: #405e78;
-  --color-info-800: #365067;
-  --color-info-900: #263a4e;
-  --color-info-950: #172535;
+  /* Info — neutral notices like billing and tips. Now dusty teal-slate. */
+  --color-info-50: #f4fafa;
+  --color-info-100: #ebf4f5;
+  --color-info-150: #e1eef0;
+  --color-info-200: #d2e3e6;
+  --color-info-300: #bfd6d9;
+  --color-info-400: #a4c0c5;
+  --color-info-500: #80a3a9;
+  --color-info-600: #5e858d;
+  --color-info-700: #39626a;
+  --color-info-800: #2f545c;
+  --color-info-900: #1f3d44;
+  --color-info-950: #11282d;
 
-  /* Warning — deadlines, unsaved changes, the top bar's alert dot. Now antique gold. */
-  --color-warning-50: #fdf8ec;
-  --color-warning-100: #f9f1dc;
-  --color-warning-150: #f5eace;
-  --color-warning-200: #eedeb7;
-  --color-warning-300: #e6cf9a;
-  --color-warning-400: #d7b66d;
-  --color-warning-500: #b59856;
-  --color-warning-600: #93793e;
-  --color-warning-700: #7b5f0f;
-  --color-warning-800: #604904;
-  --color-warning-900: #473502;
-  --color-warning-950: #2f2200;
+  /* Warning — deadlines, unsaved changes, the top bar's alert dot. Now amber. */
+  --color-warning-50: #fff7ed;
+  --color-warning-100: #ffefda;
+  --color-warning-150: #ffe7c8;
+  --color-warning-200: #fbd9b0;
+  --color-warning-300: #f5c894;
+  --color-warning-400: #e6ae6d;
+  --color-warning-500: #c59054;
+  --color-warning-600: #a1713d;
+  --color-warning-700: #88571f;
+  --color-warning-800: #6b4214;
+  --color-warning-900: #4f2f0e;
+  --color-warning-950: #361e06;
 
-  /* Danger — errors, deletes, urgent items and unknown guests. Now brick. */
-  --color-danger-50: #fff7f1;
-  --color-danger-100: #feeee4;
-  --color-danger-150: #fce6d9;
-  --color-danger-200: #f7d9c7;
-  --color-danger-300: #f0c7b1;
-  --color-danger-400: #e3ad90;
-  --color-danger-500: #cf8766;
-  --color-danger-600: #b9613e;
-  --color-danger-700: #ae4e2a;
-  --color-danger-800: #7f3119;
-  --color-danger-900: #611f0e;
-  --color-danger-950: #440e04;
+  /* Danger — errors, deletes, urgent items and unknown guests. Now brick red. */
+  --color-danger-50: #fef7f5;
+  --color-danger-100: #ffede9;
+  --color-danger-150: #fee4df;
+  --color-danger-200: #fcd5ce;
+  --color-danger-300: #f6c3ba;
+  --color-danger-400: #eca69b;
+  --color-danger-500: #d97e72;
+  --color-danger-600: #b74d42;
+  --color-danger-700: #a63931;
+  --color-danger-800: #842a24;
+  --color-danger-900: #631b18;
+  --color-danger-950: #440c0c;
 
   /* White — text on the main button and on urgent badges. */
   --color-white: #ffffff;
@@ -485,12 +482,7 @@
 
 /* A figure meant to be the first thing seen: Home's next-event countdown. */
 @utility display-number {
-  @apply font-serif text-[32px] leading-[1.1] text-neutral-950;
-}
-
-/* A small serif title: a dialog's, an empty list's. */
-@utility small-title {
-  @apply font-serif text-[17px] text-neutral-950;
+  @apply font-serif text-[27px] leading-[1.1] text-neutral-950 wide:text-[32px];
 }
 
 /* A card's serif title, without its colour: for one on a coloured fill, or in danger red. */
@@ -498,7 +490,7 @@
   @apply font-serif text-[17px] leading-[1.2] wide:text-[20px];
 }
 
-/* A card's title: Home's boxes, the Overview's and Event settings' cards, the side panel. */
+/* A card's title: every box's (Home, the Overview, Event settings, the guest list), the side panel's, a dialog's. Sign-in keeps the bigger `page-title`. */
 @utility card-title {
   @apply card-face text-neutral-950;
 }

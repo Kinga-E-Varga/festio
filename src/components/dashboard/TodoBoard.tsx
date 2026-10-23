@@ -1,7 +1,7 @@
 import { useTranslations } from "next-intl";
 import { Icon } from "@/components/icons";
 import { NoticeAction } from "@/components/dashboard/NoticeAction";
-import { WARNING_LIGHT } from "@/components/dashboard/styles";
+import { WARNING_SOFT } from "@/components/dashboard/styles";
 import { BANNER_TITLE } from "@/components/dashboard/event-editor/styles";
 import { useNoticeValues } from "@/components/dashboard/notices";
 import { Link } from "@/i18n/navigation";
@@ -16,8 +16,8 @@ const TONE_ICON: Record<NoticeTone, IconName> = {
   deletion: "download",
 };
 
-/** A to-do: a small warning-tinted box of its own. */
-const TODO_ITEM = `rounded-ui border ${WARNING_LIGHT} transition-colors hover:bg-warning-100`;
+/** A to-do: a small warning-tinted box of its own, coloured as the Hidden tag. */
+const TODO_ITEM = `rounded-ui ${WARNING_SOFT} transition-colors hover:bg-warning-200`;
 
 /**
  * What an event is waiting on, most urgent first: the alerts for this event,

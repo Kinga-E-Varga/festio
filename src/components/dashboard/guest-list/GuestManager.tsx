@@ -148,7 +148,7 @@ export function GuestManager({ event, initial }: GuestManagerProps) {
                 }}
                 className={`-mb-4 ${boxRoll(leaving)}`}
               >
-                {/* Pinned to its foot, so the bottom shows first and it grows upward. The column's gap is taken back (-mb-4) and the 32px under the box folds with it, so nothing jumps; 1px on top for the box's own -mt-px (`SUBBOX`). */}
+                {/* Pinned to its foot, so the bottom shows first and it grows upward. The column's gap is taken back (-mb-4) and the 32px under the box folds with it, so nothing jumps; 1px on top for the box's own -mt-px. */}
                 <div className="flex min-h-0 flex-col justify-end overflow-hidden">
                   <div className="pt-px pb-8">
                     <AddNamesBox

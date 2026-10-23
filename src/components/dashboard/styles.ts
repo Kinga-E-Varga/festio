@@ -1,14 +1,19 @@
-/**
- * The two warning colourings. Light, for a warning sitting on a light card
- * (the to-dos); dark, for one on the page or a darker ground (the warning
- * banners, Not coming).
- */
 /** The Festio lockup as a mask, so the caller picks its colour (`bg-*`) and height. */
 export const LOCKUP =
   "block aspect-[148/32] mask-[url(/festio-lockup-alt.svg)] mask-contain mask-center mask-no-repeat";
 
-export const WARNING_LIGHT =
-  "border-warning-500/50 bg-warning-50 text-warning-700";
+/**
+ * The borderless tones: a fill a step deeper than the bordered ones' instead of
+ * a border. The border stays, transparent, so a tag keeps its size. The event
+ * status tags (Live, Hidden, Past); the warning one is the to-dos' too.
+ */
+export const SUCCESS_SOFT =
+  "border-transparent bg-primary-200 text-primary-800";
+export const WARNING_SOFT =
+  "border-transparent bg-warning-150 text-warning-700";
+export const NEUTRAL_SOFT =
+  "border-transparent bg-neutral-300 text-neutral-800";
+/** The bordered warning: the warning banners, Not coming. */
 export const WARNING_DARK =
   "border-warning-700/50 bg-warning-100 text-warning-700";
 /** The positive colouring (Coming): the dark warning's shades in green, its border, fill and ink a step darker. */
@@ -19,9 +24,12 @@ export const INFO_DARK = "border-info-700/50 bg-info-100 text-info-700";
 /** The danger colouring (Unknown and Duplicate tags, the danger zone): the dark warning's shades in brick, its fill and ink a step darker. */
 export const DANGER_DARK = "border-danger-800/50 bg-danger-150 text-danger-800";
 
+/** A text link without its colour, for a link coloured by what it acts on. Size is the caller's. */
+export const TEXT_LINK_SHAPE =
+  "font-semibold underline-offset-[3px] transition-colors hover:underline";
+
 /** Every text link and link-like button in the dashboard: colour, weight, hover. Size is the caller's. */
-export const TEXT_LINK =
-  "font-semibold text-accent-700 underline-offset-[3px] transition-colors hover:text-accent-900 hover:underline";
+export const TEXT_LINK = `${TEXT_LINK_SHAPE} text-accent-700 hover:text-accent-900`;
 
 /** A link at the boxes' line size: the dashboard's usual link. */
 export const LINK_TEXT = `meta-face ${TEXT_LINK}`;
@@ -64,8 +72,12 @@ export const PAGE_GUTTER = "px-[18px] nav:px-8 min-[1200px]:px-12";
  */
 export const BLEED = "ml-[calc(50%-var(--main-width)/2)] w-(--main-width)";
 
-/** A page box's padding, all round: for a box drawn some other way, too. */
-export const BOX_PAD = "p-[18px] @min-[600px]:p-6";
+/** The page boxes' padding as `--box-pad`, for a box that pads its parts with it (the guest list's); `--box-head-y`, a header bar's padding over and under, switches with it. */
+export const BOX_PAD_SIZE =
+  "[--box-pad:18px] [--box-head-y:14px] @min-[600px]:[--box-pad:24px] @min-[600px]:[--box-head-y:18px]";
+
+/** A page box's padding, all round: for a box drawn some other way, too. Set as `--box-pad`, so its title (`BoxHead`) can leave the same space under it. */
+export const BOX_PAD = `p-(--box-pad) ${BOX_PAD_SIZE}`;
 
 /** A card's frame, unpadded: for a card that pads its own parts. */
 export const CARD_FRAME = "rounded-ui border border-neutral-300 bg-neutral-50";
@@ -81,15 +93,18 @@ export const PAGE_BOX = `${CARD_FRAME} ${BOX_PAD}`;
 export const TWO_COLUMNS =
   "grid grid-cols-[minmax(0,1fr)] gap-4 @min-[860px]:grid-cols-[minmax(260px,1fr)_minmax(0,2fr)]";
 
-/** Rows in a box's list, a `neutral-200` rule between each. */
+/** Rows in a box's list, a `neutral-200` rule between each: lighter than the box's border, on its `neutral-50`. */
 export const BOX_ROWS = "divide-y divide-neutral-200";
 
 /** One row ruled off from the one before, for a row that sets its own spacing: the same rule as `BOX_ROWS`. */
 export const BOX_ROW = "border-t border-neutral-200 first:border-t-0";
 
+/** The Overview's invitation preview edge, shared by its frame and the Edit tag on its corner: a box inside a box. */
+export const PREVIEW_EDGE = "border-neutral-200";
+
 /** A floating menu's surface: the picker's list and the bars' and toolbar's menus. */
 export const MENU_SURFACE =
-  "rounded-ui border border-neutral-400 bg-neutral-50 shadow-card";
+  "rounded-ui border border-neutral-400 bg-neutral-50 shadow-menu";
 /** The bars' and toolbar's menus, floating by the button that opens them. */
 export const MENU_BOX = `absolute z-10 overflow-hidden py-1 ${MENU_SURFACE}`;
 /** A row in the bars' menus: the language menu's and the phone's More menu. */

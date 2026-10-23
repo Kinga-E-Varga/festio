@@ -1,6 +1,8 @@
 "use client";
 
 import { type ReactNode, useEffect, useId, useRef } from "react";
+import { BoxHead } from "@/components/dashboard/BoxHead";
+import { BOX_PAD_SIZE } from "@/components/dashboard/styles";
 
 interface DialogProps {
   title: string;
@@ -53,16 +55,25 @@ export function Dialog({ title, hint, onDismiss, children }: DialogProps) {
        * Phones: the box's middle a third of the way down, above where the
        * keyboard comes up; a tall one stops 16px from the top and grows down.
        */
-      className="m-auto max-h-[min(calc(100dvh-32px),720px)] max-sm:top-[33.33dvh] max-sm:bottom-auto max-sm:my-0 max-sm:translate-y-[max(-50%,calc(16px-33.33dvh))] w-[min(480px,calc(100vw-32px))] side-scroll overflow-y-auto overscroll-contain rounded-ui border border-neutral-400 bg-neutral-50 p-0 text-neutral-950 backdrop:bg-neutral-950/40 [--scroll-track:var(--color-neutral-50)]"
+      className={`m-auto max-h-[min(calc(100dvh-32px),720px)] max-sm:top-[33.33dvh] max-sm:bottom-auto max-sm:my-0 max-sm:translate-y-[max(-50%,calc(16px-33.33dvh))] w-[min(480px,calc(100vw-32px))] side-scroll overflow-y-auto overscroll-contain rounded-ui border border-neutral-400 bg-neutral-50 p-0 text-neutral-950 backdrop:bg-neutral-950/40 [--scroll-track:var(--color-neutral-50)] ${BOX_PAD_SIZE}`}
     >
-      {/* No bottom padding: each body ends with its own, so a pinned bar can sit flush. */}
-      <div className="px-5 pt-5">
-        <h3 id={titleId} className="small-title">
-          {title}
-        </h3>
-        {hint ? <p className="mt-1.5 hint-text">{hint}</p> : null}
+      {/*
+       * The page boxes' padding, and their head (`BoxHead`).
+       * No bottom padding: a body ends with `DialogActions`, or (the reply editor) a pinned bar that brings its own, so it can sit flush.
+       */}
+      <div className="px-(--box-pad) pt-(--box-pad)">
+        <BoxHead as="h3" id={titleId} title={title} hint={hint} />
         {children}
       </div>
     </dialog>
+  );
+}
+
+/** A dialog's buttons, at its foot, with the dialog's bottom padding under them. */
+export function DialogActions({ children }: { children: ReactNode }) {
+  return (
+    <div className="mt-5 flex flex-wrap justify-end gap-2 pb-(--box-pad)">
+      {children}
+    </div>
   );
 }

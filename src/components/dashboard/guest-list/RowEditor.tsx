@@ -43,7 +43,7 @@ export function RowEditor({
       noValidate
       className={
         inDialog
-          ? "mt-4 flex flex-col gap-4"
+          ? "flex flex-col gap-4"
           : `flex max-w-[500px] flex-col gap-4 px-3 pt-3 pb-4 ${FADE_IN}`
       }
     >
@@ -53,7 +53,7 @@ export function RowEditor({
       <div
         className={
           inDialog
-            ? "sticky bottom-0 flex flex-col gap-4 bg-neutral-50 pt-3 pb-5"
+            ? "sticky bottom-0 flex flex-col gap-4 bg-neutral-50 pt-3 pb-(--box-pad)"
             : "contents"
         }
       >

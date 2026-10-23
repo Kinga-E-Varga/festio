@@ -1,13 +1,17 @@
 import { useTranslations } from "next-intl";
 import { TAG } from "@/components/dashboard/guest-list/styles";
-import { SUCCESS_DARK, WARNING_DARK } from "@/components/dashboard/styles";
+import {
+  NEUTRAL_SOFT,
+  SUCCESS_SOFT,
+  WARNING_SOFT,
+} from "@/components/dashboard/styles";
 import type { EventStatus } from "@/types/dashboard";
 
-/** Each status's colours: live, Hidden, or over. */
+/** Each status's colours, borderless: live, Hidden, or over. */
 const TONE: Record<EventStatus, string> = {
-  active: SUCCESS_DARK,
-  hidden: WARNING_DARK,
-  past: "border-neutral-400 bg-neutral-200 text-neutral-700",
+  active: SUCCESS_SOFT,
+  hidden: WARNING_SOFT,
+  past: NEUTRAL_SOFT,
 };
 
 /** The Overview's, roomier than the rows' tags beside a box title, its text the same size. */

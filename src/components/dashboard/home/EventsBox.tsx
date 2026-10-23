@@ -145,7 +145,7 @@ function EventRow({ event }: { event: HomeEventRow }) {
   const row = "flex items-center gap-4 py-3.5";
   const cells = (
     <>
-      <StatusTag status={status} className="w-14 shrink-0 text-center" />
+      <StatusTag status={status} className="w-19 shrink-0 text-center" />
       <RowLines
         title={event.title}
         detail={`${formatDay(event.date, locale)} · ${formatRelative(event.countdown, locale)}`}

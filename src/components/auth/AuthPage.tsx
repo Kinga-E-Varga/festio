@@ -17,7 +17,7 @@ export async function AuthPage({ mode }: { mode: AuthMode }) {
         <span aria-hidden="true" className={`h-btn bg-primary-800 ${LOCKUP}`} />
       </Link>
       <div className={`w-full max-w-[400px] p-6 sm:p-8 ${CARD_FRAME}`}>
-        <h1 className="mb-6 page-title">
+        <h1 className="mb-6 text-center page-title sm:mb-8">
           {mode === "sign-up" ? t("signUpTitle") : t("signInTitle")}
         </h1>
         <AuthForm mode={mode} />

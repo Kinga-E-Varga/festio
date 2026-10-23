@@ -8,7 +8,6 @@ import {
   ERROR,
   SOFT_ACTION,
   INPUT,
-  LABEL,
 } from "@/components/dashboard/event-editor/styles";
 import { PanelSwitch } from "@/components/invitation/PanelSwitch";
 import { localized, type Language } from "@/lib/language";
@@ -63,7 +62,7 @@ export function FieldInput({
   if (field.type === "choice") {
     return (
       <div className="flex flex-col gap-1.5">
-        <label htmlFor={id} className={LABEL}>
+        <label htmlFor={id} className="label-caps">
           {label}
         </label>
         <Select
@@ -97,7 +96,7 @@ export function FieldInput({
 
   return (
     <div className="flex flex-col gap-1.5">
-      <label htmlFor={id} id={`${id}-label`} className={LABEL}>
+      <label htmlFor={id} id={`${id}-label`} className="label-caps">
         {label}
         {required ? <span aria-hidden="true"> *</span> : null}
       </label>

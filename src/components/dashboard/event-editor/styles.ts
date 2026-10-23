@@ -10,9 +10,6 @@ export const FIELD =
   "w-full rounded-ui border px-3 [&:not(textarea)]:h-input [&:not(textarea)]:py-0 py-[9px] field-text transition-colors focus:outline-2 focus:-outline-offset-1 disabled:cursor-not-allowed disabled:bg-neutral-300 disabled:text-neutral-800";
 export const INPUT = `${FIELD} side-scroll [--scroll-track:var(--color-neutral-50)] font-normal border-neutral-400 bg-neutral-50 outline-neutral-500 hover:border-neutral-600 focus:border-neutral-500 disabled:border-neutral-400 date-icon`;
 
-/** Field labels and the standalone legends above a group of controls. */
-export const LABEL = "label-caps";
-
 export const ERROR = "hint-face font-medium text-danger-800";
 
 /** The soft action's colours ("Stop using the list", "Different person", the list box's Save), at any size. Hovered, the fill darkens two steps. */

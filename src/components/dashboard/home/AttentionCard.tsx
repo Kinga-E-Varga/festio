@@ -3,20 +3,35 @@ import { BoxHead } from "@/components/dashboard/BoxHead";
 import { NoticeAction } from "@/components/dashboard/NoticeAction";
 import { useNoticeValues } from "@/components/dashboard/notices";
 import { RowLines } from "@/components/dashboard/RowLines";
-import { BOX_ROWS, LINK_TEXT, PAGE_BOX } from "@/components/dashboard/styles";
+import {
+  BOX_ROWS,
+  PAGE_BOX,
+  TEXT_LINK_SHAPE,
+} from "@/components/dashboard/styles";
 import type {
   AttentionNotice,
   DashboardEvent,
   NoticeTone,
 } from "@/types/dashboard";
 
-/** Each notice's mark: brick for the ones that stop replies, gold for the rest. */
-const MARK: Record<NoticeTone, string> = {
-  attention: "bg-danger-600",
-  paused: "bg-danger-600",
-  deadline: "bg-warning-400",
-  deletion: "bg-warning-400",
-  hidden: "bg-warning-400",
+/**
+ * Each notice's mark, and its link in the mark's colour: brick for the ones
+ * that stop replies, amber for the rest. The links are a step darker, to read well.
+ */
+const DANGER = {
+  mark: "bg-danger-600",
+  link: "text-danger-700 hover:text-danger-800",
+};
+const WARNING = {
+  mark: "bg-warning-400",
+  link: "text-warning-700 hover:text-warning-800",
+};
+const TONE: Record<NoticeTone, { mark: string; link: string }> = {
+  attention: DANGER,
+  paused: DANGER,
+  deadline: WARNING,
+  deletion: WARNING,
+  hidden: WARNING,
 };
 
 /**
@@ -59,7 +74,7 @@ export function AttentionCard({
               >
                 <span
                   aria-hidden="true"
-                  className={`w-[3px] shrink-0 rounded-full ${MARK[notice.tone]}`}
+                  className={`w-[3px] shrink-0 rounded-full ${TONE[notice.tone].mark}`}
                 />
                 <RowLines
                   title={title}
@@ -67,7 +82,7 @@ export function AttentionCard({
                 >
                   <NoticeAction
                     notice={notice}
-                    className={`mt-1 self-start text-left ${LINK_TEXT}`}
+                    className={`mt-1 self-start text-left meta-face ${TEXT_LINK_SHAPE} ${TONE[notice.tone].link}`}
                   >
                     {tNotices(`${notice.key}.action`, values)}
                   </NoticeAction>

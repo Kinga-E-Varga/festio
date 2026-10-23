@@ -2,11 +2,7 @@
 
 import { useLocale, useTranslations } from "next-intl";
 import { memo, useLayoutEffect, useMemo, useRef, type ReactNode } from "react";
-import {
-  SOFT_BTN,
-  INPUT,
-  LABEL,
-} from "@/components/dashboard/event-editor/styles";
+import { SOFT_BTN, INPUT } from "@/components/dashboard/event-editor/styles";
 import { localized, type Language } from "@/lib/language";
 import {
   emptyItem,
@@ -53,7 +49,7 @@ export function ItemHead({
   return (
     // Filled with the inputs' border colour: the bar that heads each item.
     <div className={`${HEAD_BAR} w-full justify-between bg-neutral-300`}>
-      <span className={`${LABEL} text-neutral-950!`}>{title}</span>
+      <span className="label-caps text-neutral-950!">{title}</span>
       {end ?? (
         <button
           type="button"
@@ -91,7 +87,7 @@ function AddButton({
       // Its own words already say what it adds.
       aria-label={text ? undefined : `${t("add")}: ${label}`}
       onClick={onAdd}
-      className={`${HEAD_BAR} ${LABEL} cursor-pointer border transition-colors disabled:cursor-not-allowed disabled:opacity-50 ${SOFT_BTN} w-full`}
+      className={`${HEAD_BAR} label-caps cursor-pointer border transition-colors disabled:cursor-not-allowed disabled:opacity-50 ${SOFT_BTN} w-full`}
     >
       <Icon name="plus" className="size-3.5" strokeWidth={2} />
       {text ?? t("add")}
@@ -129,7 +125,7 @@ function LinesField({
         return (
           <div key={index} className="flex flex-col gap-1.5">
             <div className="flex items-center justify-between">
-              <label htmlFor={lineId} className={LABEL}>
+              <label htmlFor={lineId} className="label-caps">
                 {title}
               </label>
               <button

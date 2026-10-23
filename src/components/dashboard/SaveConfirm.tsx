@@ -2,7 +2,7 @@
 
 import { useTranslations } from "next-intl";
 import { type ReactNode, useState } from "react";
-import { Dialog } from "@/components/dashboard/Dialog";
+import { Dialog, DialogActions } from "@/components/dashboard/Dialog";
 import {
   BTN_GHOST_LIGHT,
   BTN_PRIMARY,
@@ -21,15 +21,15 @@ export function SaveConfirm({ replied, onAgree, onCancel }: SaveConfirmProps) {
   const t = useTranslations("SaveConfirm");
   return (
     <Dialog title={t("title")} onDismiss={onCancel}>
-      <p className="mt-3 row-text">{t("body", { count: replied })}</p>
-      <div className="mt-5 flex justify-end gap-2 pb-5">
+      <p className="row-text">{t("body", { count: replied })}</p>
+      <DialogActions>
         <button type="button" onClick={onCancel} className={BTN_GHOST_LIGHT}>
           {t("cancel")}
         </button>
         <button type="button" onClick={onAgree} className={BTN_PRIMARY}>
           {t("agree")}
         </button>
-      </div>
+      </DialogActions>
     </Dialog>
   );
 }

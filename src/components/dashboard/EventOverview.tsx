@@ -73,9 +73,7 @@ export function EventOverview({
             <RepliesBox event={event} guests={guests} latest={latest} />
             <section className={PAGE_BOX}>
               <BoxHead title={t("keyDates")} />
-              <div className="mt-5">
-                <DatesThatMatter event={event} />
-              </div>
+              <DatesThatMatter event={event} />
             </section>
             <PrivacyBox event={event} />
           </div>

@@ -1,11 +1,8 @@
 "use client";
 
 import { type KeyboardEvent, useEffect, useId, useRef, useState } from "react";
-import {
-  ERROR,
-  INPUT,
-  LABEL,
-} from "@/components/dashboard/event-editor/styles";
+import { ERROR, INPUT } from "@/components/dashboard/event-editor/styles";
+import { MENU_SURFACE } from "@/components/dashboard/styles";
 import { FoldChevron } from "@/components/icons";
 
 /** The classes a dropdown is drawn with, so an invitation can dress it in its own palette. */
@@ -23,12 +20,11 @@ export interface MultiSelectSkin {
 
 /** The host app's look — Festio's own tokens. */
 export const DASHBOARD_SKIN: MultiSelectSkin = {
-  label: `mb-1.5 block ${LABEL}`,
+  label: "mb-1.5 block label-caps",
   toggle: `${INPUT} flex cursor-pointer items-center justify-between gap-2 text-left`,
   placeholder: "text-neutral-600",
   chevron: "text-neutral-700",
-  panel:
-    "absolute inset-x-0 top-full z-10 mt-1 rounded-ui border border-neutral-400 bg-neutral-50 py-1 shadow-sm",
+  panel: `absolute inset-x-0 top-full z-10 mt-1 py-1 ${MENU_SURFACE}`,
   option:
     "flex cursor-pointer items-center gap-2.5 px-3 py-1.5 field-text transition-colors hover:bg-neutral-150",
   tick: "size-4 accent-neutral-600",

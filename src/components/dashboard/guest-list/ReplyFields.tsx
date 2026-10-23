@@ -7,11 +7,7 @@ import {
   Controller,
   type UseFormRegisterReturn,
 } from "react-hook-form";
-import {
-  ERROR,
-  INPUT,
-  LABEL,
-} from "@/components/dashboard/event-editor/styles";
+import { ERROR, INPUT } from "@/components/dashboard/event-editor/styles";
 import { MultiSelect } from "@/components/dashboard/guest-list/MultiSelect";
 import {
   AGE_KEY,
@@ -38,7 +34,7 @@ export function NameField({ registration, error }: NameFieldProps) {
   const t = useTranslations("GuestList");
   return (
     <label className="block min-w-[200px] flex-1">
-      <span className={`mb-1.5 block ${LABEL}`}>{t("name")}</span>
+      <span className="mb-1.5 block label-caps">{t("name")}</span>
       <input {...registration} maxLength={NAME_LIMIT} className={INPUT} />
       {error ? <span className={`mt-1 block ${ERROR}`}>{error}</span> : null}
     </label>
@@ -63,7 +59,7 @@ export function Choices<T extends string>({
 }: ChoicesProps<T>) {
   return (
     <fieldset className="min-w-0">
-      <legend className={`mb-1.5 ${LABEL}`}>{legend}</legend>
+      <legend className="mb-1.5 label-caps">{legend}</legend>
       <div className="flex flex-wrap gap-1.5">
         {options.map((option) => (
           <button
@@ -101,7 +97,7 @@ function SelectField({
   const t = useTranslations("GuestList");
   return (
     <label className="block min-w-0">
-      <span className={`mb-1.5 block ${LABEL}`}>{label}</span>
+      <span className="mb-1.5 block label-caps">{label}</span>
       <Select
         value={value}
         onChange={(event) => onChange(event.target.value)}
@@ -256,7 +252,7 @@ export function QuestionField({ control, name, question }: QuestionFieldProps) {
         if (question.kind === "text") {
           return (
             <label className="block min-w-0">
-              <span className={`mb-1.5 block ${LABEL}`}>{question.label}</span>
+              <span className="mb-1.5 block label-caps">{question.label}</span>
               <input
                 ref={field.ref}
                 name={field.name}

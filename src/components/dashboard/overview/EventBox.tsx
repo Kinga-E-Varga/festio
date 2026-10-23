@@ -5,17 +5,16 @@ import { EventWhen } from "@/components/dashboard/EventWhen";
 import { StatusTag } from "@/components/dashboard/StatusTag";
 import { eventPage } from "@/components/dashboard/event-nav/pages";
 import { PageLink } from "@/components/dashboard/overview/PageLink";
-import { PAGE_BOX } from "@/components/dashboard/styles";
+import { PAGE_BOX, PREVIEW_EDGE } from "@/components/dashboard/styles";
 import { eventStatus } from "@/lib/event";
 import type { DashboardEvent } from "@/types/dashboard";
 
 /**
  * Edit tucked into the picture's corner, its edges on the picture's own, its
- * outer corner rounded with it: the page's link on a light tag, edged like
- * the boxes; greyed, with its reason, when it can't open.
+ * outer corner rounded with it: the page's link on a light tag, edged in the
+ * picture's colour; greyed, with its reason, when it can't open.
  */
-const EDIT =
-  "absolute top-0 right-0 rounded-tr-ui rounded-bl-ui border border-neutral-300 bg-neutral-50 px-2.5 py-1";
+const EDIT = `absolute top-0 right-0 rounded-tr-ui rounded-bl-ui border ${PREVIEW_EDGE} bg-neutral-50 px-2.5 py-1`;
 
 /**
  * The event itself: its name and status, its day, then its invitation as

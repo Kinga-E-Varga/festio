@@ -2,7 +2,6 @@
 
 import { useLocale, useTranslations } from "next-intl";
 import { Fragment } from "react";
-import { LABEL } from "@/components/dashboard/event-editor/styles";
 import { DateFormatSelect } from "@/components/invitation/DateFormatSelect";
 import { localized, type Language } from "@/lib/language";
 import { groups, isOn, list, longDate, text } from "@/modular/content";
@@ -190,7 +189,7 @@ export function FieldList({
       const id = fieldId(section, field.id);
       return (
         <div key={field.id} className="flex flex-col gap-1.5">
-          <label htmlFor={id} className={LABEL}>
+          <label htmlFor={id} className="label-caps">
             {localized(field.label, host)}
           </label>
           <DateFormatSelect
@@ -232,7 +231,7 @@ function EventDateLine({
   const host = useLocale() as Language;
   return (
     <div className="flex flex-col gap-1.5">
-      <span className={LABEL}>{localized(field.label, host)}</span>
+      <span className="label-caps">{localized(field.label, host)}</span>
       <p className="text-[13.5px] text-neutral-950">{longDate(date, host)}</p>
       <p className="hint-text">{t("dateHint")}</p>
     </div>

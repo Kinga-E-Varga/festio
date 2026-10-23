@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, type ReactNode } from "react";
+import { PREVIEW_EDGE } from "@/components/dashboard/styles";
 import { ScaledStage } from "@/components/invitation/ScaledStage";
 import { ModularInvitation } from "@/components/modular/ModularInvitation";
 import { pageBackground, templateVars } from "@/lib/invitation";
@@ -19,8 +20,7 @@ import type {
  * the frame itself is the one image they read. `isolate` keeps the copy's
  * own layers (a sticky header) under the Edit tag on its corner.
  */
-const FRAME =
-  "relative isolate w-full overflow-clip rounded-ui border border-neutral-300";
+const FRAME = `relative isolate w-full overflow-clip rounded-ui border ${PREVIEW_EDGE}`;
 
 /**
  * A simple invitation as guests see it, the whole card shrunk to the box:

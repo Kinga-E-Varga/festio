@@ -70,8 +70,14 @@ Example v4 configuration:
 - Tailwind CSS for all styling
 - No inline styles
 - Only light mode as option
-- Write each style and element once: `@utility` classes in `src/app/globals.css`, constants in a `styles.ts`, small shared components. Check for an existing one first; extract a pattern on its second use; delete what ends up unused
-- Host-app text styles (size, weight, colour, family, tracking, case) are `@utility` classes in `globals.css`, never TS constants or repeated inline classes. Dashboard scale: page 28 serif / card 17 serif / row 14 / field 13.5 / line 12.5 / item 12.5 semibold / hint 11.5 / caps 10, no 11px
+- Write each style once, in the one place that fits it. Check for an existing one first; extract a pattern on its second use; delete what ends up unused
+  - **A value** (a colour, a size, a shadow, a padding the whole app shares): a token in `@theme` in `src/app/globals.css`
+  - **A text style** (size, weight, colour, family, tracking, case): an `@utility` class in `globals.css` (`label-caps`, `card-title`). Utilities can build on each other (`card-title` is `card-face` plus a colour). Never a TS constant
+  - **A bundle** (several classes that always go together: a field, a button, a box's frame and padding): a constant in a `styles.ts`, built from the tokens and utilities above (`INPUT`, `BUTTON`, `BOX_PAD`)
+  - **Markup that repeats** (a box's head, a tag): a small shared component
+- Never give a second name to something that already has one: a constant that is only one existing utility (`LABEL = "label-caps"`) hides the real class from search and autocomplete. Use the utility
+- A bundle lives in the `styles.ts` of the folder that uses it. Used outside that folder, it moves up to the shared one (`src/components/dashboard/styles.ts`); never import another feature's local `styles.ts`
+- Dashboard text scale: page 28 serif / card 17 serif / row 14 / field 13.5 / line 12.5 / item 12.5 semibold / hint 11.5 / caps 10, no 11px
 - Line height doesn't count when matching text styles and stays with each use. It goes into a class only when many places use it for one reason (like `hint-text`'s 1.45)
 - Invitations are excluded: when looking for matching text styles, skip `src/components/invitation/`, `src/modular/` and `src/templates/` entirely — they have their own fonts and palettes
 

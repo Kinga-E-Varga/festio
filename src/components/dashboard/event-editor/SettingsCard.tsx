@@ -2,6 +2,7 @@
 
 import { useTranslations } from "next-intl";
 import type { ReactNode } from "react";
+import { BoxHead } from "@/components/dashboard/BoxHead";
 import { UnsavedPrompt } from "@/components/dashboard/UnsavedPrompt";
 import {
   BTN_GHOST_LIGHT,
@@ -9,7 +10,7 @@ import {
   BUTTON,
   ERROR,
 } from "@/components/dashboard/event-editor/styles";
-import { BOX_ROW } from "@/components/dashboard/styles";
+import { BOX_PAD, BOX_ROW } from "@/components/dashboard/styles";
 
 /** Edit, in a card's head: edged and filled in the cards' edge colour. */
 const EDIT = `${BUTTON} border-neutral-300 bg-neutral-300 text-neutral-800 hover:border-neutral-400 hover:bg-neutral-400 hover:text-neutral-900`;
@@ -57,27 +58,27 @@ export function SettingsCard({
   return (
     <section
       id={id}
-      className={`scroll-mt-[88px] rounded-ui border bg-neutral-50 transition-colors ${
+      className={`scroll-mt-[88px] rounded-ui border bg-neutral-50 transition-colors ${BOX_PAD} ${
         open ? "border-neutral-500" : "border-neutral-300"
       }`}
     >
-      <header className="flex items-start gap-4 px-5 pt-4 pb-1.5">
-        <div className="min-w-0 flex-1">
-          <h2 className="card-title">{title}</h2>
-          {description ? <p className="mt-1 hint-text">{description}</p> : null}
-        </div>
-        {editing && !open ? (
-          <button type="button" onClick={editing.onEdit} className={EDIT}>
-            {t("edit")}
-          </button>
-        ) : null}
-      </header>
+      <BoxHead
+        title={title}
+        hint={description}
+        aside={
+          editing && !open ? (
+            <button type="button" onClick={editing.onEdit} className={EDIT}>
+              {t("edit")}
+            </button>
+          ) : null
+        }
+      />
 
       {/* The blocks inside lay themselves out against the card, not the page. */}
-      <div className="@container px-5 pt-2.5 pb-5">{children}</div>
+      <div className="@container">{children}</div>
 
       {editing && open ? (
-        <footer className="mx-5 flex flex-col gap-4 border-t border-neutral-200 py-4">
+        <footer className="mt-(--box-pad) flex flex-col gap-4 border-t border-neutral-200 pt-(--box-pad)">
           <div className="flex justify-end gap-2">
             <button
               type="button"
