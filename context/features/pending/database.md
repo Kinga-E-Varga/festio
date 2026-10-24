@@ -221,6 +221,10 @@ than a chart needs.
 - **Notification:** a `seatingWarnings` count on the event card, updated when a reply comes
   in, is edited or deleted, and when the chart is saved. The dashboard's notifications rail
   reads it ("2 seated guests need a look"). In-app only, no email.
+- **When the chart's save is built,** the counts-drift test
+  (`tests/writes/counts-drift.test.ts`) saves its chart through it instead of writing the
+  card straight to Firestore, so the test also checks that the save updates
+  `seatingWarnings`.
 - **Later, without breaking anything:** exact seats (an optional seat number per person) and a
   room plan (an optional position and shape per table).
 

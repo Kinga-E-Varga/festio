@@ -76,8 +76,8 @@ rules below hold whether or not it is used.
 3. **Branch** — a new branch per feature/fix: `feature/[name]`, `fix/[name]`, `chore/[name]`
    (`/feature start`).
 4. **Implement** — what @context/current-feature.md describes.
-5. **Test** — verify it in the browser, then run `npm run build` and fix any errors. No unit
-   tests yet.
+5. **Test** — verify it in the browser, then run `npm test` and `npm run build` and fix any
+   errors.
 6. **Iterate** — change things if needed.
 7. **Simplify, commit, merge, push, close out** — `/feature complete`.
 
@@ -85,7 +85,7 @@ rules below hold whether or not it is used.
 
 - **Ask before every commit.** The only exception: running `/feature complete` is the
   permission to commit, merge and push that feature.
-- Never commit until `npm run build` passes. If it fails, fix it first.
+- Never commit until `npm test` and `npm run build` pass. If either fails, fix it first.
 - One feature/fix = one commit, with a conventional message (`feat:`, `fix:`, `chore:`, …).
 - Merge to main fast-forward only, never a merge commit — rebase onto main first if needed.
 - If the change moved a route, a top-level `src/` directory, a file in `src/lib/`, or a
@@ -105,7 +105,22 @@ The superpowers plugin is welcome, with these adjustments. They override the plu
 - **Use:** `systematic-debugging` for bugs, `verification-before-completion` before saying
   something is done or fixed, `receiving-code-review` when acting on review findings,
   `writing-plans` / `executing-plans` / `subagent-driven-development` through `/feature`.
-- **Skip for now:** `test-driven-development` (no test setup), `using-git-worktrees` (one
+- **`test-driven-development`** (test first, watch it fail, then the code) for the saves in
+  `src/db/writes/`, plain functions in `src/lib/`, and every bug fix there: the fix starts
+  with a test that shows the bug. Not for UI; that's checked in the browser.
+- **Guards against biased tests** (the same agent writes the code and its tests):
+  1. **Tests come from the spec, before the code.** The plan (or, without one, the start of
+     the work) lists each test and its expected values.
+  2. **Expected values are worked out by hand** from the spec, never by calling the code
+     under test.
+  3. **A failing test is a finding.** Never change a test just to make it pass: stop and
+     tell the user whether the code or the test is wrong.
+  4. **Prove the tests can fail, then get a fresh review.** Break the code on purpose once
+     per new test file and see the test fail. Before `/feature complete`, a fresh agent
+     (one that didn't write the code) checks each new test proves what its name says.
+  - **Payments, the GDPR deletion job and the security rules** also get a separate agent
+    that writes their tests from the spec alone, before the code exists.
+- **Skip for now:** `using-git-worktrees` (one
   branch at a time), `finishing-a-development-branch` (use `/feature complete`),
   `requesting-code-review`.
 - Nothing goes under `docs/superpowers/`. `.superpowers/` is scratch, deleted before each

@@ -147,6 +147,14 @@ Every page reads it (server only). The host's saves write it through `src/db/wri
 - `seed/` — the emulators' seed data and runner: `npm run emulators` starts Firestore, Auth and Storage and seeds them; `npm run seed` resets the data. Host login `maria@festio.test` / `festio-dev`.
 - Root: `firebase.json` (emulator ports), `.firebaserc` (`demo-festio`), `firestore.rules` / `storage.rules` (closed until step 6), `firestore.indexes.json`.
 
+## Tests — `tests/`
+
+Vitest, run with `npm test`. It starts its own Firestore emulator (`firebase.test.json`, its own port and `demo-…-test` project), so it never touches the dev emulators or their seed; Auth and Storage point where nothing listens. `vitest.config.mts` sets the test env, including the server's clock (`TZ`, New York, never an event's zone). Vitest 4, not 5: 5 needs `@types/node` 22 or later, the project is on 20.
+
+- `setup/global.ts` — refuses anything but the test emulator, then empties it once.
+- `helpers/events.ts` — `createEvent` (each test makes its own event with fresh IDs; tests don't use the dev seed), `guestInput`, `newVisitor`, `storedCounts`, `recount`, `refusedWith`.
+- `lib/` — plain functions, no emulator. `writes/` — the saves in `src/db/writes/`, called directly.
+
 ## Other
 
 - `src/types/` — `actions.ts` (`ActionResult`, every Server Action's return), `envelope.ts` (the envelope's colour roles), `invitation.ts` (incl. `TemplateModule`, a union of simple and modular), `modular.ts` (sections, palettes, pairs, modular templates), `dashboard.ts`, `print.ts`, `guests.ts` (the guest list's view shapes)

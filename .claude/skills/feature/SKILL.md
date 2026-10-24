@@ -27,13 +27,13 @@ Completed features are listed in `context/history.md` (append only, newest first
 
 Execute the requested action: $ARGUMENTS
 
-| Action     | Description                                    |
-| ---------- | ---------------------------------------------- |
-| `load`     | Load a feature spec or inline description      |
-| `plan`     | Write an implementation plan (large features)  |
-| `start`    | Begin implementation, create and switch branch |
-| `complete` | Simplify, commit, merge, reset, push           |
-| `test`     | Not set up yet — no test runner                |
+| Action     | Description                                      |
+| ---------- | ------------------------------------------------ |
+| `load`     | Load a feature spec or inline description        |
+| `plan`     | Write an implementation plan (large features)    |
+| `start`    | Begin implementation, create and switch branch   |
+| `complete` | Simplify, commit, merge, reset, push             |
+| `test`     | Write and run tests for the feature (`npm test`) |
 
 See [actions/](actions/) for detailed instructions.
 

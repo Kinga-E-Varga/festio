@@ -20,5 +20,4 @@ Read the following to get the full context of the project:
 - `npm run start` — run the production build
 - `npm run lint` — run ESLint
 - `npm run format` — format everything with Prettier (`format:check` to only check)
-
-There is no test setup in this project yet.
+- `npm test` — the regression tests (Vitest), on their own Firestore emulator; Java needed, like `npm run emulators`. Safe to run while the dev emulators are up. One file or folder: `TESTS=tests/lib npm test`

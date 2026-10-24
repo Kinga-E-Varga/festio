@@ -24,7 +24,7 @@ export function momentFromNow(days: number): Timestamp {
 }
 
 /** The same numbers on every run, so everyone gets the same seed. */
-function random(seed: number) {
+export function random(seed: number) {
   let state = seed;
   return () => {
     state = (state + 0x6d2b79f5) | 0;

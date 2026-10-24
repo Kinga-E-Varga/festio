@@ -15,7 +15,8 @@ the Commits rules in `context/ai-interaction.md`.
      (with why), then `Goals: all met` or the goals that look missing. Ask the user to check in the browser and answer `ok`, `do [n]`,
      `undo [n]` or anything else. Act on the answer, building again after any change,
      until the user says `ok`.
-2. In `context/current-feature.md` set **Status: Completed** — that line only, nothing
+2. Run `npm test`, and `npm run build` unless step 1 already built with no change since. If either
+   fails, stop and fix it before going on. In `context/current-feature.md` set **Status: Completed** — that line only, nothing
    else in the file. Delete `.superpowers/` if it exists. If the change moved a route, a
    top-level `src/` directory, a file in `src/lib/`, or a component between folders, update
    `context/repo-map.md` (or the matching `context/map/` file). Then stage all changes and
