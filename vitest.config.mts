@@ -1,4 +1,5 @@
 import { defineConfig } from "vitest/config";
+import { TEST_ENV } from "./tests/setup/config";
 
 /*
  * `npm test` runs this inside its own Firestore emulator (`firebase.test.json`),
@@ -8,19 +9,15 @@ export default defineConfig({
   resolve: { tsconfigPaths: true },
   test: {
     include: ["tests/**/*.test.ts"],
+    /* They need the app running: `npm run test:app` and `npm run cost`. */
+    exclude: ["tests/app/**", "tests/cost/measure.test.ts"],
     globalSetup: "tests/setup/global.ts",
     /* One emulator: files run side by side make its transactions wait on each other until tests time out. */
     fileParallelism: false,
     env: {
-      NEXT_PUBLIC_USE_EMULATORS: "true",
-      /* The project `npm test` started the emulator with (`--project`), written there only. */
-      NEXT_PUBLIC_FIREBASE_PROJECT_ID: process.env.GCLOUD_PROJECT ?? "",
-      FESTIO_SECRET: "test-only-not-a-secret",
-      /* Only Firestore runs for the tests: Auth and Storage point where nothing listens, never at the dev emulators. */
+      ...TEST_ENV,
+      /* Only Firestore runs for `npm test`: Auth points where nothing listens, never at the dev emulator. */
       FIREBASE_AUTH_EMULATOR_HOST: "127.0.0.1:1",
-      FIREBASE_STORAGE_EMULATOR_HOST: "127.0.0.1:1",
-      /* Not the events' zone: proves the rules read the event's clock, not the server's. */
-      TZ: "America/New_York",
     },
   },
 });

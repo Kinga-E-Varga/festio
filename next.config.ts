@@ -7,6 +7,10 @@ const withNextIntl = createNextIntlPlugin("./src/i18n/request.ts");
 const nextConfig: NextConfig = {
   /* config options here */
   reactCompiler: true,
+  /** The page tests build a second copy into `.next-test`, so it never meets `npm run dev`'s. */
+  distDir: process.env.FESTIO_DIST_DIR ?? ".next",
+  /* That copy skips the type check: `npm run build` already does it, and the tests need only the app. */
+  typescript: { ignoreBuildErrors: Boolean(process.env.FESTIO_DIST_DIR) },
   /**
    * Dev only: lets a phone on the same Wi-Fi load the dev server by the PC's
    * local address (home networks use 192.168.x.x or 10.x.x.x).

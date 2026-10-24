@@ -13,7 +13,7 @@ import { SLUG_BLOCK_DAYS, TERMS_VERSION } from "@/lib/config";
 import { addDays, deletionDate } from "@/lib/event";
 import { countsOf } from "@/db/writes/counts";
 import { replyRef } from "@/db/writes/reply-ref";
-import { momentFromNow } from "./build";
+import { momentFromNow, SEED_HOST as HOST } from "./build";
 import { SEED_EVENTS, type SeedEvent } from "./events";
 
 /*
@@ -24,13 +24,6 @@ import { SEED_EVENTS, type SeedEvent } from "./events";
  * `npm run emulators` runs it on start; `npm run seed` resets the data any
  * time. `--stay` keeps it running, so the emulators stay up until Ctrl+C.
  */
-
-const HOST = {
-  uid: "host-maria",
-  email: "maria@festio.test",
-  password: "festio-dev",
-  name: "Maria",
-};
 
 const PROJECT = process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID;
 

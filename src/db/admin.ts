@@ -3,6 +3,7 @@ import { getAuth } from "firebase-admin/auth";
 import { getFirestore } from "firebase-admin/firestore";
 import { getStorage } from "firebase-admin/storage";
 import firebaseConfig from "../../firebase.json";
+import { countDbUse } from "@/db/count";
 
 /*
  * The server's way into Firebase (Admin SDK). It skips security rules, so
@@ -45,6 +46,10 @@ export const db = getFirestore(app);
 if (fresh) db.settings({ ignoreUndefinedProperties: true });
 
 export const auth = getAuth(app);
+
+/** Dev only: the cost check and the page tests count every read and write (`src/db/count.ts`). */
+export const COUNTING = USE_EMULATORS && process.env.FESTIO_COUNT_DB === "true";
+if (COUNTING) countDbUse(db, auth);
 
 /** Host uploads, one folder per event, in the default bucket (`storage.bucket()`). */
 export const storage = getStorage(app);

@@ -1,0 +1,87 @@
+{
+  "page: landing (signed in)": {
+    "reads": 53,
+    "writes": 0,
+    "authChecks": 1
+  },
+  "page: dashboard home": {
+    "reads": 178,
+    "writes": 0,
+    "authChecks": 1
+  },
+  "page: event overview": {
+    "reads": 184,
+    "writes": 0,
+    "authChecks": 1
+  },
+  "page: guest list": {
+    "reads": 180,
+    "writes": 0,
+    "authChecks": 1
+  },
+  "page: event editor": {
+    "reads": 178,
+    "writes": 0,
+    "authChecks": 1
+  },
+  "page: invitation editor": {
+    "reads": 8,
+    "writes": 0,
+    "authChecks": 1
+  },
+  "page: print": {
+    "reads": 8,
+    "writes": 0,
+    "authChecks": 1
+  },
+  "guest: public invitation": {
+    "reads": 3,
+    "writes": 0,
+    "authChecks": 0
+  },
+  "guest: protected, locked": {
+    "reads": 3,
+    "writes": 0,
+    "authChecks": 0
+  },
+  "guest: protected, unlocked": {
+    "reads": 3,
+    "writes": 0,
+    "authChecks": 0
+  },
+  "save: event settings": {
+    "reads": 1,
+    "writes": 1,
+    "authChecks": 0
+  },
+  "save: invitation": {
+    "reads": 2,
+    "writes": 1,
+    "authChecks": 0
+  },
+  "save: guest list, one reply edited": {
+    "reads": 43,
+    "writes": 2,
+    "authChecks": 0
+  },
+  "save: mark replies seen": {
+    "reads": 0,
+    "writes": 1,
+    "authChecks": 0
+  },
+  "guest reply: new name": {
+    "reads": 6,
+    "writes": 3,
+    "authChecks": 0
+  },
+  "guest reply: name already replied": {
+    "reads": 7,
+    "writes": 3,
+    "authChecks": 0
+  },
+  "guest reply: pre-loaded name": {
+    "reads": 7,
+    "writes": 3,
+    "authChecks": 0
+  }
+}

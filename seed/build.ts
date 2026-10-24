@@ -10,6 +10,14 @@ import type { StoredReply } from "@/lib/guests";
 
 export const TIME_ZONE = "Europe/Bucharest";
 
+/** The seed's one host: the dev login, and who the page tests sign in as. */
+export const SEED_HOST = {
+  uid: "host-maria",
+  email: "maria@festio.test",
+  password: "festio-dev",
+  name: "Maria",
+};
+
 /** A reply card with the ID it is saved under. */
 export type SeedReply = StoredReply;
 

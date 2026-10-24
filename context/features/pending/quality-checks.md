@@ -52,7 +52,7 @@ setup.
    - Not here: the Firestore / Storage rules tests. They come with step 6 and join this
      runner then.
 
-2. **To do — cost check** (`chore/cost-check`).
+2. **Done (`chore: cost check`) — cost check** (`chore/cost-check`).
    - **Count every Firestore read and write** a request makes, in dev only. Count at the
      source (around the Admin SDK in `src/db/admin.ts`, or the reads and writes), so a new
      read can't slip past. Transactions' reads count too. Off in production, no cost there.
@@ -95,8 +95,39 @@ setup.
      - a Protected invitation → the password screen, never the invitation or its title;
        unlocked, the invitation
      - a cancelled invitation → the host's message only
+   - **Findings** (first run, 2026-10-24; the seed host, 7 events, `botez-sofia` as the big
+     event with 150 expected). Numbers per page view or save; `npm run cost` has the table.
+     - **A month:** about 20,200 reads and 290 writes for one big event (each save's page
+       reload included), so about 74 such events can be active at once inside the free
+       allowance, then about $0.006 a month each (US list prices; europe-west4's to confirm
+       at step 6). Host dashboard pages and reloads are about 89% of the reads; 450 guest
+       visits about 7% (3 reads each).
+     - **Closing events' guest lists on every host page — worth a fix.** 38 of the 53 reads
+       even the landing page makes: every reply of `maria-andrei` (closing in 2 days) and
+       its list, only to count who hasn't replied. It grows with the event: a 300-guest
+       wedding near its close costs every host page view a few hundred reads.
+     - **Latest replies and their tags — worth a fix.** About 122 of a dashboard page's
+       178 reads: up to 20 replies from each event, then every reply of each event left in
+       the feed to work out Unknown / Duplicate. It grows with every event's replies.
+     - **Session check — fine.** One `verifySessionCookie` per host page, no Firestore
+       read. Its network time is measured at step 6.
+     - **`refresh()` after a guest list save — worth a fix, already planned.** The save is
+       43 reads (it recounts from every reply), then `refresh()` renders the page again:
+       180 more. Live updates (`database.md` → Security rules → Live updates for hosts)
+       remove the refresh.
+     - **The guest list page loading every reply — fine.** It shows every reply, so it
+       reads them; the rest of its 180 is the dashboard's own reads above, plus 2 for the
+       recount it runs after the page is sent (`after()`).
+     - **Templates per event — fine.** Loaded from the app's own files, no Firestore read.
+     - **Guests replying at the same moment — step 6.** Nothing new here: measure on
+       `festio-dev` as noted above.
 
 3. **To do — UX walk-through** (`chore/ux-walkthrough`).
+   - **First, the seed:** today no seed event has a Public invitation to open (the only ones
+     with a template are Protected or Hidden). Give one or two seed events a template in
+     `seed/events.ts`. Then drop the templates the page tests and the cost check add
+     themselves (`tests/app/access.test.ts`, `tests/cost/measure.test.ts`) and update the
+     cost baseline if it moves.
    - **A checklist file** of situations, each with how to get there (seed event, steps) and
      what to look for. Lives with the tests, so it's updated with them.
    - **Two people:**
@@ -117,3 +148,17 @@ setup.
      they'd hurt. Each one worth fixing becomes its own `fix/`; the rest are noted as
      accepted.
 
+## Fixes found by the cost check
+
+Each its own `fix/`, test-first, and `npm run cost` before and after: the baseline goes
+down, then `COST_UPDATE=1 npm run cost` saves it. Mark each `Done (<commit message>)` when
+finished.
+
+1. **To do — keep "who hasn't replied" as a counter** (`fix/waiting-counter`). The event's
+   `counts` gain `waiting` (pre-loaded names nobody's reply matches), kept by `countsOf`
+   like the others, so host pages stop reading every reply of each closing event. A
+   data-shape change: the seed and a one-off script if real data exists by then.
+2. **To do — latest replies without reading every reply** (`fix/latest-replies-reads`).
+   Read only the 20 newest replies across the host's events, and work out their Unknown /
+   Duplicate tags from the replies sharing their names (`nameKeys`, as `readReplyGroup`
+   does), not from every reply of each event.

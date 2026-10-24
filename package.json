@@ -11,6 +11,8 @@
     "format:check": "prettier --check .",
     "emulators": "firebase emulators:exec --ui \"npm run seed -- --stay\"",
     "seed": "node --env-file=.env.development --import tsx seed/index.ts",
+    "test:app": "firebase emulators:exec --config firebase.test.json --only firestore,auth --project demo-festio-test \"vitest run --config vitest.app.config.mts tests/app\"",
+    "cost": "firebase emulators:exec --config firebase.test.json --only firestore,auth --project demo-festio-test \"vitest run --config vitest.app.config.mts tests/cost\"",
     "test": "firebase emulators:exec --config firebase.test.json --only firestore --project demo-festio-test \"vitest run $TESTS\""
   },
   "dependencies": {

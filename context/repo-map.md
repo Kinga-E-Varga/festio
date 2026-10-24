@@ -40,6 +40,8 @@ one) — see the comments in `[locale]/layout.tsx` and `invite/[invite]/layout.t
 | `invite/[invite]/layout.tsx` | Its own root layout — same fonts/chrome; `lang` and the message catalog come from the invitation's own `language`   |
 | `invite/[invite]/page.tsx`   | Public guest-facing invitation. URL is unprefixed (`/maria-birthday`) — `next.config.ts` rewrites it here invisibly |
 
+**Dev only:** `api/dev/db-count/route.ts` — the read and write counts `npm run cost` takes after each page (`src/db/count.ts`); 404 unless counting is on, which needs the emulators.
+
 `fonts.ts` — the app-wide `next/font/google` declarations (Work Sans +
 Libre Baskerville), shared by both root layouts.
 
@@ -143,6 +145,7 @@ Every page reads it (server only). The host's saves write it through `src/db/wri
 - `src/db/limits.ts` — `EVENT_KINDS`, `TITLE_MIN`/`MAX`, `PASSWORD_PATTERN`, `HOST_NAME_MAX`, `ACCOUNT_PASSWORD_MIN`, `CANCEL_MESSAGE_MAX`, the reply's `RSVP_NAME_MAX` / `RSVP_NOTE_MAX` / `RSVP_ANSWER_MAX` / `RSVP_PEOPLE_MAX`: no Zod, so client forms import them without shipping Zod.
 - `src/db/paths.ts` — every collection and document path.
 - `src/db/secret.ts` — `sign` (HMAC with `FESTIO_SECRET`), `unlockToken`, `unlockMatches`. Dev's secret is a dummy in `.env.development`.
+- `src/db/count.ts` — dev only: `countDbUse` counts every Firestore read and write the way Firestore bills them, and session checks; `takeDbCount`. On only with `FESTIO_COUNT_DB=true` on the emulators (the test app copy).
 - `src/db/admin.ts` — the Admin SDK (`db`, `auth`). With `NEXT_PUBLIC_USE_EMULATORS=true` (`.env.development`) it talks to the local emulators, ports from `firebase.json`.
 - `seed/` — the emulators' seed data and runner: `npm run emulators` starts Firestore, Auth and Storage and seeds them; `npm run seed` resets the data. Host login `maria@festio.test` / `festio-dev`.
 - Root: `firebase.json` (emulator ports), `.firebaserc` (`demo-festio`), `firestore.rules` / `storage.rules` (closed until step 6), `firestore.indexes.json`.
@@ -154,6 +157,9 @@ Vitest, run with `npm test`. It starts its own Firestore emulator (`firebase.tes
 - `setup/global.ts` — refuses anything but the test emulator, then empties it once.
 - `helpers/events.ts` — `createEvent` (each test makes its own event with fresh IDs; tests don't use the dev seed), `guestInput`, `newVisitor`, `storedCounts`, `recount`, `refusedWith`.
 - `lib/` — plain functions, no emulator. `writes/` — the saves in `src/db/writes/`, called directly.
+- `setup/config.ts` — the env both Vitest configs share.
+- `app/` — `npm run test:app` (`vitest.app.config.mts`): `global.ts` seeds the test emulator with the dev seed, builds a second copy of the app into `.next-test` and starts it on port 3100, counting reads; `session.ts` (`hostCookie` — a real session from the test Auth emulator, `SEED_HOST`, `OTHER_HOST`), `fetch.ts` (`page`, `appDbCount`, `mentions` — text in a page in any of its written forms), `access.test.ts` (who sees what).
+- `cost/` — `npm run cost`: `measure.test.ts` (every page and save against `baseline.json`; the table in `last-run.md`, git-ignored), `report.ts` (`compare`, `table`), `month.ts` (`USE` — a month's habits, `PRICES`, `month`). `report` and `month` have plain tests in `npm test`.
 
 ## Other
 

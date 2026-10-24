@@ -517,7 +517,11 @@ Steps 1–5 run fully on your machine; the first big handoff is step 6.
    - **Email verification** needs real email sending, so it can only be finished here:
      `context/fixes/pending/email-verification.md`. Until then, Google on an unverified
      password account drops the password.
-7. **CI:** lint, build and rules tests on every push; auto-deploy to dev.
+   - **Firestore's europe-west4 prices:** `tests/cost/month.ts` uses the US list prices;
+     put the real ones in from the console's pricing.
+7. **CI:** lint, build and rules tests on every push; auto-deploy to dev. Every push also
+   runs `npm run test:app` (page tests) and `npm run cost`; a cost rise fails until fixed
+   or accepted with `COST_UPDATE=1 npm run cost`.
 8. **GDPR cleanup.** The nightly deletion job and account deletion.
    - The job reuses `src/db/writes/`. Move the rules that live only in the actions today
      (past, cancelled: `eventForRules` in `src/actions/event.ts`, the last `hostEvent` reads

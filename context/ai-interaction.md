@@ -85,7 +85,9 @@ rules below hold whether or not it is used.
 
 - **Ask before every commit.** The only exception: running `/feature complete` is the
   permission to commit, merge and push that feature.
-- Never commit until `npm test` and `npm run build` pass. If either fails, fix it first.
+- Never commit until `npm test` and `npm run build` pass, and `npm run test:app` too when the
+  change touches `src/db/reads/`, `src/db/secret.ts`, `src/app/`, `src/components/invitation/`, `src/templates/`, `src/modular/`, `src/lib/slug.ts`, `src/i18n/`, `messages/`, `src/proxy.ts` or `next.config.ts`. If any
+  fails, fix it first.
 - One feature/fix = one commit, with a conventional message (`feat:`, `fix:`, `chore:`, …).
 - Merge to main fast-forward only, never a merge commit — rebase onto main first if needed.
 - If the change moved a route, a top-level `src/` directory, a file in `src/lib/`, or a
