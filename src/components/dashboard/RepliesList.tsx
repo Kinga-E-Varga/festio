@@ -82,3 +82,39 @@ export function RepliesList({
     </ul>
   );
 }
+
+/** Rows the latest replies' shape, while they load. */
+const SKELETON_ROWS = 4;
+
+/** The side panel's latest replies: a skeleton until they first arrive, then the list. */
+export function LatestReplies({
+  entries,
+  failed,
+}: {
+  entries: RsvpActivity[] | null;
+  failed: boolean;
+}) {
+  const t = useTranslations("Rail");
+
+  if (entries) return <RepliesList entries={entries} />;
+  if (failed) return <p className="muted-text">{t("repliesFailed")}</p>;
+  return (
+    <div role="status">
+      <span className="sr-only">{t("repliesLoading")}</span>
+      <ul aria-hidden="true" className="animate-pulse">
+        {Array.from({ length: SKELETON_ROWS }, (_, row) => (
+          <li
+            key={row}
+            className={`flex gap-2.5 py-2.5 first:pt-0 last:pb-0 wide:gap-[11px] wide:py-3 ${BOX_ROW}`}
+          >
+            <span className="size-6 shrink-0 rounded-full bg-neutral-200 wide:size-7" />
+            <div className="flex-1 pt-0.5">
+              <div className="h-3 w-3/4 rounded-ui bg-neutral-200" />
+              <div className="mt-2 h-2.5 w-1/2 rounded-ui bg-neutral-200" />
+            </div>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}

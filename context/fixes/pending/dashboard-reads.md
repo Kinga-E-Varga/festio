@@ -41,7 +41,7 @@ goes down, then `COST_UPDATE=1 npm run cost` saves it.
      Another data-shape change (the reply schema, the seed, a one-off script if real data
      exists), plus a composite index in `firestore.indexes.json`. Archived events need no
      filter: their replies are deleted with their data.
-3. **To do — load the latest replies only when their panel opens** (`fix/replies-panel-on-open`).
+3. **Done (fix: load the latest replies only when their panel opens) — load the latest replies only when their panel opens** (`fix/replies-panel-on-open`).
    - **Now:** the dashboard's shared layout (`src/app/[locale]/dashboard/layout.tsx` →
      `loadDashboard`) builds the latest replies panel (behind the guests icon on the right
      strip) on every dashboard page, though it starts closed. After item 2 that is about 40
@@ -49,8 +49,8 @@ goes down, then `COST_UPDATE=1 npm run cost` saves it.
    - **Fix:** the panel asks for its replies when the host opens it, with a loading
      skeleton meanwhile. Every dashboard page drops to roughly 15 reads plus its own; the
      feed's reads are paid only when someone looks.
-   - **To decide:** the moment of skeleton on opening, and how the panel fetches (a Server
-     Action or a route).
+   - **Decided (2026-10-24):** a Server Action; the skeleton only on the first opening, then
+     the list is kept and fetched again only when the badge shows new replies.
 
 Not here: `refresh()` after a guest list save (about 180 reads on top of the save's 43).
 Live updates remove it (`context/features/pending/database.md` → Security rules → Live

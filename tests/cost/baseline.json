@@ -5,22 +5,22 @@
     "authChecks": 1
   },
   "page: dashboard home": {
-    "reads": 60,
+    "reads": 14,
     "writes": 0,
     "authChecks": 1
   },
   "page: event overview": {
-    "reads": 114,
+    "reads": 68,
     "writes": 0,
     "authChecks": 1
   },
   "page: guest list": {
-    "reads": 103,
+    "reads": 57,
     "writes": 0,
     "authChecks": 1
   },
   "page: event editor": {
-    "reads": 61,
+    "reads": 15,
     "writes": 0,
     "authChecks": 1
   },
@@ -48,6 +48,11 @@
     "reads": 3,
     "writes": 0,
     "authChecks": 0
+  },
+  "panel: latest replies": {
+    "reads": 53,
+    "writes": 0,
+    "authChecks": 1
   },
   "save: event settings": {
     "reads": 1,

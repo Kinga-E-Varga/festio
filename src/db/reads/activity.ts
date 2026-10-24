@@ -4,7 +4,6 @@ import { db } from "@/db/admin";
 import { paths } from "@/db/paths";
 import { feedTags, latestReplies, type LatestReply } from "@/db/reads/feed";
 import { initials } from "@/db/reads/host";
-import { requireHostId } from "@/db/reads/session";
 import type { StoredReply } from "@/lib/guests";
 import { isArchived, shortTitle, spanFrom } from "@/lib/event";
 import type { DashboardEvent, Message, RsvpActivity } from "@/types/dashboard";
@@ -119,11 +118,10 @@ async function toFeed(
 
 /** The host's `limit` newest replies across these, their events, newest first. */
 export async function loadRecentReplies(
+  hostId: string,
   events: DashboardEvent[],
   limit: number,
 ): Promise<RsvpActivity[]> {
-  await connection();
-  const hostId = await requireHostId();
   return toFeed(await latestReplies({ hostId }, limit), events);
 }
 

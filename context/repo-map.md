@@ -109,7 +109,7 @@ Host actions go through `host-save.ts` (`hostSave`: signed in, the card's schema
 - `slug.ts` — `checkSlug` (is the link free).
 - `invitation.ts` — `saveInvitation` (simple and modular).
 - `guests.ts` — `saveGuestChanges` (the replies), `saveGuestListOn` (the pre-loaded names).
-- `host.ts` — `markRepliesSeen` (sets `lastVisit`).
+- `host.ts` — `markRepliesSeen` (sets `lastVisit`), `loadLatestReplies` (the side panel's latest replies, when it opens).
 - `auth.ts` — see Auth.
 - `guest.ts` — the guest's own, no sign-in: `unlockInvitation` (a Protected password → the `unlock-<slug>` cookie), `sendReply` (the reply, checked in `writeGuestReply`).
 

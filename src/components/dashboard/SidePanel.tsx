@@ -15,7 +15,7 @@ export const SIDE_PANEL_ID = "side-panel";
 
 interface SidePanelProps {
   panel: SidePanelState;
-  /** Server-rendered content for each view. */
+  /** The content of each view. */
   views: Record<SidePanelView, ReactNode>;
 }
 

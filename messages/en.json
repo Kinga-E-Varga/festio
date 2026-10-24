@@ -179,7 +179,9 @@
   },
   "Rail": {
     "cartEmpty": "Invitations you start but haven't saved yet wait here.",
-    "noReplies": "No replies yet."
+    "noReplies": "No replies yet.",
+    "repliesLoading": "Loading the latest replies…",
+    "repliesFailed": "The latest replies couldn't be loaded. Close this panel and open it again to retry."
   },
   "Event": {
     "reportFlood": "Report issue",

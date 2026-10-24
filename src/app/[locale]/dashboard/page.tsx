@@ -7,7 +7,7 @@ import { EventsBox } from "@/components/dashboard/home/EventsBox";
 import { NextEventCard } from "@/components/dashboard/home/NextEventCard";
 import { CONTENT_WIDTH, TWO_COLUMNS } from "@/components/dashboard/styles";
 import { homeRows } from "@/lib/event";
-import { loadDashboard } from "@/db/reads/dashboard";
+import { loadHostSummary } from "@/db/reads/dashboard";
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations("Meta");
@@ -17,7 +17,7 @@ export async function generateMetadata(): Promise<Metadata> {
 export default async function DashboardPage() {
   const t = await getTranslations("Dashboard");
   const format = await getFormatter();
-  const { host, events, notices } = await loadDashboard();
+  const { host, events, notices } = await loadHostSummary();
   const rows = homeRows(events);
   const nextRow = rows.find((row) => row.status !== "past");
   const next = nextRow && events.find((event) => event.id === nextRow.id);

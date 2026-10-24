@@ -179,7 +179,9 @@
   },
   "Rail": {
     "cartEmpty": "Invitațiile începute, dar încă nesalvate, te așteaptă aici.",
-    "noReplies": "Niciun răspuns încă."
+    "noReplies": "Niciun răspuns încă.",
+    "repliesLoading": "Se încarcă ultimele răspunsuri…",
+    "repliesFailed": "Ultimele răspunsuri nu s-au putut încărca. Închide panoul și deschide-l din nou ca să încerci iar."
   },
   "Event": {
     "reportFlood": "Raportează răspunsuri suspecte",

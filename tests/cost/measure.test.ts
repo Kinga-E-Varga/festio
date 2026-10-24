@@ -12,7 +12,7 @@ import { writeGuestChanges } from "@/db/writes/guests";
 import { writeInvitation } from "@/db/writes/invitation";
 import { fromGuestReplies, toGuestReplies } from "@/lib/guests";
 import { guestInput, newVisitor, readEvent } from "../helpers/events";
-import { appDbCount, page } from "../app/fetch";
+import { action, appDbCount, page } from "../app/fetch";
 import { hostCookie, unlockHeader } from "../app/session";
 import { seedEvent } from "../helpers/seed";
 import { SEED_HOST } from "../../seed/build";
@@ -89,6 +89,11 @@ test("what each page and save costs, against the baseline", async () => {
   await fromApp("guest: public invitation", `/${BIG}`);
   await fromApp("guest: protected, locked", `/${slug}`);
   await fromApp("guest: protected, unlocked", `/${slug}`, unlock);
+  await action("src/actions/host.ts", "loadLatestReplies", {
+    path: "/dashboard",
+    cookie: host,
+  });
+  measured["panel: latest replies"] = await settled();
 
   const { event, replies, list } = await readEvent(BIG);
   const now = new Date();

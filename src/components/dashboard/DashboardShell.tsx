@@ -11,9 +11,11 @@ import {
 import { markRepliesSeen } from "@/actions/host";
 import { BarActions, type BarData } from "@/components/dashboard/BarActions";
 import { NAV_DOCKED } from "@/components/dashboard/media";
+import { LatestReplies } from "@/components/dashboard/RepliesList";
 import { SidePanel } from "@/components/dashboard/SidePanel";
 import { PAGE_GUTTER } from "@/components/dashboard/styles";
 import { TopBar } from "@/components/dashboard/TopBar";
+import { useLatestReplies } from "@/components/dashboard/useLatestReplies";
 import {
   useSidePanel,
   type SidePanelView,
@@ -26,8 +28,6 @@ interface DashboardShellProps {
   cart: ReactNode;
   /** Server-rendered alerts, the side panel's view behind the bell. */
   alerts: ReactNode;
-  /** Server-rendered latest replies, the side panel's view behind the guests icon. */
-  replies: ReactNode;
   /** Server-rendered account links and Log out, the view behind the account circle. */
   account: ReactNode;
   /** The host's initials and the strip's counts. */
@@ -61,7 +61,6 @@ export function DashboardShell({
   nav,
   cart,
   alerts,
-  replies,
   account,
   bar: serverBar,
   children,
@@ -70,6 +69,8 @@ export function DashboardShell({
   const sidePanel = useSidePanel();
   const [navOpen, setNavOpen] = useState(false);
   const navPanelRef = useRef<HTMLDivElement>(null);
+  /* The view behind the guests icon, loaded here so it outlives the panel's other views. */
+  const latest = useLatestReplies();
   /* The server's bar the host has seen. Any re-render from the server brings a new object with the true count. */
   const [seenBar, setSeenBar] = useState<BarData | null>(null);
   const bar = {
@@ -85,10 +86,14 @@ export function DashboardShell({
     ...sidePanel,
     select: (view: SidePanelView) => {
       setNavOpen(false);
-      /* Opening the latest replies is looking at them: save it and clear the badge. */
-      if (view === "replies" && bar.replies > 0) {
-        setSeenBar(serverBar);
-        void markRepliesSeen();
+      if (view === "replies") {
+        /* The first opening loads them; a later one only when the badge says there are new ones. */
+        if (latest.entries === null || bar.replies > 0) void latest.load();
+        /* Opening them is looking at them: save it and clear the badge. */
+        if (bar.replies > 0) {
+          setSeenBar(serverBar);
+          void markRepliesSeen();
+        }
       }
       sidePanel.select(view);
     },
@@ -187,7 +192,17 @@ export function DashboardShell({
         <BarActions panel={panel} bar={bar} />
       </div>
 
-      <SidePanel panel={panel} views={{ cart, alerts, replies, account }} />
+      <SidePanel
+        panel={panel}
+        views={{
+          cart,
+          alerts,
+          replies: (
+            <LatestReplies entries={latest.entries} failed={latest.failed} />
+          ),
+          account,
+        }}
+      />
 
       {/*
        * The scrims, below `nav` only: a tap closes what they dim. The side

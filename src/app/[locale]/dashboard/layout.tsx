@@ -3,22 +3,22 @@ import { DashboardShell } from "@/components/dashboard/DashboardShell";
 import { AccountList } from "@/components/dashboard/AccountList";
 import { AlertsList } from "@/components/dashboard/AlertsList";
 import { CartList } from "@/components/dashboard/CartList";
-import { RepliesList } from "@/components/dashboard/RepliesList";
 import { SideNav } from "@/components/dashboard/SideNav";
 import { orderEvents } from "@/lib/event";
 import { PICKED_EVENT_COOKIE, toPickerEvent } from "@/lib/picked-event";
-import { loadDashboard } from "@/db/reads/dashboard";
+import { loadHostSummary } from "@/db/reads/dashboard";
 
 /**
  * The shell owns the drawer state, so it is a client component — but the nav
- * and the side panel's four views are passed in as already-rendered server output.
+ * and three of the side panel's views are passed in as already-rendered server
+ * output; the latest replies load when their view opens.
  */
 export default async function DashboardLayout({
   children,
 }: LayoutProps<"/[locale]/dashboard">) {
   // The event picked on an earlier visit, so the nav draws it straight away.
   const storedEventId = (await cookies()).get(PICKED_EVENT_COOKIE)?.value;
-  const { events: all, notices, activity, bar } = await loadDashboard();
+  const { events: all, notices, bar } = await loadHostSummary();
   const events = orderEvents(all, "active").map(toPickerEvent);
 
   return (
@@ -26,7 +26,6 @@ export default async function DashboardLayout({
       nav={<SideNav events={events} storedEventId={storedEventId} />}
       cart={<CartList />}
       alerts={<AlertsList notices={notices} />}
-      replies={<RepliesList entries={activity} />}
       account={<AccountList />}
       bar={bar}
     >

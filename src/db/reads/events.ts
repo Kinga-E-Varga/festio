@@ -61,10 +61,8 @@ function toView(id: string, data: unknown, now: Date): DashboardEvent | null {
   return doc ? toDashboardEvent(id, doc, now) : null;
 }
 
-/** Every event of the signed-in host, in no order: callers sort for their own list. */
-export const loadHostEvents = cache(async (): Promise<DashboardEvent[]> => {
-  await connection();
-  const hostId = await requireHostId();
+/** Every event of this host, in no order: for a Server Action, which has checked the host already. */
+export async function eventsOfHost(hostId: string): Promise<DashboardEvent[]> {
   const now = new Date();
   const snapshot = await db
     .collection(paths.events)
@@ -72,6 +70,12 @@ export const loadHostEvents = cache(async (): Promise<DashboardEvent[]> => {
     .get();
   const events = snapshot.docs.map((doc) => toView(doc.id, doc.data(), now));
   return events.filter((event) => event !== null);
+}
+
+/** Every event of the signed-in host, in no order: callers sort for their own list. */
+export const loadHostEvents = cache(async (): Promise<DashboardEvent[]> => {
+  await connection();
+  return eventsOfHost(await requireHostId());
 });
 
 /** The event a guest link names, from its slug card alone: null for no such link or a blocked one. */

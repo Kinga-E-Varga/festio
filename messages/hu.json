@@ -179,7 +179,9 @@
   },
   "Rail": {
     "cartEmpty": "Az elkezdett, de még nem mentett meghívók itt várnak rád.",
-    "noReplies": "Még nincs válasz."
+    "noReplies": "Még nincs válasz.",
+    "repliesLoading": "A legutóbbi válaszok betöltése…",
+    "repliesFailed": "Nem sikerült betölteni a legutóbbi válaszokat. Zárd be a panelt, és nyisd meg újra."
   },
   "Event": {
     "reportFlood": "Gyanús válaszok jelentése",

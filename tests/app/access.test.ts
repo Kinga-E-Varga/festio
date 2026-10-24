@@ -2,11 +2,14 @@ import { Timestamp } from "firebase-admin/firestore";
 import { beforeAll, expect, test } from "vitest";
 import { db } from "@/db/admin";
 import { paths } from "@/db/paths";
+import { unlockToken } from "@/db/secret";
+import { writeGuestReply } from "@/db/writes/guest-reply";
 import ro from "../../messages/ro.json";
 import { SEED_HOST } from "../../seed/build";
+import { guestInput, newVisitor } from "../helpers/events";
 import { mentions } from "../helpers/page-text";
 import { seedEvent } from "../helpers/seed";
-import { page } from "./fetch";
+import { action, page } from "./fetch";
 import { hostCookie, OTHER_HOST, unlockHeader } from "./session";
 
 /*
@@ -20,6 +23,8 @@ const CANCELLED = seedEvent("logodna-ana-vlad");
 const PROTECTED_TEXT = "sărbătoriți nunta noastră";
 const CANCELLED_TEXT = "Doar pe invitație, niciodată după anulare";
 const CANCEL_MESSAGE = "Ne pare rău, petrecerea se amână.";
+/* The seed host's newest reply, sent in `beforeAll`. */
+const NEWEST_GUEST = "Panel Check Newest";
 
 beforeAll(async () => {
   /* With a template, so only Hidden can keep its page away (no template is "not found" anyway). */
@@ -32,6 +37,16 @@ beforeAll(async () => {
     envelope: true,
     version: 1,
   });
+  await writeGuestReply(
+    PROTECTED.id,
+    PROTECTED.event.slug,
+    guestInput([NEWEST_GUEST]),
+    {
+      ...newVisitor(),
+      unlock: unlockToken(PROTECTED.id, PROTECTED.event.password ?? ""),
+    },
+    new Date(),
+  );
 });
 
 test("another host's event is not found", async () => {
@@ -103,4 +118,34 @@ test("a cancelled invitation shows only the host's message", async () => {
   expect(status).toBe(200);
   expect(mentions(body, CANCEL_MESSAGE)).toBe(true);
   expect(mentions(body, CANCELLED_TEXT)).toBe(false);
+});
+
+test("the latest replies come only when asked, and only the host's own", async () => {
+  const [own, other] = await Promise.all([
+    hostCookie(SEED_HOST),
+    hostCookie(OTHER_HOST),
+  ]);
+  const latest = (cookie?: string) =>
+    action("src/actions/host.ts", "loadLatestReplies", {
+      path: "/dashboard",
+      cookie,
+    });
+
+  /* The page alone no longer carries them: the panel asks when it opens. */
+  const home = await page("/dashboard", own);
+  expect(home.status).toBe(200);
+  expect(mentions(home.body, NEWEST_GUEST)).toBe(false);
+
+  const asked = await latest(own);
+  expect(asked.status).toBe(200);
+  expect(mentions(asked.body, NEWEST_GUEST)).toBe(true);
+  /* Another host's answer works, it just holds none of these replies. */
+  const others = await latest(other);
+  expect(others.status).toBe(200);
+  expect(others.body).toContain('"success":true');
+  expect(mentions(others.body, NEWEST_GUEST)).toBe(false);
+  /* Signed out, the action goes to sign-in instead. */
+  const signedOut = await latest();
+  expect(signedOut.redirect).toContain("/sign-in");
+  expect(mentions(signedOut.body, NEWEST_GUEST)).toBe(false);
 });

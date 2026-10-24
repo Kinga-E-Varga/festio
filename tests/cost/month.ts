@@ -17,6 +17,8 @@ export const USE: { situation: string; times: number; reloads?: string }[] = [
   { situation: "page: event editor", times: 3 },
   { situation: "page: invitation editor", times: 5 },
   { situation: "page: print", times: 2 },
+  /* It loads on a first opening or with new replies: about as often as they are marked seen. */
+  { situation: "panel: latest replies", times: 20 },
   /* 150 guests, each opening the invitation 3 times. */
   { situation: "guest: public invitation", times: 450 },
   {
