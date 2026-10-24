@@ -167,6 +167,8 @@ export interface DashboardEvent {
   expectedGuests: number;
   /** Replies to sort out: names not on the pre-loaded list, or used by more than one reply. */
   needsAttention: number;
+  /** Pre-loaded names nobody's reply claims yet; 0 with the list off. */
+  waiting: number;
   preloaded: boolean;
   /** The host's own questions, archived ones too: their answers still show. */
   questions: GuestQuestion[];

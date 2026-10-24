@@ -6,7 +6,7 @@ import type { GuestReplyInput } from "@/db/schemas/reply";
 import { countsOf, readCountInputs } from "@/db/writes/counts";
 import type { Visitor } from "@/db/writes/guest-reply";
 import { SaveRefused, type SaveError } from "@/db/writes/save";
-import type { EventCounts } from "@/lib/guests";
+import { EMPTY_COUNTS, type EventCounts } from "@/lib/guests";
 import { newId } from "@/lib/id";
 
 /*
@@ -18,13 +18,6 @@ export const TEST_HOST = "host-test";
 
 /** The moment the tests' saves happen at, unless a test needs its own. */
 export const NOW = new Date("2029-01-10T12:00:00Z");
-
-export const NO_COUNTS: EventCounts = {
-  coming: 0,
-  notComing: 0,
-  needsAttention: 0,
-  seatingWarnings: 0,
-};
 
 /** A link no other test uses: `test-` and 8 random letters or digits. */
 function freshSlug(): string {
@@ -50,7 +43,7 @@ export async function createEvent(
     package: "free",
     templateId: "wolf-dance",
     questions: [],
-    counts: NO_COUNTS,
+    counts: EMPTY_COUNTS,
     dataDeleted: false,
     version: 0,
     createdAt: Timestamp.now(),

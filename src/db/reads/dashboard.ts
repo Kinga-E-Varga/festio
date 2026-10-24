@@ -1,11 +1,9 @@
 import { cache } from "react";
 import type { BarData } from "@/components/dashboard/BarActions";
-import { hostNotices, needsWaiting } from "@/components/dashboard/notices";
+import { hostNotices } from "@/components/dashboard/notices";
 import { loadRecentReplies, newReplyCount } from "@/db/reads/activity";
 import { loadHostEvents } from "@/db/reads/events";
-import { loadGuestRows } from "@/db/reads/guests";
 import { loadHost, type Host } from "@/db/reads/host";
-import { countRows } from "@/lib/guests";
 import type {
   AttentionNotice,
   DashboardEvent,
@@ -27,26 +25,11 @@ export interface HostDashboard extends HostSummary {
   activity: RsvpActivity[];
 }
 
-/** Who on the list hasn't replied yet, read only for the events whose notice names them. */
-async function waitingCounts(
-  events: DashboardEvent[],
-): Promise<Record<string, number>> {
-  const counted = await Promise.all(
-    events.filter(needsWaiting).map(async (event) => {
-      return [event.id, countRows(await loadGuestRows(event)).waiting] as const;
-    }),
-  );
-  return Object.fromEntries(counted);
-}
-
 /** The host, their events and what needs them, without the latest replies: the landing bar's read. */
 export const loadHostSummary = cache(async (): Promise<HostSummary> => {
   const [host, events] = await Promise.all([loadHost(), loadHostEvents()]);
-  const [waiting, replies] = await Promise.all([
-    waitingCounts(events),
-    newReplyCount(events, host.lastVisit),
-  ]);
-  const notices = hostNotices(events, waiting);
+  const replies = await newReplyCount(events, host.lastVisit);
+  const notices = hostNotices(events);
   return {
     host,
     events,

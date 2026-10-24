@@ -42,6 +42,7 @@ function toDashboardEvent(
     },
     expectedGuests: doc.expectedGuests,
     needsAttention: doc.counts.needsAttention,
+    waiting: doc.counts.waiting,
     preloaded: doc.preloaded,
     questions: doc.questions,
     seatingAvailable: PACKAGES[doc.package].seating,

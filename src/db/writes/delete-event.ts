@@ -6,6 +6,7 @@ import { eventSchema, type EventDoc } from "@/db/schemas/event";
 import { slugDocSchema } from "@/db/schemas/slug";
 import { SLUG_BLOCK_DAYS } from "@/lib/config";
 import { addDays } from "@/lib/event";
+import { EMPTY_COUNTS } from "@/lib/guests";
 
 /*
  * Deleting an event's data: the host's Delete now, and later the nightly
@@ -48,7 +49,7 @@ export function leftoverEvent(doc: EventDoc): EventDoc {
     package: doc.package,
     templateId: doc.templateId,
     questions: [],
-    counts: { coming: 0, notComing: 0, needsAttention: 0, seatingWarnings: 0 },
+    counts: EMPTY_COUNTS,
     dataDeleted: true,
     version: doc.version,
     createdAt: doc.createdAt,

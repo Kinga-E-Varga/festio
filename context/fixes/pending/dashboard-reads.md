@@ -18,7 +18,7 @@ goes down, then `COST_UPDATE=1 npm run cost` saves it.
 **When one is finished** (at `/feature complete`), mark it here: change its `To do` to
 `Done (<commit message>)`.
 
-1. **To do — keep "who hasn't replied" as a counter** (`fix/waiting-counter`).
+1. **Done (fix: keep who hasn't replied as a counter) — keep "who hasn't replied" as a counter** (`fix/waiting-counter`).
    - **Now:** 38 of the 53 reads even the landing page makes. For each event whose form is
      closing soon, host pages read every reply and the guest list, only to count who
      hasn't replied (`waitingCounts` in `src/db/reads/dashboard.ts`). A 300-guest wedding
@@ -34,7 +34,15 @@ goes down, then `COST_UPDATE=1 npm run cost` saves it.
    - **Fix:** read only the 20 newest replies across the host's events, and work out their
      tags from the replies sharing their names (`nameKeys`, as `readReplyGroup` does), not
      from every reply of each event.
+   - **To decide — one query across events:** today it asks each event for its 20 newest
+     and throws most away (7 events → up to 140 replies read for 20 shown). If each reply
+     card also stored its host's ID, one collection group query over `replies`
+     (`hostId ==`, `sentAt` newest first, limit 20) would read exactly the 20 shown.
+     Another data-shape change (the reply schema, the seed, a one-off script if real data
+     exists), plus a composite index in `firestore.indexes.json`. Archived events must
+     still drop out of the feed: check how, without reading their replies.
 
 Not here: `refresh()` after a guest list save (about 180 reads on top of the save's 43).
 Live updates remove it (`context/features/pending/database.md` → Security rules → Live
-updates for hosts).
+updates for hosts). The guest list saves themselves (a full recount each): see
+`guest-list-saves.md`.

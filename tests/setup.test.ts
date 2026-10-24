@@ -1,10 +1,6 @@
 import { expect, test } from "vitest";
-import {
-  createEvent,
-  NO_COUNTS,
-  recount,
-  storedCounts,
-} from "./helpers/events";
+import { EMPTY_COUNTS } from "@/lib/guests";
+import { createEvent, recount, storedCounts } from "./helpers/events";
 
 test("the server's clock is New York's, never an event's zone", () => {
   expect(Intl.DateTimeFormat().resolvedOptions().timeZone).toBe(
@@ -18,6 +14,6 @@ test("an event written by createEvent reads back with zero counts", async () => 
     storedCounts(id),
     recount(id),
   ]);
-  expect(counts).toEqual(NO_COUNTS);
-  expect(recounted).toEqual(NO_COUNTS);
+  expect(counts).toEqual(EMPTY_COUNTS);
+  expect(recounted).toEqual(EMPTY_COUNTS);
 });

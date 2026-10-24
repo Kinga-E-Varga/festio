@@ -51,10 +51,7 @@ function byUrgency(notices: AttentionNotice[]): AttentionNotice[] {
 }
 
 /** The reply form closing soon or closed, with who is left to chase. */
-function closingNotice(
-  event: DashboardEvent,
-  pending: number,
-): AttentionNotice {
+function closingNotice(event: DashboardEvent): AttentionNotice {
   return {
     id: `replies-close-${event.id}`,
     eventId: event.id,
@@ -65,7 +62,7 @@ function closingNotice(
     values: {
       event: shortTitle(event),
       /* Who is left to chase: the task names them. */
-      pending,
+      pending: event.waiting,
       custom: event.repliesCloseAt ? "yes" : "no",
       /*
        * A custom time can still move until the default close. On the default
@@ -93,20 +90,14 @@ function closingOnRail(event: DashboardEvent): boolean {
   );
 }
 
-/** The events whose closing notice names who is left to chase: they need their guest list read. */
-export function needsWaiting(event: DashboardEvent): boolean {
-  return event.preloaded && closingOnRail(event);
-}
-
 /**
  * One event's notices. On the rail (`overview` false) only what still needs
  * the host now: active events for replies, nothing about a past one but its
  * deletion. Its Overview also lists what its own state says needs doing,
- * Hidden or not. `waiting` is who on its list hasn't replied yet.
+ * Hidden or not.
  */
 function eventNotices(
   event: DashboardEvent,
-  waiting: number,
   overview: boolean,
 ): AttentionNotice[] {
   const base = { eventId: event.id, values: { event: shortTitle(event) } };
@@ -136,7 +127,7 @@ function eventNotices(
   const closing = overview
     ? (replies === "closed" && !past) || replies === "soon"
     : closingOnRail(event);
-  if (closing) notices.push(closingNotice(event, waiting));
+  if (closing) notices.push(closingNotice(event));
   /* Set to Hidden: nobody can open it yet. */
   if (event.visibility === "hidden" && (overview || !past)) {
     notices.push({
@@ -163,27 +154,20 @@ function eventNotices(
  * Every event's alerts, most urgent first: the rail's list. Each notice's
  * title and body are the event editor's banner for the same thing
  * (`EventPage.<key>Title` / `<key>Body`), so the two always read alike;
- * `Notices.<key>` holds only the rail's own context and action. `waiting`
- * is who hasn't replied yet, by event, for the events `needsWaiting` names.
+ * `Notices.<key>` holds only the rail's own context and action.
  */
-export function hostNotices(
-  events: DashboardEvent[],
-  waiting: Record<string, number>,
-): AttentionNotice[] {
+export function hostNotices(events: DashboardEvent[]): AttentionNotice[] {
   /* An archived event has nothing left to act on. */
   return byUrgency(
     events
       .filter((event) => !isArchived(event))
-      .flatMap((event) => eventNotices(event, waiting[event.id] ?? 0, false)),
+      .flatMap((event) => eventNotices(event, false)),
   );
 }
 
 /** One event's to-dos on its Overview, most urgent first. */
-export function eventTodos(
-  event: DashboardEvent,
-  waiting: number,
-): AttentionNotice[] {
-  return byUrgency(eventNotices(event, waiting, true));
+export function eventTodos(event: DashboardEvent): AttentionNotice[] {
+  return byUrgency(eventNotices(event, true));
 }
 
 /**

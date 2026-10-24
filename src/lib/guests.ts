@@ -597,6 +597,15 @@ export function markDifferent(
 /** The event card's counters. */
 export type EventCounts = EventDoc["counts"];
 
+/** Every counter at zero: a new event's, and what a deleted one keeps. */
+export const EMPTY_COUNTS: EventCounts = {
+  coming: 0,
+  notComing: 0,
+  needsAttention: 0,
+  waiting: 0,
+  seatingWarnings: 0,
+};
+
 /**
  * The counters the event card keeps, worked out from the cards. The one
  * place they are counted: every save that changes replies, the seed and the
@@ -611,7 +620,7 @@ export function eventCounts(input: {
 }): EventCounts {
   const { replies, list, preloaded, questions, seatedIds } = input;
   const rows = buildRows({ list, replies, questions }, preloaded);
-  const { going, notGoing, attention } = countRows(rows);
+  const { going, notGoing, attention, waiting } = countRows(rows);
   const coming = new Set(
     replies.filter((person) => person.status === "going").map(({ id }) => id),
   );
@@ -619,6 +628,7 @@ export function eventCounts(input: {
     coming: going,
     notComing: notGoing,
     needsAttention: attention,
+    waiting,
     /* Seated but not coming (or gone). */
     seatingWarnings: seatedIds.filter((id) => !coming.has(id)).length,
   };

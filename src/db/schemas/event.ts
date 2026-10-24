@@ -71,7 +71,7 @@ export const printSettingsSchema = z.object({
 
 /**
  * Kept up to date in the same transaction as every reply change, so the
- * dashboard never reads every reply. Replied, invited and waiting are worked out.
+ * dashboard never reads every reply. Replied and invited are worked out.
  */
 export const eventCountsSchema = z.object({
   /** People coming. */
@@ -79,6 +79,8 @@ export const eventCountsSchema = z.object({
   notComing: countSchema,
   /** Names to sort out: not on the pre-loaded list, or used by more than one reply. */
   needsAttention: countSchema,
+  /** Pre-loaded names no reply claims; 0 with the list off. */
+  waiting: countSchema,
   seatingWarnings: countSchema,
 });
 
