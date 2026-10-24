@@ -24,7 +24,7 @@ schema. Each step still gets its own spec in `current-feature.md` when it's buil
 | Where                    | For                           | Data                                    |
 | ------------------------ | ----------------------------- | --------------------------------------- |
 | Your machine (emulators) | Everyday coding               | Fake seed data, kept in git             |
-| `festio-dev`             | Checking things deployed      | Test data only                          |
+| `festio-staging`         | Checking things deployed      | Test data only                          |
 | `festio-prod`            | Real hosts and guests         | Real data, never copied anywhere        |
 
 - **Emulators:** Firestore, Auth, Storage and Functions run locally. The app connects to them
@@ -32,27 +32,40 @@ schema. Each step still gets its own spec in `current-feature.md` when it's buil
   loaded on start, so everyone and CI start from the same data.
 - Each cloud project has its own Firestore, Auth, Storage and App Hosting backend. Nothing
   is shared between them.
-- Prod data is never copied to dev (GDPR).
+- Prod data is never copied to staging (GDPR).
 - Prod gets point-in-time recovery or scheduled backups and delete protection.
 
 ## Deploying (CI/CD)
 
-- **App Hosting is linked to GitHub.** The dev backend follows `main`.
+- **Two branches.** Work lands on `develop` (each feature or fix branch is cut from it and
+  merged back). `main` is what's deployed: it only moves when the owner releases, by
+  fast-forwarding it to `develop` (`/feature release`). Nothing is ever committed straight
+  to `main`.
+
+  | Push to       | Happens                                           |
+  | ------------- | ------------------------------------------------- |
+  | `develop`     | Nothing in CI (the checks ran locally before it)  |
+  | `main`        | All checks, then deploy to `festio-staging`       |
+  | Prod button   | Deploy to `festio-prod`                           |
+
+- **App Hosting is linked to GitHub.** The staging backend follows `main`.
   The prod backend has automatic deploys off; a "Deploy to production" button in GitHub
   Actions starts a release, ideally with an approval step.
-- **Dev deploys only after the checks pass.** By default App Hosting deploys every push, even
-  one whose lint, build or rules tests failed. Instead, its automatic deploys are off on dev
-  too, and the GitHub Action starts the dev deploy once all checks are green.
+- **Staging deploys only after the checks pass.** By default App Hosting deploys every push,
+  even one whose lint, build or rules tests failed. Instead, its automatic deploys are off on
+  staging too, and the GitHub Action starts the staging deploy once all checks are green.
+- **Notes don't trigger CI:** a push that only changes `context/`, `.claude/` or `.md` files
+  is skipped (`paths-ignore`).
 - **Settings per environment** in `apphosting.yaml` plus a file per environment. Secrets
   (payment and email keys) in Secret Manager, never in the repo. No service-account key
   files: on App Hosting the server can already use its own project.
 - **Rules and indexes** (Firestore and Storage) are not deployed by App Hosting. A GitHub
-  Action tests the rules against the emulator, deploys them to dev on every merge, and to
+  Action tests the rules against the emulator, deploys them to staging on every push to `main`, and to
   prod in the same manual release as the app, so rules and code always match.
-- **On every push:** lint, build, rules tests.
+- **On every push to `main`:** lint, build, rules tests.
 - **Changing data shapes:** Firestore has no migrations. Code reads both the old and the new
   shape for a while (Zod with defaults). Old documents are fixed with a one-off script, run on
-  the emulator, then dev, then prod.
+  the emulator, then staging, then prod.
 
 ## Data
 
@@ -280,7 +293,7 @@ dashboard on the server after every tick, only so the nav counts update.
 **Storage rules:** the host uploads photos straight from the browser, so only the event's
 host can upload into its folder, images only, at most 1 MB a file.
 
-**Tested in CI** against the emulator on every push: a guest can't read replies, host A
+**Tested in CI** against the emulator on every push to `main`: a guest can't read replies, host A
 can't read host B's event, nobody writes from the browser, uploads over the limit fail.
 
 ## Saving from two places
@@ -502,7 +515,7 @@ Steps 1–5 run fully on your machine; the first big handoff is step 6.
    - Who is waiting is worked out, not stored, so the dashboard reads the whole guest list
      of each active event whose form is closing. Fine at a few events; revisit only if it
      gets slow.
-6. **`festio-dev`**, Firestore and Storage rules, and rules tests.
+6. **`festio-staging`**, Firestore and Storage rules, and rules tests.
    - **Google on a password account:** the emulator can't produce
      `auth/account-exists-with-different-credential`. Check on the real project that it shows
      the "sign in with your password" message (`passwordAccount` in `AuthForm.tsx`).
@@ -519,9 +532,10 @@ Steps 1–5 run fully on your machine; the first big handoff is step 6.
      password account drops the password.
    - **Firestore's europe-west4 prices:** `tests/cost/month.ts` uses the US list prices;
      put the real ones in from the console's pricing.
-7. **CI:** lint, build and rules tests on every push; auto-deploy to dev. Every push also
-   runs `npm run test:app` (page tests) and `npm run cost`; a cost rise fails until fixed
-   or accepted with `COST_UPDATE=1 npm run cost`.
+7. **CI:** on every push to `main` only (see Deploying): lint, build, rules tests,
+   `npm test`, `npm run test:app` (page tests) and `npm run cost`, then the deploy to
+   `festio-staging`. A cost rise fails until fixed or accepted with
+   `COST_UPDATE=1 npm run cost`. Pushes that only change notes are skipped.
 8. **GDPR cleanup.** The nightly deletion job and account deletion.
    - The job reuses `src/db/writes/`. Move the rules that live only in the actions today
      (past, cancelled: `eventForRules` in `src/actions/event.ts`, the last `hostEvent` reads

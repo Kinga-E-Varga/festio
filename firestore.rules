@@ -1,6 +1,6 @@
 rules_version = '2';
 
-// Closed to every browser for now; the real rules come with festio-dev
+// Closed to every browser for now; the real rules come with festio-staging
 // (database step 6). The server's Admin SDK skips rules.
 service cloud.firestore {
   match /databases/{database}/documents {

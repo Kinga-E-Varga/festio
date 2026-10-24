@@ -85,7 +85,7 @@ setup.
      - the guest list page loading every reply
      - **guests replying at the same moment:** on the emulator, 20 at once took 4–14 s (they
        queue on the event card's counters; `tests/writes/cap-race.test.ts`). Measure it again
-       on `festio-dev` once it exists (step 6): how long a guest waits, and whether any reply
+       on `festio-staging` once it exists (step 6): how long a guest waits, and whether any reply
        fails instead of waiting (the guest would see "failed").
    - **Who sees what, on pages:** with the running app set up, add page tests to check 1's
      Vitest runner (they run with `npm test` and in CI, not with the cost check):
@@ -102,11 +102,13 @@ setup.
        allowance, then about $0.006 a month each (US list prices; europe-west4's to confirm
        at step 6). Host dashboard pages and reloads are about 89% of the reads; 450 guest
        visits about 7% (3 reads each).
-     - **Closing events' guest lists on every host page — worth a fix.** 38 of the 53 reads
+     - **Closing events' guest lists on every host page — worth a fix**
+       (`context/fixes/pending/dashboard-reads.md`, 1). 38 of the 53 reads
        even the landing page makes: every reply of `maria-andrei` (closing in 2 days) and
        its list, only to count who hasn't replied. It grows with the event: a 300-guest
        wedding near its close costs every host page view a few hundred reads.
-     - **Latest replies and their tags — worth a fix.** About 122 of a dashboard page's
+     - **Latest replies and their tags — worth a fix**
+       (`context/fixes/pending/dashboard-reads.md`, 2). About 122 of a dashboard page's
        178 reads: up to 20 replies from each event, then every reply of each event left in
        the feed to work out Unknown / Duplicate. It grows with every event's replies.
      - **Session check — fine.** One `verifySessionCookie` per host page, no Firestore
@@ -120,7 +122,7 @@ setup.
        recount it runs after the page is sent (`after()`).
      - **Templates per event — fine.** Loaded from the app's own files, no Firestore read.
      - **Guests replying at the same moment — step 6.** Nothing new here: measure on
-       `festio-dev` as noted above.
+       `festio-staging` as noted above.
 
 3. **To do — UX walk-through** (`chore/ux-walkthrough`).
    - **First, the seed:** today no seed event has a Public invitation to open (the only ones
@@ -147,18 +149,3 @@ setup.
    - **First run's result:** the rough spots, ranked by how often they'd happen and how much
      they'd hurt. Each one worth fixing becomes its own `fix/`; the rest are noted as
      accepted.
-
-## Fixes found by the cost check
-
-Each its own `fix/`, test-first, and `npm run cost` before and after: the baseline goes
-down, then `COST_UPDATE=1 npm run cost` saves it. Mark each `Done (<commit message>)` when
-finished.
-
-1. **To do — keep "who hasn't replied" as a counter** (`fix/waiting-counter`). The event's
-   `counts` gain `waiting` (pre-loaded names nobody's reply matches), kept by `countsOf`
-   like the others, so host pages stop reading every reply of each closing event. A
-   data-shape change: the seed and a one-off script if real data exists by then.
-2. **To do — latest replies without reading every reply** (`fix/latest-replies-reads`).
-   Read only the 20 newest replies across the host's events, and work out their Unknown /
-   Duplicate tags from the replies sharing their names (`nameKeys`, as `readReplyGroup`
-   does), not from every reply of each event.

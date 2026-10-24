@@ -73,13 +73,15 @@ rules below hold whether or not it is used.
 
 1. **Document** — the feature in @context/current-feature.md (`/feature load`).
 2. **Plan** — large features only, and ask before planning (`/feature plan`).
-3. **Branch** — a new branch per feature/fix: `feature/[name]`, `fix/[name]`, `chore/[name]`
-   (`/feature start`).
+3. **Branch** — a new branch per feature/fix, cut from `develop`: `feature/[name]`,
+   `fix/[name]`, `chore/[name]` (`/feature start`).
 4. **Implement** — what @context/current-feature.md describes.
 5. **Test** — verify it in the browser, then run `npm test` and `npm run build` and fix any
    errors.
 6. **Iterate** — change things if needed.
-7. **Simplify, commit, merge, push, close out** — `/feature complete`.
+7. **Simplify, commit, merge into `develop`, push, close out** — `/feature complete`.
+8. **Release** — only when the user asks: `main` moves up to `develop` and is pushed, which
+   deploys (`/feature release`).
 
 ## Commits
 
@@ -89,7 +91,10 @@ rules below hold whether or not it is used.
   change touches `src/db/reads/`, `src/db/secret.ts`, `src/app/`, `src/components/invitation/`, `src/templates/`, `src/modular/`, `src/lib/slug.ts`, `src/i18n/`, `messages/`, `src/proxy.ts` or `next.config.ts`. If any
   fails, fix it first.
 - One feature/fix = one commit, with a conventional message (`feat:`, `fix:`, `chore:`, …).
-- Merge to main fast-forward only, never a merge commit — rebase onto main first if needed.
+- Two branches: work lands on `develop`; `main` is what's deployed. Merge into `develop`
+  fast-forward only, never a merge commit — rebase onto `develop` first if needed.
+- Never commit straight to `main`. It only moves by fast-forward to `develop` at a release,
+  urgent fixes included.
 - If the change moved a route, a top-level `src/` directory, a file in `src/lib/`, or a
   component between folders, update @context/repo-map.md (or the matching `context/map/`
   file) in the same commit. Adding a template does not count.

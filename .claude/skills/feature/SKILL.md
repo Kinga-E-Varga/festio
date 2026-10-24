@@ -1,7 +1,7 @@
 ---
 name: feature
 description: Manage current feature workflow - load, plan, start or complete
-argument-hint: load|plan|start|complete
+argument-hint: load|plan|start|complete|release
 ---
 
 # Feature Workflow
@@ -33,6 +33,7 @@ Execute the requested action: $ARGUMENTS
 | `plan`     | Write an implementation plan (large features)    |
 | `start`    | Begin implementation, create and switch branch   |
 | `complete` | Simplify, commit, merge, reset, push             |
+| `release`  | Move `main` up to `develop` and push (deploys)   |
 | `test`     | Write and run tests for the feature (`npm test`) |
 
 See [actions/](actions/) for detailed instructions.
