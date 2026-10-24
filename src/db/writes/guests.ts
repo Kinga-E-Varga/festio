@@ -68,8 +68,10 @@ export async function writeGuestChanges(
     );
 
     /* Every read is done: the writes. */
-    for (const { id, ...card } of replies) tx.set(replyRef(eventId, id), card);
-    for (const id of changes.replies.remove) tx.delete(replyRef(eventId, id));
+    for (const { id, ...card } of replies)
+      tx.set(replyRef(eventId, id, hostId), card);
+    for (const id of changes.replies.remove)
+      tx.delete(replyRef(eventId, id, hostId));
     if (list) tx.set(db.doc(paths.guestList(eventId)), list);
 
     const counts = countsAfter(

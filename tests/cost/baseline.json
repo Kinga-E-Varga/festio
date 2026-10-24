@@ -5,22 +5,22 @@
     "authChecks": 1
   },
   "page: dashboard home": {
-    "reads": 178,
+    "reads": 60,
     "writes": 0,
     "authChecks": 1
   },
   "page: event overview": {
-    "reads": 184,
+    "reads": 114,
     "writes": 0,
     "authChecks": 1
   },
   "page: guest list": {
-    "reads": 180,
+    "reads": 103,
     "writes": 0,
     "authChecks": 1
   },
   "page: event editor": {
-    "reads": 178,
+    "reads": 61,
     "writes": 0,
     "authChecks": 1
   },

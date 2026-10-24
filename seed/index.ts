@@ -144,7 +144,7 @@ function seedEvent(writer: BulkWriter, seed: SeedEvent) {
     writer.set(db.doc(paths.invitation(seed.id)), invitation);
   }
   for (const { id, ...reply } of seed.replies) {
-    writer.set(replyRef(seed.id, id), replySchema.parse(reply));
+    writer.set(replyRef(seed.id, id, HOST.uid), replySchema.parse(reply));
   }
   if (seed.guestList.length > 0) {
     const list = guestListSchema.parse({ names: seed.guestList, version: 0 });

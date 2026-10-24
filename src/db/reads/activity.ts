@@ -2,11 +2,10 @@ import { Timestamp } from "firebase-admin/firestore";
 import { connection } from "next/server";
 import { db } from "@/db/admin";
 import { paths } from "@/db/paths";
-import { loadGuestRows } from "@/db/reads/guests";
-import { parseCards } from "@/db/reads/parse";
-import { replySchema } from "@/db/schemas/reply";
+import { feedTags, latestReplies, type LatestReply } from "@/db/reads/feed";
 import { initials } from "@/db/reads/host";
-import { replyTags, type StoredReply } from "@/lib/guests";
+import { requireHostId } from "@/db/reads/session";
+import type { StoredReply } from "@/lib/guests";
 import { isArchived, shortTitle, spanFrom } from "@/lib/event";
 import type { DashboardEvent, Message, RsvpActivity } from "@/types/dashboard";
 import type { AttentionTag } from "@/types/guests";
@@ -89,45 +88,50 @@ export async function newReplyCount(
   return counts.reduce((sum, count) => sum + count, 0);
 }
 
-/**
- * The newest replies across these events, newest first: `limit` from each
- * event, then cut to `limit` in all. Archived events have none left. Only the
- * events still in the list read their guest list, for the tags.
- */
+/** The feed's rows in the query's order, each reply's tags worked out once per event. */
+async function toFeed(
+  latest: LatestReply[],
+  events: DashboardEvent[],
+): Promise<RsvpActivity[]> {
+  const now = new Date();
+  const shown = new Map<string, StoredReply[]>();
+  for (const { eventId, reply } of latest)
+    shown.set(eventId, [...(shown.get(eventId) ?? []), reply]);
+  const byEvent = new Map(
+    await Promise.all(
+      events
+        /* An archived event's replies went with its data; one that slipped in during the deletion stays out. */
+        .filter((event) => shown.has(event.id) && !isArchived(event))
+        .map(async (event) => {
+          const replies = shown.get(event.id) ?? [];
+          const tags = await feedTags(event.id, event.preloaded, replies);
+          return [event.id, { event, tags }] as const;
+        }),
+    ),
+  );
+  return latest.flatMap(({ eventId, reply }) => {
+    const found = byEvent.get(eventId);
+    if (!found) return [];
+    const tags = found.tags.get(reply.id) ?? [];
+    return [toActivity(reply, found.event, tags, now)];
+  });
+}
+
+/** The host's `limit` newest replies across these, their events, newest first. */
 export async function loadRecentReplies(
   events: DashboardEvent[],
   limit: number,
 ): Promise<RsvpActivity[]> {
   await connection();
-  const now = new Date();
-  const lists = await Promise.all(
-    events
-      .filter((event) => !isArchived(event))
-      .map(async (event) => {
-        const snapshot = await db
-          .collection(paths.replies(event.id))
-          .orderBy("sentAt", "desc")
-          .limit(limit)
-          .get();
-        return parseCards(replySchema, snapshot.docs).map((reply) => ({
-          at: reply.sentAt.toDate().getTime(),
-          reply,
-          event,
-        }));
-      }),
-  );
-  const latest = lists
-    .flat()
-    .sort((first, second) => second.at - first.at)
-    .slice(0, limit);
-  /* Each event's rows are built once (`loadGuestRows`), however many of its replies show. */
-  return Promise.all(
-    latest.map(async ({ reply, event }) => {
-      const ids = new Set(reply.people.map((person) => person.id));
-      const people = (await loadGuestRows(event)).filter((row) =>
-        ids.has(row.id),
-      );
-      return toActivity(reply, event, replyTags(people), now);
-    }),
-  );
+  const hostId = await requireHostId();
+  return toFeed(await latestReplies({ hostId }, limit), events);
+}
+
+/** One event's `limit` newest replies, newest first: its Overview's. */
+export async function loadEventReplies(
+  event: DashboardEvent,
+  limit: number,
+): Promise<RsvpActivity[]> {
+  await connection();
+  return toFeed(await latestReplies({ eventId: event.id }, limit), [event]);
 }

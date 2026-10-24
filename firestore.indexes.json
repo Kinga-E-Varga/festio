@@ -7,6 +7,14 @@
         { "fieldPath": "createdBy", "order": "ASCENDING" },
         { "fieldPath": "sentAt", "order": "ASCENDING" }
       ]
+    },
+    {
+      "collectionGroup": "replies",
+      "queryScope": "COLLECTION_GROUP",
+      "fields": [
+        { "fieldPath": "hostId", "order": "ASCENDING" },
+        { "fieldPath": "sentAt", "order": "DESCENDING" }
+      ]
     }
   ],
   "fieldOverrides": [

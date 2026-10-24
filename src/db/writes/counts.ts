@@ -1,4 +1,10 @@
-import type { DocumentSnapshot, Transaction } from "firebase-admin/firestore";
+import type {
+  DocumentReference,
+  DocumentSnapshot,
+  Query,
+  QuerySnapshot,
+  Transaction,
+} from "firebase-admin/firestore";
 import { db } from "@/db/admin";
 import { paths } from "@/db/paths";
 import { parseCards, parseSnap } from "@/db/reads/parse";
@@ -57,32 +63,79 @@ export async function readCountInputs(
   };
 }
 
-/**
- * The reply cards whose `field` holds any of `values`, read inside a
- * transaction. At most 10 names a reply, and list names spelled like them,
- * so always under Firestore's 30 values.
- */
+/** Reads cards inside a transaction, or straight from the database. */
+export interface CardReader {
+  query(query: Query): Promise<QuerySnapshot>;
+  doc(ref: DocumentReference): Promise<DocumentSnapshot>;
+}
+
+export function inTransaction(tx: Transaction): CardReader {
+  return { query: (query) => tx.get(query), doc: (ref) => tx.get(ref) };
+}
+
+export const DIRECT: CardReader = {
+  query: (query) => query.get(),
+  doc: (ref) => ref.get(),
+};
+
+/** Firestore's most values in one `array-contains-any`. */
+const ANY_MAX = 30;
+
+/** The reply cards whose `field` holds any of `values`, 30 values a query. */
 async function repliesWithAny(
-  tx: Transaction,
+  read: CardReader,
   eventId: string,
   field: keyof ReplyKeys,
   values: string[],
 ): Promise<StoredReply[]> {
-  if (values.length === 0) return [];
-  const snapshot = await tx.get(
-    db
-      .collection(paths.replies(eventId))
-      .where(field, "array-contains-any", values),
+  const chunks: string[][] = [];
+  for (let at = 0; at < values.length; at += ANY_MAX)
+    chunks.push(values.slice(at, at + ANY_MAX));
+  const found = await Promise.all(
+    chunks.map(async (chunk) => {
+      const snapshot = await read.query(
+        db
+          .collection(paths.replies(eventId))
+          .where(field, "array-contains-any", chunk),
+      );
+      return parseCards(replySchema, snapshot.docs);
+    }),
   );
-  return parseCards(replySchema, snapshot.docs);
+  /* A card can match two chunks: once each. */
+  return [...new Map(found.flat().map((card) => [card.id, card])).values()];
+}
+
+/**
+ * The cards that decide how these names count and are tagged: the replies
+ * sharing one of them; with the list on, also the list and the replies the
+ * host matched to a list name spelled like one of them (they hold those
+ * names). Every other reply leaves them as they are. Replies in reply order,
+ * as the rows claim list names (`buildRows`).
+ */
+export async function readNameGroup(
+  read: CardReader,
+  eventId: string,
+  nameKeys: string[],
+  preloaded: boolean,
+): Promise<Pick<CountInputs, "replies" | "list">> {
+  const [named, names] = await Promise.all([
+    repliesWithAny(read, eventId, "nameKeys", nameKeys),
+    preloaded ? read.doc(db.doc(paths.guestList(eventId))) : null,
+  ]);
+  const list = names ? guestListOf(names).names : [];
+  const keys = new Set(nameKeys);
+  const listed = list.flatMap((name) =>
+    keys.has(normalizeName(name.name)) ? [name.id] : [],
+  );
+  const matched = await repliesWithAny(read, eventId, "listNameIds", listed);
+  const replies = applied(named, { put: matched, remove: [] });
+  return { replies: replies.sort(byReplyOrder), list };
 }
 
 /**
  * The cards a new reply can change the counters of, read inside a
- * transaction: the replies sharing one of its names and the seating chart;
- * with the list on, also the list and the replies the host matched to a list
- * name spelled like one of them (they hold those names). Every other reply
- * counts the same before and after it, so it is left out.
+ * transaction: its names' group (`readNameGroup`) and the seating chart.
+ * Every other reply counts the same before and after it, so it is left out.
  */
 export async function readReplyGroup(
   tx: Transaction,
@@ -91,22 +144,11 @@ export async function readReplyGroup(
   preloaded: boolean,
 ): Promise<CountInputs> {
   const { nameKeys } = replyKeys(reply.people);
-  const [named, names, seating] = await Promise.all([
-    repliesWithAny(tx, eventId, "nameKeys", nameKeys),
-    preloaded ? tx.get(db.doc(paths.guestList(eventId))) : null,
+  const [group, seating] = await Promise.all([
+    readNameGroup(inTransaction(tx), eventId, nameKeys, preloaded),
     tx.get(db.doc(paths.seating(eventId))),
   ]);
-  const list = names ? guestListOf(names).names : [];
-  const keys = new Set(nameKeys);
-  const listed = list.flatMap((name) =>
-    keys.has(normalizeName(name.name)) ? [name.id] : [],
-  );
-  const matched = await repliesWithAny(tx, eventId, "listNameIds", listed);
-  return {
-    replies: applied(named, { put: matched, remove: [] }),
-    list,
-    seatedIds: seatedIdsOf(seating),
-  };
+  return { ...group, seatedIds: seatedIdsOf(seating) };
 }
 
 /**

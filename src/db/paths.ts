@@ -8,6 +8,8 @@ export const paths = {
   event: (eventId: string) => `events/${eventId}`,
   invitation: (eventId: string) => `events/${eventId}/invitation/content`,
   replies: (eventId: string) => `events/${eventId}/replies`,
+  /** Every event's replies at once, for a collection group query. */
+  replyGroup: "replies",
   reply: (eventId: string, replyId: string) =>
     `events/${eventId}/replies/${replyId}`,
   guestList: (eventId: string) => `events/${eventId}/guestList/names`,

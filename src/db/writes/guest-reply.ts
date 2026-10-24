@@ -62,11 +62,10 @@ export async function writeGuestReply(
   await db.runTransaction(async (tx) => {
     const ref = db.doc(paths.event(eventId));
     const limit = limitFor("reply", eventId, visitor.key, now);
-    const newReply = replyRef(eventId, input.id);
     const [snap, attempts, existing] = await Promise.all([
       tx.get(ref),
       readAttempts(tx, limit),
-      tx.get(newReply),
+      tx.get(db.doc(paths.reply(eventId, input.id))),
     ]);
     if (existing.exists) return;
     const doc = parseSnap(eventSchema, snap);
@@ -107,7 +106,7 @@ export async function writeGuestReply(
 
     /* Only a reply that may be saved reads more: the cards its names can change. */
     const group = await readReplyGroup(tx, eventId, reply, doc.preloaded);
-    tx.set(newReply, card);
+    tx.set(replyRef(eventId, input.id, doc.hostId), card);
     tx.update(ref, {
       counts: countsWithReply(doc.counts, group, reply, doc),
     });

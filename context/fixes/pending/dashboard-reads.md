@@ -27,20 +27,30 @@ goes down, then `COST_UPDATE=1 npm run cost` saves it.
      matches), kept by `countsOf` like the others, so host pages read none of the replies.
    - A data-shape change: the event schema, the seed, and a one-off script if real data
      exists by then.
-2. **To do — latest replies without reading every reply** (`fix/latest-replies-reads`).
+2. **Done (fix: latest replies without reading every reply) — latest replies without reading every reply** (`fix/latest-replies-reads`).
    - **Now:** about 122 of a dashboard page's 178 reads. `loadRecentReplies`
      (`src/db/reads/activity.ts`) reads up to 20 replies from each event, then every reply
      of each event left in the feed, to work out the Unknown / Duplicate tags.
    - **Fix:** read only the 20 newest replies across the host's events, and work out their
      tags from the replies sharing their names (`nameKeys`, as `readReplyGroup` does), not
      from every reply of each event.
-   - **To decide — one query across events:** today it asks each event for its 20 newest
+   - **Decided (2026-10-24): one query across events.** Today it asks each event for its 20 newest
      and throws most away (7 events → up to 140 replies read for 20 shown). If each reply
      card also stored its host's ID, one collection group query over `replies`
      (`hostId ==`, `sentAt` newest first, limit 20) would read exactly the 20 shown.
      Another data-shape change (the reply schema, the seed, a one-off script if real data
-     exists), plus a composite index in `firestore.indexes.json`. Archived events must
-     still drop out of the feed: check how, without reading their replies.
+     exists), plus a composite index in `firestore.indexes.json`. Archived events need no
+     filter: their replies are deleted with their data.
+3. **To do — load the latest replies only when their panel opens** (`fix/replies-panel-on-open`).
+   - **Now:** the dashboard's shared layout (`src/app/[locale]/dashboard/layout.tsx` →
+     `loadDashboard`) builds the latest replies panel (behind the guests icon on the right
+     strip) on every dashboard page, though it starts closed. After item 2 that is about 40
+     of each page's reads (the event editor's own are about 3 of its 56).
+   - **Fix:** the panel asks for its replies when the host opens it, with a loading
+     skeleton meanwhile. Every dashboard page drops to roughly 15 reads plus its own; the
+     feed's reads are paid only when someone looks.
+   - **To decide:** the moment of skeleton on opening, and how the panel fetches (a Server
+     Action or a route).
 
 Not here: `refresh()` after a guest list save (about 180 reads on top of the save's 43).
 Live updates remove it (`context/features/pending/database.md` → Security rules → Live

@@ -5,7 +5,7 @@ import {
   SimplePreview,
 } from "@/components/dashboard/overview/InvitationPreview";
 import { eventTodos } from "@/components/dashboard/notices";
-import { loadRecentReplies } from "@/db/reads/activity";
+import { loadEventReplies } from "@/db/reads/activity";
 import { loadGuests } from "@/db/reads/guests";
 import { loadInvitation, modularStart } from "@/db/reads/invitation";
 import { cardValues, invitationValues } from "@/lib/invitation";
@@ -61,7 +61,7 @@ export default async function EventOverviewPage({ params }: Props) {
   const event = await openEvent((await params).id);
   const [guests, latest, preview] = await Promise.all([
     loadGuests(event),
-    loadRecentReplies([event], LATEST),
+    loadEventReplies(event, LATEST),
     invitationPreview(event),
   ]);
 
