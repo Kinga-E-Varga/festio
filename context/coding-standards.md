@@ -2,17 +2,10 @@
 
 ## TypeScript
 
-- Strict mode enabled
-- No `any` types - use proper typing or `unknown`
-- Define interfaces for all props, API responses, and data models
-- Use type inference where obvious, explicit types where helpful
+- Strict mode; no `any` — use proper types or `unknown`
 
 ## React
 
-- Functional components only (no class components)
-- Use hooks for state and side effects
-- Keep components focused - one job per component
-- Extract reusable logic into custom hooks
 - React Compiler is on: never call React Hook Form's `reset()` in a `useEffect` — `useWatch` stops updating. To start a form fresh, remount it with a `key` (see `src/components/dashboard/event-editor/RollOut.tsx`)
 
 ## Next.js
@@ -20,15 +13,8 @@
 - Server components by default
 - Only use `'use client'` when needed (interactivity, hooks, browser APIs)
 - Use Server Actions for form submissions and simple mutations
-- Use API routes when you need:
-  - Webhooks (GitHub, etc.)
-  - File uploads with progress tracking
-  - Long-running operations
-  - Specific HTTP status codes or headers
-  - Endpoints for future mobile/CLI clients
-  - Third-party integrations
-- Otherwise, fetch data directly in server components
-- Dynamic routes for item/collection pages
+- API routes only for webhooks, uploads with progress, long-running work, specific status
+  codes or headers, and third-party integrations; otherwise fetch in server components
 
 ## Tailwind CSS v4
 
@@ -36,18 +22,6 @@
 
 - **DO NOT** create `tailwind.config.ts` or `tailwind.config.js` files (those are for v3)
 - All theme configuration must be done in CSS using the `@theme` directive in `src/app/globals.css`
-- Use CSS custom properties for colors, spacing, etc.
-- No JavaScript-based config allowed
-
-Example v4 configuration:
-
-```css
-@import "tailwindcss";
-
-@theme {
-  --color-primary: oklch(50% 0.2 250);
-}
-```
 
 ## File Organization
 

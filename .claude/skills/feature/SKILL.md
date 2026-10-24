@@ -27,15 +27,15 @@ Completed features are listed in `context/history.md` (append only, newest first
 
 Execute the requested action: $ARGUMENTS
 
-| Action     | Description                                      |
-| ---------- | ------------------------------------------------ |
-| `load`     | Load a feature spec or inline description        |
-| `plan`     | Write an implementation plan (large features)    |
-| `start`    | Begin implementation, create and switch branch   |
-| `complete` | Simplify, commit, merge, reset, push             |
-| `release`  | Move `main` up to `develop` and push (deploys)   |
-| `test`     | Write and run tests for the feature (`npm test`) |
+| Action     | Description                                    |
+| ---------- | ---------------------------------------------- |
+| `load`     | Load a feature spec or inline description      |
+| `plan`     | Write an implementation plan (large features)  |
+| `start`    | Begin implementation, create and switch branch |
+| `complete` | Simplify, commit, merge, reset, push           |
+| `release`  | Move `main` up to `develop` and push (deploys) |
 
-See [actions/](actions/) for detailed instructions.
+Read [rules.md](rules.md) first (steps, commits, test guards), then the action's file in
+[actions/](actions/).
 
 If no action provided, explain the available options.

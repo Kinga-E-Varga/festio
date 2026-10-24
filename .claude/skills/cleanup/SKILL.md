@@ -12,7 +12,7 @@ Review the codebase for cleanup tasks:
 4. Check for stale TODO comments
 5. Find orphaned/unused files
 6. Check that context files and skills match the actual project:
-   - `context/repo-map.md` and `context/map/`: every path they name exists. Every route folder in `src/app/`, every top-level `src/` folder and every file in `src/lib/` is listed (not every component). Each detail map is linked from the repo-map. When fixing, write the missing or changed lines yourself, in the right file and its style.
+   - `context/repo-map.md` and `context/map/`: every path they name exists. Every route folder in `src/app/` and every top-level `src/` folder is listed in the repo-map, every file in `src/lib/` in `context/map/lib.md` (not every component). Each detail map is linked from the repo-map. When fixing, write the missing or changed lines yourself, in the right file and its style.
    - `context/current-feature.md`: Status fits the branch — `Not Started` on main, `In Progress` on a feature branch.
    - `CLAUDE.md`: every `npm run` command it lists exists in `package.json`, and "There is no test setup" is still true.
    - `context/ai-interaction.md`: every pinned guide path exists under `node_modules/next/dist/docs/`.

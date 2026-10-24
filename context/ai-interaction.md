@@ -66,46 +66,19 @@ guide — a signature, one option, whether an API still exists.
 | Layouts and pages                  | `01-app/01-getting-started/03-layouts-and-pages.md`             |
 | Dynamic routes (invitation slugs)  | `01-app/03-api-reference/03-file-conventions/dynamic-routes.md` |
 
-## Workflow
+## Workflow and commits
 
-Every feature/fix, in this order. The `feature` skill holds the how-to for each step; the
-rules below hold whether or not it is used.
-
-1. **Document** — the feature in @context/current-feature.md (`/feature load`).
-2. **Plan** — large features only, and ask before planning (`/feature plan`).
-3. **Branch** — a new branch per feature/fix, cut from `develop`: `feature/[name]`,
-   `fix/[name]`, `chore/[name]` (`/feature start`).
-4. **Implement** — what @context/current-feature.md describes.
-5. **Test** — verify it in the browser, then run `npm test` and `npm run build` and fix any
-   errors.
-6. **Iterate** — change things if needed.
-7. **Simplify, commit, merge into `develop`, push, close out** — `/feature complete`.
-8. **Release** — only when the user asks: `main` moves up to `develop` and is pushed, which
-   deploys (`/feature release`).
-
-## Commits
-
-- **Ask before every commit.** The only exception: running `/feature complete` is the
-  permission to commit, merge and push that feature.
-- Never commit until `npm test` and `npm run build` pass, and `npm run test:app` too when the
-  change touches `src/db/reads/`, `src/db/secret.ts`, `src/app/`, `src/components/invitation/`, `src/templates/`, `src/modular/`, `src/lib/slug.ts`, `src/i18n/`, `messages/`, `src/proxy.ts` or `next.config.ts`. If any
-  fails, fix it first.
-- One feature/fix = one commit, with a conventional message (`feat:`, `fix:`, `chore:`, …).
-- Two branches: work lands on `develop`; `main` is what's deployed. Merge into `develop`
-  fast-forward only, never a merge commit — rebase onto `develop` first if needed.
-- Never commit straight to `main`. It only moves by fast-forward to `develop` at a release,
-  urgent fixes included.
-- If the change moved a route, a top-level `src/` directory, a file in `src/lib/`, or a
-  component between folders, update @context/repo-map.md (or the matching `context/map/`
-  file) in the same commit. Adding a template does not count.
-- The close-out edit (the history line and the reset @context/current-feature.md) is the only
-  change allowed to sit uncommitted between features. It rides along with the next
-  feature's commit.
+Every feature/fix goes through the `feature` skill: document, branch from `develop`,
+implement, test, commit, merge. **Its rules are in `.claude/skills/feature/rules.md`: read
+them before branching, planning, writing tests or committing**, with or without `/feature`.
+Always: ask before every commit, and never commit to `main`.
 
 ## Superpowers in Festio
 
 The superpowers plugin is welcome, with these adjustments. They override the plugin.
 
+- **Only when the task calls for it.** Questions, small edits and lookups need no process
+  skill; brainstorming is for new features and behaviour changes.
 - **Brainstorming — yes**, visual companion included. On the architectural path the spec
   goes into @context/current-feature.md (not `docs/superpowers/specs/`) and is never
   committed on its own; the plan comes from `/feature plan`, in `context/plans/`.
@@ -114,19 +87,8 @@ The superpowers plugin is welcome, with these adjustments. They override the plu
   `writing-plans` / `executing-plans` / `subagent-driven-development` through `/feature`.
 - **`test-driven-development`** (test first, watch it fail, then the code) for the saves in
   `src/db/writes/`, plain functions in `src/lib/`, and every bug fix there: the fix starts
-  with a test that shows the bug. Not for UI; that's checked in the browser.
-- **Guards against biased tests** (the same agent writes the code and its tests):
-  1. **Tests come from the spec, before the code.** The plan (or, without one, the start of
-     the work) lists each test and its expected values.
-  2. **Expected values are worked out by hand** from the spec, never by calling the code
-     under test.
-  3. **A failing test is a finding.** Never change a test just to make it pass: stop and
-     tell the user whether the code or the test is wrong.
-  4. **Prove the tests can fail, then get a fresh review.** Break the code on purpose once
-     per new test file and see the test fail. Before `/feature complete`, a fresh agent
-     (one that didn't write the code) checks each new test proves what its name says.
-  - **Payments, the GDPR deletion job and the security rules** also get a separate agent
-    that writes their tests from the spec alone, before the code exists.
+  with a test that shows the bug. Not for UI; that's checked in the browser. Follow the test
+  guards in `.claude/skills/feature/rules.md`.
 - **Skip for now:** `using-git-worktrees` (one
   branch at a time), `finishing-a-development-branch` (use `/feature complete`),
   `requesting-code-review`.
@@ -145,12 +107,3 @@ The superpowers plugin is welcome, with these adjustments. They override the plu
 - Don't refactor unrelated code unless asked
 - Don't add "nice to have" features
 - Preserve existing patterns in the codebase
-
-## Code Review
-
-Review AI-generated code periodically, especially for:
-
-- Security (auth checks, input validation)
-- Performance (unnecessary re-renders, N+1 queries)
-- Logic errors (edge cases)
-- Patterns (matches existing codebase?)

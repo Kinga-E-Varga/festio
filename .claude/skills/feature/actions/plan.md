@@ -10,7 +10,7 @@ Large features only. Running this action is the go-ahead to plan.
 5. Write the plan with superpowers:writing-plans, saved to that path instead of the
    skill's default folder. The spec is current-feature.md. For tasks that touch
    `src/db/writes/` or `src/lib/`, name each test and its expected values, worked out by
-   hand from the spec (the test guards in `context/ai-interaction.md`).
+   hand from the spec (the test guards in `.claude/skills/feature/rules.md`).
 6. Add one line to Notes: ``- Plan: `context/plans/[feature].md` ``
 7. Do not create the branch or commit. Plans are git-ignored and never committed.
 8. Ask the user to review the plan and choose how to build it: inline, or a subagent
