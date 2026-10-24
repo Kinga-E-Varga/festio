@@ -6,7 +6,7 @@ import { eventSchema, type EventDoc } from "@/db/schemas/event";
 import { slugDocSchema } from "@/db/schemas/slug";
 import { SLUG_BLOCK_DAYS } from "@/lib/config";
 import { addDays } from "@/lib/event";
-import { EMPTY_COUNTS } from "@/lib/guests";
+import { EMPTY_COUNTS, EMPTY_SUMMARY } from "@/lib/guests";
 
 /*
  * Deleting an event's data: the host's Delete now, and later the nightly
@@ -31,8 +31,8 @@ async function deleteUploads(eventId: string): Promise<void> {
 
 /**
  * What stays of an event card once its data is gone: enough to show it among
- * the host's past events. No guest data, password, questions, counts, print
- * settings or cancel message.
+ * the host's past events. No guest data, password, questions, counts,
+ * summary, print settings or cancel message.
  */
 export function leftoverEvent(doc: EventDoc): EventDoc {
   return {
@@ -50,8 +50,13 @@ export function leftoverEvent(doc: EventDoc): EventDoc {
     templateId: doc.templateId,
     questions: [],
     counts: EMPTY_COUNTS,
+    summary: EMPTY_SUMMARY,
     dataDeleted: true,
     version: doc.version,
+    /* Its replies and list are deleted with it. */
+    dataVersion: doc.dataVersion + 1,
+    /* Its invitation is deleted with it too. */
+    invitationVersion: doc.invitationVersion + 1,
     createdAt: doc.createdAt,
   };
 }

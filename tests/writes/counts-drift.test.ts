@@ -9,6 +9,7 @@ import { writeGuestReply } from "@/db/writes/guest-reply";
 import { setGuestListOn, writeGuestChanges } from "@/db/writes/guests";
 import {
   fromGuestReplies,
+  summaryOf,
   toGuestReplies,
   type StoredReply,
 } from "@/lib/guests";
@@ -24,9 +25,10 @@ import {
 
 /*
  * Random guest and host actions on one event; after each, the stored counters
- * must equal a full recount. Host saves recount the whole event with the same
- * function the check uses; what this really tests is a guest's reply counting
- * only its group (`countsWithReply`) and the list switch, mixed with them.
+ * must equal a full recount, and the reply summary one worked out from every
+ * card. Guest replies and host saves alike count only the replies their
+ * change can reach (`countsWithReply`, `countsWithHostChange`): that is what
+ * this tests, mixed with the list switch and `sent` marks.
  * Repeatable: `DRIFT_SEED=<n>` replays a run.
  */
 
@@ -204,6 +206,41 @@ const ACTIONS: [number, Action][] = [
     },
   ],
   [
+    8,
+    async (run, event, state, now) => {
+      if (state.list.length === 0) return "skip rename";
+      const renamed = run.pick(state.list);
+      const name = run.pick(NAMES);
+      const list = state.list.map((listName) =>
+        listName.id === renamed.id ? { ...listName, name } : listName,
+      );
+      await hostSave(
+        event.id,
+        { list: { names: list, version: state.listVersion } },
+        now,
+      );
+      return `list renames ${renamed.name} → ${name}`;
+    },
+  ],
+  [
+    4,
+    async (run, event, state, now) => {
+      if (state.list.length === 0) return "skip sent";
+      const marked = run.pick(state.list);
+      const list = state.list.map((listName) =>
+        listName.id === marked.id
+          ? { ...listName, sent: !listName.sent }
+          : listName,
+      );
+      await hostSave(
+        event.id,
+        { list: { names: list, version: state.listVersion } },
+        now,
+      );
+      return `list marks ${marked.name} sent → ${!marked.sent}`;
+    },
+  ],
+  [
     5,
     async (run, event, state) => {
       const on = !state.event.preloaded;
@@ -248,7 +285,13 @@ async function setUp(run: Run): Promise<TestEvent> {
     version: 1,
   });
   await db.doc(paths.seating(id)).set(chart);
-  /* After the chart: no seating save exists yet, so this save's recount is what counts it. */
+  /*
+   * No seating save exists yet: the counter it would keep is written by hand.
+   * Both seats are warnings until the seated guest's reply comes in.
+   */
+  await db
+    .doc(paths.event(id))
+    .update({ counts: { ...doc.counts, seatingWarnings: 2 } });
   await hostSave(
     id,
     {
@@ -281,6 +324,7 @@ async function drift(steps: number): Promise<string[]> {
     }
     state = await readEvent(event.id);
     expect(state.event.counts, replay()).toEqual(countsOf(state, state.event));
+    expect(state.event.summary, replay()).toEqual(summaryOf(state.replies));
   }
   return log;
 }

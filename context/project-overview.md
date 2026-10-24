@@ -92,7 +92,7 @@ Standard and Custom only. Full spec in `context/features/seating-chart.md`. Not 
 - The guest list is never shown on the invitation page.
 - `noindex` headers — invitations must never be indexed.
 - Hosts must enter their expected guests (people). Replies are shown against it and may pass 100%. The form pauses at a hidden reply cap: the larger of expected + 50% or expected + 20, both set in `src/lib/config.ts`. Hosts are told only that the form pauses if far more replies come in than expected, and that they can raise the number anytime.
-- Rate limiting by IP via Cloud Function, on both RSVP submissions (e.g. 5 per link per hour) and invitation page views.
+- Rate limiting by IP, by the server, on RSVP submissions (e.g. 5 per link per hour) and wrong passwords. Invitation page views are not limited: the page's records are cached on the server, so repeated views cost little; if abuse shows up, a limit goes in front of the site.
 
 ## GDPR
 

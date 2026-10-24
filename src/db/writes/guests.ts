@@ -1,12 +1,19 @@
-import { Timestamp } from "firebase-admin/firestore";
+import { Timestamp, type Transaction } from "firebase-admin/firestore";
 import { db } from "@/db/admin";
 import { paths } from "@/db/paths";
 import type { GuestChanges } from "@/db/schemas/guest-changes";
-import { countsAfter, countsOf, readCountInputs } from "@/db/writes/counts";
+import { parseCards } from "@/db/reads/parse";
+import type { GuestListDoc } from "@/db/schemas/guest-list";
+import { replySchema } from "@/db/schemas/reply";
+import {
+  affectedKeys,
+  countsWithHostChange,
+  guestListOf,
+} from "@/db/writes/counts";
 import { ownEvent } from "@/db/writes/event";
 import { replyRef } from "@/db/writes/reply-ref";
 import { expectVersion, SaveRefused } from "@/db/writes/save";
-import type { StoredReply } from "@/lib/guests";
+import { summaryAfter, type StoredReply } from "@/lib/guests";
 
 /**
  * The reply cards to write. Replies keep when they came in and who sent
@@ -40,55 +47,109 @@ function replyCards(
 }
 
 /**
- * Saves the host's guest-list changes and recounts the event, in one
- * transaction. The list is saved from the version the page read; reply cards
- * have none, the last save wins. The host can always add replies: no cap.
- * Returns the list's version after the save.
+ * The cards a host save starts from: the list card, and the reply cards it
+ * names (written, split from or deleted) by ID. A save of the list alone
+ * reads no reply card.
+ */
+async function readChanged(
+  tx: Transaction,
+  eventId: string,
+  replies: GuestChanges["replies"],
+): Promise<{ list: GuestListDoc; stored: Map<string, StoredReply> }> {
+  const ids = new Set([
+    ...replies.put.flatMap(({ id, from }) => (from ? [id, from] : [id])),
+    ...replies.remove,
+  ]);
+  const refs = [...ids].map((id) => db.doc(paths.reply(eventId, id)));
+  const [list, snaps] = await Promise.all([
+    tx.get(db.doc(paths.guestList(eventId))),
+    refs.length > 0 ? tx.getAll(...refs) : [],
+  ]);
+  const cards = parseCards(
+    replySchema,
+    snaps.filter((snap) => snap.exists),
+  );
+  return {
+    list: guestListOf(list),
+    stored: new Map(cards.map((card) => [card.id, card])),
+  };
+}
+
+/**
+ * Saves the host's guest-list changes and what they change of the counters,
+ * in one transaction. Only the replies the change can reach are counted
+ * (`countsWithHostChange`); marking list names sent changes no counter, so
+ * it writes the list alone. The list is saved from the version the page
+ * read; reply cards have none, the last save wins. The host can always add
+ * replies: no cap. Returns the list's version and the event's `dataVersion`
+ * after the save.
  */
 export async function writeGuestChanges(
   hostId: string,
   eventId: string,
   changes: GuestChanges,
   now: Date,
-): Promise<{ listVersion: number }> {
+): Promise<{ listVersion: number; dataVersion: number }> {
   return db.runTransaction(async (tx) => {
     const { ref, doc } = await ownEvent(tx, hostId, eventId);
-    const inputs = await readCountInputs(tx, eventId);
-    /* The list is saved whole, from the version the page read: otherwise another device got there first. */
+    const { list: listCard, stored } = await readChanged(
+      tx,
+      eventId,
+      changes.replies,
+    );
+    /*
+     * The list is saved whole, from the version the page read: else another
+     * device got there first.
+     */
     if (changes.list)
-      expectVersion({ version: inputs.listVersion }, changes.list.version);
+      expectVersion({ version: listCard.version }, changes.list.version);
     const list = changes.list && {
       names: changes.list.names,
-      version: inputs.listVersion + 1,
+      version: listCard.version + 1,
     };
     const replies = replyCards(
       changes.replies,
-      new Map(inputs.replies.map((reply) => [reply.id, reply])),
+      stored,
       Timestamp.fromDate(now),
     );
+    const { remove } = changes.replies;
+    /* Each card as it was stored, to come off the counters and summary as the cards now saved go on. */
+    const change = {
+      before: [...replies.map(({ id }) => id), ...remove].flatMap(
+        (id) => stored.get(id) ?? [],
+      ),
+      after: replies,
+      listBefore: listCard.names,
+      listAfter: list?.names ?? listCard.names,
+      remove,
+    };
+    const keys = affectedKeys(change);
+    const counted =
+      (keys.length > 0 || replies.length > 0 || remove.length > 0) &&
+      (await countsWithHostChange(tx, eventId, doc, { ...change, keys }));
 
     /* Every read is done: the writes. */
     for (const { id, ...card } of replies)
       tx.set(replyRef(eventId, id, hostId), card);
-    for (const id of changes.replies.remove)
-      tx.delete(replyRef(eventId, id, hostId));
+    for (const id of remove) tx.delete(replyRef(eventId, id, hostId));
     if (list) tx.set(db.doc(paths.guestList(eventId)), list);
+    const dataVersion = counted ? doc.dataVersion + 1 : doc.dataVersion;
+    if (counted)
+      tx.update(ref, {
+        counts: counted,
+        summary: summaryAfter(doc.summary, change.before, replies),
+        dataVersion,
+      });
 
-    const counts = countsAfter(
-      { ...inputs, list: list?.names ?? inputs.list },
-      { put: replies, remove: changes.replies.remove },
-      doc,
-    );
-    tx.update(ref, { counts });
-
-    return { listVersion: list?.version ?? inputs.listVersion };
+    return { listVersion: list?.version ?? listCard.version, dataVersion };
   });
 }
 
 /**
- * The guest page's list switch: the event's `preloaded`, recounted with it.
- * The version goes up, as it's an Event settings field: a settings form open
- * elsewhere is told it's stale. No version check: it's one switch, not a form.
+ * The guest page's list switch: the event's `preloaded` alone. The counters
+ * keep both settings (`eventCounts`), so nothing is recounted. The version
+ * goes up, as it's an Event settings field: a settings form open elsewhere is
+ * told it's stale. No version check: it's one switch, not a form.
  */
 export async function setGuestListOn(
   hostId: string,
@@ -97,11 +158,6 @@ export async function setGuestListOn(
 ): Promise<void> {
   await db.runTransaction(async (tx) => {
     const { ref, doc } = await ownEvent(tx, hostId, eventId);
-    const inputs = await readCountInputs(tx, eventId);
-    tx.update(ref, {
-      preloaded: on,
-      counts: countsOf(inputs, { preloaded: on, questions: doc.questions }),
-      version: doc.version + 1,
-    });
+    tx.update(ref, { preloaded: on, version: doc.version + 1 });
   });
 }

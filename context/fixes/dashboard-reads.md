@@ -52,7 +52,3 @@ goes down, then `COST_UPDATE=1 npm run cost` saves it.
    - **Decided (2026-10-24):** a Server Action; the skeleton only on the first opening, then
      the list is kept and fetched again only when the badge shows new replies.
 
-Not here: `refresh()` after a guest list save (about 180 reads on top of the save's 43).
-Live updates remove it (`context/features/pending/database.md` → Security rules → Live
-updates for hosts). The guest list saves themselves (a full recount each): see
-`guest-list-saves.md`.

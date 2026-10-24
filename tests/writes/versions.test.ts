@@ -52,7 +52,9 @@ test("a guest list saved from an old version is refused", async () => {
     replies: { put: [], remove: [] },
     list: { names: [{ id: "n1", name, sent: false }], version: 0 },
   });
-  expect(await writeGuestChanges(TEST_HOST, id, changes("Ana"), NOW)).toEqual({
+  expect(
+    await writeGuestChanges(TEST_HOST, id, changes("Ana"), NOW),
+  ).toMatchObject({
     listVersion: 1,
   });
   expect(

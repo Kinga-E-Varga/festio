@@ -11,6 +11,7 @@ import { slugDocSchema } from "@/db/schemas/slug";
 import { userSchema } from "@/db/schemas/user";
 import { SLUG_BLOCK_DAYS, TERMS_VERSION } from "@/lib/config";
 import { addDays, deletionDate } from "@/lib/event";
+import { summaryOf } from "@/lib/guests";
 import { countsOf } from "@/db/writes/counts";
 import { replyRef } from "@/db/writes/reply-ref";
 import { momentFromNow, SEED_HOST as HOST } from "./build";
@@ -133,7 +134,10 @@ function seedEvent(writer: BulkWriter, seed: SeedEvent) {
     ...seed.event,
     hostId: HOST.uid,
     counts: counts(seed),
+    summary: summaryOf(seed.replies),
     version: 0,
+    dataVersion: 0,
+    invitationVersion: seed.invitation?.version ?? 0,
     createdAt: momentFromNow(-60),
   });
   writer.set(db.doc(paths.event(seed.id)), event);

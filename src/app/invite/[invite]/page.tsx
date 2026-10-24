@@ -10,7 +10,7 @@ import { sendReply } from "@/actions/guest";
 import { repliesPaused, replyWindow } from "@/lib/event";
 import { cardValues, invitationValues } from "@/lib/invitation";
 import { loadEventBySlug } from "@/db/reads/events";
-import { loadInvitation } from "@/db/reads/invitation";
+import { loadShownInvitation } from "@/db/reads/invitation";
 import { isUnlocked } from "@/db/reads/unlock";
 import { loadSimpleTemplate } from "@/templates";
 import type { DashboardEvent } from "@/types/dashboard";
@@ -55,11 +55,10 @@ export default async function InvitationPage({ params }: Props) {
 
   const event = await guestEvent(invite);
   if (!event?.templateId) notFound();
-  /* The template, the password check and the invitation's own card are read at once; the card is used only once the page may show it. */
-  const [loaded, readable, stored] = await Promise.all([
+  /* The password check is the cookie alone; the invitation's own card is read only once it is shown. */
+  const [loaded, readable] = await Promise.all([
     loadSimpleTemplate(event.templateId),
     mayRead(event),
-    loadInvitation(event),
   ]);
   if (!loaded) notFound();
   const { template, Card } = loaded;
@@ -78,6 +77,7 @@ export default async function InvitationPage({ params }: Props) {
     );
   }
 
+  const stored = await loadShownInvitation(event);
   const values = invitationValues(template, event, stored);
   /* The date a guest reads is written in the invitation's own language. */
   const { language } = event;

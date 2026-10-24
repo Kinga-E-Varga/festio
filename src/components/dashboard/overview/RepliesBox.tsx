@@ -16,10 +16,9 @@ import {
   replyClose,
   replyWindow,
 } from "@/lib/event";
-import { answeredCustom, buildRows, tallyGuests } from "@/lib/guests";
 import type { Language } from "@/lib/language";
 import type { DashboardEvent, RsvpActivity } from "@/types/dashboard";
-import type { DietNeed, EventGuests } from "@/types/guests";
+import type { DietNeed } from "@/types/guests";
 
 /**
  * How the replies stand, then who is coming, by age and diet, in a line
@@ -29,11 +28,9 @@ import type { DietNeed, EventGuests } from "@/types/guests";
  */
 export function RepliesBox({
   event,
-  guests,
   latest,
 }: {
   event: DashboardEvent;
-  guests: EventGuests;
   /** Its latest replies; the side panel and the guest list hold the rest. */
   latest: RsvpActivity[];
 }) {
@@ -41,8 +38,6 @@ export function RepliesBox({
   const tGuests = useTranslations("GuestList");
   const tTop = useTranslations("TopBar");
   const locale = useLocale() as Language;
-  const rows = buildRows(guests, event.preloaded);
-  const tally = tallyGuests(rows, guests.questions);
   /* Each age group and need with anyone in it; a line left out with none. */
   const facts = [
     {
@@ -51,7 +46,7 @@ export function RepliesBox({
       parts: AGES.map((age) => ({
         key: age,
         label: tGuests(AGE_SUMMARY_KEY[age]),
-        count: tally.ages[age],
+        count: event.summary.ages[age],
       })),
     },
     {
@@ -60,7 +55,7 @@ export function RepliesBox({
       parts: (Object.keys(DIET_KEY) as DietNeed[]).map((need) => ({
         key: need,
         label: tGuests(DIET_KEY[need]),
-        count: tally.diets[need],
+        count: event.summary.diets[need],
       })),
     },
   ]
@@ -103,8 +98,8 @@ export function RepliesBox({
         ) : (
           <p className="muted-text">{tGuests("summaryEmpty")}</p>
         )}
-        {guests.questions.length > 0 ? (
-          <p>{t("customAnswered", { count: answeredCustom(rows) })}</p>
+        {event.questions.length > 0 ? (
+          <p>{t("customAnswered", { count: event.summary.answeredCustom })}</p>
         ) : null}
         <p>{form}</p>
       </div>

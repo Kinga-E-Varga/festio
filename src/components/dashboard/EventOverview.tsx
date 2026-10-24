@@ -19,13 +19,11 @@ import type {
   DashboardEvent,
   RsvpActivity,
 } from "@/types/dashboard";
-import type { EventGuests } from "@/types/guests";
 
 interface EventOverviewProps {
   event: DashboardEvent;
   /** Its alerts plus what its own state needs doing. */
   todos: AttentionNotice[];
-  guests: EventGuests;
   /** Its latest replies, newest first. */
   latest: RsvpActivity[];
   /** The invitation drawn live and shrunk; none before a design is picked. */
@@ -42,7 +40,6 @@ interface EventOverviewProps {
 export function EventOverview({
   event,
   todos,
-  guests,
   latest,
   preview,
 }: EventOverviewProps) {
@@ -70,7 +67,7 @@ export function EventOverview({
                 <TodoBoard todos={todos} />
               </section>
             ) : null}
-            <RepliesBox event={event} guests={guests} latest={latest} />
+            <RepliesBox event={event} latest={latest} />
             <section className={PAGE_BOX}>
               <BoxHead title={t("keyDates")} />
               <DatesThatMatter event={event} />

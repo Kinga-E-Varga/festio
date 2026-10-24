@@ -1,6 +1,10 @@
 import type { z } from "zod";
 import type { packageSchema } from "@/db/schemas/common";
-import type { eventKindSchema, visibilitySchema } from "@/db/schemas/event";
+import type {
+  eventKindSchema,
+  replySummarySchema,
+  visibilitySchema,
+} from "@/db/schemas/event";
 import type { Language } from "@/lib/language";
 import type { AttentionTag, GuestQuestion } from "@/types/guests";
 import type { PrintSettings } from "@/types/print";
@@ -160,6 +164,8 @@ export interface DashboardEvent {
   /** Set only on Protected invitations; min 4 chars, letters or digits. */
   password?: string;
   rsvp: RsvpTally;
+  /** The people coming by age and diet, and who answered the host's questions. */
+  summary: z.infer<typeof replySummarySchema>;
   /**
    * How many people the host expects. Replies are shown against it, and the
    * hidden reply cap is worked out from it (`replyCap` in `lib/event.ts`).
@@ -190,6 +196,10 @@ export interface DashboardEvent {
   print?: PrintSettings;
   /** The card's version when read; a save sends it back, so a newer save elsewhere is noticed. */
   version: number;
+  /** Goes up with every change to the replies or the list's names: what their caches are keyed by. */
+  dataVersion: number;
+  /** The invitation card's version (0 before its first save): what the shown invitation is cached by. */
+  invitationVersion: number;
 }
 
 /** What an invitation editor needs to save to its event: the card's version it opened at, and the confirm's facts. */

@@ -602,25 +602,101 @@ export const EMPTY_COUNTS: EventCounts = {
   coming: 0,
   notComing: 0,
   needsAttention: 0,
+  needsAttentionNoList: 0,
   waiting: 0,
   seatingWarnings: 0,
 };
 
+/** What the Overview shows of the people coming: ages, diets, answers to the host's questions. */
+export type ReplySummary = EventDoc["summary"];
+
+/** Nothing counted: a new event's summary. */
+export const EMPTY_SUMMARY: ReplySummary = {
+  ages: { adult: 0, child: 0, baby: 0 },
+  diets: {
+    vegetarian: 0,
+    vegan: 0,
+    glutenFree: 0,
+    lactoseFree: 0,
+    nutAllergy: 0,
+    other: 0,
+  },
+  answeredCustom: 0,
+};
+
+/** The summary over these people (the rows' replies), by the rules the Summary page counts with. */
+export function summaryOfPeople(replies: GuestReply[]): ReplySummary {
+  const rows = buildRows({ list: [], replies, questions: [] }, false);
+  const { ages, diets } = tallyGuests(rows, []);
+  return { ages, diets, answeredCustom: answeredCustom(rows) };
+}
+
+/** The summary over these reply cards. */
+export function summaryOf(cards: StoredReply[]): ReplySummary {
+  return summaryOfPeople(toGuestReplies(cards));
+}
+
 /**
- * The counters the event card keeps, worked out from the cards. The one
- * place they are counted: every save that changes replies, the seed and the
- * guest list's recount all call it.
+ * The stored summary once cards change: it adds what the cards are now and
+ * takes off what they were. Never below zero: a summary that drifted is
+ * fixed by the guest list page's recount, and a negative one would fail the
+ * event card's schema.
+ */
+export function summaryAfter(
+  stored: ReplySummary,
+  before: StoredReply[],
+  after: StoredReply[],
+): ReplySummary {
+  const was = summaryOf(before);
+  const now = summaryOf(after);
+  return {
+    ages: combine(stored.ages, now.ages, was.ages),
+    diets: combine(stored.diets, now.diets, was.diets),
+    answeredCustom: Math.max(
+      0,
+      stored.answeredCustom + now.answeredCustom - was.answeredCustom,
+    ),
+  };
+}
+
+/** Each kept count plus what was added, less what was taken off, never below zero. */
+function combine<K extends string>(
+  kept: Record<K, number>,
+  added: Record<K, number>,
+  removed: Record<K, number>,
+): Record<K, number> {
+  const counts = { ...kept };
+  for (const key of Object.keys(kept) as K[])
+    counts[key] = Math.max(0, kept[key] + added[key] - removed[key]);
+  return counts;
+}
+
+/** The two counters that follow the list switch, as the pages show them. */
+export function shownCounts(
+  counts: EventCounts,
+  preloaded: boolean,
+): { needsAttention: number; waiting: number } {
+  return preloaded
+    ? { needsAttention: counts.needsAttention, waiting: counts.waiting }
+    : { needsAttention: counts.needsAttentionNoList, waiting: 0 };
+}
+
+/**
+ * The counters the event card keeps, worked out from the cards, for the list
+ * on and off alike, so the switch never recounts. The one place they are
+ * counted: every save that changes replies, the seed and the guest list's
+ * recount all call it.
  */
 export function eventCounts(input: {
   replies: GuestReply[];
   list: ListName[];
-  preloaded: boolean;
   questions: GuestQuestion[];
   seatedIds: string[];
 }): EventCounts {
-  const { replies, list, preloaded, questions, seatedIds } = input;
-  const rows = buildRows({ list, replies, questions }, preloaded);
-  const { going, notGoing, attention, waiting } = countRows(rows);
+  const { replies, list, questions, seatedIds } = input;
+  const withList = countRows(buildRows({ list, replies, questions }, true));
+  const noList = countRows(buildRows({ list, replies, questions }, false));
+  const { going, notGoing, attention, waiting } = withList;
   const coming = new Set(
     replies.filter((person) => person.status === "going").map(({ id }) => id),
   );
@@ -628,6 +704,7 @@ export function eventCounts(input: {
     coming: going,
     notComing: notGoing,
     needsAttention: attention,
+    needsAttentionNoList: noList.attention,
     waiting,
     /* Seated but not coming (or gone). */
     seatingWarnings: seatedIds.filter((id) => !coming.has(id)).length,

@@ -9,6 +9,8 @@ import { requireHostId } from "@/db/reads/session";
 import { parseCard } from "@/db/reads/parse";
 import { readGuestList } from "@/db/reads/guests";
 import { replyCloseAt, spanBetween, spanFrom, todayIn } from "@/lib/event";
+import { shownCounts } from "@/lib/guests";
+import { createMemo } from "@/lib/memo";
 import { PACKAGES } from "@/lib/packages";
 import type { DashboardEvent } from "@/types/dashboard";
 
@@ -40,9 +42,9 @@ function toDashboardEvent(
       attending: doc.counts.coming,
       declined: doc.counts.notComing,
     },
+    summary: doc.summary,
     expectedGuests: doc.expectedGuests,
-    needsAttention: doc.counts.needsAttention,
-    waiting: doc.counts.waiting,
+    ...shownCounts(doc.counts, doc.preloaded),
     preloaded: doc.preloaded,
     questions: doc.questions,
     seatingAvailable: PACKAGES[doc.package].seating,
@@ -53,6 +55,8 @@ function toDashboardEvent(
     cancelMessage: doc.cancelled?.message,
     print: doc.print,
     version: doc.version,
+    dataVersion: doc.dataVersion,
+    invitationVersion: doc.invitationVersion,
   };
 }
 
@@ -88,17 +92,42 @@ export async function eventIdBySlug(slug: string): Promise<string | null> {
 }
 
 /**
+ * Guest link → event ID, for links found and not blocked whose event was
+ * shown. This server's only: the event card is always read fresh and checked
+ * against the link, so an entry another server made stale is never trusted.
+ */
+const eventIds = createMemo<string>();
+
+/** The event card, read fresh, if it still has this link and its data. */
+async function eventAtLink(
+  eventId: string,
+  slug: string,
+): Promise<DashboardEvent | null> {
+  const snapshot = await db.doc(paths.event(eventId)).get();
+  const event = toView(eventId, snapshot.data(), new Date());
+  return event && event.slug === slug && !event.dataDeleted ? event : null;
+}
+
+/**
  * The event a guest link points at, or null: no such link, a blocked link
  * (its event moved off it or its data went), an event that has since moved
- * to another link, or nothing left to show.
+ * to another link, or nothing left to show. The link's card is read only when
+ * this server hasn't kept it, or what it kept no longer matches.
  */
 export const loadEventBySlug = cache(
   async (slug: string): Promise<DashboardEvent | null> => {
+    await connection();
+    const kept = eventIds.get(slug);
+    if (kept !== undefined) {
+      const event = await eventAtLink(kept, slug);
+      if (event) return event;
+      eventIds.delete(slug);
+    }
     const eventId = await eventIdBySlug(slug);
     if (!eventId) return null;
-    const snapshot = await db.doc(paths.event(eventId)).get();
-    const event = toView(eventId, snapshot.data(), new Date());
-    return event && event.slug === slug && !event.dataDeleted ? event : null;
+    const event = await eventAtLink(eventId, slug);
+    if (event) eventIds.set(slug, eventId);
+    return event;
   },
 );
 

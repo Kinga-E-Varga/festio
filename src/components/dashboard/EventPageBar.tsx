@@ -1,6 +1,7 @@
 "use client";
 
 import { type ReactNode, useEffect, useRef, useState } from "react";
+import { type PageTab, useCurrentTab } from "@/components/dashboard/PageTabs";
 import {
   BLEED,
   CONTENT_WIDTH,
@@ -14,8 +15,8 @@ interface EventPageBarProps {
   title: string;
   /** The page's one action, at the right of its title (Export on Guests). */
   action?: ReactNode;
-  /** The page's open tab (Guests' Guest list or Summary), after its name in the bar. */
-  tab?: string;
+  /** The page's tabs (Guests' Guest list and Summary); the open one's label goes after its name in the bar. */
+  tabs?: PageTab[];
   /** An event page's, or Home's. */
   look?: keyof typeof LOOKS;
 }
@@ -59,7 +60,7 @@ export function EventPageBar({
   label,
   title,
   action,
-  tab,
+  tabs,
   look = "event",
 }: EventPageBarProps) {
   const {
@@ -68,6 +69,7 @@ export function EventPageBar({
     title: titleClassName,
     echo: echoTitle,
   } = LOOKS[look];
+  const tab = useCurrentTab(tabs)?.label;
   const barRef = useRef<HTMLDivElement>(null);
   const titleRef = useRef<HTMLDivElement>(null);
   const [scrolled, setScrolled] = useState(false);

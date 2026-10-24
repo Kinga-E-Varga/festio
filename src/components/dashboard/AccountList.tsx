@@ -1,6 +1,6 @@
 import { useTranslations } from "next-intl";
-import { signOut } from "@/actions/auth";
 import { Icon } from "@/components/icons";
+import { LogoutForm } from "@/components/dashboard/LogoutForm";
 import { NavLink } from "@/components/dashboard/NavLink";
 import { QUIT_ITEM, SIDE_ICON } from "@/components/dashboard/styles";
 import { ACCOUNT_LINKS } from "@/mock/dashboard";
@@ -24,10 +24,7 @@ export function AccountList() {
       </ul>
 
       {/* Log out ends the session and leaves for the landing page. */}
-      <form
-        action={signOut}
-        className="mt-3 flex flex-col border-t border-neutral-200 pt-3"
-      >
+      <LogoutForm className="mt-3 flex flex-col border-t border-neutral-200 pt-3">
         <button
           type="submit"
           className={`-mx-3 cursor-pointer wide:-mx-4 ${QUIT_ITEM} wide:px-4`}
@@ -35,7 +32,7 @@ export function AccountList() {
           <Icon name="logout" {...SIDE_ICON} />
           <span>{t("logout")}</span>
         </button>
-      </form>
+      </LogoutForm>
     </div>
   );
 }

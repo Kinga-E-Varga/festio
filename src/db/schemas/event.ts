@@ -6,6 +6,7 @@ import {
   TITLE_MAX,
   TITLE_MIN,
 } from "@/db/limits";
+import { ageGroupSchema, dietNeedSchema } from "@/db/schemas/reply";
 import { isValidSlug } from "@/lib/slug";
 import {
   countSchema,
@@ -77,11 +78,24 @@ export const eventCountsSchema = z.object({
   /** People coming. */
   coming: countSchema,
   notComing: countSchema,
-  /** Names to sort out: not on the pre-loaded list, or used by more than one reply. */
+  /** Names to sort out with the list on: not on it, or used by more than one reply. */
   needsAttention: countSchema,
-  /** Pre-loaded names no reply claims; 0 with the list off. */
+  /** Names to sort out with the list off: used by more than one reply. */
+  needsAttentionNoList: countSchema,
+  /** Pre-loaded names no reply claims, with the list on; nothing waits with it off. */
   waiting: countSchema,
   seatingWarnings: countSchema,
+});
+
+/**
+ * What the Overview's Replies box shows of the people coming: how many in
+ * each age group and with each diet, and how many answered the host's own
+ * questions. Kept beside `counts`, each reply card adding on its own.
+ */
+export const replySummarySchema = z.object({
+  ages: z.record(ageGroupSchema, countSchema),
+  diets: z.record(dietNeedSchema, countSchema),
+  answeredCustom: countSchema,
 });
 
 /** The card's fields, without its cross-field rules: other schemas pick from it. */
@@ -112,6 +126,7 @@ export const eventFieldsSchema = z.object({
   questions: z.array(questionSchema),
   print: printSettingsSchema.optional(),
   counts: eventCountsSchema,
+  summary: replySummarySchema,
   /** Missing = not cancelled. */
   cancelled: z
     .object({
@@ -122,6 +137,17 @@ export const eventFieldsSchema = z.object({
   /** Past the retention window: only a leftover of this card remains. */
   dataDeleted: z.boolean(),
   version: versionSchema,
+  /**
+   * Goes up by one with every save that writes or deletes a reply card or
+   * changes the list's names (spelling or who is on it), in the same
+   * transaction. Not with a `sent` mark, the list switch or a recount.
+   */
+  dataVersion: versionSchema,
+  /**
+   * The invitation card's version, set by its save in the same transaction
+   * (0 before the first). Read-only views cache the invitation under it.
+   */
+  invitationVersion: versionSchema,
   createdAt: momentSchema,
 });
 

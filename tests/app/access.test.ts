@@ -2,8 +2,11 @@ import { Timestamp } from "firebase-admin/firestore";
 import { beforeAll, expect, test } from "vitest";
 import { db } from "@/db/admin";
 import { paths } from "@/db/paths";
+import { eventSchema, eventSettingsSchema } from "@/db/schemas/event";
 import { unlockToken } from "@/db/secret";
+import { writeEventSettings } from "@/db/writes/event";
 import { writeGuestReply } from "@/db/writes/guest-reply";
+import { writeInvitation } from "@/db/writes/invitation";
 import ro from "../../messages/ro.json";
 import { SEED_HOST } from "../../seed/build";
 import { guestInput, newVisitor } from "../helpers/events";
@@ -20,6 +23,8 @@ import { hostCookie, OTHER_HOST, unlockHeader } from "./session";
 const PROTECTED = seedEvent("maria-andrei");
 const HIDDEN = seedEvent("aniversare-50");
 const CANCELLED = seedEvent("logodna-ana-vlad");
+/* Read by no other page test: the cache checks change its cards, then put them back. */
+const CACHED = seedEvent("botez-sofia");
 const PROTECTED_TEXT = "sărbătoriți nunta noastră";
 const CANCELLED_TEXT = "Doar pe invitație, niciodată după anulare";
 const CANCEL_MESSAGE = "Ne pare rău, petrecerea se amână.";
@@ -29,8 +34,13 @@ const NEWEST_GUEST = "Panel Check Newest";
 beforeAll(async () => {
   /* With a template, so only Hidden can keep its page away (no template is "not found" anyway). */
   await db.doc(paths.event(HIDDEN.id)).update({ templateId: "wolf-dance" });
-  /* Its seed card has no template either; and its own text, to look for. */
-  await db.doc(paths.event(CANCELLED.id)).update({ templateId: "wolf-dance" });
+  /*
+   * Its seed card has no template either; and its own text, to look for,
+   * written straight to the card, so the event card names its version as a save would.
+   */
+  await db
+    .doc(paths.event(CANCELLED.id))
+    .update({ templateId: "wolf-dance", invitationVersion: 1 });
   await db.doc(paths.invitation(CANCELLED.id)).set({
     kind: "simple",
     values: { title1: CANCELLED_TEXT },
@@ -148,4 +158,73 @@ test("the latest replies come only when asked, and only the host's own", async (
   const signedOut = await latest();
   expect(signedOut.redirect).toContain("/sign-in");
   expect(mentions(signedOut.body, NEWEST_GUEST)).toBe(false);
+});
+
+/**
+ * Runs a check on the cached event with a template, then puts its cards back
+ * as seeded: the event, its link, no invitation and no other link.
+ */
+async function onCachedEvent(check: () => Promise<void>, newSlug?: string) {
+  const eventRef = db.doc(paths.event(CACHED.id));
+  const slugRef = db.doc(paths.slug(CACHED.event.slug));
+  const [event, link] = await Promise.all([eventRef.get(), slugRef.get()]);
+  /* Its seed card has no template, and the guest page needs one. */
+  await eventRef.update({ templateId: "wolf-dance" });
+  try {
+    await check();
+  } finally {
+    await Promise.all([
+      eventRef.set(event.data() ?? {}),
+      slugRef.set(link.data() ?? {}),
+      db.doc(paths.invitation(CACHED.id)).delete(),
+      newSlug && db.doc(paths.slug(newSlug)).delete(),
+    ]);
+  }
+}
+
+/** Saves the cached event's invitation with this title, from the version it has. */
+function saveCachedInvitation(title1: string, version: number) {
+  return writeInvitation(SEED_HOST.uid, CACHED.id, async () => ({
+    kind: "simple",
+    values: { title1 },
+    envelope: true,
+    version,
+  }));
+}
+
+test("a new invitation version is read fresh", async () => {
+  const path = `/${CACHED.event.slug}`;
+  await onCachedEvent(async () => {
+    await saveCachedInvitation("First cached title", 0);
+    /* Shown once, so this server keeps it. */
+    expect(mentions((await page(path)).body, "First cached title")).toBe(true);
+
+    await saveCachedInvitation("Second cached title", 1);
+    const { status, body } = await page(path);
+    expect(status).toBe(200);
+    expect(mentions(body, "Second cached title")).toBe(true);
+    expect(mentions(body, "First cached title")).toBe(false);
+  });
+});
+
+test("a cached link that no longer matches is read again", async () => {
+  const oldPath = `/${CACHED.event.slug}`;
+  const newSlug = "botez-sofia-moved";
+  await onCachedEvent(async () => {
+    /* Shown once, so this server keeps the link. */
+    expect((await page(oldPath)).status).toBe(200);
+
+    const card = await db.doc(paths.event(CACHED.id)).get();
+    const event = eventSchema.parse(card.data());
+    await writeEventSettings(
+      SEED_HOST.uid,
+      CACHED.id,
+      eventSettingsSchema.parse({ ...event, slug: newSlug }),
+      new Date(),
+    );
+    expect((await page(oldPath)).status).toBe(404);
+    const moved = await page(`/${newSlug}`);
+    expect(moved.status).toBe(200);
+    expect(mentions(moved.body, CACHED.event.title)).toBe(true);
+  }, newSlug);
 });

@@ -16,10 +16,8 @@ export async function generateMetadata({ params }: Props) {
   return eventMetadata((await params).id, "guests");
 }
 
-export default async function GuestsPage({ params, searchParams }: Props) {
+export default async function GuestsPage({ params }: Props) {
   const event = await openEvent((await params).id);
-  /* The open tab, `?view=summary` as in `GuestManager`. */
-  const summary = (await searchParams).view === "summary";
   /* Read alongside the page's words; a deleted event has none left to read. */
   const [t, tNav, initial] = await Promise.all([
     getTranslations("GuestList"),
@@ -42,13 +40,13 @@ export default async function GuestsPage({ params, searchParams }: Props) {
               key: "list",
               label: t("sectionList"),
               href: guests,
-              current: !summary,
+              view: null,
             },
             {
               key: "summary",
               label: t("sectionSummary"),
               href: `${guests}?view=summary`,
-              current: summary,
+              view: "summary",
             },
           ],
         }}

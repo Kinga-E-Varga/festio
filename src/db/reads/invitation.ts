@@ -5,6 +5,7 @@ import { paths } from "@/db/paths";
 import { parseSnap } from "@/db/reads/parse";
 import { invitationSchema, type InvitationDoc } from "@/db/schemas/invitation";
 import type { Language } from "@/lib/language";
+import { createMemo } from "@/lib/memo";
 import type { DashboardEvent } from "@/types/dashboard";
 import { initialState } from "@/modular/state";
 import type {
@@ -24,6 +25,32 @@ export const loadInvitation = cache(
     await connection();
     const snapshot = await db.doc(paths.invitation(event.id)).get();
     return parseSnap(invitationSchema, snapshot);
+  },
+);
+
+/**
+ * Invitation cards by `eventId:invitationVersion`, null for none saved. The
+ * key comes from the event card read fresh, so a save (on any server) is
+ * never missed: it raises the version, and the old entry just ages out.
+ */
+const shownInvitations = createMemo<InvitationDoc | null>();
+
+/**
+ * The invitation as read-only views show it (the guest page, the Overview's
+ * preview): `loadInvitation`, kept on this server by the event card's
+ * `invitationVersion`. Editors and the print page read it fresh instead.
+ * Nothing is kept or served for an event whose data is gone.
+ */
+export const loadShownInvitation = cache(
+  async (event: DashboardEvent): Promise<InvitationDoc | null> => {
+    await connection();
+    if (event.dataDeleted) return null;
+    const key = `${event.id}:${event.invitationVersion}`;
+    const kept = shownInvitations.get(key);
+    if (kept !== undefined) return kept;
+    const stored = await loadInvitation(event);
+    shownInvitations.set(key, stored);
+    return stored;
   },
 );
 

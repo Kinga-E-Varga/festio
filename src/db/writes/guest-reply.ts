@@ -16,7 +16,7 @@ import { replyRef } from "@/db/writes/reply-ref";
 import { SaveRefused } from "@/db/writes/save";
 import { REPLY_LIMIT_PER_HOUR } from "@/lib/config";
 import { replyCap, replyCloseAt } from "@/lib/event";
-import type { StoredReply } from "@/lib/guests";
+import { summaryAfter, type StoredReply } from "@/lib/guests";
 import { newId } from "@/lib/id";
 
 /** Who is replying, as the request tells: their scrambled IP, and the Protected cookie if any. */
@@ -105,10 +105,12 @@ export async function writeGuestReply(
     const reply: StoredReply = { ...card, id: input.id };
 
     /* Only a reply that may be saved reads more: the cards its names can change. */
-    const group = await readReplyGroup(tx, eventId, reply, doc.preloaded);
+    const group = await readReplyGroup(tx, eventId, reply);
     tx.set(replyRef(eventId, input.id, doc.hostId), card);
     tx.update(ref, {
       counts: countsWithReply(doc.counts, group, reply, doc),
+      summary: summaryAfter(doc.summary, [], [reply]),
+      dataVersion: doc.dataVersion + 1,
     });
     countAttempt(tx, limit, attempts, now);
   });

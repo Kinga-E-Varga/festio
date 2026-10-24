@@ -4,10 +4,17 @@ import { paths } from "@/db/paths";
 import { eventSchema, type EventDoc } from "@/db/schemas/event";
 import type { GuestReplyInput } from "@/db/schemas/reply";
 import { countsOf, readCountInputs } from "@/db/writes/counts";
+import { writeGuestChanges } from "@/db/writes/guests";
 import type { Visitor } from "@/db/writes/guest-reply";
 import { SaveRefused, type SaveError } from "@/db/writes/save";
-import { EMPTY_COUNTS, type EventCounts } from "@/lib/guests";
+import {
+  EMPTY_COUNTS,
+  EMPTY_SUMMARY,
+  shownCounts,
+  type EventCounts,
+} from "@/lib/guests";
 import { newId } from "@/lib/id";
+import type { ListName } from "@/types/guests";
 
 /*
  * What every test builds on: its own event with fresh IDs, so tests running
@@ -44,8 +51,11 @@ export async function createEvent(
     templateId: "wolf-dance",
     questions: [],
     counts: EMPTY_COUNTS,
+    summary: EMPTY_SUMMARY,
     dataDeleted: false,
     version: 0,
+    dataVersion: 0,
+    invitationVersion: 0,
     createdAt: Timestamp.now(),
     ...overrides,
   });
@@ -78,6 +88,15 @@ export async function storedCounts(eventId: string): Promise<EventCounts> {
   return eventSchema.parse(snap.data()).counts;
 }
 
+/** The two counters the pages show, which follow the event's list switch. */
+export async function shownStored(
+  eventId: string,
+): Promise<{ needsAttention: number; waiting: number }> {
+  const snap = await db.doc(paths.event(eventId)).get();
+  const { counts, preloaded } = eventSchema.parse(snap.data());
+  return shownCounts(counts, preloaded);
+}
+
 /** Every card the counters come from, and the event card, read together. */
 export async function readEvent(eventId: string) {
   return db.runTransaction(async (tx) => {
@@ -106,4 +125,19 @@ export async function refusedWith(
     if (error instanceof SaveRefused) return error.reason;
     throw error;
   }
+}
+
+/** Pre-loaded names with fresh IDs, none sent yet. */
+export function listNames(names: string[]): ListName[] {
+  return names.map((name) => ({ id: newId(), name, sent: false }));
+}
+
+/** Saves the whole list, from the list's version the page read (0 before the first save). */
+export function saveList(eventId: string, names: ListName[], version = 0) {
+  return writeGuestChanges(
+    TEST_HOST,
+    eventId,
+    { replies: { put: [], remove: [] }, list: { names, version } },
+    NOW,
+  );
 }

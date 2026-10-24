@@ -8,9 +8,11 @@ import { paths } from "@/db/paths";
 import { eventSettingsSchema } from "@/db/schemas/event";
 import { writeEventSettings } from "@/db/writes/event";
 import { writeGuestReply } from "@/db/writes/guest-reply";
-import { writeGuestChanges } from "@/db/writes/guests";
+import { setGuestListOn, writeGuestChanges } from "@/db/writes/guests";
 import { writeInvitation } from "@/db/writes/invitation";
 import { fromGuestReplies, toGuestReplies } from "@/lib/guests";
+import { newId } from "@/lib/id";
+import type { ListName } from "@/types/guests";
 import { guestInput, newVisitor, readEvent } from "../helpers/events";
 import { action, appDbCount, page } from "../app/fetch";
 import { hostCookie, unlockHeader } from "../app/session";
@@ -82,11 +84,17 @@ test("what each page and save costs, against the baseline", async () => {
   await fromApp("page: landing (signed in)", "/", host);
   await fromApp("page: dashboard home", "/dashboard", host);
   await fromApp("page: event overview", `/dashboard/events/${BIG}`, host);
+  await fromApp(
+    "page: event overview, again",
+    `/dashboard/events/${BIG}`,
+    host,
+  );
   await fromApp("page: guest list", `/dashboard/events/${BIG}/guests`, host);
   await fromApp("page: event editor", `/dashboard/events/${BIG}/details`, host);
   await fromApp("page: invitation editor", `/invitations/${BIG}`, host);
   await fromApp("page: print", `/prints/${BIG}`, host);
   await fromApp("guest: public invitation", `/${BIG}`);
+  await fromApp("guest: public invitation, again", `/${BIG}`);
   await fromApp("guest: protected, locked", `/${slug}`);
   await fromApp("guest: protected, unlocked", `/${slug}`, unlock);
   await action("src/actions/host.ts", "loadLatestReplies", {
@@ -123,6 +131,39 @@ test("what each page and save costs, against the baseline", async () => {
       now,
     ),
   );
+  const names = (await readEvent(BIG)).list;
+  const listSave = (list: ListName[], listVersion: number) =>
+    writeGuestChanges(
+      SEED_HOST.uid,
+      BIG,
+      {
+        replies: { put: [], remove: [] },
+        list: { names: list, version: listVersion },
+      },
+      now,
+    );
+  let { listVersion } = await readEvent(BIG);
+  await here("save: guest list, mark sent", () =>
+    listSave(
+      names.map((name, i) => (i === 0 ? { ...name, sent: !name.sent } : name)),
+      listVersion,
+    ),
+  );
+  ({ listVersion } = await readEvent(BIG));
+  await here("save: guest list, add names", () =>
+    listSave(
+      [
+        ...names,
+        { id: newId(), name: "Cost Check Added One", sent: false },
+        { id: newId(), name: "Cost Check Added Two", sent: false },
+      ],
+      listVersion,
+    ),
+  );
+  await here("save: list switch", () =>
+    setGuestListOn(SEED_HOST.uid, BIG, !event.preloaded),
+  );
+  await setGuestListOn(SEED_HOST.uid, BIG, event.preloaded);
   /* What `markRepliesSeen` writes (a Server Action, so not callable here). */
   await here("save: mark replies seen", () =>
     db.doc(paths.user(SEED_HOST.uid)).update({ lastVisit: Timestamp.now() }),
@@ -135,6 +176,22 @@ test("what each page and save costs, against the baseline", async () => {
     reply(replies[1].people[0].name),
   );
   await here("guest reply: pre-loaded name", () => reply(list[0].name));
+
+  const { replies: after, list: listNow } = await readEvent(BIG);
+  const unknown = after.find((r) =>
+    r.people.some((person) => person.name === "Cost Check Newcomer"),
+  );
+  if (!unknown) throw new Error("The newcomer's reply is missing");
+  const matched = fromGuestReplies(toGuestReplies([unknown]), [])[0];
+  matched.people[0].listNameId = listNow[1].id;
+  await here("save: guest list, match an unknown", () =>
+    writeGuestChanges(
+      SEED_HOST.uid,
+      BIG,
+      { replies: { put: [matched], remove: [] }, list: null },
+      now,
+    ),
+  );
 
   const baseline: Measured | undefined = existsSync(BASELINE)
     ? JSON.parse(readFileSync(BASELINE, "utf8"))

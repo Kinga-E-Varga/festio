@@ -1,6 +1,6 @@
 import { Timestamp } from "firebase-admin/firestore";
 import type { Person } from "@/db/schemas/reply";
-import { DAY_MS, todayIn } from "@/lib/event";
+import { DAY_MS, shiftDay, todayIn } from "@/lib/event";
 import type { StoredReply } from "@/lib/guests";
 
 /*
@@ -23,7 +23,8 @@ export type SeedReply = StoredReply;
 
 /** A calendar day `days` from today, `YYYY-MM-DD`, in the seed's time zone. */
 export function dayFromNow(days: number): string {
-  return todayIn(TIME_ZONE, new Date(Date.now() + days * DAY_MS));
+  /* Counted on the calendar: a day the clocks change has 23 or 25 hours. */
+  return shiftDay(todayIn(TIME_ZONE, new Date()), days);
 }
 
 /** A moment `days` from now; negative is in the past. */

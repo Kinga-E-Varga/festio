@@ -23,15 +23,13 @@ export function EventPageHeader({
   action,
   tabs,
 }: EventPageHeaderProps) {
-  const tab = tabs?.items.find((item) => item.current)?.label;
-
   return (
     <>
       <EventPageBar
         label={event.title}
         title={title}
         action={action}
-        tab={tab}
+        tabs={tabs?.items}
       />
       {tabs ? (
         <div className="mt-6">

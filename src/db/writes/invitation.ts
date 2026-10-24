@@ -11,6 +11,7 @@ import { expectVersion } from "@/db/writes/save";
  * editor started from (a card not written yet is 0), then the next one.
  * `fit` shapes the card to the event's template as read in this transaction
  * (it throws to refuse), so a template changed meanwhile is never missed.
+ * The event card's `invitationVersion` follows the new version.
  */
 export async function writeInvitation(
   hostId: string,
@@ -29,6 +30,8 @@ export async function writeInvitation(
 
     const version = (stored?.version ?? 0) + 1;
     tx.set(ref, { ...input, version });
+    /* The guest page caches the invitation under this, so it never shows an older one. */
+    tx.update(db.doc(paths.event(eventId)), { invitationVersion: version });
     return { version };
   });
 }

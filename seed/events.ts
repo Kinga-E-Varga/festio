@@ -20,7 +20,16 @@ import {
 
 export interface SeedEvent {
   id: string;
-  event: Omit<EventDoc, "hostId" | "counts" | "version" | "createdAt">;
+  event: Omit<
+    EventDoc,
+    | "hostId"
+    | "counts"
+    | "summary"
+    | "version"
+    | "dataVersion"
+    | "invitationVersion"
+    | "createdAt"
+  >;
   invitation?: InvitationDoc;
   replies: SeedReply[];
   guestList: ListName[];

@@ -5,6 +5,7 @@ import { paths } from "@/db/paths";
 import { feedTags, latestReplies, type LatestReply } from "@/db/reads/feed";
 import { initials } from "@/db/reads/host";
 import type { StoredReply } from "@/lib/guests";
+import { createMemo } from "@/lib/memo";
 import { isArchived, shortTitle, spanFrom } from "@/lib/event";
 import type { DashboardEvent, Message, RsvpActivity } from "@/types/dashboard";
 import type { AttentionTag } from "@/types/guests";
@@ -87,33 +88,55 @@ export async function newReplyCount(
   return counts.reduce((sum, count) => sum + count, 0);
 }
 
+/** Each shown reply's tags by event, worked out once per event. */
+async function feedTagsByEvent(
+  latest: LatestReply[],
+  events: DashboardEvent[],
+): Promise<Map<string, Map<string, AttentionTag[]>>> {
+  const shown = new Map<string, StoredReply[]>();
+  for (const { eventId, reply } of latest)
+    shown.set(eventId, [...(shown.get(eventId) ?? []), reply]);
+  return new Map(
+    await Promise.all(
+      events
+        /* An archived event's replies went with its data; one that slipped in during the deletion stays out. */
+        .filter((event) => shown.has(event.id) && !isArchived(event))
+        .map(
+          async (event) =>
+            [
+              event.id,
+              await feedTags(
+                event.id,
+                event.preloaded,
+                shown.get(event.id) ?? [],
+              ),
+            ] as const,
+        ),
+    ),
+  );
+}
+
+/** The feed's rows in the query's order; `when` is read against now, on every call. */
+function toRows(
+  latest: LatestReply[],
+  events: DashboardEvent[],
+  tags: Map<string, Map<string, AttentionTag[]>>,
+): RsvpActivity[] {
+  const now = new Date();
+  return latest.flatMap(({ eventId, reply }) => {
+    const event = events.find(({ id }) => id === eventId);
+    const eventTags = tags.get(eventId);
+    if (!event || !eventTags) return [];
+    return [toActivity(reply, event, eventTags.get(reply.id) ?? [], now)];
+  });
+}
+
 /** The feed's rows in the query's order, each reply's tags worked out once per event. */
 async function toFeed(
   latest: LatestReply[],
   events: DashboardEvent[],
 ): Promise<RsvpActivity[]> {
-  const now = new Date();
-  const shown = new Map<string, StoredReply[]>();
-  for (const { eventId, reply } of latest)
-    shown.set(eventId, [...(shown.get(eventId) ?? []), reply]);
-  const byEvent = new Map(
-    await Promise.all(
-      events
-        /* An archived event's replies went with its data; one that slipped in during the deletion stays out. */
-        .filter((event) => shown.has(event.id) && !isArchived(event))
-        .map(async (event) => {
-          const replies = shown.get(event.id) ?? [];
-          const tags = await feedTags(event.id, event.preloaded, replies);
-          return [event.id, { event, tags }] as const;
-        }),
-    ),
-  );
-  return latest.flatMap(({ eventId, reply }) => {
-    const found = byEvent.get(eventId);
-    if (!found) return [];
-    const tags = found.tags.get(reply.id) ?? [];
-    return [toActivity(reply, found.event, tags, now)];
-  });
+  return toRows(latest, events, await feedTagsByEvent(latest, events));
 }
 
 /** The host's `limit` newest replies across these, their events, newest first. */
@@ -125,11 +148,37 @@ export async function loadRecentReplies(
   return toFeed(await latestReplies({ hostId }, limit), events);
 }
 
-/** One event's `limit` newest replies, newest first: its Overview's. */
+/** An event's latest cards and their tags, by `eventId:dataVersion:preloaded:limit`. */
+interface KeptReplies {
+  latest: LatestReply[];
+  tags: Map<string, Map<string, AttentionTag[]>>;
+}
+
+/**
+ * Every save that writes or deletes a reply, or changes the list's names,
+ * raises `dataVersion` in its own transaction, so the key decides the cards
+ * and their tags. Only those are kept: the rows (and their "ago") are built
+ * on every call. The value is shared: never changed.
+ */
+const keptReplies = createMemo<KeptReplies>();
+
+/**
+ * One event's `limit` newest replies, newest first: its Overview's. Kept on
+ * this server by the event's `dataVersion`; never for an archived event.
+ */
 export async function loadEventReplies(
   event: DashboardEvent,
   limit: number,
 ): Promise<RsvpActivity[]> {
   await connection();
-  return toFeed(await latestReplies({ eventId: event.id }, limit), [event]);
+  if (isArchived(event))
+    return toFeed(await latestReplies({ eventId: event.id }, limit), [event]);
+  const key = `${event.id}:${event.dataVersion}:${event.preloaded}:${limit}`;
+  let kept = keptReplies.get(key);
+  if (!kept) {
+    const latest = await latestReplies({ eventId: event.id }, limit);
+    kept = { latest, tags: await feedTagsByEvent(latest, [event]) };
+    keptReplies.set(key, kept);
+  }
+  return toRows(kept.latest, [event], kept.tags);
 }

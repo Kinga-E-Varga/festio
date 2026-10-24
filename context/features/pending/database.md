@@ -135,10 +135,25 @@ list and are worked out.
   replying together is never cut off halfway.
 - **Safety net:** the guest list page loads every reply anyway, so it recounts and quietly
   fixes the counters if they've drifted.
-- **A guest's reply adds only the difference it makes** (`readReplyGroup`,
-  `countsWithReply`): it reads the replies sharing one of its names, the ones the host matched
-  to a list name spelled like them, the list and the seating chart, and counts that group
-  before and after. Host saves still recount the whole event.
+- **A save adds only the difference it makes** (`countsWithReply` for a guest's reply,
+  `countsWithHostChange` for the host's): it reads the replies sharing one of the changed
+  names, the ones the host matched to a list name spelled like them, the list and the seating
+  chart, and counts that group before and after (`affectedKeys`, `readChangeGroup`: the group
+  grows until it holds every name its replies and list names share). A group past
+  `GROUP_MAX_ROUNDS` / `GROUP_MAX_NAMES` falls back to a full recount.
+- **Both list settings are stored.** `counts` keeps `needsAttention` and `waiting` for the
+  list on, and `needsAttentionNoList` for it off; pages show one (`shownCounts`). So the list
+  switch and Event settings recount nothing: one read, one write.
+- **`summary`** on the event card: ages, diets and answers to the host's questions of the
+  people coming. Every reply save and `repairCounts` keep it, so the Overview never reads
+  every reply.
+- **Versions for caches:** `dataVersion` goes up with every save that writes or deletes a
+  reply or changes the list's names (not a `sent` flip, not the switch). `invitationVersion`
+  goes up inside `writeInvitation`'s transaction. The server's small caches (`src/lib/memo.ts`)
+  key on them.
+- **Host saves don't heal `summary` drift.** If a group is too big to settle, a host
+  save recounts and rewrites `counts` whole, but only `repairCounts` on the guest list
+  page fixes `summary`.
 
 **Protected password:** stored as it is (not hashed), because the host sees it in the share
 fields and it's printed on the card. It guards a page, not an account. Only the server ever
@@ -237,7 +252,8 @@ than a chart needs.
 - **When the chart's save is built,** the counts-drift test
   (`tests/writes/counts-drift.test.ts`) saves its chart through it instead of writing the
   card straight to Firestore, so the test also checks that the save updates
-  `seatingWarnings`.
+  `seatingWarnings`. The save must keep `seatingWarnings` itself: host saves of replies and
+  the list no longer recount the whole event, so nothing else fixes it in between.
 - **Later, without breaking anything:** exact seats (an optional seat number per person) and a
   room plan (an optional position and shape per table).
 
@@ -336,8 +352,23 @@ several copies of the server and restarts them, so the count lives in Firestore.
 - Some mobile networks put many phones behind one IP, so unrelated guests can rarely share a
   limit. Unlikely to matter at these numbers.
 - **Page views: not limited at launch.** Counting every view would double its cost. Caching
-  keeps repeated views cheap, and the budget alert tells us about abuse. If it happens, a
+  keeps repeated views cheap, and the budget alert tells us about abuse. The guest page caches
+  the shown invitation in server memory, keyed on `invitationVersion`: the link (slug →
+  event) is cached too, so a repeat view reads only the event card (1 read). Each App
+  Hosting copy has its own cache, so a save is seen everywhere through the version, never
+  by clearing. If it happens, a
   page-view limit goes in front of the site (e.g. Cloudflare's free plan).
+
+**Host side: not limited yet.** Anyone can make a free account, and a host's own event has
+no ceiling: the host can add unlimited replies (no cap in `writeGuestChanges`), and every
+open of the guest list reads them all. 10,000 replies opened 1,000 times is 10 million
+reads, about $3: not ruinous, but unbounded. Live updates make it cheaper (a reopened
+listener reads only what changed), not bounded. To add (Do later, item 7):
+
+- **A ceiling on replies per event**, for the host's own as well: a number in
+  `src/lib/config.ts`, well above any real event (e.g. a few times the largest reply cap).
+- **A rate limit on host saves per account**, counted like the guests' (`rateLimits/`, by
+  host ID instead of IP), high enough that no real host meets it.
 
 ## Previews
 
@@ -516,6 +547,12 @@ Steps 1–5 run fully on your machine; the first big handoff is step 6.
      of each active event whose form is closing. Fine at a few events; revisit only if it
      gets slow.
 6. **`festio-staging`**, Firestore and Storage rules, and rules tests.
+   - **Live updates for hosts** (see Security rules): the dashboard listens to the host's
+     event cards, the guest list page to its event's replies (`onSnapshot`). Needs the
+     browser signed in to Firebase on every page load (today in memory only, lost on
+     reload), e.g. with a token the server makes from the session cookie. Replaces any
+     server cache of the guest list's replies. Check whether a request the rules refuse is
+     billed.
    - **Google on a password account:** the emulator can't produce
      `auth/account-exists-with-different-credential`. Check on the real project that it shows
      the "sign in with your password" message (`passwordAccount` in `AuthForm.tsx`).
@@ -620,3 +657,6 @@ Work steps 1–5 left open, in the order to build them. Load one at a time
    `dateLocked`, `deletionDate` in `src/lib/event.ts`) use the server's clock, not the
    event's `timeZone`. Today only the countdown's "today" and the save's date lock
    (`todayIn`) use it.
+7. **To do — host-side limits** (`fix/`, any time before `festio-prod`): a ceiling on
+   replies per event and a rate limit on host saves per account, so one account can't run
+   up unbounded reads. See Rate limiting → Host side.

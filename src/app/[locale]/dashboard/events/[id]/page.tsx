@@ -6,8 +6,7 @@ import {
 } from "@/components/dashboard/overview/InvitationPreview";
 import { eventTodos } from "@/components/dashboard/notices";
 import { loadEventReplies } from "@/db/reads/activity";
-import { loadGuests } from "@/db/reads/guests";
-import { loadInvitation, modularStart } from "@/db/reads/invitation";
+import { loadShownInvitation, modularStart } from "@/db/reads/invitation";
 import { cardValues, invitationValues } from "@/lib/invitation";
 import { loadLibrary } from "@/modular";
 import { loadTemplate } from "@/templates";
@@ -28,7 +27,7 @@ async function invitationPreview(event: DashboardEvent) {
   if (!event.templateId) return null;
   const [loaded, stored, t] = await Promise.all([
     loadTemplate(event.templateId),
-    loadInvitation(event),
+    loadShownInvitation(event),
     getTranslations("Event"),
   ]);
   if (!loaded) return null;
@@ -59,8 +58,7 @@ async function invitationPreview(event: DashboardEvent) {
 
 export default async function EventOverviewPage({ params }: Props) {
   const event = await openEvent((await params).id);
-  const [guests, latest, preview] = await Promise.all([
-    loadGuests(event),
+  const [latest, preview] = await Promise.all([
     loadEventReplies(event, LATEST),
     invitationPreview(event),
   ]);
@@ -69,7 +67,6 @@ export default async function EventOverviewPage({ params }: Props) {
     <EventOverview
       event={event}
       todos={eventTodos(event)}
-      guests={guests}
       latest={latest}
       preview={preview}
     />

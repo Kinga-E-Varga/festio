@@ -37,8 +37,12 @@ export function GuestManager({ event, initial }: GuestManagerProps) {
   const toast = useToast();
   /* Two tabs on one page, picked by `?view=`. */
   const summary = useSearchParams().get("view") === "summary";
-  const list = useGuestList(event.id, initial, event.preloaded, (error) =>
-    toast.show(tError(error), "error"),
+  const list = useGuestList(
+    event.id,
+    initial,
+    event.preloaded,
+    event.dataVersion,
+    (error) => toast.show(tError(error), "error"),
   );
   const actions = useGuestActions(list.apply, toast.show, {
     guests: list.guests,

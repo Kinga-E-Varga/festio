@@ -1,14 +1,15 @@
 import { expect, test } from "vitest";
-import type { ListName } from "@/types/guests";
 import { writeGuestReply } from "@/db/writes/guest-reply";
 import { setGuestListOn, writeGuestChanges } from "@/db/writes/guests";
 import { newId } from "@/lib/id";
 import {
   createEvent,
   guestInput,
+  listNames,
   newVisitor,
   NOW,
-  storedCounts,
+  saveList,
+  shownStored,
   TEST_HOST,
 } from "../helpers/events";
 
@@ -17,21 +18,8 @@ import {
  * host pages never read the replies to show it.
  */
 
-function listNames(names: string[]): ListName[] {
-  return names.map((name) => ({ id: newId(), name, sent: false }));
-}
-
-function saveList(eventId: string, names: ListName[], version: number) {
-  return writeGuestChanges(
-    TEST_HOST,
-    eventId,
-    { replies: { put: [], remove: [] }, list: { names, version } },
-    NOW,
-  );
-}
-
 async function waiting(eventId: string): Promise<number> {
-  return (await storedCounts(eventId)).waiting;
+  return (await shownStored(eventId)).waiting;
 }
 
 test("waiting follows guest replies, list changes, deletes and the list switch", async () => {

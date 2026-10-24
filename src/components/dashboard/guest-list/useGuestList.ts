@@ -14,7 +14,31 @@ import {
   hasChanges,
   tallyGuests,
 } from "@/lib/guests";
+import {
+  dropList,
+  keepList,
+  keptList,
+  type SavedList,
+} from "@/lib/saved-lists";
 import type { EventGuests, GuestGroup } from "@/types/guests";
+
+/** The state to start from: the tab's last save, unless the page is newer (a guest reply, another device), which wins and drops it. */
+function startFrom(
+  eventId: string,
+  initial: EventGuests,
+  dataVersion: number,
+  preloaded: boolean,
+): Omit<SavedList, "listVersion"> {
+  const kept = keptList(eventId);
+  if (
+    kept &&
+    dataVersion <= kept.dataVersion &&
+    initial.listVersion <= kept.listVersion
+  )
+    return kept;
+  dropList(eventId);
+  return { dataVersion, guests: initial, useList: preloaded };
+}
 
 /**
  * The list, the view over it, and its saves; nothing that talks to the host
@@ -24,13 +48,20 @@ export function useGuestList(
   eventId: string,
   initial: EventGuests,
   preloaded: boolean,
+  dataVersion: number,
   fail: (error: SaveError) => void,
 ) {
   const locale = useLocale();
-  const [guests, setGuests] = useState(initial);
-  const [useList, setUseList] = useState(preloaded);
+  const [start] = useState(() =>
+    startFrom(eventId, initial, dataVersion, preloaded),
+  );
+  const [guests, setGuests] = useState(start.guests);
+  const [useList, setUseList] = useState(start.useList);
   /* The list as last saved: the next save starts from it. */
-  const saved = useRef(initial);
+  const saved = useRef(start.guests);
+  /* The data version the list started from, then the one the last save left. */
+  const version = useRef(start.dataVersion);
+  const listOn = useRef(start.useList);
   /* One save at a time: a second click while one runs is ignored. */
   const busy = useRef(false);
   const [saving, setSaving] = useState(false);
@@ -46,6 +77,16 @@ export function useGuestList(
     const shown = filterGroup(group, query, keep);
     return shown ? [shown] : [];
   });
+
+  /** Keeps the saved state for a mount that starts from an older page. */
+  function remember() {
+    keepList(eventId, {
+      dataVersion: version.current,
+      listVersion: saved.current.listVersion,
+      guests: saved.current,
+      useList: listOn.current,
+    });
+  }
 
   /** Runs one save unless another is running; false when it didn't save. */
   async function once(run: () => Promise<boolean>): Promise<boolean> {
@@ -74,6 +115,8 @@ export function useGuestList(
       return false;
     }
     saved.current = { ...next, listVersion: result.data.listVersion };
+    version.current = result.data.dataVersion;
+    remember();
     setGuests(saved.current);
     return true;
   }
@@ -90,6 +133,8 @@ export function useGuestList(
         fail(result.error);
         return false;
       }
+      listOn.current = on;
+      remember();
       setUseList(on);
       return true;
     });

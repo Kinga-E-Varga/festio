@@ -14,7 +14,6 @@ import {
   type EventSettings,
 } from "@/db/schemas/event";
 import type { PrintSettings } from "@/types/print";
-import { countsOf, readCountInputs } from "@/db/writes/counts";
 import { expectVersion, SaveRefused } from "@/db/writes/save";
 import { blockSlug, prepareClaim } from "@/db/writes/slugs";
 import { SLUG_BLOCK_DAYS } from "@/lib/config";
@@ -86,17 +85,11 @@ export async function writeEventSettings(
       throw new SaveRefused("closeTooLate");
     }
 
-    /*
-     * The list switch changes which names need sorting out: recount with it.
-     * A new link is claimed; the old one stays blocked for a while, still
-     * this event's. The two reads don't depend on each other.
-     */
-    const [recount, claim] = await Promise.all([
-      input.preloaded !== doc.preloaded ? readCountInputs(tx, eventId) : null,
+    /* A new link is claimed; the old one stays blocked for a while, still this event's. */
+    const claim =
       input.slug !== doc.slug
-        ? prepareClaim(tx, input.slug, { eventId, hostId, now })
-        : undefined,
-    ]);
+        ? await prepareClaim(tx, input.slug, { eventId, hostId, now })
+        : undefined;
     if (claim === null) throw new SaveRefused("slugTaken");
     if (claim) {
       claim();
@@ -115,12 +108,6 @@ export async function writeEventSettings(
       password: input.password ?? FieldValue.delete(),
       expectedGuests: input.expectedGuests,
       preloaded: input.preloaded,
-      ...(recount && {
-        counts: countsOf(recount, {
-          preloaded: input.preloaded,
-          questions: doc.questions,
-        }),
-      }),
       version,
     });
     return { version };

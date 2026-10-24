@@ -32,3 +32,16 @@ export const PASSWORD_LIMIT_PER_HOUR = 10;
 
 /** How long a browser keeps a Protected invitation open once its password is typed. */
 export const UNLOCK_DAYS = 30;
+
+/**
+ * A host save counts only the replies its change can reach, found in rounds
+ * (`readChangeGroup`). Past either limit it counts every reply instead.
+ */
+export const GROUP_MAX_ROUNDS = 3;
+export const GROUP_MAX_NAMES = 300;
+
+/** How long the server remembers a read it can reuse (a link, an invitation) before reading again. */
+export const MEMO_TTL_MINUTES = 60;
+
+/** Most entries one of those memories holds; past it the least recently used goes first. */
+export const MEMO_MAX_ENTRIES = 1000;

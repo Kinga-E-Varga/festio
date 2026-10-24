@@ -10,7 +10,12 @@
     "authChecks": 1
   },
   "page: event overview": {
-    "reads": 68,
+    "reads": 27,
+    "writes": 0,
+    "authChecks": 1
+  },
+  "page: event overview, again": {
+    "reads": 14,
     "writes": 0,
     "authChecks": 1
   },
@@ -35,17 +40,22 @@
     "authChecks": 1
   },
   "guest: public invitation": {
-    "reads": 3,
+    "reads": 2,
+    "writes": 0,
+    "authChecks": 0
+  },
+  "guest: public invitation, again": {
+    "reads": 1,
     "writes": 0,
     "authChecks": 0
   },
   "guest: protected, locked": {
-    "reads": 3,
+    "reads": 2,
     "writes": 0,
     "authChecks": 0
   },
   "guest: protected, unlocked": {
-    "reads": 3,
+    "reads": 2,
     "writes": 0,
     "authChecks": 0
   },
@@ -61,12 +71,27 @@
   },
   "save: invitation": {
     "reads": 2,
-    "writes": 1,
+    "writes": 2,
     "authChecks": 0
   },
   "save: guest list, one reply edited": {
-    "reads": 43,
+    "reads": 6,
     "writes": 2,
+    "authChecks": 0
+  },
+  "save: guest list, mark sent": {
+    "reads": 2,
+    "writes": 1,
+    "authChecks": 0
+  },
+  "save: guest list, add names": {
+    "reads": 5,
+    "writes": 2,
+    "authChecks": 0
+  },
+  "save: list switch": {
+    "reads": 1,
+    "writes": 1,
     "authChecks": 0
   },
   "save: mark replies seen": {
@@ -87,6 +112,11 @@
   "guest reply: pre-loaded name": {
     "reads": 7,
     "writes": 3,
+    "authChecks": 0
+  },
+  "save: guest list, match an unknown": {
+    "reads": 10,
+    "writes": 2,
     "authChecks": 0
   }
 }
