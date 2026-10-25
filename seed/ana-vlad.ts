@@ -22,6 +22,7 @@ export const questions: Question[] = [
     ],
     required: false,
     archived: false,
+    answered: true,
   },
   {
     id: "q-room",
@@ -30,6 +31,7 @@ export const questions: Question[] = [
     kind: "yesNo",
     required: false,
     archived: false,
+    answered: true,
   },
   {
     id: "q-song",
@@ -38,6 +40,7 @@ export const questions: Question[] = [
     kind: "text",
     required: false,
     archived: false,
+    answered: true,
   },
 ];
 

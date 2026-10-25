@@ -7,9 +7,13 @@ import { RepliesBar } from "@/components/dashboard/RepliesSummary";
 import { RowLines } from "@/components/dashboard/RowLines";
 import { SearchField } from "@/components/dashboard/SearchField";
 import { Select } from "@/components/dashboard/event-editor/Select";
-import { ICON_BTN } from "@/components/dashboard/guest-list/styles";
 import { StatusTag } from "@/components/dashboard/StatusTag";
-import { BOX_ROWS, PAGE_BOX, ROW_LINK } from "@/components/dashboard/styles";
+import {
+  BOX_ROWS,
+  ICON_BTN,
+  PAGE_BOX,
+  ROW_LINK,
+} from "@/components/dashboard/styles";
 import { Icon } from "@/components/icons";
 import { Link } from "@/i18n/navigation";
 import { eventPath, formatDay, formatRelative } from "@/lib/event";

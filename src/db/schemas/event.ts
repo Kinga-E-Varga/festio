@@ -3,10 +3,15 @@ import {
   CANCEL_MESSAGE_MAX,
   EVENT_KINDS,
   PASSWORD_PATTERN,
+  RSVP_OPTION_MAX,
+  RSVP_OPTIONS_MAX,
+  RSVP_OPTIONS_MIN,
+  RSVP_QUESTION_MAX,
   TITLE_MAX,
   TITLE_MIN,
 } from "@/db/limits";
 import { ageGroupSchema, dietNeedSchema } from "@/db/schemas/reply";
+import { QUESTIONS_MAX } from "@/lib/config";
 import { SLUG_MAX, SLUG_MIN, SLUG_PATTERN } from "@/lib/slug";
 import {
   countSchema,
@@ -38,28 +43,76 @@ export const slugSchema = z
 
 export const questionScopeSchema = z.enum(["person", "reply"]);
 
-const questionBase = {
-  id: idSchema,
-  /** The host's own wording, in the invitation's language. */
-  label: z.string().trim().min(1),
-  scope: questionScopeSchema,
-  required: z.boolean(),
-  /** Hidden from the form; its answers still show and export. */
-  archived: z.boolean(),
-};
+/**
+ * A question's fields, from its wording and options. The stored card takes
+ * any length (a limit added later must never make a saved card unreadable);
+ * what the host sends is held to the limits.
+ */
+function questionKinds<Extra extends z.ZodRawShape>(
+  label: z.ZodString,
+  options: z.ZodType<{ id: string; label: string }[]>,
+  extra: Extra,
+) {
+  const base = {
+    id: idSchema,
+    /** The host's own wording, in the invitation's language. */
+    label,
+    scope: questionScopeSchema,
+    required: z.boolean(),
+    /** Hidden from the form; its answers still show and export. */
+    archived: z.boolean(),
+    ...extra,
+  };
+  return z.discriminatedUnion("kind", [
+    z.object({ ...base, kind: z.literal("choice"), options }),
+    z.object({ ...base, kind: z.literal("yesNo") }),
+    z.object({ ...base, kind: z.literal("text") }),
+  ]);
+}
 
 /** A host's own question. Asked only of people coming. */
-export const questionSchema = z.discriminatedUnion("kind", [
-  z.object({
-    ...questionBase,
-    kind: z.literal("choice"),
-    options: z
-      .array(z.object({ id: idSchema, label: z.string().trim().min(1) }))
-      .min(1),
-  }),
-  z.object({ ...questionBase, kind: z.literal("yesNo") }),
-  z.object({ ...questionBase, kind: z.literal("text") }),
-]);
+export const questionSchema = questionKinds(
+  z.string().trim().min(1),
+  z.array(z.object({ id: idSchema, label: z.string().trim().min(1) })).min(1),
+  {
+    /**
+     * A reply has answered it: its type and scope are fixed, Required can
+     * only go off, it is archived rather than deleted. Set by the reply's
+     * save, never by the browser; never goes back. A card saved before the
+     * flag reads as not answered.
+     */
+    answered: z.boolean().default(false),
+  },
+);
+
+/** A question as the host's editor sends it: held to the limits, no `answered`. */
+export const questionInputSchema = questionKinds(
+  z.string().trim().min(1).max(RSVP_QUESTION_MAX),
+  z
+    .array(
+      z.object({
+        id: idSchema,
+        label: z.string().trim().min(1).max(RSVP_OPTION_MAX),
+      }),
+    )
+    .min(RSVP_OPTIONS_MIN)
+    .max(RSVP_OPTIONS_MAX)
+    .refine(unique, "Two options with one id"),
+  {},
+);
+
+function unique(items: { id: string }[]): boolean {
+  return new Set(items.map(({ id }) => id)).size === items.length;
+}
+
+/** The host's whole list, archived ones too, in the form's order. */
+export const questionsInputSchema = z
+  .array(questionInputSchema)
+  .refine(unique, "Two questions with one id")
+  .refine(
+    (list) => list.filter(({ archived }) => !archived).length <= QUESTIONS_MAX,
+    "Too many questions",
+  );
 
 export const printShapeSchema = z.enum(["flat", "folded"]);
 
@@ -196,3 +249,5 @@ export const eventSettingsSchema = eventFieldsSchema
 export type EventDoc = z.infer<typeof eventSchema>;
 export type EventSettings = z.infer<typeof eventSettingsSchema>;
 export type Question = z.infer<typeof questionSchema>;
+export type QuestionInput = z.infer<typeof questionInputSchema>;
+export type QuestionScope = z.infer<typeof questionScopeSchema>;

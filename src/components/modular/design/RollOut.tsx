@@ -4,7 +4,12 @@ import { useTranslations } from "next-intl";
 import { type ReactNode, useState } from "react";
 import { Icon } from "@/components/icons";
 import type { IconName } from "@/types/dashboard";
-import { BOX_MARK, BOX_MARK_STROKE, DESIGN_BOX_BUTTON } from "./styles";
+import {
+  BOX_MARK,
+  BOX_MARK_STROKE,
+  DESIGN_BOX_BUTTON,
+  MARK_SLOT,
+} from "./styles";
 
 /**
  * One choice card in the rolled-out grid, as wide as its column. Picked, a
@@ -62,11 +67,13 @@ export function RollOut({
         className={DESIGN_BOX_BUTTON}
       >
         {icon ? (
-          <Icon
-            name={icon}
-            className={`${BOX_MARK} w-[22px]`}
-            strokeWidth={iconStroke}
-          />
+          <span className={MARK_SLOT}>
+            <Icon
+              name={icon}
+              className={`${BOX_MARK} w-[22px]`}
+              strokeWidth={iconStroke}
+            />
+          </span>
         ) : null}
         <span className="flex min-w-0 flex-1">{summary}</span>
         <RollArrow open={open} reveal="group-focus-visible:opacity-100" />
@@ -119,23 +126,35 @@ export function RollArrow({
 /**
  * Rolls out by growing its one grid row from nothing to its height; while
  * shut it is out of the tab order. Its child must clip (`overflow-hidden`).
+ * `lazy` mounts the child only while open, and while it rolls back — for
+ * forms too heavy to keep under every card.
  */
 export function RollPanel({
   id,
   open,
   children,
+  lazy = false,
 }: {
   id: string;
   open: boolean;
   children: ReactNode;
+  lazy?: boolean;
 }) {
+  const [shown, setShown] = useState(open);
+  /* Opening mounts it at once, so it rolls out with its content. */
+  if (lazy && open && !shown) setShown(true);
+
   return (
     <div
       id={id}
       inert={!open}
+      onTransitionEnd={(event) => {
+        if (lazy && !open && event.target === event.currentTarget)
+          setShown(false);
+      }}
       className={`grid transition-[grid-template-rows] duration-300 ease-out ${open ? "grid-rows-[1fr]" : "grid-rows-[0fr]"}`}
     >
-      {children}
+      {!lazy || shown ? children : null}
     </div>
   );
 }

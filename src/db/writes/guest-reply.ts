@@ -2,7 +2,7 @@ import { Timestamp } from "firebase-admin/firestore";
 import { db } from "@/db/admin";
 import { paths } from "@/db/paths";
 import { parseSnap } from "@/db/reads/parse";
-import { eventSchema } from "@/db/schemas/event";
+import { eventSchema, type Question } from "@/db/schemas/event";
 import type {
   GuestPersonInput,
   GuestReplyInput,
@@ -14,6 +14,8 @@ import { countsWithReply, readReplyGroup } from "@/db/writes/counts";
 import { countAttempt, limitFor, readAttempts } from "@/db/writes/rate-limit";
 import { replyRef } from "@/db/writes/reply-ref";
 import { SaveRefused } from "@/db/writes/save";
+import { GUEST_RULES, markAnswered } from "@/lib/answers";
+import { checkedAnswers } from "@/db/writes/answers";
 import { REPLY_LIMIT_PER_HOUR } from "@/lib/config";
 import { replyCap, replyCloseAt } from "@/lib/event";
 import { summaryAfter, type StoredReply } from "@/lib/guests";
@@ -25,10 +27,20 @@ export interface Visitor {
   unlock?: string;
 }
 
-/** One person as stored: a new permanent ID; age and diet only when coming. */
-function toPerson(person: GuestPersonInput, going: boolean): Person {
+/** One person as stored: a new permanent ID; age, diet and answers only when coming. */
+function toPerson(
+  person: GuestPersonInput,
+  going: boolean,
+  questions: Question[],
+): Person {
   const { name, ageGroup, diet, dietOther } = person;
   if (!going) return { id: newId(), name };
+  const answers = checkedAnswers(
+    questions,
+    "person",
+    person.answers,
+    GUEST_RULES,
+  );
   return {
     id: newId(),
     name,
@@ -36,6 +48,7 @@ function toPerson(person: GuestPersonInput, going: boolean): Person {
     /* Each need once, whatever was sent. */
     ...(diet && { diet: [...new Set(diet)] }),
     ...(diet?.includes("other") && dietOther && { dietOther }),
+    ...(answers && { answers }),
   };
 }
 
@@ -95,13 +108,23 @@ export async function writeGuestReply(
     }
 
     const going = input.status === "going";
+    const answers = going
+      ? checkedAnswers(doc.questions, "reply", input.answers, GUEST_RULES)
+      : undefined;
     const card: ReplyDoc = {
       sentAt: Timestamp.fromDate(now),
       status: input.status,
       message: input.message || null,
+      ...(answers && { answers }),
       createdBy: "guest",
-      people: input.people.map((person) => toPerson(person, going)),
+      people: input.people.map((person) =>
+        toPerson(person, going, doc.questions),
+      ),
     };
+    const questions = markAnswered(doc.questions, [
+      card.answers,
+      ...card.people.map((person) => person.answers),
+    ]);
     const reply: StoredReply = { ...card, id: input.id };
 
     /* Only a reply that may be saved reads more: the cards its names can change. */
@@ -111,6 +134,7 @@ export async function writeGuestReply(
       counts: countsWithReply(doc.counts, group, reply, doc),
       summary: summaryAfter(doc.summary, [], [reply]),
       dataVersion: doc.dataVersion + 1,
+      ...(questions && { questions }),
     });
     countAttempt(tx, limit, attempts, now);
   });

@@ -10,7 +10,7 @@ import type {
   ModularLibrary,
   ModularState,
 } from "@/types/modular";
-import { RollArrow } from "../design/RollOut";
+import { RollArrow, RollPanel } from "../design/RollOut";
 import { SectionBar } from "../design/SectionBar";
 import { BOX_MARK, SECTION_CARD, SECTION_REVEAL } from "../design/styles";
 import { PaletteColors } from "./palette";
@@ -109,23 +109,25 @@ export function ContentTab({
                     }
                   />
                 </div>
-                {open ? (
-                  <div
-                    id={panelId}
-                    className={`${SUBBOX} flex flex-col gap-4 rounded-none! border-t-0 border-neutral-400! bg-neutral-50`}
-                  >
-                    <SectionFields
-                      library={library}
-                      definition={definition}
-                      variant={variant}
-                      state={state}
-                      basics={basics}
-                      language={language}
-                      showErrors={showErrors}
-                      onChange={onChange}
-                    />
+                {/* Kept mounted only while open or rolling back: a card's fields are many. */}
+                <RollPanel id={panelId} open={open} lazy>
+                  <div className="overflow-hidden">
+                    <div
+                      className={`${SUBBOX} flex flex-col gap-4 rounded-none! border-t-0 border-neutral-400! bg-neutral-50`}
+                    >
+                      <SectionFields
+                        library={library}
+                        definition={definition}
+                        variant={variant}
+                        state={state}
+                        basics={basics}
+                        language={language}
+                        showErrors={showErrors}
+                        onChange={onChange}
+                      />
+                    </div>
                   </div>
-                ) : null}
+                </RollPanel>
               </div>
             );
           })}

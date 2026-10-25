@@ -18,6 +18,7 @@ import {
   MUTED,
   PILL,
 } from "@/modular/styles";
+import type { Question } from "@/db/schemas/event";
 import type { VariantProps } from "@/types/modular";
 
 /*
@@ -76,8 +77,11 @@ export const SKIN: RsvpSkin = {
 /**
  * The reply form's state and its Send, shared by Split and Band.
  */
-export function useReply(onRsvp: VariantProps["onRsvp"]) {
-  const form = useRsvpForm();
+export function useReply(
+  onRsvp: VariantProps["onRsvp"],
+  questions?: Question[],
+) {
+  const form = useRsvpForm(questions);
 
   function send() {
     const payload = form.buildPayload();

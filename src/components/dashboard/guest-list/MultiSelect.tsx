@@ -142,11 +142,13 @@ export function MultiSelect<T extends string>({
           role="group"
           onKeyDown={move}
           /*
-           * Only focus moving somewhere else closes it. A press on an
-           * option's words sends focus nowhere first, before its click
-           * picks — closing then would drop the pick. A click outside is
-           * the pointer listener's to close.
+           * Only focus moving somewhere else closes it. A press keeps focus
+           * where it is, so the click that follows can pick: else it moves
+           * to a focusable box around the list (the modular page's) before
+           * the click, and closing then would drop the pick. A click
+           * outside is the pointer listener's to close.
            */
+          onMouseDown={(event) => event.preventDefault()}
           onBlur={(event) => {
             const next = event.relatedTarget;
             if (next && !box.current?.contains(next)) setOpen(false);

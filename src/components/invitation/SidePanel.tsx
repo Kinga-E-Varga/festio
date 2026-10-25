@@ -58,9 +58,13 @@ export function SidePanel({
       data-open={open}
       inert={inert}
     >
+      {/*
+       * The scrollbar's room kept even when a view doesn't scroll, so the
+       * centred content sits in the same place on every view.
+       */}
       <div
         data-panel-scroll
-        className="side-scroll flex flex-1 flex-col overflow-y-auto [--scroll-track:var(--color-neutral-125)]"
+        className="side-scroll flex flex-1 flex-col overflow-y-auto [scrollbar-gutter:stable] [--scroll-track:var(--color-neutral-125)]"
       >
         {/*
          * The dashboard side panel's spacing: its title row level with the

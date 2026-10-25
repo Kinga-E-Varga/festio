@@ -3,6 +3,7 @@
 import { useTranslations } from "next-intl";
 import { TAB_LABEL, type PanelTabId } from "@/components/invitation/PanelTabs";
 import { SidePanel } from "@/components/invitation/SidePanel";
+import type { Question } from "@/db/schemas/event";
 import type { Language } from "@/lib/language";
 import type {
   InvitationBasics,
@@ -11,6 +12,7 @@ import type {
 } from "@/types/modular";
 import { ContentTab } from "./content/ContentTab";
 import { DesignTab } from "./design/DesignTab";
+import { RepliesTab } from "./replies/RepliesTab";
 
 interface ModularEditPanelProps {
   open: boolean;
@@ -37,11 +39,14 @@ interface ModularEditPanelProps {
   onOpenStyles: (id: string | null) => void;
   /** One of a section's styles picked. */
   onStylePicked: () => void;
+  /** The host's reply questions, archived ones too. */
+  questions: Question[];
+  onQuestions: (questions: Question[]) => void;
 }
 
 /**
  * The modular editor's panel, on the tab picked on the strip. Design and Content edit the state;
- * Replies is still empty.
+ * Replies the host's own reply questions.
  */
 export function ModularEditPanel({
   open,
@@ -60,6 +65,8 @@ export function ModularEditPanel({
   openStyles,
   onOpenStyles,
   onStylePicked,
+  questions,
+  onQuestions,
 }: ModularEditPanelProps) {
   const t = useTranslations("HostEditor");
 
@@ -95,6 +102,13 @@ export function ModularEditPanel({
             onOpen={onOpenSection}
             showErrors={showErrors}
             onChange={onChange}
+          />
+        ) : null}
+        {tab === "replies" ? (
+          <RepliesTab
+            questions={questions}
+            onChange={onQuestions}
+            language={language}
           />
         ) : null}
       </div>

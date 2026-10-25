@@ -59,6 +59,8 @@ export default async function TemplatePreviewPage({ params }: Props) {
         templateId={template.id}
         basics={DEFAULT_BASICS}
         language={language}
+        /* A preview starts with none; what the host adds stays in memory. */
+        questions={[]}
       />
     );
   }

@@ -2,7 +2,7 @@
 
 import { useTranslations } from "next-intl";
 import { EditorHeading } from "@/components/dashboard/event-editor/EditorSection";
-import { PanelSwitch } from "@/components/invitation/PanelSwitch";
+import { Switch } from "@/components/invitation/PanelSwitch";
 import type { Language } from "@/lib/language";
 import { DEFAULT_CORNERS, isCornersId } from "@/modular/corners";
 import type { ModularLibrary, ModularState } from "@/types/modular";
@@ -13,7 +13,8 @@ import {
   PatternPicker,
 } from "./LookPickers";
 import { SectionsList } from "./SectionsList";
-import { SECTION_CARD as CARD, SECTION_NAME as NAME } from "./styles";
+import { SectionBar } from "./SectionBar";
+import { SECTION_CARD as CARD } from "./styles";
 import { TemplatePicker } from "./TemplatePicker";
 
 interface DesignTabProps {
@@ -87,15 +88,18 @@ export function DesignTab({
         />
         {/* As a section's card in Sections, its switch set the same way. */}
         <div className={CARD}>
-          <PanelSwitch
-            className="-ml-[9px]"
-            gap="gap-[11px]"
-            tone="light"
-            id="envelope-switch"
-            label={t("envelope")}
-            checked={state.envelope}
-            onChange={(on) => onChange({ ...state, envelope: on })}
-            heading={<span className={NAME}>{t("envelope")}</span>}
+          <SectionBar
+            mark={
+              <Switch
+                size="panel"
+                tone="light"
+                id="envelope-switch"
+                label={t("envelope")}
+                checked={state.envelope}
+                onChange={(on) => onChange({ ...state, envelope: on })}
+              />
+            }
+            name={t("envelope")}
           />
         </div>
       </div>

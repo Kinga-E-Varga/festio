@@ -13,6 +13,9 @@ import {
 import { ownEvent } from "@/db/writes/event";
 import { replyRef } from "@/db/writes/reply-ref";
 import { expectVersion, SaveRefused } from "@/db/writes/save";
+import type { Question } from "@/db/schemas/event";
+import { HOST_RULES, markAnswered } from "@/lib/answers";
+import { checkedAnswers } from "@/db/writes/answers";
 import { summaryAfter, type StoredReply } from "@/lib/guests";
 
 /**
@@ -44,6 +47,28 @@ function replyCards(
       editedAt: at,
     };
   });
+}
+
+/**
+ * A card's answers checked against the event's questions, the host's way:
+ * any type mismatch refuses the save, Required isn't enforced (the host may
+ * not know), and archived questions still take answers (the guest list
+ * shows them).
+ */
+function withCheckedAnswers(
+  card: StoredReply,
+  questions: Question[],
+): StoredReply {
+  const check = (scope: Question["scope"], sent: StoredReply["answers"]) =>
+    checkedAnswers(questions, scope, sent, HOST_RULES);
+  return {
+    ...card,
+    answers: check("reply", card.answers),
+    people: card.people.map((person) => ({
+      ...person,
+      answers: check("person", person.answers),
+    })),
+  };
 }
 
 /**
@@ -111,6 +136,13 @@ export async function writeGuestChanges(
       changes.replies,
       stored,
       Timestamp.fromDate(now),
+    ).map((card) => withCheckedAnswers(card, doc.questions));
+    const questions = markAnswered(
+      doc.questions,
+      replies.flatMap((card) => [
+        card.answers,
+        ...card.people.map((person) => person.answers),
+      ]),
     );
     const { remove } = changes.replies;
     /* Each card as it was stored, to come off the counters and summary as the cards now saved go on. */
@@ -134,11 +166,14 @@ export async function writeGuestChanges(
     for (const id of remove) tx.delete(replyRef(eventId, id, hostId));
     if (list) tx.set(db.doc(paths.guestList(eventId)), list);
     const dataVersion = counted ? doc.dataVersion + 1 : doc.dataVersion;
-    if (counted)
+    if (counted || questions)
       tx.update(ref, {
-        counts: counted,
-        summary: summaryAfter(doc.summary, change.before, replies),
-        dataVersion,
+        ...(counted && {
+          counts: counted,
+          summary: summaryAfter(doc.summary, change.before, replies),
+          dataVersion,
+        }),
+        ...(questions && { questions }),
       });
 
     return { listVersion: list?.version ?? listCard.version, dataVersion };

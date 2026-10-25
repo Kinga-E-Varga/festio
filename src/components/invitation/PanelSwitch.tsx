@@ -18,9 +18,14 @@ interface PanelSwitchProps {
   tone?: SwitchTone;
 }
 
-/** The two switch sizes: the track, the knob, and how far the knob travels. */
+/**
+ * The switch sizes: the track, the knob, and how far the knob travels (the
+ * knob ends as far from the track's right edge as it starts from its left).
+ * `panel` is the editors' side panel's, a step under `md`.
+ */
 const SIZES = {
   md: { track: "h-5 w-9", knob: "size-3.5", on: "translate-x-4" },
+  panel: { track: "h-[18px] w-8", knob: "size-3", on: "translate-x-3.5" },
   sm: { track: "h-4 w-7", knob: "size-2.5", on: "translate-x-3" },
 };
 
@@ -58,7 +63,8 @@ export type SwitchTone = keyof typeof TONES;
  * The switch alone, in neutral — solid neutral when on, a pale track
  * with a neutral edge when off. An invisible layer stretches the track's tap
  * area to 44px tall, enough for a finger, without making it look bigger.
- * `sm` sits on the Content tab's head bars.
+ * `md` in the dashboard and the Form tab's question form, `panel` in the
+ * rest of the editors' side panel, `sm` on the Content tab's head bars.
  */
 export function Switch({
   id,
@@ -116,6 +122,7 @@ export function PanelSwitch({
           label={label}
           checked={checked}
           onChange={onChange}
+          size="panel"
           tone={tone}
         />
         {/* Not a `<label>`: only the switch itself flips, never its name. */}

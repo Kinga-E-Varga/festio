@@ -10,8 +10,8 @@ import { SKIN, ThankYouCard, useReply } from "./reply";
  * The intro beside the reply form; once sent, the thank-you card in its
  * place. The form is the shared one, in this variant's own skin.
  */
-export function Variant({ values, onRsvp }: VariantProps) {
-  const { form, send } = useReply(onRsvp);
+export function Variant({ values, onRsvp, questions }: VariantProps) {
+  const { form, send } = useReply(onRsvp, questions);
 
   return (
     <div className={`${SPLIT} items-start ${PAD}`}>

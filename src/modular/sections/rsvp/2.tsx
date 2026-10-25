@@ -42,8 +42,8 @@ const ON_BAND =
  * Once sent, Split's thank-you card in its place. The form and its skin are
  * Split's.
  */
-export function Variant({ values, onRsvp }: VariantProps) {
-  const { form, send } = useReply(onRsvp);
+export function Variant({ values, onRsvp, questions }: VariantProps) {
+  const { form, send } = useReply(onRsvp, questions);
   const heading = text(values, "heading");
   const note = text(values, "note");
 

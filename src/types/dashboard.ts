@@ -27,6 +27,7 @@ export type IconName =
   | "cart"
   | "bell"
   | "pencil"
+  | "grip"
   | "eye"
   | "eyeOff"
   | "list"

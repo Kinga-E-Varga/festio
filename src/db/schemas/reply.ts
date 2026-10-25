@@ -67,14 +67,17 @@ export const replySchema = z.object({
 
 /**
  * What a guest's browser sends: the reply's answers and its ID, never the
- * people's IDs, times or who sent it — the server sets those. Age and diet are kept only for a
- * reply that is coming.
+ * people's IDs, times or who sent it — the server sets those. Age, diet and
+ * the answers to the host's questions are kept only for a reply that is
+ * coming, the answers once checked against the event's questions.
  */
 export const guestReplySchema = z.object({
   /** Made once by the form, so a reply sent twice is saved once. */
   id: z.uuid(),
   status: rsvpStatusSchema,
   message: z.string().trim().max(RSVP_NOTE_MAX).nullable(),
+  /** Answers to the questions asked once per reply. */
+  answers: answersSchema.optional(),
   people: z
     .array(
       z.object({
@@ -85,6 +88,8 @@ export const guestReplySchema = z.object({
           .max(dietNeedSchema.options.length)
           .optional(),
         dietOther: z.string().trim().max(RSVP_ANSWER_MAX).optional(),
+        /** Answers to the questions asked of each person. */
+        answers: answersSchema.optional(),
       }),
     )
     .min(1)

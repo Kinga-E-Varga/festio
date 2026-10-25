@@ -15,6 +15,7 @@ import {
 import { GUEST_DATA_RETENTION_DAYS } from "@/lib/config";
 import type { RsvpStatus } from "@/types/invitation";
 import { PlusIcon, XIcon } from "./icons";
+import { RsvpQuestion } from "./RsvpQuestion";
 import { INVITE_SCROLL, PERSON } from "./styles";
 import { RSVP_ANSWER_MAX, RSVP_NAME_MAX, RSVP_NOTE_MAX } from "@/db/limits";
 import type { RsvpFormState, RsvpProblem } from "./useRsvpForm";
@@ -32,6 +33,7 @@ const WARNING_KEY = {
   age: "ageWarning",
   diet: "dietWarning",
   dietOther: "dietOtherWarning",
+  question: "questionWarning",
 } as const satisfies Record<RsvpProblem, string>;
 
 type Row = RsvpFormState["values"]["rows"][number];
@@ -183,6 +185,7 @@ export function RsvpForm({
                 skin={skin}
                 row={row}
                 removable={removable}
+                id={`${formId}-person-${index}`}
               />
             ) : null}
           </div>
@@ -197,6 +200,21 @@ export function RsvpForm({
           {t("addPerson")}
         </button>
       </fieldset>
+
+      {derived.going && form.questions.shared.length > 0 ? (
+        <div className={`flex flex-col ${skin.space.group}`}>
+          {form.questions.shared.map((question) => (
+            <RsvpQuestion
+              key={question.id}
+              id={`${formId}-shared-${question.id}`}
+              question={question}
+              value={values.shared[question.id]}
+              onChange={(value) => set.sharedAnswer(question.id, value)}
+              skin={skin}
+            />
+          ))}
+        </div>
+      ) : null}
 
       <div className={`flex flex-col ${skin.space.field}`}>
         <label htmlFor="rsvp-note" className={skin.label}>
@@ -234,18 +252,21 @@ export function RsvpForm({
   );
 }
 
-/** Age and dietary needs, asked of each person when the reply is Coming. */
+/** Age, dietary needs and the host's per-person questions, asked of each person when the reply is Coming. */
 function PersonQuestions({
   form,
   skin,
   row,
   removable,
+  id,
 }: {
   form: RsvpFormState;
   skin: RsvpSkin;
   row: Row;
   /** The name has an × beside it; the answers stop short of it, where the name does — its 14px plus the 12px gap. */
   removable: boolean;
+  /** The start of this person's field ids. */
+  id: string;
 }) {
   const t = useTranslations("Rsvp");
   const { set } = form;
@@ -286,6 +307,17 @@ function PersonQuestions({
           />
         ) : null}
       </div>
+
+      {form.questions.person.map((question) => (
+        <RsvpQuestion
+          key={question.id}
+          id={`${id}-${question.id}`}
+          question={question}
+          value={row.answers[question.id]}
+          onChange={(value) => set.answer(row.id, question.id, value)}
+          skin={skin}
+        />
+      ))}
     </div>
   );
 }

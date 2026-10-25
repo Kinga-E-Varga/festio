@@ -45,7 +45,7 @@ const STRIP_ITEM = `group flex w-16 flex-col items-center gap-0.5 rounded-ui tex
  * gold while its view is open. Only the icon, never the label.
  */
 const STRIP_CIRCLE = `grid ${ITEM_CIRCLE} place-items-center rounded-full transition-colors group-hover:bg-secondary-400/30 group-aria-expanded:bg-secondary-400`;
-/** The strip's short rules, above Save and above Quit; none in the top bar. */
+/** The strip's short rule above Quit; none in the top bar. */
 const DIVIDER = "hidden w-12 border-t border-neutral-300 invite:block";
 const STRIP_LABEL = "text-[11px] leading-tight font-medium";
 
@@ -61,12 +61,12 @@ interface EditorStripProps<Id extends string> {
 
 /**
  * The editor's strip down the right edge, built like the dashboard's
- * right-hand strip but labelled, as hosts meet it rarely: the panel's views
- * (each opens the panel on it, the open one closes it), Save (faded while
- * there is nothing to save) or Export, and Quit editor at the foot under the
- * same short rule. Where the panel covers the page (below `--breakpoint-invite`) it
- * turns into a bar across the top, the panel opening under it: Quit at the
- * left, the views, Save at the right. Not along the bottom, where the simple
+ * right-hand strip but labelled, as hosts meet it rarely: Save (faded while
+ * there is nothing to save) or Export on top, then the panel's views (each
+ * opens the panel on it, the open one closes it), one column with one gap,
+ * and Quit editor at the foot under a short rule. Where the panel covers the
+ * page (below `--breakpoint-invite`) it turns into a bar across the top, the
+ * panel opening under it: Quit at the left, the views, Save at the right. Not along the bottom, where the simple
  * invitation's own reply bar sits. Festio's own chrome, never the
  * invitation's.
  */
@@ -105,29 +105,26 @@ function EditorStrip<Id extends string>({
             </button>
           );
         })}
-      </div>
-
-      <div className={`my-4 ${DIVIDER}`} />
-
-      <button
-        type="button"
-        disabled={save && !action.dirty}
-        onClick={save ? action.onSave : action.onExport}
-        className={`group flex w-16 flex-col items-center gap-0.5 text-neutral-900 disabled:cursor-not-allowed ${FOCUS}`}
-      >
-        <span
-          className={`grid ${ITEM_CIRCLE} place-items-center rounded-full bg-accent-800 text-neutral-50 transition-colors group-hover:bg-accent-900 group-disabled:bg-accent-800 group-disabled:opacity-40`}
+        <button
+          type="button"
+          disabled={save && !action.dirty}
+          onClick={save ? action.onSave : action.onExport}
+          className={`group flex w-16 flex-col items-center gap-0.5 text-neutral-900 disabled:cursor-not-allowed invite:order-first ${FOCUS}`}
         >
-          <Icon
-            name={save ? "check" : "download"}
-            className="size-5"
-            strokeWidth={2}
-          />
-        </span>
-        <span className={`${STRIP_LABEL} group-disabled:opacity-40`}>
-          {label}
-        </span>
-      </button>
+          <span
+            className={`grid ${ITEM_CIRCLE} place-items-center rounded-full bg-accent-800 text-neutral-50 transition-colors group-hover:bg-accent-900 group-disabled:bg-accent-800 group-disabled:opacity-40`}
+          >
+            <Icon
+              name={save ? "check" : "download"}
+              className="size-5"
+              strokeWidth={2}
+            />
+          </span>
+          <span className={`${STRIP_LABEL} group-disabled:opacity-40`}>
+            {label}
+          </span>
+        </button>
+      </div>
 
       <div className="hidden flex-1 invite:block" />
 

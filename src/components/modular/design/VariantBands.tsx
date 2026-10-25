@@ -2,7 +2,7 @@
 
 import { Icon } from "@/components/icons";
 import { RollPanel } from "./RollOut";
-import { BOX_MARK, BOX_MARK_STROKE, DESIGN_BAND } from "./styles";
+import { BOX_MARK, BOX_MARK_STROKE, DESIGN_BAND, MARK_SLOT } from "./styles";
 
 interface VariantBandsProps<T extends string> {
   /** The rolled-out bands' id, for the arrow that opens them. */
@@ -39,7 +39,7 @@ export function VariantBands<T extends string>({
               className={DESIGN_BAND}
             >
               {/* The tick's place, kept empty when not picked. */}
-              <span className={`${BOX_MARK} flex w-[22px]`}>
+              <span className={`${MARK_SLOT} h-[22px]`}>
                 {picked ? (
                   <Icon
                     name="check"

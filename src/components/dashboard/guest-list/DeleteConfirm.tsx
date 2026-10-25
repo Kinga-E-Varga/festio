@@ -1,6 +1,8 @@
 import { useTranslations } from "next-intl";
-import { BTN_PRIMARY } from "@/components/dashboard/styles";
-import { GUEST_BTN_DANGER } from "@/components/dashboard/guest-list/styles";
+import {
+  GUEST_BTN_DANGER,
+  GUEST_BTN_DANGER_OUTLINE,
+} from "@/components/dashboard/guest-list/styles";
 
 interface DeleteConfirmProps {
   message: string;
@@ -12,7 +14,7 @@ interface DeleteConfirmProps {
   stacked?: boolean;
 }
 
-/** A delete asks first: the question in danger's colour, back out or delete. */
+/** A delete asks first: the question in danger's colour, back out (outlined) or delete (solid). */
 export function DeleteConfirm({
   message,
   keepLabel,
@@ -30,7 +32,11 @@ export function DeleteConfirm({
     >
       <span className={stacked ? undefined : "mr-auto"}>{message}</span>
       <div className="flex shrink-0 gap-2.5">
-        <button type="button" onClick={onKeep} className={BTN_PRIMARY}>
+        <button
+          type="button"
+          onClick={onKeep}
+          className={GUEST_BTN_DANGER_OUTLINE}
+        >
           {keepLabel}
         </button>
         <button type="button" onClick={onDelete} className={GUEST_BTN_DANGER}>

@@ -45,3 +45,6 @@ export const MEMO_TTL_MINUTES = 60;
 
 /** Most entries one of those memories holds; past it the least recently used goes first. */
 export const MEMO_MAX_ENTRIES = 1000;
+
+/** The most questions of their own a host's reply form asks; archived ones don't count. */
+export const QUESTIONS_MAX = 10;

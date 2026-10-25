@@ -71,6 +71,7 @@ export function PalettePicker({
       <RollOut
         id="design-palettes"
         label={`${t("palette")}: ${palette?.name ?? ""}`}
+        icon="palette"
         summary={palette ? <Swatches palette={palette} /> : null}
       >
         {palettes.map((option) => (

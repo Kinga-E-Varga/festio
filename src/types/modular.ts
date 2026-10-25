@@ -4,6 +4,7 @@ import type { CornersId } from "@/modular/corners";
 import type { EnvelopeColor, PaletteEnvelopeRole } from "@/types/envelope";
 import type { EventKind } from "@/types/dashboard";
 import type { RsvpPayload, TemplateFonts } from "@/types/invitation";
+import type { Question } from "@/db/schemas/event";
 
 /**
  * The colours a palette sets, by name. On the page each is `--m-<role>`.
@@ -352,6 +353,8 @@ export interface VariantProps {
   ground: SectionGround;
   /** The RSVP variant hands the guest's reply up; every other one ignores it. */
   onRsvp?: (payload: RsvpPayload) => void;
+  /** The host's own reply questions; only the RSVP variants read them. */
+  questions?: Question[];
   /** Only the header's variants read it. */
   nav?: BarNav;
 }

@@ -43,3 +43,11 @@ export const RSVP_ANSWER_MAX = 200;
 
 /** The most people one reply answers for. */
 export const RSVP_PEOPLE_MAX = 10;
+
+/** The longest wording of a host's own question. */
+export const RSVP_QUESTION_MAX = 120;
+
+/** A choice question's fewest and most options, and its longest option. */
+export const RSVP_OPTIONS_MIN = 2;
+export const RSVP_OPTIONS_MAX = 8;
+export const RSVP_OPTION_MAX = 60;

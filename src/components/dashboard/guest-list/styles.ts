@@ -1,6 +1,7 @@
 import {
   WARNING_DARK,
   BUTTON,
+  ICON_BTN,
   SOFT_BTN,
   SOFT_ACTION_SHAPE,
   SOFT_OUTLINE,
@@ -10,6 +11,8 @@ import {
 
 /** A row's Delete: the shared danger button, a shade lighter. */
 export const GUEST_BTN_DANGER = `${BUTTON} border-danger-700 bg-danger-700 text-neutral-50 hover:border-danger-800 hover:bg-danger-800`;
+/** Backing out of a delete: the same danger colour, outlined. */
+export const GUEST_BTN_DANGER_OUTLINE = `${BUTTON} border-danger-700 bg-neutral-50 text-danger-800 hover:border-danger-800 hover:bg-danger-150 hover:text-danger-900`;
 
 /** The small soft action the editor's "Edit list" uses. */
 const SMALL_BTN_SHAPE =
@@ -28,13 +31,6 @@ export const STATUS_FILL = {
   going: "bg-primary-700",
   not_going: "bg-warning-500",
 } as const;
-
-/** The quiet icon-only actions at the end of a row; a `data-tip` gives one its quick label. */
-const ICON_BASE =
-  "icon-tip grid size-8 cursor-pointer place-items-center rounded-ui text-neutral-600 transition-colors";
-export const ICON_BTN = `${ICON_BASE} hover:bg-neutral-200 hover:text-neutral-950`;
-/** Delete: the same button, turning danger on hover. */
-export const ICON_BTN_DANGER = `${ICON_BASE} hover:bg-danger-200 hover:text-danger-600`;
 
 /**
  * The preloaded list box's buttons, apart from the page's primary actions:

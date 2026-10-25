@@ -4,7 +4,7 @@ import { useLocale, useTranslations } from "next-intl";
 import { useState } from "react";
 import { SearchClear } from "@/components/dashboard/SearchClear";
 import { Icon } from "@/components/icons";
-import { ICON_BTN_DANGER } from "@/components/dashboard/guest-list/styles";
+import { ICON_BTN_DANGER } from "@/components/dashboard/styles";
 import { normalizeName } from "@/lib/guests";
 import type { ListName } from "@/types/guests";
 

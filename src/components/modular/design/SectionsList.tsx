@@ -3,7 +3,7 @@
 import { useLocale, useTranslations } from "next-intl";
 import { EditorHeading } from "@/components/dashboard/event-editor/EditorSection";
 import { Icon } from "@/components/icons";
-import { PanelSwitch } from "@/components/invitation/PanelSwitch";
+import { Switch } from "@/components/invitation/PanelSwitch";
 import { localized, type Language } from "@/lib/language";
 import { customNoteSample } from "@/modular/samples";
 import { NOTES_ID, setSectionOn, setVariant, showNotes } from "@/modular/state";
@@ -19,7 +19,6 @@ import {
   BOX_MARK,
   BOX_MARK_STROKE,
   SECTION_CARD as CARD,
-  SECTION_NAME as NAME,
   SECTION_REVEAL as REVEAL,
 } from "./styles";
 import { VariantBands } from "./VariantBands";
@@ -130,7 +129,6 @@ function SectionRow({
       reveal="group-has-[[data-reveal]:focus-visible]:opacity-100"
     />
   ) : null;
-  const title = <span className={NAME}>{name}</span>;
 
   return (
     <div id={designCardId(definition.id)} className="flex flex-col">
@@ -149,11 +147,7 @@ function SectionRow({
         ) : null}
         {definition.required ? (
           <SectionBar
-            /*
-             * A lock where the switch would be, set like the look pickers'
-             * icons above — same place, size and gap — so its name starts
-             * where theirs do, and a switch's: always on, nothing to flip.
-             */
+            /* A lock where the switch would be: always on, nothing to flip. */
             mark={
               <span
                 role="img"
@@ -172,21 +166,19 @@ function SectionRow({
             arrow={arrow}
           />
         ) : (
-          <PanelSwitch
-            /*
-             * 11px from the card's edge, 11px to the name: even on both
-             * sides, and the name still starts where the icon boxes' do
-             * (11 + 36 + 11 = 58).
-             */
-            className="-ml-[9px]"
-            gap="gap-[11px]"
-            tone="light"
-            id={switchId}
-            label={name}
-            checked={section.on}
-            onChange={turn}
-            heading={title}
-            end={arrow}
+          <SectionBar
+            mark={
+              <Switch
+                size="panel"
+                tone="light"
+                id={switchId}
+                label={name}
+                checked={section.on}
+                onChange={turn}
+              />
+            }
+            name={name}
+            arrow={arrow}
           />
         )}
       </div>

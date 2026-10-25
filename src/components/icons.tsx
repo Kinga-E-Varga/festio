@@ -127,6 +127,17 @@ const PATHS: Record<IconName, ReactNode> = {
       <path d="M9.75 18.25a2.25 2.25 0 0 0 4.5 0" />
     </>
   ),
+  /* The handle a row is dragged by: two columns of three dots. */
+  grip: (
+    <>
+      <circle cx="9" cy="6" r="1" />
+      <circle cx="15" cy="6" r="1" />
+      <circle cx="9" cy="12" r="1" />
+      <circle cx="15" cy="12" r="1" />
+      <circle cx="9" cy="18" r="1" />
+      <circle cx="15" cy="18" r="1" />
+    </>
+  ),
   pencil: (
     <>
       <path d="m4.5 19.5.7-3.7L15.6 5.4a1.9 1.9 0 0 1 2.7 0l.3.3a1.9 1.9 0 0 1 0 2.7L8.2 18.8z" />

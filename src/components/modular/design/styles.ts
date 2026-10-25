@@ -4,12 +4,22 @@ import { SUMMARY_SURFACE } from "@/components/dashboard/event-editor/SummarySwit
 /**
  * The Design tab's own summary box: the event editor's row, shorter, as the
  * side panel is a tighter place than the event page, and square like the
- * section cards.
+ * section cards. The Form tab's question rows are built on it.
  */
-const DESIGN_BOX = `${SUMMARY_SURFACE} min-h-[45px] rounded-none! py-2`;
+export const DESIGN_BOX = `${SUMMARY_SURFACE} min-h-[45px] rounded-none! py-2 pl-3!`;
 
-/** The gap between a box's mark, its text and its arrow. */
-export const BOX_GAP = "gap-4";
+/**
+ * The gap between a box's mark slot, its text and its arrow: the same as
+ * the box's left padding, so a mark has as much room before as after it.
+ */
+export const BOX_GAP = "gap-3";
+
+/**
+ * The slot at a box's left that holds its mark — an icon, a switch, a
+ * number, a tick or a drag handle — centred, as wide as the switch, so
+ * every box's text starts in the same place.
+ */
+export const MARK_SLOT = "grid w-8 shrink-0 place-items-center";
 
 /**
  * A box's mark at its left: a Design box's icon, a Content card's number.
@@ -28,7 +38,7 @@ export const BOX_MARK_STROKE = 1.75;
  * pixel apart on a scaled screen and read as a thick line. The focus ring
  * is the keyboard's only: a click leaves none.
  */
-export const DESIGN_BAND = `${FIELD} flex cursor-pointer items-center ${BOX_GAP} rounded-none! border-t-0 border-neutral-400 pl-5 text-left outline-neutral-400 bg-neutral-50 hover:bg-neutral-300 focus:not-focus-visible:outline-none`;
+export const DESIGN_BAND = `${FIELD} flex cursor-pointer items-center ${BOX_GAP} rounded-none! border-t-0 border-neutral-400 pl-3 text-left outline-neutral-400 bg-neutral-50 hover:bg-neutral-300 focus:not-focus-visible:outline-none`;
 
 /**
  * The box as one button that opens what is under it (template, palette,
@@ -46,7 +56,7 @@ export const DESIGN_BOX_BUTTON = `${DESIGN_BOX} group flex w-full cursor-pointer
  * boxes.
  */
 export const SECTION_CARD =
-  "flex min-h-[45px] flex-col justify-center border border-neutral-400 bg-neutral-50 pr-4 pl-5 text-neutral-800";
+  "flex min-h-[45px] flex-col justify-center border border-neutral-400 bg-neutral-50 pr-4 pl-3 text-neutral-800";
 /**
  * An on section's whole bar: a button laid over the card, under its
  * switches, which sit above it.

@@ -59,6 +59,7 @@ export default async function HostInvitationPage({ params }: Props) {
         basics={{ date: event.date }}
         language={language}
         saving={saving}
+        questions={event.questions}
       />
     );
   }

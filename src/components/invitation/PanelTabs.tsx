@@ -13,7 +13,7 @@ import type { StripView } from "./EditorFrame";
 export const TABS = [
   { id: "design", labelKey: "tabDesign", icon: "brush" },
   { id: "content", labelKey: "tabContent", icon: "fonts" },
-  { id: "replies", labelKey: "tabReplies", icon: "guests" },
+  { id: "replies", labelKey: "tabForm", icon: "envelope" },
 ] as const satisfies readonly {
   id: string;
   labelKey: string;

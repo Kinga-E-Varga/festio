@@ -5,9 +5,17 @@ import { useRef, useState } from "react";
 import { saveInvitation } from "@/actions/invitation";
 import { useSaveConfirm } from "@/components/dashboard/SaveConfirm";
 import type { useToast } from "@/components/dashboard/Toast";
+import type { Question } from "@/db/schemas/event";
 import type { InvitationDoc } from "@/db/schemas/invitation";
 import { orFailed } from "@/lib/action";
+import { inputOf } from "@/lib/questions";
 import type { InvitationSaving } from "@/types/dashboard";
+
+/** The questions as the save kept them, and those kept against the host's change. */
+export interface SavedQuestions {
+  questions: Question[];
+  kept: string[];
+}
 
 /** An invitation card as an editor sends it: the hook adds the version. */
 type UnsavedCard<Card = InvitationDoc> = Card extends unknown
@@ -18,7 +26,10 @@ type UnsavedCard<Card = InvitationDoc> = Card extends unknown
  * Save for both invitation editors: the confirm while guests can see it,
  * one save at a time, the version sent and kept, and the outcome as a
  * toast. Without `saving` (a template's preview) it keeps in memory only.
- * `keep` marks what was sent as saved, even if the host edited on meanwhile.
+ * `keep` marks what was sent as saved, even if the host edited on meanwhile;
+ * a modular editor also sends its questions and gets back the list as
+ * saved (none on a preview). Questions guests answered meanwhile were kept
+ * as they were: the toast names them instead of "Saved".
  */
 export function useInvitationSave(
   saving: InvitationSaving | undefined,
@@ -36,12 +47,28 @@ export function useInvitationSave(
     saving?.replied ?? 0,
   );
 
-  function kept(keep: () => void) {
-    keep();
-    toast.show(t("saved"));
+  function kept(
+    keep: (saved?: SavedQuestions) => void,
+    saved?: SavedQuestions,
+  ) {
+    keep(saved);
+    const names = saved?.questions
+      .filter(({ id }) => saved.kept.includes(id))
+      .map(({ label }) => `“${label}”`)
+      .join(", ");
+    if (names)
+      toast.show(
+        t("questionsKept", { names, count: saved?.kept.length ?? 0 }),
+        "warning",
+      );
+    else toast.show(t("saved"));
   }
 
-  function save(card: UnsavedCard, keep: () => void) {
+  function save(
+    card: UnsavedCard,
+    keep: (saved?: SavedQuestions) => void,
+    questions?: Question[],
+  ) {
     if (!saving) {
       kept(keep);
       return;
@@ -52,7 +79,11 @@ export function useInvitationSave(
       busy.current = true;
       setSending(true);
       const result = await orFailed(
-        saveInvitation(saving.eventId, { ...card, version }),
+        saveInvitation(saving.eventId, {
+          card: { ...card, version },
+          /* `answered` is the server's to set: never sent. */
+          questions: questions?.map(inputOf),
+        }),
       );
       busy.current = false;
       setSending(false);
@@ -61,7 +92,7 @@ export function useInvitationSave(
         return;
       }
       setVersion(result.data.version);
-      kept(keep);
+      kept(keep, questions ? result.data : undefined);
     });
   }
 

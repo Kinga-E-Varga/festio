@@ -10,6 +10,7 @@ import {
   useState,
 } from "react";
 import { useToast } from "@/components/dashboard/Toast";
+import type { Question } from "@/db/schemas/event";
 import { envelopeGround } from "@/components/envelope/colors";
 import { EditorFrame } from "@/components/invitation/EditorFrame";
 import {
@@ -21,6 +22,7 @@ import { eventPath } from "@/lib/event";
 import type { Language } from "@/lib/language";
 import { useLeaveWarning } from "@/lib/leave-warning";
 import { firstMissing } from "@/modular/fields";
+import { RSVP_ID } from "@/modular/nav";
 import { applyTemplate, resolveDesign, sameState } from "@/modular/state";
 import { modularVars } from "@/modular/vars";
 import type { InvitationSaving } from "@/types/dashboard";
@@ -74,6 +76,16 @@ function scrollToCard(id: string) {
   panel.scrollTo({ top, behavior: "smooth" });
 }
 
+/** The editor's questions, with `answered` as the save found it. */
+function withAnswered(current: Question[], saved: Question[]): Question[] {
+  const answered = new Set(
+    saved.filter((question) => question.answered).map(({ id }) => id),
+  );
+  return current.map((question) =>
+    answered.has(question.id) ? { ...question, answered: true } : question,
+  );
+}
+
 interface ModularEditorProps {
   library: ModularLibrary;
   /** Where the editor starts — and what Save last kept. */
@@ -84,6 +96,8 @@ interface ModularEditorProps {
   language: Language;
   /** The event Save writes to. Absent (a template's preview), Save keeps it in memory. */
   saving?: InvitationSaving;
+  /** The host's reply questions as stored, archived ones too. */
+  questions: Question[];
 }
 
 /**
@@ -102,12 +116,21 @@ export function ModularEditor({
   basics,
   language,
   saving,
+  questions: initialQuestions,
 }: ModularEditorProps) {
   const t = useTranslations("HostEditor");
   /* Closed on arrival: the host sees the invitation first and opens the panel from the strip. */
   const [editing, setEditing] = useState(false);
   const [state, setState] = useState(initial);
   const [saved, setSaved] = useState(initial);
+  /* The reply questions: edited in the Replies tab, saved with the invitation. */
+  const [questions, setQuestions] = useState(initialQuestions);
+  const [savedQuestions, setSavedQuestions] = useState(initialQuestions);
+  /* The form asks the active ones; the same array while they don't change, so the preview isn't redrawn. */
+  const asked = useMemo(
+    () => questions.filter(({ archived }) => !archived),
+    [questions],
+  );
   /* Not stored: only which template the Design tab shows as current. */
   const [template, setTemplate] = useState(templateId);
   const views = useTabViews();
@@ -131,7 +154,12 @@ export function ModularEditor({
     [preview, library],
   );
 
-  const dirty = useMemo(() => !sameState(state, saved), [state, saved]);
+  const dirty = useMemo(
+    () =>
+      !sameState(state, saved) ||
+      JSON.stringify(questions) !== JSON.stringify(savedQuestions),
+    [state, saved, questions, savedQuestions],
+  );
   useLeaveWarning(dirty, t("leaveUnsaved"));
 
   /*
@@ -140,6 +168,12 @@ export function ModularEditor({
    * is dropped; one that needs the preview waits until it has caught up.
    */
   const afterDraw = useRef<{ run: () => void; preview?: boolean }[]>([]);
+  /*
+   * A section to bring into view once the panel has finished opening: the
+   * invitation narrows as it opens, so a section found earlier ends up
+   * further down.
+   */
+  const afterOpen = useRef<string | null>(null);
 
   useEffect(() => {
     const caughtUp = preview === state;
@@ -187,7 +221,36 @@ export function ModularEditor({
       return;
     }
     setShowErrors(false);
-    send({ kind: "modular", ...state }, () => setSaved(state));
+    send(
+      { kind: "modular", ...state },
+      (stored) => {
+        setSaved(state);
+        setSavedQuestions(stored?.questions ?? questions);
+        if (!stored) return;
+        /*
+         * A question kept against the host's change: the list as saved.
+         * Otherwise edits made while the save was out stay, taking only
+         * which questions are now answered.
+         */
+        setQuestions((current) =>
+          stored.kept.length > 0
+            ? stored.questions
+            : withAnswered(current, stored.questions),
+        );
+      },
+      questions,
+    );
+  }
+
+  /* A question added comes into view in the reply form, once the preview draws it. */
+  function changeQuestions(next: Question[]) {
+    if (next.length > questions.length) {
+      afterDraw.current.push({
+        run: () => scrollToSection(RSVP_ID),
+        preview: true,
+      });
+    }
+    setQuestions(next);
   }
 
   function pickTemplate(id: string) {
@@ -271,6 +334,11 @@ export function ModularEditor({
         onView={(id) => {
           setTab(id);
           setEditing(true);
+          /* The Form tab edits the reply form: it comes into view beside the panel. */
+          if (id === "replies" && window.matchMedia(PANEL_BESIDE).matches) {
+            if (editing) scrollToSection(RSVP_ID);
+            else afterOpen.current = RSVP_ID;
+          }
         }}
         onClose={() => setEditing(false)}
         action={{ kind: "save", dirty: dirty && !sending, onSave: save }}
@@ -299,6 +367,12 @@ export function ModularEditor({
            */}
           <div
             data-panel={editing ? "true" : undefined}
+            onTransitionEnd={(event) => {
+              if (event.target !== event.currentTarget || !afterOpen.current)
+                return;
+              scrollToSection(afterOpen.current);
+              afterOpen.current = null;
+            }}
             className="relative h-full transition-[margin] duration-[620ms] ease-[cubic-bezier(0.22,1,0.36,1)] invite:data-[panel=true]:mr-invite-panel"
           >
             {/* A state id that names nothing leaves the ground empty rather than failing the page. */}
@@ -310,6 +384,7 @@ export function ModularEditor({
                 framed
                 edit={edit}
                 onRsvp={testReply}
+                questions={asked}
               />
             ) : null}
           </div>
@@ -330,6 +405,8 @@ export function ModularEditor({
             openStyles={openStyles}
             onOpenStyles={openStylesOf}
             onStylePicked={stylePicked}
+            questions={questions}
+            onQuestions={changeQuestions}
           />
         </div>
       </EditorFrame>

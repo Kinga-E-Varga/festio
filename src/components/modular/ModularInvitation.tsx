@@ -16,9 +16,10 @@ import { localized, type Language, type LocalizedText } from "@/lib/language";
 import { cornerVars } from "@/modular/corners";
 import { hasContent } from "@/modular/fields";
 import { groundRule, sectionGrounds } from "@/modular/ground";
-import { HEADER_ID } from "@/modular/nav";
+import { HEADER_ID, RSVP_ID } from "@/modular/nav";
 import { GROUND_FILL } from "@/modular/styles";
 import { fontClasses, modularVars } from "@/modular/vars";
+import type { Question } from "@/db/schemas/event";
 import type { RsvpPayload } from "@/types/invitation";
 import type {
   InvitationBasics,
@@ -40,6 +41,8 @@ interface ModularInvitationProps {
    */
   framed?: boolean;
   onRsvp?: (payload: RsvpPayload) => void;
+  /** The host's own reply questions, asked in the RSVP section. Keep the same array while they don't change. */
+  questions?: Question[];
   /** The editor in Edit mode: a section's Design and Content buttons. */
   edit?: SectionEdit;
 }
@@ -97,6 +100,7 @@ export const ModularInvitation = memo(function ModularInvitation({
   language,
   framed = false,
   onRsvp,
+  questions,
   edit,
 }: ModularInvitationProps) {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -195,6 +199,7 @@ export const ModularInvitation = memo(function ModularInvitation({
                 language={language}
                 ground={grounds[index]}
                 onRsvp={copy ? undefined : onRsvp}
+                questions={definition.id === RSVP_ID ? questions : undefined}
               />
             </Suspense>
           </div>

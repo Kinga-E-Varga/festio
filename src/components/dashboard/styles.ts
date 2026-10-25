@@ -180,6 +180,13 @@ export const BTN_PRIMARY = `${BUTTON} border-accent-800 bg-accent-800 text-neutr
 /** The outlined action, the main one's fill colour for its edge and words, on the inputs' fill to sit in a row with them. */
 export const BTN_GHOST_LIGHT = `${BUTTON} border-accent-800 bg-neutral-50 text-accent-800 hover:border-accent-950 hover:bg-accent-150 hover:text-accent-950`;
 
+/** The quiet icon-only actions at the end of a row; a `data-tip` gives one its quick label. */
+const ICON_BASE =
+  "icon-tip grid size-8 cursor-pointer place-items-center rounded-ui text-neutral-600 transition-colors";
+export const ICON_BTN = `${ICON_BASE} hover:bg-neutral-200 hover:text-neutral-950`;
+/** Delete: the same button, turning danger on hover. */
+export const ICON_BTN_DANGER = `${ICON_BASE} hover:bg-danger-200 hover:text-danger-600`;
+
 /** The small icon-only control that sits inside a field. */
 export const MINI =
   "grid place-items-center text-neutral-700 transition-colors hover:text-accent-700";
