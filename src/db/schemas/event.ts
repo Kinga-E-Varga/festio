@@ -7,7 +7,7 @@ import {
   TITLE_MIN,
 } from "@/db/limits";
 import { ageGroupSchema, dietNeedSchema } from "@/db/schemas/reply";
-import { isValidSlug } from "@/lib/slug";
+import { SLUG_MAX, SLUG_MIN, SLUG_PATTERN } from "@/lib/slug";
 import {
   countSchema,
   dateSchema,
@@ -26,7 +26,15 @@ export const eventKindSchema = z.enum(EVENT_KINDS);
 
 export const visibilitySchema = z.enum(["hidden", "public", "protected"]);
 
-export const slugSchema = z.string().refine(isValidSlug, "Not a valid link");
+/**
+ * A link's shape only. Whether a link can be taken (not reserved) is checked
+ * where it changes: a name reserved later never breaks an event that has it.
+ */
+export const slugSchema = z
+  .string()
+  .min(SLUG_MIN)
+  .max(SLUG_MAX)
+  .regex(SLUG_PATTERN);
 
 export const questionScopeSchema = z.enum(["person", "reply"]);
 

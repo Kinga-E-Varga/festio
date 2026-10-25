@@ -121,8 +121,7 @@ Also on the event card:
   cancelled.
 
 **Counters** (`counts`), so the dashboard never reads every reply of every event: people coming, people not coming, names needing attention,
-`seatingWarnings`. Replied = coming + not coming; invited and waiting come from the guest
-list and are worked out.
+who hasn't replied yet (`waiting`), `seatingWarnings`. Replied = coming + not coming.
 
 - **Every change is a transaction:** check the count, save the reply, update the count, as
   one step. Two guests sending at the same second are handled one after the other, so the
@@ -283,15 +282,14 @@ Admin SDK, which skips them, so the server does its own checks.
   already replied would leak who replied. The guest list shows it as Duplicate. A guest's browser never touches the
   database.
 - **Every host save goes through the server** (Server Actions): event, invitation,
-  replies, guest list, seating. One place for every check: the 24h lock, Required not
+  replies, guest list, seating. One place for every check: the date lock, Required not
   turned on once answers exist, only the server changes the package.
 - **Every server action starts with one shared check:** someone is logged in, and it's
   *their* event. Written once, so no action can forget it.
 
 **Live updates for hosts:** the host's browser reads its own events straight from Firestore
-(`onSnapshot`), so new replies appear without a refresh. Once they're in, the guest list's
-saves can drop `refresh()` (`src/actions/guests.ts`): today it re-renders the whole
-dashboard on the server after every tick, only so the nav counts update.
+(`onSnapshot`), so new replies appear without a refresh. The guest list's saves already
+skip `refresh()` (`src/actions/guests.ts`); live updates also keep the nav counts current.
 
 - **Dashboard:** listens only to the host's event cards; the counters there update for one
   read per change.
@@ -372,14 +370,15 @@ listener reads only what changed), not bounded. To add (Do later, item 7):
 
 ## Previews
 
-**No preview pictures are saved.** The Events page and the printables section draw the real
-invitation live, shrunk to the box (`ScaledStage`), with clicks turned off. Nothing to
+**No preview pictures are saved.** Wherever an invitation is previewed (the Event Overview
+today), the real invitation is drawn live, shrunk to the box (`ScaledStage`), with clicks
+turned off. Nothing to
 upload, store or delete, always up to date, nothing that can fail on save.
 
 - **Simple invitations:** the whole card, the same as the printable.
 - **Modular invitations:** the top of the page (header, cover, names), cut off at the box.
-- **Printables section:** simple ones show the card; modular ones their own printable
-  layout, drawn live like the print page does (`PrintPreview`), once it's built.
+- **Printables:** simple ones show the card; modular ones their own printable layout,
+  drawn live like the print page does (`PrintPreview`), once it's built.
 - **Long lists** only draw the cards that scroll into view.
 - **Host photos** load through `next/image`, at the small size the box needs.
 
@@ -447,8 +446,8 @@ theirs with everything inside it and its Storage folder. Payment cards stay, for
 
 ## Links
 
-Later, `maria-wedding.festio.eu` instead of `festio.eu/maria-wedding`. Its own spec:
-`context/features/pending/subdomain-links.md`.
+`maria-wedding.festio.eu`, not `festio.eu/maria-wedding`. The code: `context/features/pending/subdomain-links.md`
+(built); the hosting side: `context/features/pending/subdomain-hosting.md`.
 
 ## Error alerts
 
@@ -515,20 +514,10 @@ Steps 1–5 run fully on your machine; the first big handoff is step 6.
    live; the latest replies come from the reply cards.
    - **Fixed (`fc2f96f`):** the deletion date and the default reply close count calendar
      days (`addDays`), not 24-hour blocks, so a clock change no longer moves them an hour.
-3. **Auth.** Sign in and sign up (email + password, Google), the `users` card, and the one
-   shared check every server action starts with: logged in, and it's their event.
-   - Replace `DEV_HOST_ID` (`src/db/reads/host.ts`, the seed's host) with the signed-in one.
-   - `loadInvitation` and `guestListCount` take a bare event id; make them go through the
-     shared check too, so no caller can skip it.
-   - The shared check replaces `openEvent` (today in the dashboard's route folder, imported
-     by the invitation and print pages too): put it next to the reads. On dashboard pages it
-     can take the event from the host's events the layout already read, instead of reading
-     the card a second time.
-   - The landing page reads the whole dashboard (`loadDashboard`) for two badge counts. Give
-     it a lighter read. Every dashboard page also runs one replies query and one template
-     load per event; fine at a few events, worth a look as hosts get more.
-   - Decided: the last visit lives on the `users` card (`lastVisit`). The badge is built
-     with step 4, since setting it is a host save.
+3. **Auth.** Done: sign in and sign up (email + password, Google), the `users` card, and
+   the one shared check every host page and action starts with (`src/db/reads/access.ts`:
+   logged in, and it's their event; `openEvent` takes the event from the host's events the
+   layout already read). The last visit lives on the `users` card (`lastVisit`).
 4. **Host saves.** Done: event settings, link claiming, both invitation editors, the guest
    list (names and the host's reply edits), cancel / reopen / delete now and print settings
    save through Server Actions (`src/actions/` → `src/db/writes/`), with version numbers.
@@ -543,9 +532,8 @@ Steps 1–5 run fully on your machine; the first big handoff is step 6.
    inside each transaction. The guest list page recounts from the replies it loaded.
    - Decided: the guest list's saves keep comparing reply cards before and after
      (`guestChanges`). Switch to sending each action only if the comparing causes a real bug.
-   - Who is waiting is worked out, not stored, so the dashboard reads the whole guest list
-     of each active event whose form is closing. Fine at a few events; revisit only if it
-     gets slow.
+   - Who is waiting is now a counter too (`counts.waiting`, `fix: keep who hasn't replied
+     as a counter`), so the dashboard no longer reads closing events' guest lists.
 6. **`festio-staging`**, Firestore and Storage rules, and rules tests.
    - **Live updates for hosts** (see Security rules): the dashboard listens to the host's
      event cards, the guest list page to its event's replies (`onSnapshot`). Needs the

@@ -3,7 +3,7 @@ import { connection } from "next/server";
 import { db } from "@/db/admin";
 import { paths } from "@/db/paths";
 import { eventSchema, type EventDoc } from "@/db/schemas/event";
-import { slugDocSchema } from "@/db/schemas/slug";
+import { slugDocSchema, type SlugDoc } from "@/db/schemas/slug";
 import { SLUG_PATTERN } from "@/lib/slug";
 import { requireHostId } from "@/db/reads/session";
 import { parseCard } from "@/db/reads/parse";
@@ -82,13 +82,32 @@ export const loadHostEvents = cache(async (): Promise<DashboardEvent[]> => {
   return eventsOfHost(await requireHostId());
 });
 
-/** The event a guest link names, from its slug card alone: null for no such link or a blocked one. */
-export async function eventIdBySlug(slug: string): Promise<string | null> {
+/** A guest link's card, read once per page: null for no such link, or a name that can't be one (no read). */
+const slugCard = cache(async (slug: string): Promise<SlugDoc | null> => {
   await connection();
   if (!SLUG_PATTERN.test(slug)) return null;
   const card = await db.doc(paths.slug(slug)).get();
-  const link = parseCard(slugDocSchema, paths.slug(slug), card.data());
+  /* No card is no such link, not a broken one: nothing to log. */
+  if (!card.exists) return null;
+  return parseCard(slugDocSchema, paths.slug(slug), card.data());
+});
+
+/** The event a guest link names, from its slug card alone: null for no such link or a blocked one. */
+export async function eventIdBySlug(slug: string): Promise<string | null> {
+  const link = await slugCard(slug);
   return link && !link.blockedUntil ? link.eventId : null;
+}
+
+/**
+ * Whether a link that opens nothing is blocked because its event's data was
+ * deleted: "no longer available" rather than "not found". The old link of a
+ * renamed event is blocked too, but is simply not found.
+ */
+export async function linkGone(slug: string): Promise<boolean> {
+  const link = await slugCard(slug);
+  if (!link?.blockedUntil) return false;
+  const event = await db.doc(paths.event(link.eventId)).get();
+  return event.get("dataDeleted") === true;
 }
 
 /**

@@ -23,8 +23,8 @@ async function inviteLanguage(invite: string) {
  * language switch and stay outside next-intl's routing entirely. Lives under
  * a literal `invite/` folder (not `[invite]` at the app root) because
  * Next.js disallows two differently-named dynamic segments as siblings;
- * `next.config.ts` rewrites the real, unprefixed URL
- * (`festio.eu/maria-birthday-1657`) here invisibly.
+ * `src/proxy.ts` rewrites the real URL (`maria-birthday-1657.festio.eu`)
+ * here invisibly.
  */
 export async function generateMetadata({
   params,

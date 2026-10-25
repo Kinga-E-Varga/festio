@@ -8,7 +8,7 @@ import type { SaveError } from "@/db/writes/save";
 import { readOwnEvent } from "@/db/writes/event";
 import { readSlug, slugFree } from "@/db/writes/slugs";
 import { hostSave } from "@/actions/host-save";
-import { slugSuggestions } from "@/lib/slug";
+import { isReservedSlug, slugSuggestions } from "@/lib/slug";
 import type { ActionResult } from "@/types/actions";
 
 /** How many free links to offer instead of a taken one. */
@@ -28,7 +28,9 @@ export async function checkSlug(
     async (hostId, typed) => {
       const event = await readOwnEvent(hostId, eventId);
       const parsed = slugSchema.safeParse(typed);
-      if (!parsed.success) return { free: false, suggestions: [] };
+      if (!parsed.success || isReservedSlug(parsed.data)) {
+        return { free: false, suggestions: [] };
+      }
 
       const claim = { eventId, hostId, now: new Date() };
       const read = (path: string) => db.doc(path).get();

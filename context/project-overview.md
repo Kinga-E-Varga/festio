@@ -32,7 +32,7 @@ Each event has one package. It only ever goes up (Free → Standard → Custom);
 - Optional sections: countdown, helpful notes, dress code, gift preferences, playlist, FAQ, schedule, menu, accommodation, transportation.
 - **Sections, palettes and font pairs are shared libraries** in `src/modular/`. Each section has one or more variants; a palette is 14 colour roles, the rest mixed from them; more may be added; a font pair is body + headings. Hosts pick a whole palette or pair, never single colours or fonts.
 - **A modular template is a preset over them:** a palette, a font pair and the sections with a variant each, in the fixed order. It is a starting point the host can change later.
-- Events store section, variant, palette and font-pair ids, so those ids are permanent. Template ids are not stored and may change.
+- Events store template, section, variant, palette and font-pair ids, so those ids are permanent. A simple event is drawn from its template; a modular one only started from it (its own choices are on the event), so a later change to a modular template doesn't reach it.
 
 ## Host flow
 
@@ -87,7 +87,7 @@ Standard and Custom only. Full spec in `context/features/seating-chart.md`. Not 
 
 ## Security
 
-- Links are the host-chosen slug only, e.g. `festio.eu/maria-birthday`. Slugs are unique across Festio; slugs that clash with app routes are rejected.
+- Links are the host-chosen slug as a subdomain, e.g. `maria-birthday.festio.eu`; the host app stays on `festio.eu`. Slugs are unique across Festio; slugs that clash with Festio's reserved subdomains are rejected.
 - Links are guessable. Privacy comes from Protected mode; the link editor tells the host so.
 - The guest list is never shown on the invitation page.
 - `noindex` headers — invitations must never be indexed.

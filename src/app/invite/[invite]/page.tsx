@@ -2,6 +2,7 @@ import { cache } from "react";
 import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import { notFound } from "next/navigation";
+import { MissingPage } from "@/components/MissingPage";
 import { CancelledNotice } from "@/components/invitation/CancelledNotice";
 import { Invitation } from "@/components/invitation/Invitation";
 import { InviteNotice } from "@/components/invitation/InviteNotice";
@@ -9,7 +10,7 @@ import { PasswordGate } from "@/components/invitation/PasswordGate";
 import { sendReply } from "@/actions/guest";
 import { repliesPaused, replyWindow } from "@/lib/event";
 import { cardValues, invitationValues } from "@/lib/invitation";
-import { loadEventBySlug } from "@/db/reads/events";
+import { linkGone, loadEventBySlug } from "@/db/reads/events";
 import { loadShownInvitation } from "@/db/reads/invitation";
 import { isUnlocked } from "@/db/reads/unlock";
 import { loadSimpleTemplate } from "@/templates";
@@ -54,6 +55,8 @@ export default async function InvitationPage({ params }: Props) {
   const { invite } = await params;
 
   const event = await guestEvent(invite);
+  /* Its link's card is already read, so this costs a read only for a blocked link. */
+  if (!event && (await linkGone(invite))) return <MissingPage kind="gone" />;
   if (!event?.templateId) notFound();
   /* The password check is the cookie alone; the invitation's own card is read only once it is shown. */
   const [loaded, readable] = await Promise.all([

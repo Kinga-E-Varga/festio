@@ -60,9 +60,9 @@
     "authChecks": 0
   },
   "panel: latest replies": {
-    "reads": 53,
+    "reads": 67,
     "writes": 0,
-    "authChecks": 1
+    "authChecks": 2
   },
   "save: event settings": {
     "reads": 1,

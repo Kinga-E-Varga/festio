@@ -3,8 +3,8 @@
 A way to check, whenever wanted (e.g. monthly, before launch), that the tests really catch
 mistakes, without the user clicking through the app and without trusting the agent that
 wrote them. Builds on the regression tests (`context/features/pending/quality-checks.md`,
-item 1), so it needs that one done first, and is worth most once a few features have been
-built with the test guards (`context/ai-interaction.md`).
+item 1, done), and is worth most once a few features have been built with the test guards
+(`.claude/skills/feature/rules.md`).
 
 | Part                | What it finds                                      | Bias                          | Cost                          |
 | ------------------- | -------------------------------------------------- | ----------------------------- | ----------------------------- |

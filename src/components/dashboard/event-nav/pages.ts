@@ -1,4 +1,4 @@
-import { eventPath, invitationPath } from "@/lib/event";
+import { eventPath, invitationUrl } from "@/lib/event";
 import { toPickerEvent } from "@/lib/picked-event";
 import type { DashboardEvent, IconName, PickerEvent } from "@/types/dashboard";
 
@@ -62,7 +62,7 @@ export function eventPages(event: PickerEvent): EventPageLink[] {
     {
       key: "guestView",
       icon: "eye",
-      href: invitationPath(event),
+      href: invitationUrl(event),
       external: true,
       disabledKey: noDesign,
     },

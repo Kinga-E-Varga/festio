@@ -12,7 +12,13 @@ import { testEmulator } from "../setup/guard";
  */
 
 const PORT = 3100;
-export const APP_URL = `http://127.0.0.1:${PORT}`;
+export const APP_URL = `http://localhost:${PORT}`;
+/**
+ * The app copy's base domain: invitations at `<slug>.festio.test:3100`. Not
+ * the server's own address, as in prod, so its links and redirects stay
+ * whole; the tests name the host in each request, no DNS needed.
+ */
+export const APP_BASE = `festio.test:${PORT}`;
 const NEXT = "node_modules/.bin/next";
 
 /** What the seed and the app copy run with: the tests' environment, counting on. */
@@ -21,6 +27,7 @@ function appEnv(): NodeJS.ProcessEnv {
     ...process.env,
     ...TEST_ENV,
     NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN: `${TEST_ENV.NEXT_PUBLIC_FIREBASE_PROJECT_ID}.firebaseapp.com`,
+    NEXT_PUBLIC_BASE_DOMAIN: APP_BASE,
     FESTIO_COUNT_DB: "true",
     FESTIO_DIST_DIR: ".next-test",
   };
@@ -67,7 +74,12 @@ export default async function setup() {
   /* Its own process group, so stopping it stops everything it started. */
   const server: ChildProcess = spawn(
     NEXT,
-    ["start", "-p", String(PORT), "-H", "127.0.0.1"],
+    /*
+     * `localhost`, never `127.0.0.1`: the proxy sees the address as
+     * `localhost`, and a rewrite to an address other than the server's own
+     * is sent on over HTTP, through the proxy again.
+     */
+    ["start", "-p", String(PORT), "-H", "localhost"],
     { env, stdio: "inherit", detached: true },
   );
   const stop = async () => {

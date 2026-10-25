@@ -18,6 +18,7 @@ import { expectVersion, SaveRefused } from "@/db/writes/save";
 import { blockSlug, prepareClaim } from "@/db/writes/slugs";
 import { SLUG_BLOCK_DAYS } from "@/lib/config";
 import { addDays, defaultReplyClose, todayIn } from "@/lib/event";
+import { isReservedSlug } from "@/lib/slug";
 
 /**
  * The host's own event card, read inside a transaction. Missing, failing its
@@ -86,6 +87,9 @@ export async function writeEventSettings(
     }
 
     /* A new link is claimed; the old one stays blocked for a while, still this event's. */
+    if (input.slug !== doc.slug && isReservedSlug(input.slug)) {
+      throw new SaveRefused("invalid");
+    }
     const claim =
       input.slug !== doc.slug
         ? await prepareClaim(tx, input.slug, { eventId, hostId, now })

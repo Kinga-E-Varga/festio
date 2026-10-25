@@ -89,6 +89,14 @@
     "tag": "Pentru\ntine",
     "open": "Deschide invitația"
   },
+  "Missing": {
+    "inviteTitle": "Invitația nu a fost găsită.",
+    "inviteBody": "Verifică linkul de pe invitație sau roagă gazdele să ți-l trimită din nou.",
+    "goneTitle": "Această invitație nu mai este disponibilă.",
+    "goneBody": "Dacă mai ai nevoie de ea, cere gazdelor un link nou.",
+    "pageTitle": "Pagina nu a fost găsită.",
+    "pageBody": "Verifică adresa sau pornește din nou de la pagina principală."
+  },
   "Nav": {
     "aria": "Secțiuni meniu",
     "quit": "Ieși din panou",

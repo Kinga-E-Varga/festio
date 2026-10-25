@@ -12,7 +12,7 @@ import { SEED_HOST } from "../../seed/build";
 import { guestInput, newVisitor } from "../helpers/events";
 import { mentions } from "../helpers/page-text";
 import { seedEvent } from "../helpers/seed";
-import { action, page } from "./fetch";
+import { action, guestPage, page } from "./fetch";
 import { hostCookie, OTHER_HOST, unlockHeader } from "./session";
 
 /*
@@ -88,17 +88,17 @@ test("signed out, a host page goes to sign-in", async () => {
 });
 
 test("a Hidden invitation is not found", async () => {
-  const path = `/${HIDDEN.event.slug}`;
+  const slug = HIDDEN.event.slug;
   const card = db.doc(paths.event(HIDDEN.id));
   /* Public, the same page opens: so the 404 after is Hidden's doing. */
   await card.update({ visibility: "public" });
-  expect((await page(path)).status).toBe(200);
+  expect((await guestPage(slug)).status).toBe(200);
   await card.update({ visibility: "hidden" });
-  expect((await page(path)).status).toBe(404);
+  expect((await guestPage(slug)).status).toBe(404);
 });
 
 test("a Protected invitation shows only the password screen", async () => {
-  const { status, body } = await page(`/${PROTECTED.event.slug}`);
+  const { status, body } = await guestPage(PROTECTED.event.slug);
   expect(status).toBe(200);
   /* The password screen's own heading: proves it is what rendered. */
   expect(mentions(body, ro.Rsvp.passwordTitle)).toBe(true);
@@ -107,8 +107,8 @@ test("a Protected invitation shows only the password screen", async () => {
 });
 
 test("an unlocked Protected invitation shows the invitation", async () => {
-  const { status, body } = await page(
-    `/${PROTECTED.event.slug}`,
+  const { status, body } = await guestPage(
+    PROTECTED.event.slug,
     unlockHeader(PROTECTED),
   );
   expect(status).toBe(200);
@@ -117,14 +117,14 @@ test("an unlocked Protected invitation shows the invitation", async () => {
 });
 
 test("a cancelled invitation shows only the host's message", async () => {
-  const path = `/${CANCELLED.event.slug}`;
+  const slug = CANCELLED.event.slug;
   /* Before: the invitation shows its text, so its absence after means something. */
-  expect(mentions((await page(path)).body, CANCELLED_TEXT)).toBe(true);
+  expect(mentions((await guestPage(slug)).body, CANCELLED_TEXT)).toBe(true);
 
   await db.doc(paths.event(CANCELLED.id)).update({
     cancelled: { message: CANCEL_MESSAGE, at: Timestamp.now() },
   });
-  const { status, body } = await page(path);
+  const { status, body } = await guestPage(slug);
   expect(status).toBe(200);
   expect(mentions(body, CANCEL_MESSAGE)).toBe(true);
   expect(mentions(body, CANCELLED_TEXT)).toBe(false);
@@ -193,14 +193,16 @@ function saveCachedInvitation(title1: string, version: number) {
 }
 
 test("a new invitation version is read fresh", async () => {
-  const path = `/${CACHED.event.slug}`;
+  const slug = CACHED.event.slug;
   await onCachedEvent(async () => {
     await saveCachedInvitation("First cached title", 0);
     /* Shown once, so this server keeps it. */
-    expect(mentions((await page(path)).body, "First cached title")).toBe(true);
+    expect(mentions((await guestPage(slug)).body, "First cached title")).toBe(
+      true,
+    );
 
     await saveCachedInvitation("Second cached title", 1);
-    const { status, body } = await page(path);
+    const { status, body } = await guestPage(slug);
     expect(status).toBe(200);
     expect(mentions(body, "Second cached title")).toBe(true);
     expect(mentions(body, "First cached title")).toBe(false);
@@ -208,11 +210,11 @@ test("a new invitation version is read fresh", async () => {
 });
 
 test("a cached link that no longer matches is read again", async () => {
-  const oldPath = `/${CACHED.event.slug}`;
+  const oldSlug = CACHED.event.slug;
   const newSlug = "botez-sofia-moved";
   await onCachedEvent(async () => {
     /* Shown once, so this server keeps the link. */
-    expect((await page(oldPath)).status).toBe(200);
+    expect((await guestPage(oldSlug)).status).toBe(200);
 
     const card = await db.doc(paths.event(CACHED.id)).get();
     const event = eventSchema.parse(card.data());
@@ -222,8 +224,8 @@ test("a cached link that no longer matches is read again", async () => {
       eventSettingsSchema.parse({ ...event, slug: newSlug }),
       new Date(),
     );
-    expect((await page(oldPath)).status).toBe(404);
-    const moved = await page(`/${newSlug}`);
+    expect((await guestPage(oldSlug)).status).toBe(404);
+    const moved = await guestPage(newSlug);
     expect(moved.status).toBe(200);
     expect(mentions(moved.body, CACHED.event.title)).toBe(true);
   }, newSlug);

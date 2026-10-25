@@ -89,6 +89,14 @@
     "tag": "Open\nme",
     "open": "Open the invitation"
   },
+  "Missing": {
+    "inviteTitle": "This invitation can't be found.",
+    "inviteBody": "Check the link on your card, or ask the hosts to send it again.",
+    "goneTitle": "This invitation is no longer available.",
+    "goneBody": "Ask the hosts for a new link if you still need it.",
+    "pageTitle": "This page can't be found.",
+    "pageBody": "Check the address, or start again from the home page."
+  },
   "Nav": {
     "aria": "Dashboard sections",
     "quit": "Quit dashboard",

@@ -16,6 +16,8 @@ import { INSET_INPUT } from "@/components/dashboard/event-editor/styles";
 import { ERROR, MINI } from "@/components/dashboard/styles";
 import type { EventForm } from "@/components/dashboard/event-editor/useEventForm";
 import { Icon } from "@/components/icons";
+import { BASE_DOMAIN } from "@/lib/domain";
+import { SLUG_MAX } from "@/lib/slug";
 import type { DashboardEvent, Visibility } from "@/types/dashboard";
 
 const ORDER: Visibility[] = ["hidden", "public", "protected"];
@@ -106,17 +108,17 @@ export function LinkSection({ event, form, editing }: SectionProps) {
             }
           >
             <div className="flex h-input items-stretch rounded-ui border border-neutral-400 bg-neutral-50 transition-colors hover:border-neutral-600 has-[:focus]:border-neutral-500">
-              <span className="grid place-items-center bg-neutral-200 px-3 row-text whitespace-nowrap">
-                festio.eu/
-              </span>
               <input
                 id="event-slug"
                 type="text"
-                maxLength={32}
+                maxLength={SLUG_MAX}
                 value={values.slug}
                 onChange={(control) => set.slug(control.target.value)}
                 className={INSET_INPUT}
               />
+              <span className="grid place-items-center bg-neutral-200 px-3 row-text whitespace-nowrap">
+                .{BASE_DOMAIN}
+              </span>
             </div>
             {derived.slugOptions.length > 0 ? (
               <p className="flex flex-wrap items-center gap-1.5 hint-text">

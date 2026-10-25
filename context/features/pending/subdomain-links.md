@@ -91,12 +91,12 @@ only blocks new links, never ones already taken.
 ## Environments
 
 - **Prod:** `festio.eu` (host app) and `*.festio.eu` (invitations).
-- **Dev:** `dev.festio.eu` and `*.dev.festio.eu` on the dev backend. A `*.festio.eu`
-  certificate covers one level only, so dev needs its own wildcard. `dev` is reserved, so
-  no host can take it.
+- **Staging:** `staging.festio.eu` and `*.staging.festio.eu` on the `festio-staging`
+  backend. A `*.festio.eu` certificate covers one level only, so staging needs its own
+  wildcard. `staging` is reserved, so no host can take it.
 - **Local:** browsers send `*.localhost` to your own machine, so
   `maria-wedding.localhost:3000` works with no setup. The app reads the base domain
-  (`festio.eu`, `dev.festio.eu`, `localhost:3000`) from one setting per environment.
+  (`festio.eu`, `staging.festio.eu`, `localhost:3000`) from one setting per environment.
 
 ## Docs to update when built
 

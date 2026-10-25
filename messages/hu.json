@@ -89,6 +89,14 @@
     "tag": "Nyiss\nki",
     "open": "Nyisd ki a meghívót"
   },
+  "Missing": {
+    "inviteTitle": "Ez a meghívó nem található.",
+    "inviteBody": "Ellenőrizd a linket a kártyán, vagy kérd meg a házigazdákat, hogy küldjék el újra.",
+    "goneTitle": "Ez a meghívó már nem érhető el.",
+    "goneBody": "Ha még szükséged van rá, kérj új linket a házigazdáktól.",
+    "pageTitle": "Ez az oldal nem található.",
+    "pageBody": "Ellenőrizd a címet, vagy kezdd újra a kezdőlapról."
+  },
   "Nav": {
     "aria": "Vezérlőpult szakaszai",
     "quit": "Vezérlő elhagyása",

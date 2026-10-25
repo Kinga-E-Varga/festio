@@ -20,8 +20,8 @@ export function generateStaticParams() {
 
 /**
  * The root layout for every host-facing route (dashboard, editor, landing
- * page). Guest invitation links (`/[invite]`, rewritten from `/maria-birthday-1657`
- * via `next.config.ts`) are a separate root layout outside next-intl.
+ * page). Guest invitations (`maria-birthday-1657.festio.eu`, rewritten by
+ * `src/proxy.ts`) are a separate root layout outside next-intl.
  */
 export default async function LocaleRootLayout({
   children,

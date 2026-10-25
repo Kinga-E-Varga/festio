@@ -1,24 +1,46 @@
-import { LANGUAGES } from "./language";
-
-/*
- * Relative imports only: `next.config.ts` reads this file for its invite
- * rewrite, and path aliases don't resolve there.
- */
+import { LANGUAGES } from "@/lib/language";
 
 /**
- * Top-level paths the host app owns, so no guest link may take them. Every
- * top-level folder under `app/[locale]` and `app/` belongs here, plus each
- * locale prefix.
+ * Subdomains Festio keeps for itself: ones it may need, and ones that would
+ * look official and could fool guests. Names shorter than `SLUG_MIN` stay
+ * listed, so the list holds if the minimum ever drops. Adding one only blocks
+ * new links, never ones already taken.
  */
 export const RESERVED_SLUGS: readonly string[] = [
-  "dashboard",
-  "invitations",
-  "templates",
-  "prints",
-  "sign-in",
-  "sign-up",
-  "invite",
+  /* Festio's own. */
+  "www",
+  "app",
   "api",
+  "admin",
+  "mail",
+  "email",
+  "smtp",
+  "status",
+  "help",
+  "support",
+  "docs",
+  "blog",
+  "cdn",
+  "static",
+  "assets",
+  "auth",
+  "login",
+  "dev",
+  "staging",
+  "test",
+  "festio",
+  "dashboard",
+  "settings",
+  "official",
+  /* Accounts and money. */
+  "account",
+  "signin",
+  "signup",
+  "security",
+  "billing",
+  "payment",
+  "payments",
+  "invoice",
   ...LANGUAGES,
 ];
 
@@ -29,25 +51,22 @@ export const SLUG_MAX = 32;
 export const SLUG_PATTERN = /^[a-z0-9]+(-[a-z0-9]+)*$/;
 
 /**
- * The path pattern of a guest link: one top-level segment of slug characters
- * that isn't reserved. Written for `next.config.ts` rewrites (path-to-regexp),
- * which allow only non-capturing groups.
+ * Slugs carry lowercase letters, digits and single hyphens, nothing else, and
+ * no hyphen at either end: a subdomain name can't start or end with one.
  */
-export const INVITE_PATH_PATTERN = `(?!(?:${RESERVED_SLUGS.join("|")})$)[a-z0-9-]+`;
-
-/** Slugs carry lowercase letters, digits and single hyphens, nothing else. */
 export function normalizeSlug(value: string): string {
   return value
     .toLowerCase()
     .replace(/[^a-z0-9-]/g, "-")
-    .replace(/-+/g, "-");
+    .replace(/-+/g, "-")
+    .replace(/^-|-$/g, "");
 }
 
 export function isReservedSlug(slug: string): boolean {
   return RESERVED_SLUGS.includes(slug);
 }
 
-/** A link a host may take: the right length and shape, and not an app route. */
+/** A link a host may take: the right length and shape, and not reserved. */
 export function isValidSlug(slug: string): boolean {
   return (
     slug.length >= SLUG_MIN &&

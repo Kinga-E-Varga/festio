@@ -5,6 +5,7 @@ import {
   REPLY_CAP_MARGIN,
   REPLY_CAP_MIN_EXTRA,
 } from "@/lib/config";
+import { BASE_DOMAIN, siteOrigin } from "@/lib/domain";
 import { LANGUAGE_LOCALE, type Language } from "@/lib/language";
 import type {
   DashboardEvent,
@@ -79,14 +80,14 @@ export function eventStatus(
   return event.visibility !== "hidden" ? "active" : "hidden";
 }
 
-/** The guest-facing address as a route this app can navigate to. */
-export function invitationPath(event: { slug: string }): string {
-  return `/${event.slug}`;
+/** The guest-facing address as shown and printed: the host's slug as a subdomain. */
+export function invitationLink(event: { slug: string }): string {
+  return `${event.slug}.${BASE_DOMAIN}`;
 }
 
-/** The guest-facing address: the host's slug, nothing added. */
-export function invitationLink(event: { slug: string }): string {
-  return `festio.eu${invitationPath(event)}`;
+/** The guest-facing address to open or copy. */
+export function invitationUrl(event: { slug: string }): string {
+  return siteOrigin(event.slug);
 }
 
 interface ReplyCounts {

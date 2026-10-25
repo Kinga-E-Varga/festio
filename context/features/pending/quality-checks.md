@@ -88,7 +88,7 @@ setup.
        on `festio-staging` once it exists (step 6): how long a guest waits, and whether any reply
        fails instead of waiting (the guest would see "failed").
    - **Who sees what, on pages:** with the running app set up, add page tests to check 1's
-     Vitest runner (they run with `npm test` and in CI, not with the cost check):
+     Vitest runner (they run with `npm run test:app` and in CI, not with the cost check):
      - host B opens host A's event (dashboard, editors, guest list, print) → not found
      - signed out, a host page → sign-in
      - a Hidden invitation link → not found
@@ -102,21 +102,23 @@ setup.
        allowance, then about $0.006 a month each (US list prices; europe-west4's to confirm
        at step 6). Host dashboard pages and reloads are about 89% of the reads; 450 guest
        visits about 7% (3 reads each).
-     - **Closing events' guest lists on every host page — worth a fix**
-       (`context/fixes/pending/dashboard-reads.md`, 1). 38 of the 53 reads
+     - **Closing events' guest lists on every host page — fixed**
+       (`context/fixes/dashboard-reads.md`, 1; `fix: keep who hasn't replied as a
+       counter`). 38 of the 53 reads
        even the landing page makes: every reply of `maria-andrei` (closing in 2 days) and
        its list, only to count who hasn't replied. It grows with the event: a 300-guest
        wedding near its close costs every host page view a few hundred reads.
-     - **Latest replies and their tags — worth a fix**
-       (`context/fixes/pending/dashboard-reads.md`, 2). About 122 of a dashboard page's
+     - **Latest replies and their tags — fixed**
+       (`context/fixes/dashboard-reads.md`, 2; the latest replies load only when their
+       panel opens, without reading every reply). About 122 of a dashboard page's
        178 reads: up to 20 replies from each event, then every reply of each event left in
        the feed to work out Unknown / Duplicate. It grows with every event's replies.
      - **Session check — fine.** One `verifySessionCookie` per host page, no Firestore
        read. Its network time is measured at step 6.
-     - **`refresh()` after a guest list save — worth a fix, already planned.** The save is
-       43 reads (it recounts from every reply), then `refresh()` renders the page again:
-       180 more. Live updates (`database.md` → Security rules → Live updates for hosts)
-       remove the refresh.
+     - **`refresh()` after a guest list save — fixed.** The save was 43 reads (it
+       recounted from every reply), then `refresh()` rendered the page again: 180 more. The
+       guest list's saves now skip `refresh()` (`fix: stop re-reading every reply on
+       repeated opens, switches and saves`).
      - **The guest list page loading every reply — fine.** It shows every reply, so it
        reads them; the rest of its 180 is the dashboard's own reads above, plus 2 for the
        recount it runs after the page is sent (`after()`).

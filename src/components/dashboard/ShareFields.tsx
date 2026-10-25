@@ -1,7 +1,7 @@
 import { useTranslations } from "next-intl";
 import { CopyButton } from "@/components/dashboard/CopyButton";
 import { PasswordField } from "@/components/dashboard/PasswordField";
-import { invitationLink } from "@/lib/event";
+import { invitationLink, invitationUrl } from "@/lib/event";
 import type { DashboardEvent } from "@/types/dashboard";
 
 /**
@@ -37,7 +37,7 @@ export function ShareFields({
         <span className={SHARE_VALUE}>
           <span className="min-w-0 truncate">{link}</span>
           <CopyButton
-            value={`https://${link}`}
+            value={invitationUrl(event)}
             label={t("copyLinkFor", { title: event.title })}
             tone="text-neutral-600 hover:text-accent-800"
             copiedLabel={t("linkCopied")}

@@ -224,7 +224,8 @@ export function useEventForm(event: DashboardEvent) {
     slugError = t("slugTooShort", { min: SLUG_MIN });
   } else if (cleanSlug.length > SLUG_MAX) {
     slugError = t("slugTooLong", { max: SLUG_MAX });
-  } else if (isReservedSlug(cleanSlug)) {
+  } else if (cleanSlug !== original.slug && isReservedSlug(cleanSlug)) {
+    /* A name reserved later never stops an event that already has it. */
     slugError = t("slugReserved");
   } else if (taken) {
     slugError = t("slugTaken");

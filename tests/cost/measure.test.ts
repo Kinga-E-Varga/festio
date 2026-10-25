@@ -14,7 +14,7 @@ import { fromGuestReplies, toGuestReplies } from "@/lib/guests";
 import { newId } from "@/lib/id";
 import type { ListName } from "@/types/guests";
 import { guestInput, newVisitor, readEvent } from "../helpers/events";
-import { action, appDbCount, page } from "../app/fetch";
+import { action, appDbCount, inviteHost, page } from "../app/fetch";
 import { hostCookie, unlockHeader } from "../app/session";
 import { seedEvent } from "../helpers/seed";
 import { SEED_HOST } from "../../seed/build";
@@ -50,9 +50,14 @@ async function settled(): Promise<DbCount> {
   }
 }
 
-/** A page of the app copy; the count before it is already settled. */
-async function fromApp(name: string, path: string, cookie?: string) {
-  await page(path, cookie);
+/** A page of the app copy (on `host` for an invitation); the count before it is already settled. */
+async function fromApp(
+  name: string,
+  path: string,
+  cookie?: string,
+  host?: string,
+) {
+  await page(path, cookie, host);
   measured[name] = await settled();
 }
 
@@ -93,10 +98,15 @@ test("what each page and save costs, against the baseline", async () => {
   await fromApp("page: event editor", `/dashboard/events/${BIG}/details`, host);
   await fromApp("page: invitation editor", `/invitations/${BIG}`, host);
   await fromApp("page: print", `/prints/${BIG}`, host);
-  await fromApp("guest: public invitation", `/${BIG}`);
-  await fromApp("guest: public invitation, again", `/${BIG}`);
-  await fromApp("guest: protected, locked", `/${slug}`);
-  await fromApp("guest: protected, unlocked", `/${slug}`, unlock);
+  await fromApp("guest: public invitation", "/", undefined, inviteHost(BIG));
+  await fromApp(
+    "guest: public invitation, again",
+    "/",
+    undefined,
+    inviteHost(BIG),
+  );
+  await fromApp("guest: protected, locked", "/", undefined, inviteHost(slug));
+  await fromApp("guest: protected, unlocked", "/", unlock, inviteHost(slug));
   await action("src/actions/host.ts", "loadLatestReplies", {
     path: "/dashboard",
     cookie: host,

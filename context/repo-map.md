@@ -38,12 +38,16 @@ one) — see the comments in `[locale]/layout.tsx` and `invite/[invite]/layout.t
 
 **Guest invitation**, outside next-intl entirely, no language switch:
 
-| Path                         | Purpose                                                                                                             |
-| ---------------------------- | ------------------------------------------------------------------------------------------------------------------- |
-| `invite/[invite]/layout.tsx` | Its own root layout — same fonts/chrome; `lang` and the message catalog come from the invitation's own `language`   |
-| `invite/[invite]/page.tsx`   | Public guest-facing invitation. URL is unprefixed (`/maria-birthday`) — `next.config.ts` rewrites it here invisibly |
+| Path                         | Purpose                                                                                                                       |
+| ---------------------------- | ----------------------------------------------------------------------------------------------------------------------------- |
+| `invite/[invite]/layout.tsx` | Its own root layout — same fonts/chrome; `lang` and the message catalog come from the invitation's own `language`             |
+| `invite/[invite]/page.tsx`   | Public guest-facing invitation. URL is its subdomain (`maria-birthday.festio.eu`) — `src/proxy.ts` rewrites it here invisibly |
 
 **Dev only:** `api/dev/db-count/route.ts` — the read and write counts `npm run cost` takes after each page (`src/db/count.ts`); 404 unless counting is on, which needs the emulators.
+
+`[locale]/not-found.tsx` — a host page's `notFound()` (`MissingPage`, in the host's language).
+
+`global-not-found.tsx` — every 404 of an address no route matches (`experimental.globalNotFound`), outside both root layouts: an invitation subdomain's or the host app's `MissingPage`, in English.
 
 `fonts.ts` — the app-wide `next/font/google` declarations (Work Sans +
 Libre Baskerville), shared by both root layouts.
@@ -60,8 +64,8 @@ layout only, off until `?palette=on` (`context/dev-tools/palette-switcher.md`).
 - `src/i18n/navigation.ts` — locale-aware `Link`/`useRouter`/`usePathname`; every host-app component under `[locale]` imports these instead of `next/link` / `next/navigation`.
 - `src/i18n/request.ts` — per-request message loading, for the host app's own locale.
 - `src/i18n/messages.ts` — `loadMessages(language)`, the only place the path to `messages/` is written. Guest pages call it directly: an invitation's language is its own, not the request's.
-- `src/proxy.ts` — the locale-routing proxy (Next.js 16 renamed `middleware.ts`). Explicit route allowlist — must never match invite-link paths.
-- `messages/{en,ro,hu}.json` — message catalogs. `Rsvp`, `Print`, `Sections` and `Envelope` are guest-facing and follow the invitation's `language`; `Nav`, `TopBar`, `Footer`, `Dashboard` and `Rail` follow the host's locale. Nav and footer wording lives here, not in `src/mock/dashboard.ts` — that file carries only the keys.
+- `src/proxy.ts` — the proxy (Next.js 16 renamed `middleware.ts`). Decides by host (`siteFor`): an invitation subdomain's `/` goes to its invitation, outside next-intl; anything else there, and `/invite/…` on any host, to an address that 404s; `www` to the base domain; the base domain to next-intl's locale routing.
+- `messages/{en,ro,hu}.json` — message catalogs. `Rsvp`, `Print`, `Sections`, `Envelope` and `Missing` are guest-facing and follow the invitation's `language`; `Nav`, `TopBar`, `Footer`, `Dashboard` and `Rail` follow the host's locale. Nav and footer wording lives here, not in `src/mock/dashboard.ts` — that file carries only the keys.
 
 ## Templates — `src/templates/`
 
@@ -80,7 +84,7 @@ Two folders: `simple/` (basic invitations) and `modular/` (custom invitations). 
 - `HostInvitationEditor.tsx` — host editing wrapper; `EditPanel.tsx` — the edit surface.
 - `EditorFrame.tsx` — the editors' page: the invitation or sheet, and the labelled strip at its right edge (the panel's views, Save or Export, Quit editor); the side panel opens beside it. Shared by the simple and modular editors and the print page. `SidePanel.tsx` — the panel itself: the open view's title and an X, then the caller's fields.
 - `RsvpPanel.tsx` / `RsvpForm.tsx` / `useRsvpForm.ts` — guest RSVP.
-- `InviteNotice.tsx` — a guest page in the invitation's look standing in for it: `PasswordGate.tsx` (Protected), `CancelledNotice.tsx` (cancelled).
+- `InviteNotice.tsx` — a guest page in the invitation's look standing in for it: `PasswordGate.tsx` (Protected), `CancelledNotice.tsx` (cancelled). A link whose event's data is deleted gets `MissingPage` (`src/components/MissingPage.tsx`, Festio's look) instead; an unknown or Hidden one, `invite/[invite]/not-found.tsx` (the same page).
 - `ScaledStage.tsx` — scales the invitation to its container.
 - `useInvitationSave.ts` — Save for both invitation editors: the confirm, one save at a time, the version, the toast.
 - `PanelTabs.tsx` — the Design / Content / Replies tabs (`TABS`, `useTabViews` for the strip), shared by both invitation editors.
@@ -135,4 +139,5 @@ Vitest on its own emulator: `lib/` (plain functions), `writes/` (the saves), `ap
 - `src/types/` — `actions.ts` (`ActionResult`, every Server Action's return), `envelope.ts` (the envelope's colour roles), `invitation.ts` (incl. `TemplateModule`, a union of simple and modular), `modular.ts` (sections, palettes, pairs, modular templates), `dashboard.ts`, `print.ts`, `guests.ts` (the guest list's view shapes)
 - `src/mock/dashboard.ts` — the nav, account and footer keys only; `src/mock/inv-img/` — the print preview's placeholder front
 - `src/components/icons.tsx` — app-wide icons
-- Config: `next.config.ts`, `tsconfig.json`, `eslint.config.mjs`, `postcss.config.mjs`
+- `src/components/MissingPage.tsx` — a page that isn't there, in Festio's look: an invitation link that opens nothing, one no longer available, any other address
+- Config: `next.config.ts` (no invite rewrite: the proxy routes invitations; one `afterFiles` rewrite sends a missing file name to the 404 page), `tsconfig.json`, `eslint.config.mjs`, `postcss.config.mjs`
