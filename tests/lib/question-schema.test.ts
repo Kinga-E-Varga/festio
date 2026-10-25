@@ -1,9 +1,10 @@
 import { expect, test } from "vitest";
 import {
+  customQuestionSchema,
   questionInputSchema,
-  questionSchema,
   questionsInputSchema,
 } from "@/db/schemas/event";
+import { answerSchema } from "@/db/schemas/reply";
 
 /* Every limit here is the spec's: 10 active questions, 120 characters, 2–8 options of 60. */
 
@@ -40,7 +41,7 @@ function options(count: number) {
 const ok = (input: unknown) => questionsInputSchema.safeParse(input).success;
 
 test("a stored question saved before the answered flag reads as not answered", () => {
-  const stored = questionSchema.parse({
+  const stored = customQuestionSchema.parse({
     id: "q-room",
     label: "Aveți nevoie de cazare?",
     scope: "reply",
@@ -96,4 +97,44 @@ test("a choice needs 2 to 8 options", () => {
 test("answered sent by the browser is not kept", () => {
   const parsed = questionInputSchema.parse({ ...q(), answered: true });
   expect("answered" in parsed).toBe(false);
+});
+
+test("a host's question can't take a suggested id", () => {
+  expect(
+    questionInputSchema.safeParse({
+      id: "age",
+      label: "Age?",
+      kind: "text",
+      scope: "person",
+      required: false,
+      archived: false,
+    }).success,
+  ).toBe(false);
+});
+
+test("a suggested input takes only its switches", () => {
+  expect(
+    questionInputSchema.safeParse({
+      id: "diet",
+      suggested: true,
+      required: true,
+      archived: false,
+    }).success,
+  ).toBe(true);
+  expect(
+    questionInputSchema.safeParse({
+      id: "cake",
+      suggested: true,
+      required: true,
+      archived: false,
+    }).success,
+  ).toBe(false);
+});
+
+test("a needs answer is option ids plus optional words", () => {
+  expect(
+    answerSchema.safeParse({ needs: ["vegan", "other"], other: "No onions" })
+      .success,
+  ).toBe(true);
+  expect(answerSchema.safeParse({ needs: "vegan" }).success).toBe(false);
 });

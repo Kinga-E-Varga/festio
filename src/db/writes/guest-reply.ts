@@ -20,6 +20,7 @@ import { REPLY_LIMIT_PER_HOUR } from "@/lib/config";
 import { replyCap, replyCloseAt } from "@/lib/event";
 import { summaryAfter, type StoredReply } from "@/lib/guests";
 import { newId } from "@/lib/id";
+import { resolveQuestions } from "@/lib/suggested";
 
 /** Who is replying, as the request tells: their scrambled IP, and the Protected cookie if any. */
 export interface Visitor {
@@ -27,13 +28,13 @@ export interface Visitor {
   unlock?: string;
 }
 
-/** One person as stored: a new permanent ID; age, diet and answers only when coming. */
+/** One person as stored: a new permanent ID; answers (age and diet too) only when coming. */
 function toPerson(
   person: GuestPersonInput,
   going: boolean,
   questions: Question[],
 ): Person {
-  const { name, ageGroup, diet, dietOther } = person;
+  const { name } = person;
   if (!going) return { id: newId(), name };
   const answers = checkedAnswers(
     questions,
@@ -44,10 +45,6 @@ function toPerson(
   return {
     id: newId(),
     name,
-    ...(ageGroup && { ageGroup }),
-    /* Each need once, whatever was sent. */
-    ...(diet && { diet: [...new Set(diet)] }),
-    ...(diet?.includes("other") && dietOther && { dietOther }),
     ...(answers && { answers }),
   };
 }
@@ -108,8 +105,9 @@ export async function writeGuestReply(
     }
 
     const going = input.status === "going";
+    const asked = resolveQuestions(doc.questions, doc.language);
     const answers = going
-      ? checkedAnswers(doc.questions, "reply", input.answers, GUEST_RULES)
+      ? checkedAnswers(asked, "reply", input.answers, GUEST_RULES)
       : undefined;
     const card: ReplyDoc = {
       sentAt: Timestamp.fromDate(now),
@@ -117,9 +115,7 @@ export async function writeGuestReply(
       message: input.message || null,
       ...(answers && { answers }),
       createdBy: "guest",
-      people: input.people.map((person) =>
-        toPerson(person, going, doc.questions),
-      ),
+      people: input.people.map((person) => toPerson(person, going, asked)),
     };
     const questions = markAnswered(doc.questions, [
       card.answers,

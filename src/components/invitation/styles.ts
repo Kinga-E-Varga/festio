@@ -110,8 +110,8 @@ const DROPDOWN_BASE = {
   chevron: "text-[color:var(--c4)]",
 };
 
-/** Dietary needs: several picks, ticked with the guest checkbox, in two columns. */
-export const DIET_DROPDOWN = {
+/** A needs question (diet, accessibility): several picks, ticked with the guest checkbox, in two columns. */
+export const NEEDS_DROPDOWN = {
   ...DROPDOWN_BASE,
   panel: `${DROPDOWN_PANEL} grid-cols-2`,
   option: DROPDOWN_OPTION,
@@ -172,7 +172,7 @@ export const SIMPLE_RSVP_SKIN: RsvpSkin = {
   warning: WARNING,
   space: { group: "gap-10", field: "gap-2", legend: "mb-3", send: "-mt-5" },
   age: AGE_DROPDOWN,
-  diet: DIET_DROPDOWN,
+  needs: NEEDS_DROPDOWN,
 };
 
 /**

@@ -5,24 +5,23 @@ import { useTranslations } from "next-intl";
 import {
   type Control,
   Controller,
+  type FieldErrors,
+  type UseFormRegister,
   type UseFormRegisterReturn,
 } from "react-hook-form";
 import { ERROR, INPUT } from "@/components/dashboard/styles";
 import { MultiSelect } from "@/components/dashboard/guest-list/MultiSelect";
 import {
-  AGE_KEY,
-  AGES,
-  DIET_KEY,
-  DIETS,
-  pickDiet,
+  pickNeeds,
   STATUS_KEY,
 } from "@/components/dashboard/guest-list/labels";
+import { useQuestionWords } from "@/components/dashboard/guest-list/useQuestionWords";
 import {
   CHOICE_OFF,
   CHOICE_ON,
 } from "@/components/dashboard/guest-list/styles";
 import { RSVP_ANSWER_MAX, RSVP_NAME_MAX } from "@/db/limits";
-import type { GuestQuestion, ReplyValues } from "@/types/guests";
+import type { GuestQuestion, PersonValues, ReplyValues } from "@/types/guests";
 
 interface NameFieldProps {
   registration: UseFormRegisterReturn;
@@ -143,92 +142,87 @@ interface PersonFieldsProps {
   control: Control<ReplyValues>;
   index: number;
   questions: GuestQuestion[];
-  /** Whether age and diet must be answered, given the status picked. */
-  requireAge: (status: ReplyValues["status"]) => boolean;
-  requireDiet: (status: ReplyValues["status"]) => boolean;
-  dietOther: UseFormRegisterReturn;
-  dietOtherError?: string;
-  /** Other is picked, so its words are asked for. */
-  withOther: boolean;
+  register: UseFormRegister<ReplyValues>;
+  /** The person as the form holds them now: Other's words are asked for once it is picked. */
+  values?: PersonValues;
+  errors?: FieldErrors<ReplyValues>["people"];
 }
 
-/** One person's questions: Festio's age and diet, then the host's own. */
+/** One person's questions in the form's order: a needs question has its own field, the rest a field each. Nothing is required but Other's words. */
 export function PersonFields({
   control,
   index,
   questions,
-  requireAge,
-  requireDiet,
-  dietOther,
-  dietOtherError,
-  withOther,
+  register,
+  values,
+  errors,
 }: PersonFieldsProps) {
   const t = useTranslations("GuestList");
+  const words = useQuestionWords();
   return (
     <>
-      <Controller
-        control={control}
-        name={`people.${index}.ageGroup`}
-        rules={{
-          validate: (value, all) =>
-            !requireAge(all.status) || value !== "" || t("ageRequired"),
-        }}
-        render={({ field, fieldState }) => (
-          <SelectField
-            label={t("ageLabel")}
-            options={AGES.map((age) => ({
-              value: age,
-              label: t(AGE_KEY[age]),
-            }))}
-            value={field.value}
-            onChange={field.onChange}
-            error={fieldState.error?.message}
-          />
-        )}
-      />
-      <div>
-        <Controller
-          control={control}
-          name={`people.${index}.diet`}
-          rules={{
-            validate: (value, all) =>
-              !requireDiet(all.status) || value.length > 0 || t("dietRequired"),
-          }}
-          render={({ field, fieldState }) => (
-            <MultiSelect
-              label={t("dietLabel")}
-              placeholder={t("choose")}
-              options={DIETS.map((diet) => ({
-                value: diet,
-                label: t(diet === "none" ? "dietNone" : DIET_KEY[diet]),
-              }))}
-              value={field.value}
-              onPick={(value) => field.onChange(pickDiet(field.value, value))}
-              error={fieldState.error?.message}
+      {questions.map((question) => {
+        if (question.kind !== "needs") {
+          return (
+            <QuestionField
+              key={question.id}
+              control={control}
+              name={`people.${index}.answers.${question.id}`}
+              question={question}
             />
-          )}
-        />
-        {withOther ? (
-          <input
-            {...dietOther}
-            maxLength={RSVP_ANSWER_MAX}
-            aria-label={t("dietOtherInput")}
-            placeholder={t("dietOtherInput")}
-            className={`mt-2 ${INPUT}`}
-          />
-        ) : null}
-        {withOther && dietOtherError ? (
-          <p className={`mt-1 ${ERROR}`}>{dietOtherError}</p>
-        ) : null}
-      </div>
-      {questions.map((question) => (
-        <QuestionField
-          key={question.id}
-          control={control}
-          name={`people.${index}.answers.${question.id}`}
-          question={question}
-        />
-      ))}
+          );
+        }
+        const withOther =
+          values?.needs[question.id]?.picks.includes("other") ?? false;
+        const otherError =
+          errors?.[index]?.needs?.[question.id]?.other?.message;
+        return (
+          <div key={question.id}>
+            <Controller
+              control={control}
+              name={`people.${index}.needs.${question.id}.picks`}
+              render={({ field }) => (
+                <MultiSelect
+                  label={words.title(question)}
+                  placeholder={t("choose")}
+                  options={[
+                    { value: "none", label: t("needsNone") },
+                    ...question.options.map(({ id }) => ({
+                      value: id,
+                      label: words.option(question, id),
+                    })),
+                  ]}
+                  value={field.value}
+                  onPick={(value) =>
+                    field.onChange(pickNeeds(field.value, value))
+                  }
+                />
+              )}
+            />
+            {withOther ? (
+              <input
+                {...register(`people.${index}.needs.${question.id}.other`, {
+                  /* Other alone tells nothing: picked, its words are required. */
+                  validate: (value, all) =>
+                    all.status !== "going" ||
+                    !all.people[index]?.needs[question.id]?.picks.includes(
+                      "other",
+                    ) ||
+                    value.trim() !== "" ||
+                    t("otherRequired"),
+                })}
+                maxLength={RSVP_ANSWER_MAX}
+                aria-label={t("otherInput")}
+                placeholder={t("otherInput")}
+                className={`mt-2 ${INPUT}`}
+              />
+            ) : null}
+            {withOther && otherError ? (
+              <p className={`mt-1 ${ERROR}`}>{otherError}</p>
+            ) : null}
+          </div>
+        );
+      })}
     </>
   );
 }
@@ -239,9 +233,11 @@ interface QuestionFieldProps {
   question: GuestQuestion;
 }
 
-/** A host's question, never required: a choice's empty option, or a yes/no clicked again, goes back to unanswered. */
+/** A question, never required here: a choice's empty option, or a yes/no clicked again, goes back to unanswered. */
 export function QuestionField({ control, name, question }: QuestionFieldProps) {
   const t = useTranslations("GuestList");
+  const words = useQuestionWords();
+  const label = words.title(question);
   return (
     <Controller
       control={control}
@@ -251,7 +247,7 @@ export function QuestionField({ control, name, question }: QuestionFieldProps) {
         if (question.kind === "text") {
           return (
             <label className="block min-w-0">
-              <span className="mb-1.5 block label-caps">{question.label}</span>
+              <span className="mb-1.5 block label-caps">{label}</span>
               <input
                 ref={field.ref}
                 name={field.name}
@@ -267,10 +263,10 @@ export function QuestionField({ control, name, question }: QuestionFieldProps) {
         if (question.kind === "choice") {
           return (
             <SelectField
-              label={question.label}
+              label={label}
               options={question.options.map((option) => ({
                 value: option.id,
-                label: option.label,
+                label: words.option(question, option.id),
               }))}
               value={value}
               onChange={field.onChange}
@@ -283,7 +279,7 @@ export function QuestionField({ control, name, question }: QuestionFieldProps) {
         ];
         return (
           <Choices
-            legend={question.label}
+            legend={label}
             options={options}
             picked={(option) => value === option}
             onPick={(option) => field.onChange(value === option ? "" : option)}

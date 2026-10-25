@@ -5,20 +5,26 @@ import { useTranslations } from "next-intl";
 import type { ReactNode } from "react";
 import {
   AGE_SUMMARY_KEY,
+  ACCESS_KEY,
   AGES,
   DIET_KEY,
 } from "@/components/dashboard/guest-list/labels";
+import { useQuestionWords } from "@/components/dashboard/guest-list/useQuestionWords";
 import { LINK_TEXT, PAGE_BOX } from "@/components/dashboard/styles";
 import { Link } from "@/i18n/navigation";
 import type {
+  AccessNeed,
   DietNeed,
   GuestCounts,
+  GuestQuestion,
   GuestTally,
   QuestionTally,
 } from "@/types/guests";
 
 interface ReplySummaryProps {
   tally: GuestTally;
+  /** The form's questions, archived ones too: age, diet and accessibility show only while asked. */
+  questions: GuestQuestion[];
   counts: GuestCounts;
   useList: boolean;
   /** Set on the event page; shown here to read, with the way there. */
@@ -29,8 +35,7 @@ interface ReplySummaryProps {
 interface Line {
   key: string;
   label: ReactNode;
-  /** Left out when the label already reads as a sentence with its number. */
-  count?: number;
+  count: number;
   /** Shown even at 0. */
   keep?: boolean;
 }
@@ -42,12 +47,16 @@ const GRID =
 /** The numbers a host plans with, one small table per question. */
 export function ReplySummary({
   tally,
+  questions,
   counts,
   useList,
   expected,
   eventId,
 }: ReplySummaryProps) {
   const t = useTranslations("GuestList");
+  const words = useQuestionWords();
+  const asked = (id: string) =>
+    questions.some((question) => question.id === id && !question.archived);
 
   function questionLines({
     question,
@@ -67,9 +76,7 @@ export function ReplySummary({
         { key: "no", label: t("summaryNo"), count: answers.no ?? 0 },
       ];
     }
-    return answered > 0
-      ? [{ key: "answered", label: t("summaryAnswered", { count: answered }) }]
-      : [];
+    return [{ key: "answered", label: t("summaryAnswered"), count: answered }];
   }
 
   return (
@@ -118,41 +125,57 @@ export function ReplySummary({
             },
           ]}
         />
-        <Block
-          title={t("ageLabel")}
-          lines={AGES.map((age) => ({
-            key: age,
-            label: t(AGE_SUMMARY_KEY[age]),
-            count: tally.ages[age],
-          }))}
-        />
-        <Block
-          title={t("dietLabel")}
-          lines={(Object.keys(DIET_KEY) as DietNeed[]).map((need) => ({
-            key: need,
-            label: t(DIET_KEY[need]),
-            count: tally.diets[need],
-          }))}
-        />
-        {tally.questions.map((entry) => (
+        {asked("age") ? (
           <Block
-            key={entry.question.id}
-            title={entry.question.label}
-            lines={questionLines(entry)}
+            title={t("ageLabel")}
+            lines={AGES.map((age) => ({
+              key: age,
+              label: t(AGE_SUMMARY_KEY[age]),
+              count: tally.ages[age],
+            }))}
           />
-        ))}
+        ) : null}
+        {asked("diet") ? (
+          <Block
+            title={t("dietLabel")}
+            lines={(Object.keys(DIET_KEY) as DietNeed[]).map((need) => ({
+              key: need,
+              label: t(DIET_KEY[need]),
+              count: tally.diets[need],
+            }))}
+          />
+        ) : null}
+        {asked("accessibility") ? (
+          <Block
+            title={t("accessLabel")}
+            lines={(Object.keys(ACCESS_KEY) as AccessNeed[]).map((need) => ({
+              key: need,
+              label: t(ACCESS_KEY[need]),
+              count: tally.access[need],
+            }))}
+          />
+        ) : null}
+        {tally.questions
+          .filter(
+            (entry) =>
+              !("suggested" in entry.question && entry.question.archived),
+          )
+          .map((entry) => (
+            <Block
+              key={entry.question.id}
+              title={words.title(entry.question)}
+              lines={questionLines(entry)}
+            />
+          ))}
         <Block
           title={t("summaryMessagesTitle")}
-          lines={
-            tally.messages > 0
-              ? [
-                  {
-                    key: "messages",
-                    label: t("summaryMessages", { count: tally.messages }),
-                  },
-                ]
-              : []
-          }
+          lines={[
+            {
+              key: "messages",
+              label: t("summaryMessages"),
+              count: tally.messages,
+            },
+          ]}
         />
       </div>
     </div>
@@ -167,9 +190,7 @@ interface BlockProps {
 /** A title, then label-and-number rows; rows at 0 drop out unless kept. */
 function Block({ title, lines }: BlockProps) {
   const t = useTranslations("GuestList");
-  const shown = lines.filter(
-    (line) => line.keep || line.count === undefined || line.count > 0,
-  );
+  const shown = lines.filter((line) => line.keep || line.count > 0);
 
   return (
     <section className="min-w-0">
@@ -184,11 +205,9 @@ function Block({ title, lines }: BlockProps) {
               className="flex items-baseline justify-between gap-4 border-b border-neutral-200 px-3 py-2 row-text"
             >
               <dt className="min-w-0">{line.label}</dt>
-              {line.count !== undefined ? (
-                <dd className="font-medium text-neutral-950 tabular-nums">
-                  {line.count}
-                </dd>
-              ) : null}
+              <dd className="font-medium text-neutral-950 tabular-nums">
+                {line.count}
+              </dd>
             </div>
           ))}
         </dl>

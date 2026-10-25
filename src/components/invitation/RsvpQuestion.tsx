@@ -17,10 +17,11 @@ interface RsvpQuestionProps {
 }
 
 /**
- * One of the host's own questions, in the form's skin: text in the name's
- * field, yes / no as two choices like Coming / Not going (a second tap
- * unpicks), a choice as the age group's dropdown. The wording is the
- * host's; Yes, No and Optional are Festio's, in the invitation's language.
+ * One question of the form, the host's own or a suggested one, in the form's
+ * skin: text in the name's field, yes / no as two choices like Coming / Not
+ * going (a second tap unpicks), a choice (age too) as a dropdown. The wording
+ * is the host's, or Festio's for a suggested one; Yes, No and Optional are
+ * Festio's, in the invitation's language.
  */
 export function RsvpQuestion({
   question,

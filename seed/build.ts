@@ -1,5 +1,5 @@
 import { Timestamp } from "firebase-admin/firestore";
-import type { Person } from "@/db/schemas/reply";
+import type { NeedsAnswer } from "@/db/schemas/reply";
 import { DAY_MS, shiftDay, todayIn } from "@/lib/event";
 import type { StoredReply } from "@/lib/guests";
 
@@ -100,17 +100,64 @@ const LAST_NAMES = [
 ];
 
 /** Diets to pick from: mostly none, sometimes one need. */
-const DIETS: Person["diet"][] = [
-  [],
-  [],
-  [],
-  [],
-  [],
-  ["vegetarian"],
-  ["vegan"],
-  ["glutenFree"],
-  ["lactoseFree"],
+const DIETS: NeedsAnswer[] = [
+  { needs: [] },
+  { needs: [] },
+  { needs: [] },
+  { needs: [] },
+  { needs: [] },
+  { needs: ["vegetarian"] },
+  { needs: ["vegan"] },
+  { needs: ["glutenFree"] },
+  { needs: ["lactoseFree"] },
 ];
+
+/** Songs a reply may ask for. */
+const SONGS = [
+  "Ciocârlia",
+  "Dancing Queen",
+  "Hora Unirii",
+  "September",
+  "Mamma Mia",
+  "Uptown Funk",
+];
+
+/** Accessibility needs a person may pick, one each; Other comes with the guest's words. */
+const ACCESS: NeedsAnswer[] = [
+  { needs: ["stepFree"] },
+  { needs: ["walking"] },
+  { needs: ["hearing"] },
+  { needs: ["sight"] },
+  { needs: ["other"], other: "Loc lângă ieșire" },
+];
+
+/**
+ * The answers to the suggested questions past age and diet, for a reply
+ * coming: transport, accommodation, song and phone once per reply,
+ * accessibility per person: mostly none, a few with one need, a few
+ * skipped (null), like real replies.
+ */
+function suggestedAnswers(next: () => number, people: number) {
+  const pick = <T>(list: T[]) => list[Math.floor(next() * list.length)];
+  return {
+    reply: {
+      transport: next() < 0.3,
+      accommodation: next() < 0.2,
+      song: next() < 0.5 ? pick(SONGS) : null,
+      phone:
+        next() < 0.7
+          ? `07${String(Math.floor(next() * 1e8)).padStart(8, "0")}`
+          : null,
+    },
+    person: Array.from({ length: people }, () => {
+      const chance = next();
+      return {
+        accessibility:
+          chance < 0.08 ? pick(ACCESS) : chance < 0.13 ? null : { needs: [] },
+      };
+    }),
+  };
+}
 
 interface Party {
   people: { name: string; age: "adult" | "child" | "baby" }[];
@@ -158,20 +205,28 @@ export function partyReply(
   going: boolean,
   daysAgo: number,
   seed: number,
+  /** The event also asks the other suggested questions. */
+  suggested = false,
 ): SeedReply {
   const next = random(seed);
+  const extra =
+    going && suggested ? suggestedAnswers(next, party.people.length) : null;
   return {
     id,
     sentAt: momentFromNow(-daysAgo),
     status: going ? "going" : "not_going",
     message: next() < 0.3 ? "Abia așteptăm!" : null,
+    ...(extra && { answers: extra.reply }),
     createdBy: "guest",
     people: party.people.map((person, index) => ({
       id: `${id}-p${index + 1}`,
       name: person.name,
       ...(going && {
-        ageGroup: person.age,
-        diet: DIETS[Math.floor(next() * DIETS.length)],
+        answers: {
+          age: person.age,
+          diet: DIETS[Math.floor(next() * DIETS.length)],
+          ...extra?.person[index],
+        },
       }),
     })),
   };

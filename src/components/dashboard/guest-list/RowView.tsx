@@ -11,11 +11,7 @@ import {
   TAG_TEXT,
   WARNING_DARK,
 } from "@/components/dashboard/styles";
-import {
-  AGE_KEY,
-  DIET_KEY,
-  STATUS_KEY,
-} from "@/components/dashboard/guest-list/labels";
+import { STATUS_KEY } from "@/components/dashboard/guest-list/labels";
 import {
   ALERT,
   fold,
@@ -23,15 +19,16 @@ import {
   SMALL_BTN_WARN_SOLID,
   STATUS_FILL,
 } from "@/components/dashboard/guest-list/styles";
+import { useQuestionWords } from "@/components/dashboard/guest-list/useQuestionWords";
 import type { GuestActions } from "@/components/dashboard/guest-list/useGuestActions";
 import { AttentionTag } from "@/components/dashboard/AttentionTag";
 import { DeleteConfirm } from "@/components/dashboard/guest-list/DeleteConfirm";
 import { UnknownFix } from "@/components/dashboard/guest-list/UnknownFix";
 import { Icon, FoldChevron } from "@/components/icons";
+import type { NeedsAnswer } from "@/db/schemas/reply";
 import { rowName, showsUnknown } from "@/lib/guests";
 import type {
   AnswerValue,
-  DietNeed,
   GuestQuestion,
   GuestReply,
   GuestRow,
@@ -139,11 +136,9 @@ export function RowView({
   /* The extra questions are asked only of people coming; a message can come with any reply. */
   const hasDetails =
     reply !== null &&
-    (reply.reply.ageGroup !== undefined ||
-      reply.reply.diet !== undefined ||
-      questions.some(
-        (question) => reply.reply.answers?.[question.id] !== undefined,
-      ) ||
+    (questions.some(
+      (question) => reply.reply.answers?.[question.id] !== undefined,
+    ) ||
       reply.reply.note !== null);
 
   function remove() {
@@ -370,13 +365,16 @@ interface ReplyDetailsProps {
 function ReplyDetails({ reply, questions, spaced }: ReplyDetailsProps) {
   const t = useTranslations("GuestList");
   const locale = useLocale();
-  const { ageGroup, diet, note } = reply;
+  const words = useQuestionWords();
+  const { note } = reply;
 
-  function dietText(needs: DietNeed[]) {
-    if (needs.length === 0) return t("dietNone");
+  function needsText(question: GuestQuestion, answer: NeedsAnswer) {
+    if (answer.needs.length === 0) return t("needsNone");
     /* The row shows what the guest wrote for Other; the summary only counts it. */
-    const named = needs.map((need) =>
-      need === "other" && reply.dietOther ? reply.dietOther : t(DIET_KEY[need]),
+    const named = answer.needs.map((need) =>
+      need === "other" && answer.other
+        ? answer.other
+        : words.option(question, need),
     );
     return new Intl.ListFormat(locale).format(named);
   }
@@ -386,36 +384,20 @@ function ReplyDetails({ reply, questions, spaced }: ReplyDetailsProps) {
     if (value === null || value === "") return t("skipped");
     if (typeof value === "boolean")
       return t(value ? "summaryYes" : "summaryNo");
-    if (question.kind === "choice")
-      return (
-        question.options.find((option) => option.id === value)?.label ?? value
-      );
+    if (typeof value === "object") return needsText(question, value);
+    if (question.kind === "choice") return words.option(question, value);
     return value;
   }
 
   /* One line per question, so a form with many more still reads as a list. */
   const answers = [
-    ageGroup === undefined
-      ? null
-      : {
-          key: "age",
-          label: t("ageLabel"),
-          value: ageGroup === null ? t("skipped") : t(AGE_KEY[ageGroup]),
-        },
-    diet === undefined
-      ? null
-      : {
-          key: "diet",
-          label: t("dietLabel"),
-          value: diet === null ? t("skipped") : dietText(diet),
-        },
     ...questions.map((question) => {
       const value = reply.answers?.[question.id];
       return value === undefined
         ? null
         : {
             key: question.id,
-            label: question.label,
+            label: words.title(question),
             value: answerText(question, value),
           };
     }),

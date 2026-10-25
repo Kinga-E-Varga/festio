@@ -1,5 +1,6 @@
 import { RSVP_ANSWER_MAX } from "@/db/limits";
 import type { Question, QuestionScope } from "@/db/schemas/event";
+import { needsAnswerSchema } from "@/db/schemas/reply";
 import type { AnswerValue } from "@/types/guests";
 
 /** Answers by question id: missing = never asked, null = asked and skipped. */
@@ -63,6 +64,7 @@ function answerFor(
   if (question.kind === "yesNo") {
     return typeof value === "boolean" ? value : undefined;
   }
+  if (question.kind === "needs") return needsFor(question.options, value);
   if (typeof value !== "string") return undefined;
   if (question.kind === "choice") {
     return question.options.some(({ id }) => id === value) ? value : undefined;
@@ -73,14 +75,37 @@ function answerFor(
 }
 
 /**
+ * A needs answer as stored: each pick once, in the question's order; Other's
+ * words trimmed and kept only when Other is picked and something is written.
+ * Undefined if it isn't a needs answer, a pick isn't one of the question's
+ * options or the words are too long.
+ */
+function needsFor(
+  options: { id: string }[],
+  value: AnswerValue,
+): AnswerValue | undefined {
+  const parsed = needsAnswerSchema.safeParse(value);
+  if (!parsed.success) return undefined;
+  const picked = new Set(parsed.data.needs);
+  if (![...picked].every((pick) => options.some(({ id }) => id === pick))) {
+    return undefined;
+  }
+  const needs = options.map(({ id }) => id).filter((id) => picked.has(id));
+  const other = parsed.data.other?.trim() ?? "";
+  if (other.length > RSVP_ANSWER_MAX) return undefined;
+  const kept = picked.has("other") && other !== "";
+  return { needs, ...(kept ? { other } : {}) };
+}
+
+/**
  * The questions with `answered` set on each one these answers answer (not
  * skipped); null when none is newly answered, so the save writes nothing
  * extra.
  */
-export function markAnswered(
-  questions: Question[],
+export function markAnswered<Q extends { id: string; answered: boolean }>(
+  questions: Q[],
   answers: (Answers | undefined)[],
-): Question[] | null {
+): Q[] | null {
   const answered = new Set(
     answers.flatMap((each) =>
       Object.entries(each ?? {}).flatMap(([id, value]) =>

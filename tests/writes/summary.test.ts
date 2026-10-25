@@ -1,33 +1,35 @@
 import { expect, test } from "vitest";
 import { db } from "@/db/admin";
 import { paths } from "@/db/paths";
-import { eventSchema } from "@/db/schemas/event";
 import type { GuestReplyInput } from "@/db/schemas/reply";
 import { repairCounts } from "@/db/writes/counts";
 import { writeGuestReply } from "@/db/writes/guest-reply";
 import { writeGuestChanges } from "@/db/writes/guests";
-import { toGuestReplies } from "@/lib/guests";
+import { DEFAULT_QUESTIONS } from "@/lib/suggested";
+import { EMPTY_SUMMARY, toGuestReplies } from "@/lib/guests";
 import { newId } from "@/lib/id";
 import {
   createEvent,
+  guestInput,
   newVisitor,
   NOW,
   readEvent,
+  storedSummary,
   TEST_HOST,
 } from "../helpers/events";
 
-async function storedSummary(eventId: string) {
-  const snap = await db.doc(paths.event(eventId)).get();
-  return eventSchema.parse(snap.data()).summary;
-}
-
 test("a guest's reply adds to the summary, a host edit takes it off", async () => {
-  const { id, doc } = await createEvent();
+  const { id, doc } = await createEvent({ questions: DEFAULT_QUESTIONS });
   const input: GuestReplyInput = {
     id: newId(),
     status: "going",
     message: null,
-    people: [{ name: "Ana Pop", ageGroup: "child", diet: ["vegan"] }],
+    people: [
+      {
+        name: "Ana Pop",
+        answers: { age: "child", diet: { needs: ["vegan"] } },
+      },
+    ],
   };
   await writeGuestReply(id, doc.slug, input, newVisitor(), NOW);
   let summary = await storedSummary(id);
@@ -94,12 +96,17 @@ test("a guest's reply adds to the summary, a host edit takes it off", async () =
 });
 
 test("repairCounts fixes a drifted summary", async () => {
-  const { id, doc } = await createEvent();
+  const { id, doc } = await createEvent({ questions: DEFAULT_QUESTIONS });
   const input: GuestReplyInput = {
     id: newId(),
     status: "going",
     message: null,
-    people: [{ name: "Ana Pop", ageGroup: "child", diet: ["vegan"] }],
+    people: [
+      {
+        name: "Ana Pop",
+        answers: { age: "child", diet: { needs: ["vegan"] } },
+      },
+    ],
   };
   await writeGuestReply(id, doc.slug, input, newVisitor(), NOW);
   await db.doc(paths.event(id)).update({ "summary.ages.adult": 5 });
@@ -116,6 +123,29 @@ test("repairCounts fixes a drifted summary", async () => {
       nutAllergy: 0,
       other: 0,
     },
-    answeredCustom: 0,
+    access: EMPTY_SUMMARY.access,
+    suggested: EMPTY_SUMMARY.suggested,
   });
+});
+
+test("a guest's yes to transport counts once for the reply", async () => {
+  const { id, doc } = await createEvent({
+    questions: [
+      {
+        id: "transport",
+        suggested: true,
+        required: false,
+        archived: false,
+        answered: false,
+      },
+    ],
+  });
+  await writeGuestReply(
+    id,
+    doc.slug,
+    { ...guestInput(["A", "B"]), answers: { transport: true } },
+    newVisitor(),
+    NOW,
+  );
+  expect((await storedSummary(id)).suggested.transport).toBe(1);
 });

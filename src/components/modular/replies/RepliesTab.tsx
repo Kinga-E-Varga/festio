@@ -7,15 +7,20 @@ import {
   BTN_PRIMARY,
   SOFT_ACTION_SHAPE,
   SOFT_OUTLINE,
-  TAG,
   TEXT_LINK,
 } from "@/components/dashboard/styles";
 import { Icon } from "@/components/icons";
-import type { Question, QuestionInput } from "@/db/schemas/event";
+import {
+  suggestedIdSchema,
+  type QuestionInput,
+  type StoredQuestion,
+  type SuggestedId,
+} from "@/db/schemas/event";
 import { QUESTIONS_MAX } from "@/lib/config";
 import { newId } from "@/lib/id";
 import { inputOf } from "@/lib/questions";
-import { localized, type Language } from "@/lib/language";
+import type { Language } from "@/lib/language";
+import { resolveQuestions } from "@/lib/suggested";
 import { RollPanel } from "../design/RollOut";
 import { QuestionForm } from "./QuestionForm";
 import { QuestionList } from "./QuestionList";
@@ -26,13 +31,12 @@ import {
   SECTION_NAME,
 } from "../design/styles";
 import { QUESTION_ROW, SUGGESTION_CHIP } from "./styles";
-import { SUGGESTIONS } from "./suggestions";
 
 interface RepliesTabProps {
-  /** The host's questions, archived ones too, as the editor holds them. */
-  questions: Question[];
-  onChange: (questions: Question[]) => void;
-  /** The invitation's language: what the suggestions are worded in. */
+  /** The form's questions, archived ones too, as the editor holds them. */
+  questions: StoredQuestion[];
+  onChange: (questions: StoredQuestion[]) => void;
+  /** The invitation's language: what the suggested questions are worded in. */
   language: Language;
 }
 
@@ -44,22 +48,26 @@ interface Draft {
   answered: boolean;
 }
 
-const FIXED = ["fixedName", "fixedAge", "fixedDiet"] as const;
+/** Every suggested question has a chip, in the order they are offered. */
+const CHIPS = suggestedIdSchema.options;
 
 /**
- * The modular editor's Replies tab: what every reply asks, the host's own
- * questions (dragged into order, edited inline, archived ones apart), our
- * suggestions to start from, and a blank question. Changes go into the
+ * The Form tab of both editors: what every reply asks, the form's questions
+ * (ours and the host's own, dragged into order, edited inline, archived ones
+ * apart), chips to add or bring back ours, and a blank question. Changes go into the
  * editor's state; Save keeps them with the invitation.
  */
 export function RepliesTab({ questions, onChange, language }: RepliesTabProps) {
   const t = useTranslations("RepliesTab");
+  const tSuggested = useTranslations("Suggested");
   /* The last form opened; kept while it rolls back, `rolled` says whether it is out. */
   const [draft, setDraft] = useState<Draft | null>(null);
   const [rolled, setRolled] = useState(false);
   const [showArchived, setShowArchived] = useState(false);
-  const active = questions.filter(({ archived }) => !archived);
-  const archived = questions.filter((question) => question.archived);
+  /* Resolved, so a suggested question has its wording in the invitation's language. */
+  const resolved = resolveQuestions(questions, language);
+  const active = resolved.filter(({ archived }) => !archived);
+  const archived = resolved.filter((question) => question.archived);
   const full = active.length >= QUESTIONS_MAX;
 
   function open(start: QuestionInput, isNew: boolean, answered = false) {
@@ -71,13 +79,36 @@ export function RepliesTab({ questions, onChange, language }: RepliesTabProps) {
   /* The question whose form is out, if it is one in the list. */
   const editing = rolled && draft && !draft.isNew ? draft.start.id : null;
 
-  /* A new question to start the form from: a suggestion's, or a blank text one. */
-  function blank(
-    start: Pick<QuestionInput, "scope" | "label"> & {
-      kind: "yesNo" | "text";
-    } = { label: "", kind: "text", scope: "reply" },
-  ): QuestionInput {
-    return { ...start, id: newId(), required: false, archived: false };
+  /* A blank text question to start the form from. */
+  function blank(): QuestionInput {
+    return {
+      id: newId(),
+      label: "",
+      kind: "text",
+      scope: "reply",
+      required: false,
+      archived: false,
+    };
+  }
+
+  /* A chip: ours is added at the end, or brought back; one already asked stays. */
+  function pickSuggested(id: SuggestedId) {
+    const card = questions.find((question) => question.id === id);
+    if (full || (card && !card.archived)) return;
+    if (card) {
+      restore(id);
+      return;
+    }
+    onChange([
+      ...questions,
+      {
+        id,
+        suggested: true,
+        required: id === "age" || id === "diet",
+        archived: false,
+        answered: false,
+      },
+    ]);
   }
 
   function submit(question: QuestionInput) {
@@ -121,6 +152,7 @@ export function RepliesTab({ questions, onChange, language }: RepliesTabProps) {
       start={draft.start}
       isNew={draft.isNew}
       answered={draft.answered}
+      suggestedLabel={resolved.find(({ id }) => id === draft.start.id)?.label}
       attached={!draft.isNew}
       onRemove={draft.isNew ? undefined : () => remove(draft.start.id)}
       onSubmit={submit}
@@ -130,21 +162,6 @@ export function RepliesTab({ questions, onChange, language }: RepliesTabProps) {
 
   return (
     <div className="mb-8 flex flex-col gap-8">
-      <section>
-        <EditorHeading title={t("alwaysAsked")} />
-        <ul className="flex flex-wrap gap-1.5">
-          {FIXED.map((key) => (
-            <li
-              key={key}
-              className={`${TAG} inline-flex items-center gap-1 border-neutral-400 bg-neutral-150 text-neutral-700`}
-            >
-              <Icon name="lock" className="size-3" />
-              {t(key)}
-            </li>
-          ))}
-        </ul>
-      </section>
-
       <section className="flex flex-col gap-3">
         <EditorHeading
           title={`${t("yourQuestions")} · ${t("count", { count: active.length, max: QUESTIONS_MAX })}`}
@@ -157,12 +174,22 @@ export function RepliesTab({ questions, onChange, language }: RepliesTabProps) {
               editing={editing}
               formOf={draft && !draft.isNew ? draft.start.id : null}
               form={form}
-              onReorder={(order) => onChange([...order, ...archived])}
-              onToggle={(question) =>
-                editing === question.id
-                  ? close()
-                  : open(inputOf(question), false, question.answered)
+              onReorder={(order) =>
+                onChange([
+                  ...order.flatMap(({ id }) =>
+                    questions.filter((question) => question.id === id),
+                  ),
+                  ...questions.filter((question) => question.archived),
+                ])
               }
+              onToggle={(question) => {
+                if (editing === question.id) {
+                  close();
+                  return;
+                }
+                const card = questions.find(({ id }) => id === question.id);
+                if (card) open(inputOf(card), false, card.answered);
+              }}
             />
           ) : (
             <p className="hint-text text-neutral-700">{t("none")}</p>
@@ -227,28 +254,16 @@ export function RepliesTab({ questions, onChange, language }: RepliesTabProps) {
       <section>
         <EditorHeading title={t("suggestions")} />
         <ul className="flex flex-wrap gap-1.5">
-          {SUGGESTIONS.map((suggestion) => {
-            const label = localized(suggestion.label, language);
-            const added = active.some(
-              (question) => question.label.trim() === label,
-            );
-            const name = t(`suggestion.${suggestion.id}`);
+          {CHIPS.map((id) => {
+            const added = active.some((question) => question.id === id);
+            const name = tSuggested(id);
             return (
-              <li key={suggestion.id}>
+              <li key={id}>
                 <button
                   type="button"
                   disabled={full}
                   aria-label={added ? t("added", { name }) : undefined}
-                  onClick={() =>
-                    open(
-                      blank({
-                        label,
-                        kind: suggestion.kind,
-                        scope: suggestion.scope,
-                      }),
-                      true,
-                    )
-                  }
+                  onClick={() => pickSuggested(id)}
                   className={`${SUGGESTION_CHIP} ${added ? "opacity-60" : ""}`}
                 >
                   <Icon name={added ? "check" : "plus"} className="size-3.5" />

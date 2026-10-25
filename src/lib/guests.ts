@@ -3,10 +3,11 @@
  * pre-loaded names and the replies. No React or Firebase, so a plain Node
  * script (the seed) can load this file.
  */
-import type { EventDoc } from "@/db/schemas/event";
+import { suggestedCountIdSchema, type EventDoc } from "@/db/schemas/event";
 import type { GuestChanges, ReplyInput } from "@/db/schemas/guest-changes";
 import type { ReplyDoc } from "@/db/schemas/reply";
 import { toDateTimeLocal } from "@/lib/event";
+import { accessOf, ageOf, dietOf } from "@/lib/suggested";
 import type {
   AnswerValue,
   AttentionItem,
@@ -39,9 +40,6 @@ export function toGuestReplies(replies: StoredReply[]): GuestReply[] {
       name: person.name,
       status: reply.status,
       note: reply.message,
-      ageGroup: person.ageGroup,
-      diet: person.diet,
-      dietOther: person.dietOther,
       answers: { ...reply.answers, ...person.answers },
       repliedAt: toDateTimeLocal(reply.sentAt.toDate()),
       differentPerson: person.differentPerson ?? false,
@@ -83,9 +81,6 @@ export function fromGuestReplies(
     const stored = {
       id: person.id,
       name: person.name,
-      ageGroup: person.ageGroup,
-      diet: person.diet,
-      dietOther: person.dietOther,
       answers: pickAnswers(person.answers, (id) => !perReply.has(id)),
       listNameId: person.listNameId,
       differentPerson: person.differentPerson || undefined,
@@ -404,6 +399,25 @@ export function countRows(rows: GuestRow[]): GuestCounts {
   return counts;
 }
 
+/** The suggested questions the Summary tallies on their own, not as a question block. */
+const OWN_TALLY = new Set(["age", "diet", "accessibility"]);
+
+/** Each reply once: the people of one submission share its reply-wide answers and note. */
+function onePerReply(list: GuestReply[]): GuestReply[] {
+  return [
+    ...new Map(list.map((reply) => [reply.submissionId, reply])).values(),
+  ];
+}
+
+/** Adds one to each picked need the tally knows; an unknown id is skipped. */
+function countNeeds<Need extends string>(
+  tally: Record<Need, number>,
+  needs: string[] | undefined,
+) {
+  for (const need of needs ?? [])
+    if (Object.hasOwn(tally, need)) tally[need as Need] += 1;
+}
+
 /** A choice counts by option id, a yes/no as `yes` / `no`, free text only as answered. */
 function tallyQuestion(
   question: GuestQuestion,
@@ -424,7 +438,7 @@ function tallyQuestion(
 }
 
 /**
- * The Summary section's numbers. Age, diet and custom answers come from the
+ * The Summary section's numbers. Age, diet, accessibility and custom answers come from the
  * people coming; a reply-wide question counts each reply once, as does a note.
  */
 export function tallyGuests(
@@ -435,10 +449,6 @@ export function tallyGuests(
     row.kind === "reply" ? [row.reply] : [],
   );
   const coming = replies.filter((reply) => reply.status === "going");
-  const onePerReply = (list: GuestReply[]) => [
-    ...new Map(list.map((reply) => [reply.submissionId, reply])).values(),
-  ];
-
   const tally: GuestTally = {
     ages: { adult: 0, child: 0, baby: 0 },
     diets: {
@@ -449,28 +459,36 @@ export function tallyGuests(
       nutAllergy: 0,
       other: 0,
     },
+    access: { stepFree: 0, walking: 0, hearing: 0, sight: 0, other: 0 },
     questions: [],
     messages: onePerReply(replies.filter((reply) => reply.note?.trim())).length,
   };
   for (const reply of coming) {
-    if (reply.ageGroup) tally.ages[reply.ageGroup] += 1;
-    for (const need of reply.diet ?? []) tally.diets[need] += 1;
+    const age = ageOf(reply.answers);
+    if (age) tally.ages[age] += 1;
+    countNeeds(tally.diets, dietOf(reply.answers)?.needs);
+    countNeeds(tally.access, accessOf(reply.answers)?.needs);
   }
   const perReply = onePerReply(coming);
-  tally.questions = questions.map((question) =>
-    tallyQuestion(question, question.scope === "reply" ? perReply : coming),
-  );
+  tally.questions = questions
+    .filter((question) => !OWN_TALLY.has(question.id))
+    .map((question) =>
+      tallyQuestion(question, question.scope === "reply" ? perReply : coming),
+    );
   return tally;
 }
 
-/** The people coming who answered at least one of the host's own questions. */
-export function answeredCustom(rows: GuestRow[]): number {
-  return rows.filter(
-    (row) =>
-      row.kind === "reply" &&
-      row.reply.status === "going" &&
-      Object.values(row.reply.answers ?? {}).some((answer) => answer !== null),
-  ).length;
+/** The replies coming that said yes to transport and to accommodation, each reply once. */
+function suggestedCounts(replies: GuestReply[]): ReplySummary["suggested"] {
+  const perReply = onePerReply(
+    replies.filter((reply) => reply.status === "going"),
+  );
+  const counts = { ...EMPTY_SUMMARY.suggested };
+  for (const id of suggestedCountIdSchema.options)
+    counts[id] = perReply.filter(
+      (reply) => reply.answers?.[id] === true,
+    ).length;
+  return counts;
 }
 
 export function rowMatches(row: GuestRow, query: string): boolean {
@@ -607,7 +625,7 @@ export const EMPTY_COUNTS: EventCounts = {
   seatingWarnings: 0,
 };
 
-/** What the Overview shows of the people coming: ages, diets, answers to the host's questions. */
+/** What the Overview shows of the people coming: ages, diets, accessibility needs, transport and accommodation. */
 export type ReplySummary = EventDoc["summary"];
 
 /** Nothing counted: a new event's summary. */
@@ -621,14 +639,20 @@ export const EMPTY_SUMMARY: ReplySummary = {
     nutAllergy: 0,
     other: 0,
   },
-  answeredCustom: 0,
+  access: { stepFree: 0, walking: 0, hearing: 0, sight: 0, other: 0 },
+  suggested: { transport: 0, accommodation: 0 },
 };
 
 /** The summary over these people (the rows' replies), by the rules the Summary page counts with. */
 export function summaryOfPeople(replies: GuestReply[]): ReplySummary {
   const rows = buildRows({ list: [], replies, questions: [] }, false);
-  const { ages, diets } = tallyGuests(rows, []);
-  return { ages, diets, answeredCustom: answeredCustom(rows) };
+  const { ages, diets, access } = tallyGuests(rows, []);
+  return {
+    ages,
+    diets,
+    access,
+    suggested: suggestedCounts(replies),
+  };
 }
 
 /** The summary over these reply cards. */
@@ -652,10 +676,8 @@ export function summaryAfter(
   return {
     ages: combine(stored.ages, now.ages, was.ages),
     diets: combine(stored.diets, now.diets, was.diets),
-    answeredCustom: Math.max(
-      0,
-      stored.answeredCustom + now.answeredCustom - was.answeredCustom,
-    ),
+    access: combine(stored.access, now.access, was.access),
+    suggested: combine(stored.suggested, now.suggested, was.suggested),
   };
 }
 

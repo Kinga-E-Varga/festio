@@ -2,7 +2,7 @@ import { Timestamp } from "firebase-admin/firestore";
 import { db } from "@/db/admin";
 import { paths } from "@/db/paths";
 import { eventSchema, type EventDoc } from "@/db/schemas/event";
-import type { GuestReplyInput } from "@/db/schemas/reply";
+import { replySchema, type GuestReplyInput } from "@/db/schemas/reply";
 import { countsOf, readCountInputs } from "@/db/writes/counts";
 import { writeGuestChanges } from "@/db/writes/guests";
 import type { Visitor } from "@/db/writes/guest-reply";
@@ -86,6 +86,23 @@ export function newVisitor(): Visitor {
 export async function storedCounts(eventId: string): Promise<EventCounts> {
   const snap = await db.doc(paths.event(eventId)).get();
   return eventSchema.parse(snap.data()).counts;
+}
+
+/** The event card as stored. */
+export async function storedEvent(eventId: string): Promise<EventDoc> {
+  return eventSchema.parse((await db.doc(paths.event(eventId)).get()).data());
+}
+
+/** The summary stored on the event card. */
+export async function storedSummary(eventId: string) {
+  return (await storedEvent(eventId)).summary;
+}
+
+/** One reply card as stored. */
+export async function storedReply(eventId: string, replyId: string) {
+  return replySchema.parse(
+    (await db.doc(paths.reply(eventId, replyId)).get()).data(),
+  );
 }
 
 /** The two counters the pages show, which follow the event's list switch. */

@@ -24,6 +24,7 @@ import {
   type StoredReply,
 } from "@/lib/guests";
 import { GROUP_MAX_NAMES, GROUP_MAX_ROUNDS } from "@/lib/config";
+import { resolveQuestions } from "@/lib/suggested";
 import type { GuestReply, ListName } from "@/types/guests";
 
 /** The cards the counters are worked out from. */
@@ -163,7 +164,7 @@ export function countsWithReply(
   stored: EventCounts,
   group: CountInputs,
   reply: StoredReply,
-  event: Pick<EventDoc, "questions">,
+  event: Pick<EventDoc, "questions" | "language">,
 ): EventCounts {
   const after = {
     ...group,
@@ -182,7 +183,7 @@ export function countsWithChange(
   stored: EventCounts,
   before: CountInputs,
   after: CountInputs,
-  event: Pick<EventDoc, "questions">,
+  event: Pick<EventDoc, "questions" | "language">,
 ): EventCounts {
   const was = countsOf(before, event);
   const now = countsOf(after, event);
@@ -290,7 +291,7 @@ function groupNames(replies: StoredReply[], list: ListName[]): string[] {
 export async function countsWithHostChange(
   tx: Transaction,
   eventId: string,
-  event: Pick<EventDoc, "questions" | "counts">,
+  event: Pick<EventDoc, "questions" | "language" | "counts">,
   change: CardChange & { remove: string[]; keys: string[] },
 ): Promise<EventCounts> {
   const { listBefore, listAfter, keys } = change;
@@ -344,7 +345,7 @@ function applied<T extends { id: string }>(
  */
 export function countsOf(
   inputs: CountInputs,
-  event: Pick<EventDoc, "questions">,
+  event: Pick<EventDoc, "questions" | "language">,
 ): EventCounts {
   return countRows(
     {
@@ -359,12 +360,12 @@ export function countsOf(
 /** The counters over replies already in reply order, as rows. */
 function countRows(
   rows: { replies: GuestReply[]; list: ListName[]; seatedIds: string[] },
-  event: Pick<EventDoc, "questions">,
+  event: Pick<EventDoc, "questions" | "language">,
 ): EventCounts {
   return eventCounts({
     replies: rows.replies,
     list: rows.list,
-    questions: event.questions,
+    questions: resolveQuestions(event.questions, event.language),
     seatedIds: rows.seatedIds,
   });
 }
@@ -373,7 +374,7 @@ function countRows(
 export function countsAfter(
   inputs: CountInputs,
   replies: { put: StoredReply[]; remove: string[] },
-  event: Pick<EventDoc, "questions">,
+  event: Pick<EventDoc, "questions" | "language">,
 ): EventCounts {
   return countsOf(
     {
@@ -397,7 +398,8 @@ function sameSummary(a: ReplySummary, b: ReplySummary): boolean {
   return (
     same(a.ages, b.ages) &&
     same(a.diets, b.diets) &&
-    a.answeredCustom === b.answeredCustom
+    same(a.access, b.access) &&
+    same(a.suggested, b.suggested)
   );
 }
 

@@ -7,6 +7,7 @@ import type { GuestListDoc } from "@/db/schemas/guest-list";
 import { replySchema } from "@/db/schemas/reply";
 import { guestListOf } from "@/db/writes/counts";
 import { toGuestReplies } from "@/lib/guests";
+import { resolveQuestions } from "@/lib/suggested";
 import type { DashboardEvent } from "@/types/dashboard";
 import type { EventGuests } from "@/types/guests";
 
@@ -36,5 +37,8 @@ const readGuests = cache(
 
 /** The event's guest list as the page reads it, with the host's questions. */
 export async function loadGuests(event: DashboardEvent): Promise<EventGuests> {
-  return { ...(await readGuests(event.id)), questions: event.questions };
+  return {
+    ...(await readGuests(event.id)),
+    questions: resolveQuestions(event.questions, event.language),
+  };
 }

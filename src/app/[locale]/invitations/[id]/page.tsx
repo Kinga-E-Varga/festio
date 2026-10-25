@@ -73,6 +73,7 @@ export default async function HostInvitationPage({ params }: Props) {
       guestMessages={await loadMessages(language)}
       backTo={eventPath(event.id)}
       saving={saving}
+      questions={event.questions}
     />
   );
 }

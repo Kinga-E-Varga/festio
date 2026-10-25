@@ -6,11 +6,15 @@ import type { GuestChanges } from "@/db/schemas/guest-changes";
 import { writeGuestChanges } from "@/db/writes/guests";
 import { newId } from "@/lib/id";
 import { createEvent, NOW, refusedWith, TEST_HOST } from "../helpers/events";
+import { DEFAULT_QUESTIONS } from "@/lib/suggested";
 import { answeredById, MEAL, OLD, RIDE } from "../helpers/questions";
 
 /* The host's answers in the guest list: type-checked, Required not enforced, archived still taken. */
 
-function hostReply(answers: Record<string, unknown>): GuestChanges {
+function hostReply(
+  answers: Record<string, unknown>,
+  personAnswers: Record<string, unknown> = { meal: "o1" },
+): GuestChanges {
   return {
     replies: {
       put: [
@@ -20,7 +24,7 @@ function hostReply(answers: Record<string, unknown>): GuestChanges {
           status: "going",
           message: null,
           answers,
-          people: [{ id: newId(), name: "Ion Pop", answers: { meal: "o1" } }],
+          people: [{ id: newId(), name: "Ion Pop", answers: personAnswers }],
         },
       ],
       remove: [],
@@ -29,9 +33,18 @@ function hostReply(answers: Record<string, unknown>): GuestChanges {
   } as GuestChanges;
 }
 
-async function save(eventId: string, answers: Record<string, unknown>) {
+async function save(
+  eventId: string,
+  answers: Record<string, unknown>,
+  personAnswers?: Record<string, unknown>,
+) {
   return refusedWith(
-    writeGuestChanges(TEST_HOST, eventId, hostReply(answers), NOW),
+    writeGuestChanges(
+      TEST_HOST,
+      eventId,
+      hostReply(answers, personAnswers),
+      NOW,
+    ),
   );
 }
 
@@ -61,4 +74,18 @@ test("the host keeps answers to an archived question", async () => {
   expect(await save(id, { ride: true, old: "late" })).toBe("ok");
   const [card] = await replies(id);
   expect(card.answers).toEqual({ ride: true, old: "late" });
+});
+
+test("the host's diet answer is kept as sent", async () => {
+  const { id } = await createEvent({ questions: DEFAULT_QUESTIONS });
+  const diet = { needs: ["other"], other: "Shellfish" };
+  expect(await save(id, {}, { diet })).toBe("ok");
+  const [card] = await replies(id);
+  expect(card.people[0].answers).toEqual({ diet });
+});
+
+test("the host's diet answer of the wrong type is refused", async () => {
+  const { id } = await createEvent({ questions: DEFAULT_QUESTIONS });
+  expect(await save(id, {}, { diet: "vegan" })).toBe("invalid");
+  expect(await replies(id)).toEqual([]);
 });

@@ -8,6 +8,7 @@ import type {
   RsvpPayload,
   TemplateValues,
 } from "@/types/invitation";
+import type { Question } from "@/db/schemas/event";
 import type { SaveError } from "@/db/writes/save";
 import type { ActionResult } from "@/types/actions";
 import { XIcon } from "./icons";
@@ -36,6 +37,8 @@ export interface RsvpPanelProps {
   inert?: boolean;
   /** Replies are closed for now; a neutral line stands in for the form. */
   paused?: boolean;
+  /** The host's reply questions, resolved; none asks only names and the note. */
+  questions?: Question[];
 }
 
 /**
@@ -52,9 +55,10 @@ export function RsvpPanel({
   onSubmit,
   inert,
   paused,
+  questions,
 }: RsvpPanelProps) {
   const t = useTranslations("Rsvp");
-  const form = useRsvpForm();
+  const form = useRsvpForm(questions);
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const [sending, setSending] = useState(false);

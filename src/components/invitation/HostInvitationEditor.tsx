@@ -7,12 +7,15 @@ import {
   useMessages,
   useTranslations,
 } from "next-intl";
-import { type ReactNode, Suspense, useState } from "react";
+import { type ReactNode, Suspense, useMemo, useState } from "react";
 import { useToast } from "@/components/dashboard/Toast";
 import type { CardOpening } from "@/components/envelope/card";
 import { cardValues } from "@/lib/invitation";
 import type { Language } from "@/lib/language";
 import { TemplateCard } from "@/templates/TemplateCard";
+import type { StoredQuestion } from "@/db/schemas/event";
+import { withAnswered } from "@/lib/questions";
+import { resolveQuestions } from "@/lib/suggested";
 import type { InvitationSaving } from "@/types/dashboard";
 import type { InvitationTemplate, TemplateValues } from "@/types/invitation";
 import { EditPanel } from "./EditPanel";
@@ -37,6 +40,8 @@ interface HostInvitationEditorProps {
   backTo?: string;
   /** The event Save writes to. Absent (a template's preview), Save keeps it in memory. */
   saving?: InvitationSaving;
+  /** The form's questions as stored, archived ones too. */
+  questions: StoredQuestion[];
 }
 
 /**
@@ -52,6 +57,7 @@ export function HostInvitationEditor({
   guestMessages,
   backTo,
   saving,
+  questions: initialQuestions,
 }: HostInvitationEditorProps) {
   const t = useTranslations("HostEditor");
   const hostLocale = useLocale();
@@ -61,13 +67,25 @@ export function HostInvitationEditor({
   /* Closed on arrival: the host sees the invitation first and opens the panel from the strip. */
   const [editing, setEditing] = useState(false);
   const [tab, setTab] = useState<PanelTabId>("content");
+  /* The reply questions: edited in the Form tab, saved with the invitation. */
+  const [questions, setQuestions] = useState(initialQuestions);
+  const [savedQuestions, setSavedQuestions] = useState(initialQuestions);
+  /* The form asks the active ones; the same array while they don't change, so the preview isn't redrawn. */
+  const asked = useMemo(
+    () =>
+      resolveQuestions(
+        questions.filter(({ archived }) => !archived),
+        language,
+      ),
+    [questions, language],
+  );
   const [envelope, setEnvelope] = useState(initialEnvelope);
   const [savedEnvelope, setSavedEnvelope] = useState(initialEnvelope);
   /* Not saved: only to compare the two ways out while they are tried. */
   const [opening, setOpening] = useState<CardOpening>("rise");
   const toast = useToast();
   const views = useTabViews();
-  const { save, sending, dialog } = useInvitationSave(saving, toast);
+  const { save, sending, dialog } = useInvitationSave(saving, toast, language);
 
   function change(id: string, value: string) {
     setValues((current) => ({ ...current, [id]: value }));
@@ -79,6 +97,7 @@ export function HostInvitationEditor({
 
   const dirty =
     envelope !== savedEnvelope ||
+    JSON.stringify(questions) !== JSON.stringify(savedQuestions) ||
     Object.keys(values).some((id) => values[id] !== saved[id]);
 
   /*
@@ -101,6 +120,7 @@ export function HostInvitationEditor({
       replyInert={editing}
       envelope={envelope}
       opening={opening}
+      questions={asked}
       /*
        * The host can try the form out, every check included, but the editor
        * never saves a reply — only the guest page will.
@@ -122,6 +142,8 @@ export function HostInvitationEditor({
           opening={opening}
           onOpening={setOpening}
           onClose={() => setEditing(false)}
+          questions={questions}
+          onQuestions={setQuestions}
         />,
       )}
     >
@@ -148,10 +170,26 @@ export function HostInvitationEditor({
           kind: "save",
           dirty: dirty && !sending,
           onSave: () =>
-            save({ kind: "simple", values, envelope }, () => {
-              setSaved(values);
-              setSavedEnvelope(envelope);
-            }),
+            save(
+              { kind: "simple", values, envelope },
+              (stored) => {
+                setSaved(values);
+                setSavedEnvelope(envelope);
+                setSavedQuestions(stored?.questions ?? questions);
+                if (!stored) return;
+                /*
+                 * A question kept against the host's change: the list as
+                 * saved. Otherwise edits made while the save was out stay,
+                 * taking only which questions are now answered.
+                 */
+                setQuestions((current) =>
+                  stored.kept.length > 0
+                    ? stored.questions
+                    : withAnswered(current, stored.questions),
+                );
+              },
+              questions,
+            ),
         }}
         toast={toast}
       >

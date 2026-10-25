@@ -5,6 +5,7 @@ import type { listNameSchema } from "@/db/schemas/guest-list";
 import type {
   ageGroupSchema,
   answerSchema,
+  accessNeedSchema,
   dietNeedSchema,
 } from "@/db/schemas/reply";
 
@@ -22,6 +23,9 @@ export type AgeGroup = z.infer<typeof ageGroupSchema>;
 
 /** The dietary presets every form offers, for each person coming; `other` comes with the guest's own words. */
 export type DietNeed = z.infer<typeof dietNeedSchema>;
+
+/** The accessibility presets, for each person coming; `other` comes with the guest's own words. */
+export type AccessNeed = z.infer<typeof accessNeedSchema>;
 
 /** Asked of each person coming, or once for the whole reply. */
 export type QuestionScope = z.infer<typeof questionScopeSchema>;
@@ -43,15 +47,10 @@ export interface GuestReply {
   status: RsvpStatus;
   /** The reply's note to the host. Null = asked and skipped. */
   note: string | null;
-  /* Asked only of people coming: missing = never asked, null = asked and skipped. */
-  ageGroup?: AgeGroup | null;
-  /** Empty = no needs. */
-  diet?: DietNeed[] | null;
-  /** What the guest wrote for `other`. */
-  dietOther?: string;
   /**
-   * Custom answers by question id: missing = never asked, null = asked and
-   * skipped. A reply-wide answer is copied onto each person, like the note.
+   * Answers by question id, age and diet included: missing = never asked,
+   * null = asked and skipped. A reply-wide answer is copied onto each
+   * person, like the note.
    */
   answers?: Record<string, AnswerValue | null>;
   /** When the reply came in, as a local ISO date-time. */
@@ -67,7 +66,7 @@ export interface EventGuests {
   /** The list card's version the page read; 0 before it is first saved. */
   listVersion: number;
   replies: GuestReply[];
-  /** The host's custom questions; empty when the form asks none. */
+  /** The form's questions, resolved: the suggested ones and the host's own. */
   questions: GuestQuestion[];
 }
 
@@ -126,10 +125,11 @@ export interface QuestionTally {
   answered: number;
 }
 
-/** The Summary section's numbers. Age, diet and questions count people coming. */
+/** The Summary section's numbers. Age, diet, accessibility and questions count people coming. */
 export interface GuestTally {
   ages: Record<AgeGroup, number>;
   diets: Record<DietNeed, number>;
+  access: Record<AccessNeed, number>;
   questions: QuestionTally[];
   /** Replies that came with a note, once per reply. */
   messages: number;
@@ -140,8 +140,14 @@ export interface NameRepeat {
   count: number;
 }
 
-/** A diet pick in the editor: a need, or `none` for no needs at all. */
-export type DietPick = DietNeed | "none";
+/** A needs pick in the editor: an option id, or the reserved id `none` for no needs at all. */
+export type NeedsPick = string;
+
+/** One needs question's answer in a form: the picks, and Other's words. */
+export interface NeedsValue {
+  picks: NeedsPick[];
+  other: string;
+}
 
 /**
  * One person in the reply editor. Empty strings and lists are unanswered;
@@ -149,9 +155,8 @@ export type DietPick = DietNeed | "none";
  */
 export interface PersonValues {
   name: string;
-  ageGroup: AgeGroup | "";
-  diet: DietPick[];
-  dietOther: string;
+  /** Needs answers by question id. */
+  needs: Record<string, NeedsValue>;
   answers: Record<string, string>;
 }
 

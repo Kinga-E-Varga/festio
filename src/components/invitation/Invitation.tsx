@@ -34,6 +34,8 @@ interface InvitationProps {
   repliesPaused?: boolean;
   /** Sends the reply; see `RsvpPanel`. */
   onSubmit?: RsvpPanelProps["onSubmit"];
+  /** The reply form's questions, resolved; see `RsvpPanel`. */
+  questions?: RsvpPanelProps["questions"];
   /** The closed envelope over the invitation until the guest opens it. */
   envelope?: boolean;
   /** How the card comes out of it; a new one seals it again. */
@@ -65,6 +67,7 @@ export function Invitation({
   replyInert,
   repliesPaused,
   onSubmit,
+  questions,
   envelope = false,
   opening = "rise",
 }: InvitationProps) {
@@ -110,6 +113,7 @@ export function Invitation({
         onSubmit={onSubmit}
         inert={replyInert || sealed}
         paused={repliesPaused}
+        questions={questions}
       />
 
       {/* Over card and reply, under the host's edit panel (z-50). `replyInert` is the editor's open panel. */}

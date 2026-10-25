@@ -6,6 +6,8 @@ import {
   HOST_RULES,
   markAnswered,
 } from "@/lib/answers";
+import { RSVP_ANSWER_MAX } from "@/db/limits";
+import { DEFAULT_QUESTIONS, resolveQuestions } from "@/lib/suggested";
 import { answeredById, MEAL, OLD, RIDE, SONG } from "../helpers/questions";
 
 /* Every expected result is worked out by hand from the spec's storage rules and the four shared questions. */
@@ -124,4 +126,185 @@ test("answering marks the question", () => {
 
 test("nothing new answered changes nothing", () => {
   expect(markAnswered(Q, [{ old: "x" }, undefined, { song: null }])).toBe(null);
+});
+
+const [AGE, DIET] = resolveQuestions(DEFAULT_QUESTIONS, "en");
+
+test("diet needs are kept once each", () => {
+  expect(
+    checkAnswers(
+      [DIET],
+      "person",
+      { diet: { needs: ["vegan", "vegan"] } },
+      HOST_RULES,
+    ),
+  ).toEqual({ ok: true, answers: { diet: { needs: ["vegan"] } } });
+});
+
+test("Other's words are trimmed and kept", () => {
+  expect(
+    checkAnswers(
+      [DIET],
+      "person",
+      { diet: { needs: ["other"], other: "  No onions " } },
+      HOST_RULES,
+    ),
+  ).toEqual({
+    ok: true,
+    answers: { diet: { needs: ["other"], other: "No onions" } },
+  });
+});
+
+test("words without Other, or only spaces, are dropped", () => {
+  expect(
+    checkAnswers(
+      [DIET],
+      "person",
+      { diet: { needs: ["vegan"], other: "x" } },
+      HOST_RULES,
+    ),
+  ).toEqual({ ok: true, answers: { diet: { needs: ["vegan"] } } });
+  expect(
+    checkAnswers(
+      [DIET],
+      "person",
+      { diet: { needs: ["other"], other: "   " } },
+      HOST_RULES,
+    ),
+  ).toEqual({ ok: true, answers: { diet: { needs: ["other"] } } });
+});
+
+test("no needs is an answer", () => {
+  expect(
+    checkAnswers([DIET], "person", { diet: { needs: [] } }, GUEST_RULES),
+  ).toEqual({ ok: true, answers: { diet: { needs: [] } } });
+});
+
+test("a diet of the wrong shape refuses the host and is dropped for a guest", () => {
+  expect(checkAnswers([DIET], "person", { diet: "vegan" }, HOST_RULES)).toEqual(
+    { ok: false },
+  );
+  expect(
+    checkAnswers([DIET], "person", { diet: "vegan" }, GUEST_RULES),
+  ).toEqual({ ok: true, answers: undefined });
+});
+
+test("Other's words past the limit refuse the host", () => {
+  expect(
+    checkAnswers(
+      [DIET],
+      "person",
+      { diet: { needs: ["other"], other: "a".repeat(RSVP_ANSWER_MAX + 1) } },
+      HOST_RULES,
+    ),
+  ).toEqual({ ok: false });
+});
+
+test("age takes only its three groups", () => {
+  expect(checkAnswers([AGE], "person", { age: "child" }, HOST_RULES)).toEqual({
+    ok: true,
+    answers: { age: "child" },
+  });
+  expect(checkAnswers([AGE], "person", { age: "teen" }, HOST_RULES)).toEqual({
+    ok: false,
+  });
+});
+
+const [ACCESS] = resolveQuestions(
+  [
+    {
+      id: "accessibility",
+      suggested: true,
+      required: false,
+      archived: false,
+      answered: false,
+    },
+  ],
+  "en",
+);
+
+test("accessibility needs are kept once each, in the question's order", () => {
+  expect(
+    checkAnswers(
+      [ACCESS],
+      "person",
+      { accessibility: { needs: ["hearing", "stepFree", "hearing"] } },
+      HOST_RULES,
+    ),
+  ).toEqual({
+    ok: true,
+    answers: { accessibility: { needs: ["stepFree", "hearing"] } },
+  });
+});
+
+test("a need that isn't the question's own refuses the host and is dropped for a guest", () => {
+  const sent = { accessibility: { needs: ["vegan"] } };
+  expect(checkAnswers([ACCESS], "person", sent, HOST_RULES)).toEqual({
+    ok: false,
+  });
+  expect(checkAnswers([ACCESS], "person", sent, GUEST_RULES)).toEqual({
+    ok: true,
+    answers: undefined,
+  });
+});
+
+test("accessibility's Other words are trimmed", () => {
+  expect(
+    checkAnswers(
+      [ACCESS],
+      "person",
+      { accessibility: { needs: ["other"], other: "  Guide dog " } },
+      HOST_RULES,
+    ),
+  ).toEqual({
+    ok: true,
+    answers: { accessibility: { needs: ["other"], other: "Guide dog" } },
+  });
+});
+
+test("accessibility's Other words that are too long refuse the host", () => {
+  expect(
+    checkAnswers(
+      [ACCESS],
+      "person",
+      {
+        accessibility: {
+          needs: ["other"],
+          other: "a".repeat(RSVP_ANSWER_MAX + 1),
+        },
+      },
+      HOST_RULES,
+    ),
+  ).toEqual({ ok: false });
+});
+
+test("words are dropped when Other isn't picked", () => {
+  expect(
+    checkAnswers(
+      [ACCESS],
+      "person",
+      { accessibility: { needs: ["hearing"], other: "x" } },
+      HOST_RULES,
+    ),
+  ).toEqual({
+    ok: true,
+    answers: { accessibility: { needs: ["hearing"] } },
+  });
+});
+
+test("accessibility as plain text refuses the host", () => {
+  expect(
+    checkAnswers([ACCESS], "person", { accessibility: "Ramp" }, HOST_RULES),
+  ).toEqual({ ok: false });
+});
+
+test("a removed diet question drops a guest's diet answer", () => {
+  expect(
+    checkAnswers(
+      [{ ...DIET, archived: true }],
+      "person",
+      { diet: { needs: ["vegan"] } },
+      GUEST_RULES,
+    ),
+  ).toEqual({ ok: true, answers: undefined });
 });

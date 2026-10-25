@@ -1,4 +1,4 @@
-import type { Question } from "@/db/schemas/event";
+import type { Question, StoredQuestion } from "@/db/schemas/event";
 
 /*
  * The reply questions the answer tests share: a required yes/no and a text
@@ -47,7 +47,9 @@ export const OLD: Question = {
 };
 
 /** Each question's `answered`, by id. */
-export function answeredById(questions: Question[]): Record<string, boolean> {
+export function answeredById(
+  questions: StoredQuestion[],
+): Record<string, boolean> {
   return Object.fromEntries(
     questions.map(({ id, answered }): [string, boolean] => [id, answered]),
   );

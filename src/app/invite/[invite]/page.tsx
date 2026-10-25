@@ -9,6 +9,7 @@ import { InviteNotice } from "@/components/invitation/InviteNotice";
 import { PasswordGate } from "@/components/invitation/PasswordGate";
 import { sendReply } from "@/actions/guest";
 import { repliesPaused, replyWindow } from "@/lib/event";
+import { resolveQuestions } from "@/lib/suggested";
 import { cardValues, invitationValues } from "@/lib/invitation";
 import { linkGone, loadEventBySlug } from "@/db/reads/events";
 import { loadShownInvitation } from "@/db/reads/invitation";
@@ -91,6 +92,7 @@ export default async function InvitationPage({ params }: Props) {
       values={values}
       repliesPaused={repliesPaused(event) || replyWindow(event) === "closed"}
       onSubmit={sendReply.bind(null, invite)}
+      questions={resolveQuestions(event.questions, language)}
       /* The host's saved switch, on for a card never saved. */
       envelope={stored?.kind === "simple" ? stored.envelope : true}
     >

@@ -17,6 +17,7 @@ import type { Question } from "@/db/schemas/event";
 import { HOST_RULES, markAnswered } from "@/lib/answers";
 import { checkedAnswers } from "@/db/writes/answers";
 import { summaryAfter, type StoredReply } from "@/lib/guests";
+import { resolveQuestions } from "@/lib/suggested";
 
 /**
  * The reply cards to write. Replies keep when they came in and who sent
@@ -136,7 +137,9 @@ export async function writeGuestChanges(
       changes.replies,
       stored,
       Timestamp.fromDate(now),
-    ).map((card) => withCheckedAnswers(card, doc.questions));
+    ).map((card) =>
+      withCheckedAnswers(card, resolveQuestions(doc.questions, doc.language)),
+    );
     const questions = markAnswered(
       doc.questions,
       replies.flatMap((card) => [

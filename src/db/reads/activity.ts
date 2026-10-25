@@ -5,6 +5,7 @@ import { paths } from "@/db/paths";
 import { feedTags, latestReplies, type LatestReply } from "@/db/reads/feed";
 import { initials } from "@/db/reads/host";
 import type { StoredReply } from "@/lib/guests";
+import { ageOf, dietOf } from "@/lib/suggested";
 import { createMemo } from "@/lib/memo";
 import { isArchived, shortTitle, spanFrom } from "@/lib/event";
 import type { DashboardEvent, Message, RsvpActivity } from "@/types/dashboard";
@@ -16,12 +17,14 @@ const NAMED_DIETS = ["vegetarian", "glutenFree"] as const;
 /** What a coming reply is worth knowing about: children, and the needs `Activity` names. */
 function details(reply: StoredReply): Message[] {
   const children = reply.people.filter(
-    (person) => person.ageGroup === "child",
+    (person) => ageOf(person.answers) === "child",
   ).length;
   return [
     ...(children > 0 ? [{ key: "children", values: { count: children } }] : []),
     ...NAMED_DIETS.filter((need) =>
-      reply.people.some((person) => person.diet?.includes(need)),
+      reply.people.some((person) =>
+        dietOf(person.answers)?.needs.includes(need),
+      ),
     ).map((key) => ({ key })),
   ];
 }

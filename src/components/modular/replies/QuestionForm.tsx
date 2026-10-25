@@ -26,14 +26,14 @@ import {
 } from "@/db/limits";
 import {
   questionInputSchema,
-  type Question,
+  type CustomQuestion,
   type QuestionInput,
   type QuestionScope,
 } from "@/db/schemas/event";
 import { newId } from "@/lib/id";
 import { FORM_LABEL } from "./styles";
 
-type Kind = Question["kind"];
+type Kind = CustomQuestion["kind"];
 
 interface FormValues {
   label: string;
@@ -44,12 +44,14 @@ interface FormValues {
 }
 
 interface QuestionFormProps {
-  /** Where the form starts: a suggestion, a blank question, or the one being edited. */
+  /** Where the form starts: a blank question, or the one being edited. */
   start: QuestionInput;
   /** A new question (Add) or one already in the list (Save). */
   isNew: boolean;
   /** Guests have answered it: its type and scope stay, Required can't go on, its options can't go. */
   answered: boolean;
+  /** A suggested question's wording, in the invitation's language: shown, never edited. */
+  suggestedLabel?: string;
   onSubmit: (question: QuestionInput) => void;
   onCancel: () => void;
   /** Delete (nobody answered, asks first) or Archive (answered); absent for a new question. */
@@ -77,18 +79,21 @@ export function QuestionForm({
   start,
   isNew,
   answered,
+  suggestedLabel,
   onSubmit,
   onCancel,
   onRemove,
   attached = false,
 }: QuestionFormProps) {
   const t = useTranslations("RepliesTab");
-  const startOptions = start.kind === "choice" ? start.options : [];
+  const suggested = "suggested" in start;
+  const startOptions =
+    !suggested && start.kind === "choice" ? start.options : [];
   const { control, register, setValue, getValues } = useForm<FormValues>({
     defaultValues: {
-      label: start.label,
-      kind: start.kind,
-      scope: start.scope,
+      label: suggested ? "" : start.label,
+      kind: suggested ? "text" : start.kind,
+      scope: suggested ? "reply" : start.scope,
       required: start.required,
       options: startOptions,
     },
@@ -114,6 +119,15 @@ export function QuestionForm({
 
   function submit() {
     const values = getValues();
+    if (suggested) {
+      onSubmit({
+        id: start.id,
+        suggested: true,
+        required: values.required,
+        archived: start.archived,
+      });
+      return;
+    }
     const base = {
       id: start.id,
       label: values.label,
@@ -147,80 +161,89 @@ export function QuestionForm({
           : `${CARD_FRAME} border-neutral-400 p-4`
       }`}
     >
-      <div>
-        <label htmlFor="question-label" className={FORM_LABEL}>
-          {t("question")}
-        </label>
-        <input
-          id="question-label"
-          type="text"
-          maxLength={RSVP_QUESTION_MAX}
-          className={INPUT}
-          {...register("label")}
-        />
-      </div>
-
-      <Choices
-        label={t("answer")}
-        values={KINDS}
-        current={kind}
-        name={(each) => t(KIND_KEY[each])}
-        locked={answered}
-        onPick={pickKind}
-      />
-
-      {kind === "choice" ? (
-        <fieldset>
-          <legend className={FORM_LABEL}>{t("options")}</legend>
-          <div className="flex flex-col gap-1.5">
-            {options.fields.map((field, index) => (
-              <div key={field.key} className="flex items-center gap-1.5">
-                <input
-                  type="text"
-                  maxLength={RSVP_OPTION_MAX}
-                  aria-label={t("option", { number: index + 1 })}
-                  className={INPUT}
-                  {...register(`options.${index}.label`)}
-                />
-                {kept.has(field.id) ||
-                options.fields.length <= RSVP_OPTIONS_MIN ? null : (
-                  <button
-                    type="button"
-                    aria-label={t("removeOption", { number: index + 1 })}
-                    onClick={() => options.remove(index)}
-                    className={`${ICON_BTN} shrink-0`}
-                  >
-                    <Icon name="close" className="size-4" />
-                  </button>
-                )}
-              </div>
-            ))}
+      {suggested ? (
+        <div>
+          <span className={FORM_LABEL}>{t("question")}</span>
+          <p className="field-text">{suggestedLabel}</p>
+        </div>
+      ) : (
+        <>
+          <div>
+            <label htmlFor="question-label" className={FORM_LABEL}>
+              {t("question")}
+            </label>
+            <input
+              id="question-label"
+              type="text"
+              maxLength={RSVP_QUESTION_MAX}
+              className={INPUT}
+              {...register("label")}
+            />
           </div>
-          {options.fields.length < RSVP_OPTIONS_MAX ? (
-            <button
-              type="button"
-              onClick={() => options.append({ id: newId(), label: "" })}
-              className={`${TEXT_LINK} mt-2 inline-flex items-center gap-1 hint-face`}
-            >
-              <Icon name="plus" className="size-3.5" />
-              {t("addOption")}
-            </button>
+
+          <Choices
+            label={t("answer")}
+            values={KINDS}
+            current={kind}
+            name={(each) => t(KIND_KEY[each])}
+            locked={answered}
+            onPick={pickKind}
+          />
+
+          {kind === "choice" ? (
+            <fieldset>
+              <legend className={FORM_LABEL}>{t("options")}</legend>
+              <div className="flex flex-col gap-1.5">
+                {options.fields.map((field, index) => (
+                  <div key={field.key} className="flex items-center gap-1.5">
+                    <input
+                      type="text"
+                      maxLength={RSVP_OPTION_MAX}
+                      aria-label={t("option", { number: index + 1 })}
+                      className={INPUT}
+                      {...register(`options.${index}.label`)}
+                    />
+                    {kept.has(field.id) ||
+                    options.fields.length <= RSVP_OPTIONS_MIN ? null : (
+                      <button
+                        type="button"
+                        aria-label={t("removeOption", { number: index + 1 })}
+                        onClick={() => options.remove(index)}
+                        className={`${ICON_BTN} shrink-0`}
+                      >
+                        <Icon name="close" className="size-4" />
+                      </button>
+                    )}
+                  </div>
+                ))}
+              </div>
+              {options.fields.length < RSVP_OPTIONS_MAX ? (
+                <button
+                  type="button"
+                  onClick={() => options.append({ id: newId(), label: "" })}
+                  className={`${TEXT_LINK} mt-2 inline-flex items-center gap-1 hint-face`}
+                >
+                  <Icon name="plus" className="size-3.5" />
+                  {t("addOption")}
+                </button>
+              ) : null}
+            </fieldset>
           ) : null}
-        </fieldset>
-      ) : null}
 
-      <Choices
-        label={t("ask")}
-        values={SCOPES}
-        current={scope}
-        name={(each) => t(SCOPE_KEY[each])}
-        locked={answered}
-        onPick={(next) => setValue("scope", next)}
-      />
+          <Choices
+            label={t("ask")}
+            values={SCOPES}
+            current={scope}
+            name={(each) => t(SCOPE_KEY[each])}
+            locked={answered}
+            onPick={(next) => setValue("scope", next)}
+          />
 
-      {answered ? (
-        <p className="hint-text text-neutral-700">{t("locked")}</p>
-      ) : null}
+          {answered && !suggested ? (
+            <p className="hint-text text-neutral-700">{t("locked")}</p>
+          ) : null}
+        </>
+      )}
 
       {/* Opened off, it stays off; opened on, the switch stays until the form closes. */}
       {answered && !start.required ? (

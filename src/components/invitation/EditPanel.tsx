@@ -7,8 +7,10 @@ import type {
   TemplateField,
   TemplateValues,
 } from "@/types/invitation";
+import type { StoredQuestion } from "@/db/schemas/event";
 import { DEFAULT_DATE_FORMAT, EVENT_DATE } from "@/lib/invitation";
 import { localized, type Language } from "@/lib/language";
+import { RepliesTab } from "@/components/modular/replies/RepliesTab";
 import { DateFormatSelect } from "./DateFormatSelect";
 import { TAB_LABEL, type PanelTabId } from "./PanelTabs";
 import {
@@ -44,6 +46,9 @@ interface EditPanelProps {
   /** How the card comes out of the envelope, to compare the two. */
   opening: CardOpening;
   onOpening: (opening: CardOpening) => void;
+  /** The Form tab's questions as the editor holds them, and where its changes go. */
+  questions: StoredQuestion[];
+  onQuestions: (questions: StoredQuestion[]) => void;
 }
 
 /**
@@ -71,6 +76,8 @@ export function EditPanel({
   onEnvelope,
   opening,
   onOpening,
+  questions,
+  onQuestions,
 }: EditPanelProps) {
   const tDesign = useTranslations("DesignTab");
   const tHost = useTranslations("HostEditor");
@@ -94,16 +101,25 @@ export function EditPanel({
        */}
       <div className="flex flex-col w-full max-w-[640px] mx-auto">
         {scope ? (
-          fields.map((field) => (
-            <Field
-              key={field.id}
-              field={field}
-              value={values[field.id] ?? ""}
-              eventDate={values[EVENT_DATE] ?? ""}
-              language={language}
-              onChange={onChange}
-            />
-          ))
+          <>
+            {fields.map((field) => (
+              <Field
+                key={field.id}
+                field={field}
+                value={values[field.id] ?? ""}
+                eventDate={values[EVENT_DATE] ?? ""}
+                language={language}
+                onChange={onChange}
+              />
+            ))}
+            {tab === "replies" ? (
+              <RepliesTab
+                questions={questions}
+                onChange={onQuestions}
+                language={language}
+              />
+            ) : null}
+          </>
         ) : (
           <>
             <PanelSwitch

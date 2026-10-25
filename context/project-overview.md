@@ -24,9 +24,9 @@ Each event has one package. It only ever goes up (Free → Standard → Custom);
 
 ## Invitation kinds
 
-**Simple:** fixed template, host edits text only. Minimal RSVP form. Free or Standard templates; Custom can use them too.
+**Simple:** fixed template, host edits text and the reply form. Free or Standard templates; Custom can use them too.
 
-**Modular:** host adds/removes/edits sections; RSVP form is modular the same way. Also gets template customization (palette, fonts, images). Custom only.
+**Modular:** host adds/removes/edits sections. Also gets template customization (palette, fonts, images). Custom only.
 
 - Base sections, always present: header, hero/cover, title, date & time, location, RSVP, footer.
 - Optional sections: countdown, helpful notes, dress code, gift preferences, playlist, FAQ, schedule, menu, accommodation, transportation.
@@ -36,13 +36,15 @@ Each event has one package. It only ever goes up (Free → Standard → Custom);
 
 ## Host flow
 
-Pick invitation → add event details → (modular) customize design → (modular) add optional sections + RSVP questions → save, then sign in/up and pay → share → configure & download printable → track RSVPs → (paid) seating chart.
+Pick invitation → add event details → add reply questions → (modular) customize design → (modular) add optional sections → save, then sign in/up and pay → share → configure & download printable → track RSVPs → (paid) seating chart.
 
 ## RSVP
 
 - Guests RSVP **without an account**.
 - One guest can RSVP for multiple people, with a name per attendee plus any requested details (age group / child-baby tagging, dietary needs, etc.).
-- Modular-invitation hosts add optional questions from presets or fully custom.
+- Hosts of every invitation, simple or modular, on every package, add optional questions from suggested ones or fully custom. Age and diet are suggested questions, on by default and required; the host can remove them. Suggested questions are locked: wording and options come from the code, only Required can be switched.
+- A form holds at most 10 questions (`QUESTIONS_MAX`); every active one counts, suggested ones too.
+- Suggested questions' wording follows the invitation's language.
 - All non-core questions are attend-only conditionals (shown only when attending).
 - **No conditional question logic in v1** — explicit non-goal.
 - RSVP form auto-closes 24h before the event date.

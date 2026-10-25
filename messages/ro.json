@@ -16,20 +16,9 @@
     "nameNumber": "Nume {number}",
     "removeName": "Șterge {number}",
     "addPerson": "Adaugă o persoană",
-    "ageLabel": "Vârstă",
-    "ageAdult": "Adult",
-    "ageChild": "Copil",
-    "ageBaby": "Bebeluș",
-    "dietLabel": "Restricții alimentare",
-    "dietNone": "Niciuna",
-    "dietVegetarian": "Vegetarian",
-    "dietVegan": "Vegan",
-    "dietGlutenFree": "Fără gluten",
-    "dietLactoseFree": "Fără lactoză",
-    "dietNutAllergy": "Alergie la nuci",
-    "dietOther": "Altele",
+    "needsNone": "Niciuna",
     "choose": "Alege…",
-    "dietOtherInput": "Spune-ne mai multe",
+    "otherInput": "Spune-ne mai multe",
     "noteLabel": "Notă pentru gazdă",
     "notePlaceholder": "Opțional",
     "going": "Vin",
@@ -38,9 +27,7 @@
     "no": "Nu",
     "statusWarning": "Te rugăm să ne spui dacă vii.",
     "nameWarning": "Te rugăm să completezi un nume pentru fiecare persoană pentru care răspunzi.",
-    "ageWarning": "Te rugăm să alegi o categorie de vârstă pentru fiecare persoană care vine.",
-    "dietWarning": "Te rugăm să alegi restricțiile alimentare pentru fiecare persoană care vine — sau Niciuna.",
-    "dietOtherWarning": "Te rugăm să ne spui care este cealaltă restricție alimentară.",
+    "otherWarning": "Te rugăm să ne spui mai multe acolo unde ai ales altă opțiune.",
     "questionWarning": "Te rugăm să răspunzi la toate întrebările de care gazdele au nevoie.",
     "submit": "Trimite",
     "privacy": "Numele și răspunsurile tale ajung doar la gazdele acestui eveniment și sunt șterse la {days} zile după eveniment. Nimic nu este partajat cu altcineva.",
@@ -231,7 +218,10 @@
     "legendStillExpected": "încă <b>{count}</b> așteptați",
     "legendOverExpected": "<b>{count}</b> peste cei așteptați",
     "fullSummary": "Vezi rezumatul complet",
-    "customAnswered": "{count, plural, one {# invitat a răspuns la întrebările tale} few {# invitați au răspuns la întrebările tale} other {# de invitați au răspuns la întrebările tale}}",
+    "suggestedLine": {
+      "transport": "Cer transport",
+      "accommodation": "Cer cazare"
+    },
     "editInvitation": "Editează invitația",
     "share": "Distribuie",
     "hiddenShort": "doar tu o poți deschide.",
@@ -248,17 +238,17 @@
     "price": "{amount, plural, =0 {Gratuit} other {# RON}}",
     "free": {
       "name": "Gratuit",
-      "blurb": "Invitație simplă din șabloanele gratuite, cu formular de răspuns minimal. Fără plan de așezare."
+      "blurb": "Invitație simplă din șabloanele gratuite, cu întrebările tale proprii în formularul de răspuns. Fără plan de așezare."
     },
     "standard": {
       "name": "Standard",
-      "blurb": "Orice șablon simplu, cu formular de răspuns minimal și plan de așezare.",
+      "blurb": "Orice șablon simplu, cu întrebările tale proprii în formularul de răspuns și plan de așezare.",
       "upsell": "Deblochează toate șabloanele simple și adaugă un plan de așezare. Plătești doar diferența și nu pierzi nimic din ce ai scris."
     },
     "custom": {
       "name": "Personalizat",
-      "blurb": "Toate șabloanele, simple sau modulare: secțiuni, întrebări, culori, fonturi și imagini proprii. Plan de așezare inclus.",
-      "upsell": "Deblochează șabloanele modulare, cu secțiuni, întrebări, culori și fonturi proprii. Plătești doar diferența și nu pierzi nimic din ce ai scris."
+      "blurb": "Toate șabloanele, simple sau modulare: secțiuni, culori, fonturi și imagini proprii. Plan de așezare inclus.",
+      "upsell": "Deblochează șabloanele modulare, cu secțiuni, culori și fonturi proprii. Plătești doar diferența și nu pierzi nimic din ce ai scris."
     }
   },
   "Occasions": {
@@ -460,13 +450,9 @@
     "pickColour": "Alege o culoare."
   },
   "RepliesTab": {
-    "alwaysAsked": "Întrebate mereu",
-    "fixedName": "Nume",
-    "fixedAge": "Vârstă",
-    "fixedDiet": "Restricții alimentare",
     "yourQuestions": "Întrebările tale",
     "count": "{count} din {max}",
-    "none": "Încă nu ai întrebări proprii.",
+    "none": "Încă nu ai întrebări.",
     "kindChoice": "Variante",
     "kindYesNo": "Da / nu",
     "kindText": "Text",
@@ -500,14 +486,16 @@
     "optionsBlank": "Denumește fiecare variantă.",
     "suggestions": "Sugestii",
     "added": "{name}, adăugată deja",
-    "writeOwn": "Scrie propria întrebare",
-    "suggestion": {
-      "transport": "Transport",
-      "song": "Melodie preferată",
-      "accessibility": "Accesibilitate",
-      "accommodation": "Cazare",
-      "phone": "Număr de telefon"
-    }
+    "writeOwn": "Scrie propria întrebare"
+  },
+  "Suggested": {
+    "age": "Vârstă",
+    "diet": "Restricții alimentare",
+    "transport": "Transport",
+    "song": "Melodie preferată",
+    "accessibility": "Accesibilitate",
+    "accommodation": "Cazare",
+    "phone": "Număr de telefon"
   },
   "PrintPanel": {
     "cardStyle": "stil invitațe",
@@ -608,9 +596,9 @@
     "summaryBabies": "Bebeluși",
     "summaryYes": "Da",
     "summaryNo": "Nu",
-    "summaryAnswered": "{count, plural, one {# invitat a răspuns la această întrebare} few {# invitați au răspuns la această întrebare} other {# de invitați au răspuns la această întrebare}}",
+    "summaryAnswered": "Invitați care au răspuns",
     "summaryMessagesTitle": "Mesaje",
-    "summaryMessages": "{count, plural, one {# invitat v-a lăsat un mesaj} few {# invitați v-au lăsat un mesaj} other {# de invitați v-au lăsat un mesaj}}",
+    "summaryMessages": "Invitați care au lăsat un mesaj",
     "summaryEmpty": "Încă nu sunt răspunsuri",
     "listCount": "{count, plural, one {# nume pe listă} few {# nume pe listă} other {# de nume pe listă}}",
     "editList": "Editează lista de invitații",
@@ -631,7 +619,13 @@
     "dietLactoseFree": "Fără lactoză",
     "dietNutAllergy": "Alergie la nuci",
     "dietOther": "Altele",
-    "dietNone": "Niciuna",
+    "accessLabel": "Accesibilitate",
+    "accessStepFree": "Scaun cu rotile",
+    "accessWalking": "Ajutor la mers",
+    "accessHearing": "Auz slab",
+    "accessSight": "Vedere slabă",
+    "accessOther": "Altele",
+    "needsNone": "Niciuna",
     "skipped": "Fără răspuns",
     "statusGoing": "Vine",
     "statusNotGoing": "Nu vine",
@@ -662,10 +656,8 @@
     "toastSeparated": "Răspuns separat",
     "addPerson": "Adaugă o persoană",
     "removePerson": "Elimină persoana {number}",
-    "ageRequired": "Alege o categorie de vârstă.",
-    "dietRequired": "Alege o restricție alimentară sau Niciuna.",
-    "dietOtherRequired": "Descrie cealaltă restricție alimentară.",
-    "dietOtherInput": "Altă restricție alimentară",
+    "otherRequired": "Descrie cealaltă nevoie.",
+    "otherInput": "Altă nevoie",
     "matchTo": "Potrivește cu un nume",
     "matchSearch": "Caută în lista de invitații",
     "noWaiting": "Niciun nume fără răspuns de potrivit.",

@@ -3,7 +3,7 @@
 import { useTranslations } from "next-intl";
 import { TAB_LABEL, type PanelTabId } from "@/components/invitation/PanelTabs";
 import { SidePanel } from "@/components/invitation/SidePanel";
-import type { Question } from "@/db/schemas/event";
+import type { StoredQuestion } from "@/db/schemas/event";
 import type { Language } from "@/lib/language";
 import type {
   InvitationBasics,
@@ -40,8 +40,8 @@ interface ModularEditPanelProps {
   /** One of a section's styles picked. */
   onStylePicked: () => void;
   /** The host's reply questions, archived ones too. */
-  questions: Question[];
-  onQuestions: (questions: Question[]) => void;
+  questions: StoredQuestion[];
+  onQuestions: (questions: StoredQuestion[]) => void;
 }
 
 /**

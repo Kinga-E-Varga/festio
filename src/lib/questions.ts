@@ -1,5 +1,5 @@
 import { RSVP_OPTIONS_MAX } from "@/db/limits";
-import type { Question, QuestionInput } from "@/db/schemas/event";
+import type { QuestionInput, StoredQuestion } from "@/db/schemas/event";
 
 /**
  * The host's questions as sent, merged with the stored ones: the list the
@@ -7,16 +7,17 @@ import type { Question, QuestionInput } from "@/db/schemas/event";
  * question a reply has answered (`answered`, which only the reply's save
  * sets) stays safe even if the editor was opened before that reply came:
  * left out, it is archived at the end instead of deleted; its type and
- * scope stay; Required can't go back on; its options can't go. Every such
+ * scope stay; Required can't go back on; its options can't go. A suggested
+ * one has only Required and the archive switch to keep. Every such
  * question is named once in `kept`, so the host can be told.
  */
 export function mergeQuestions(
-  stored: Question[],
+  stored: StoredQuestion[],
   sent: QuestionInput[],
-): { questions: Question[]; kept: string[] } {
+): { questions: StoredQuestion[]; kept: string[] } {
   const was = new Map(stored.map((question) => [question.id, question]));
   const kept = new Set<string>();
-  const questions = sent.map((question): Question => {
+  const questions = sent.map((question): StoredQuestion => {
     const before = was.get(question.id);
     if (!before?.answered) return { ...question, answered: false };
     const { merged, changed } = keepAnswered(before, question);
@@ -33,7 +34,7 @@ export function mergeQuestions(
 }
 
 /** A stored question as the editor holds and sends it: `answered` is the server's alone. */
-export function inputOf(question: Question): QuestionInput {
+export function inputOf(question: StoredQuestion): QuestionInput {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { answered, ...input } = question;
   return input;
@@ -41,9 +42,17 @@ export function inputOf(question: Question): QuestionInput {
 
 /** An answered question as the host sent it, with what can't change taken back from the stored one. */
 function keepAnswered(
-  before: Question,
+  before: StoredQuestion,
   sent: QuestionInput,
-): { merged: Question; changed: boolean } {
+): { merged: StoredQuestion; changed: boolean } {
+  if ("suggested" in before || "suggested" in sent) {
+    const required = sent.required && before.required;
+    const merged =
+      "suggested" in before
+        ? { ...before, required, archived: sent.archived }
+        : before;
+    return { merged, changed: required !== sent.required };
+  }
   const required = sent.required && before.required;
   let changed =
     sent.kind !== before.kind ||
@@ -79,4 +88,17 @@ function keepAnswered(
   }
   const options = [...fitting, ...gone];
   return { merged: { ...common, kind: "choice", options }, changed };
+}
+
+/** The editor's questions, with `answered` as the save found it. */
+export function withAnswered(
+  current: StoredQuestion[],
+  saved: StoredQuestion[],
+): StoredQuestion[] {
+  const answered = new Set(
+    saved.filter((question) => question.answered).map(({ id }) => id),
+  );
+  return current.map((question) =>
+    answered.has(question.id) ? { ...question, answered: true } : question,
+  );
 }

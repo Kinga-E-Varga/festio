@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { HostInvitationEditor } from "@/components/invitation/HostInvitationEditor";
 import { ModularEditor } from "@/components/modular/ModularEditor";
 import { fallbackValues } from "@/lib/invitation";
+import { DEFAULT_QUESTIONS } from "@/lib/suggested";
 import { loadLibrary } from "@/modular";
 import { DEFAULT_BASICS } from "@/modular/defaults";
 import { initialState, resolveDesign } from "@/modular/state";
@@ -59,8 +60,8 @@ export default async function TemplatePreviewPage({ params }: Props) {
         templateId={template.id}
         basics={DEFAULT_BASICS}
         language={language}
-        /* A preview starts with none; what the host adds stays in memory. */
-        questions={[]}
+        /* A preview starts with what a new event asks; what the host adds stays in memory. */
+        questions={DEFAULT_QUESTIONS}
       />
     );
   }
@@ -70,6 +71,7 @@ export default async function TemplatePreviewPage({ params }: Props) {
       template={template}
       initial={fallbackValues(template, language)}
       language={language}
+      questions={DEFAULT_QUESTIONS}
     />
   );
 }

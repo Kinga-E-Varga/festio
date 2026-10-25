@@ -5,15 +5,17 @@ import { useRef, useState } from "react";
 import { saveInvitation } from "@/actions/invitation";
 import { useSaveConfirm } from "@/components/dashboard/SaveConfirm";
 import type { useToast } from "@/components/dashboard/Toast";
-import type { Question } from "@/db/schemas/event";
+import type { StoredQuestion } from "@/db/schemas/event";
 import type { InvitationDoc } from "@/db/schemas/invitation";
 import { orFailed } from "@/lib/action";
+import type { Language } from "@/lib/language";
 import { inputOf } from "@/lib/questions";
+import { resolveQuestions } from "@/lib/suggested";
 import type { InvitationSaving } from "@/types/dashboard";
 
 /** The questions as the save kept them, and those kept against the host's change. */
 export interface SavedQuestions {
-  questions: Question[];
+  questions: StoredQuestion[];
   kept: string[];
 }
 
@@ -27,13 +29,15 @@ type UnsavedCard<Card = InvitationDoc> = Card extends unknown
  * one save at a time, the version sent and kept, and the outcome as a
  * toast. Without `saving` (a template's preview) it keeps in memory only.
  * `keep` marks what was sent as saved, even if the host edited on meanwhile;
- * a modular editor also sends its questions and gets back the list as
+ * both editors also send their questions and get back the list as
  * saved (none on a preview). Questions guests answered meanwhile were kept
  * as they were: the toast names them instead of "Saved".
  */
 export function useInvitationSave(
   saving: InvitationSaving | undefined,
   toast: Pick<ReturnType<typeof useToast>, "show">,
+  /** The invitation's language: a kept suggested question is named in it. */
+  language: Language,
 ) {
   const t = useTranslations("HostEditor");
   const tError = useTranslations("SaveErrors");
@@ -52,8 +56,8 @@ export function useInvitationSave(
     saved?: SavedQuestions,
   ) {
     keep(saved);
-    const names = saved?.questions
-      .filter(({ id }) => saved.kept.includes(id))
+    const names = (saved ? resolveQuestions(saved.questions, language) : [])
+      .filter(({ id }) => saved?.kept.includes(id))
       .map(({ label }) => `“${label}”`)
       .join(", ");
     if (names)
@@ -67,7 +71,7 @@ export function useInvitationSave(
   function save(
     card: UnsavedCard,
     keep: (saved?: SavedQuestions) => void,
-    questions?: Question[],
+    questions?: StoredQuestion[],
   ) {
     if (!saving) {
       kept(keep);

@@ -10,7 +10,7 @@ import {
   useState,
 } from "react";
 import { useToast } from "@/components/dashboard/Toast";
-import type { Question } from "@/db/schemas/event";
+import type { StoredQuestion } from "@/db/schemas/event";
 import { envelopeGround } from "@/components/envelope/colors";
 import { EditorFrame } from "@/components/invitation/EditorFrame";
 import {
@@ -23,6 +23,8 @@ import type { Language } from "@/lib/language";
 import { useLeaveWarning } from "@/lib/leave-warning";
 import { firstMissing } from "@/modular/fields";
 import { RSVP_ID } from "@/modular/nav";
+import { withAnswered } from "@/lib/questions";
+import { resolveQuestions } from "@/lib/suggested";
 import { applyTemplate, resolveDesign, sameState } from "@/modular/state";
 import { modularVars } from "@/modular/vars";
 import type { InvitationSaving } from "@/types/dashboard";
@@ -76,16 +78,6 @@ function scrollToCard(id: string) {
   panel.scrollTo({ top, behavior: "smooth" });
 }
 
-/** The editor's questions, with `answered` as the save found it. */
-function withAnswered(current: Question[], saved: Question[]): Question[] {
-  const answered = new Set(
-    saved.filter((question) => question.answered).map(({ id }) => id),
-  );
-  return current.map((question) =>
-    answered.has(question.id) ? { ...question, answered: true } : question,
-  );
-}
-
 interface ModularEditorProps {
   library: ModularLibrary;
   /** Where the editor starts — and what Save last kept. */
@@ -97,7 +89,7 @@ interface ModularEditorProps {
   /** The event Save writes to. Absent (a template's preview), Save keeps it in memory. */
   saving?: InvitationSaving;
   /** The host's reply questions as stored, archived ones too. */
-  questions: Question[];
+  questions: StoredQuestion[];
 }
 
 /**
@@ -128,8 +120,12 @@ export function ModularEditor({
   const [savedQuestions, setSavedQuestions] = useState(initialQuestions);
   /* The form asks the active ones; the same array while they don't change, so the preview isn't redrawn. */
   const asked = useMemo(
-    () => questions.filter(({ archived }) => !archived),
-    [questions],
+    () =>
+      resolveQuestions(
+        questions.filter(({ archived }) => !archived),
+        language,
+      ),
+    [questions, language],
   );
   /* Not stored: only which template the Design tab shows as current. */
   const [template, setTemplate] = useState(templateId);
@@ -143,7 +139,11 @@ export function ModularEditor({
   const [showErrors, setShowErrors] = useState(false);
   const toast = useToast();
   const showToast = toast.show;
-  const { save: send, sending, dialog } = useInvitationSave(saving, toast);
+  const {
+    save: send,
+    sending,
+    dialog,
+  } = useInvitationSave(saving, toast, language);
   /*
    * The preview draws a deferred copy of the state: typing in the panel
    * stays quick, and the invitation catches up as soon as React is free.
@@ -243,7 +243,7 @@ export function ModularEditor({
   }
 
   /* A question added comes into view in the reply form, once the preview draws it. */
-  function changeQuestions(next: Question[]) {
+  function changeQuestions(next: StoredQuestion[]) {
     if (next.length > questions.length) {
       afterDraw.current.push({
         run: () => scrollToSection(RSVP_ID),

@@ -3,10 +3,11 @@ import type { packageSchema } from "@/db/schemas/common";
 import type {
   eventKindSchema,
   replySummarySchema,
+  StoredQuestion,
   visibilitySchema,
 } from "@/db/schemas/event";
 import type { Language } from "@/lib/language";
-import type { AttentionTag, GuestQuestion } from "@/types/guests";
+import type { AttentionTag } from "@/types/guests";
 import type { PrintSettings } from "@/types/print";
 
 export type IconName =
@@ -177,8 +178,8 @@ export interface DashboardEvent {
   /** Pre-loaded names nobody's reply claims yet; 0 with the list off. */
   waiting: number;
   preloaded: boolean;
-  /** The host's own questions, archived ones too: their answers still show. */
-  questions: GuestQuestion[];
+  /** The form's stored questions, suggested ones included, archived ones too: their answers still show. */
+  questions: StoredQuestion[];
   seatingAvailable: boolean;
   /**
    * The host's own reply-form closing time, `YYYY-MM-DDTHH:MM`. Absent means

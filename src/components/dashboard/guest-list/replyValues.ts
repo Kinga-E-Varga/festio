@@ -1,8 +1,10 @@
+import { needsOf } from "@/lib/suggested";
+import type { NeedsAnswer } from "@/db/schemas/reply";
 import type {
   AnswerValue,
-  DietNeed,
   GuestQuestion,
   GuestReply,
+  NeedsValue,
   PersonValues,
   ReplyValues,
 } from "@/types/guests";
@@ -14,13 +16,18 @@ import type {
 
 export const personQuestions = (questions: GuestQuestion[]) =>
   questions.filter((question) => question.scope === "person");
+/** A needs question has its own field and answer shape; the rest are a value each. */
+const plainQuestions = (questions: GuestQuestion[]) =>
+  questions.filter((question) => question.kind !== "needs");
+const needsQuestions = (questions: GuestQuestion[]) =>
+  questions.filter((question) => question.kind === "needs");
 export const sharedQuestions = (questions: GuestQuestion[]) =>
   questions.filter((question) => question.scope === "reply");
 
 function answerIn(value: AnswerValue | null | undefined): string {
   if (value === undefined || value === null) return "";
   if (typeof value === "boolean") return value ? "yes" : "no";
-  return value;
+  return typeof value === "string" ? value : "";
 }
 
 function answersIn(
@@ -28,7 +35,7 @@ function answersIn(
   questions: GuestQuestion[],
 ): Record<string, string> {
   return Object.fromEntries(
-    questions.map((question) => [
+    plainQuestions(questions).map((question) => [
       question.id,
       answerIn(reply?.answers?.[question.id]),
     ]),
@@ -77,22 +84,26 @@ function answersOut(
     : out;
 }
 
+/** No needs is stored as an empty list; the editor shows it as None. */
+function needsIn(answer: NeedsAnswer | null | undefined): NeedsValue {
+  return {
+    picks: !answer ? [] : answer.needs.length === 0 ? ["none"] : answer.needs,
+    other: answer?.other ?? "",
+  };
+}
+
 export function personValues(
   reply: GuestReply | null,
   questions: GuestQuestion[],
 ): PersonValues {
-  const diet = reply?.diet;
   return {
     name: reply?.name ?? "",
-    ageGroup: reply?.ageGroup ?? "",
-    /* No needs is stored as an empty list; the editor shows it as None. */
-    diet:
-      diet === undefined || diet === null
-        ? []
-        : diet.length === 0
-          ? ["none"]
-          : diet,
-    dietOther: reply?.dietOther ?? "",
+    needs: Object.fromEntries(
+      needsQuestions(questions).map((question) => [
+        question.id,
+        needsIn(needsOf(reply?.answers, question.id)),
+      ]),
+    ),
     answers: answersIn(reply, personQuestions(questions)),
   };
 }
@@ -120,6 +131,20 @@ export function newReplyValues(questions: GuestQuestion[]): ReplyValues {
   };
 }
 
+/** The picks as stored: `none` is an empty list, nothing picked is as unanswered as any other question. */
+function needsOut(
+  value: NeedsValue | undefined,
+  before: ReturnType<typeof needsOf>,
+  asked: boolean,
+): NeedsAnswer | null | undefined {
+  if (!value) return unanswered(before, asked);
+  if (value.picks.includes("none")) return { needs: [] };
+  const needs = value.picks;
+  if (needs.length === 0) return unanswered(before, asked);
+  const other = value.other.trim();
+  return needs.includes("other") && other !== "" ? { needs, other } : { needs };
+}
+
 /** Not coming changes only the name and status: the answers stay stored, just not shown or counted. */
 function applyPerson(
   reply: GuestReply,
@@ -130,26 +155,28 @@ function applyPerson(
 ): GuestReply {
   const base = { ...reply, name: person.name.trim(), status };
   if (status !== "going") return base;
-  const needs = person.diet.filter((pick): pick is DietNeed => pick !== "none");
-  const other = person.dietOther.trim();
+  const answers = answersOut(
+    plainQuestions(personQuestions(questions)),
+    person.answers,
+    reply.answers,
+    asked,
+  );
+  const merged = { ...answers };
+  for (const question of needsQuestions(questions)) {
+    const next = needsOut(
+      person.needs[question.id],
+      needsOf(reply.answers, question.id),
+      asked,
+    );
+    if (next === undefined) delete merged[question.id];
+    else merged[question.id] = next;
+  }
   return {
     ...base,
-    ageGroup:
-      person.ageGroup === ""
-        ? unanswered(reply.ageGroup, asked)
-        : person.ageGroup,
-    diet: person.diet.includes("none")
-      ? []
-      : needs.length > 0
-        ? needs
-        : unanswered(reply.diet, asked),
-    dietOther: needs.includes("other") && other !== "" ? other : undefined,
-    answers: answersOut(
-      personQuestions(questions),
-      person.answers,
-      reply.answers,
-      asked,
-    ),
+    answers:
+      reply.answers === undefined && Object.keys(merged).length === 0
+        ? undefined
+        : merged,
   };
 }
 

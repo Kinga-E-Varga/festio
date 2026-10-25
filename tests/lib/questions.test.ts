@@ -1,10 +1,14 @@
 import { expect, test } from "vitest";
-import type { Question, QuestionInput } from "@/db/schemas/event";
+import type {
+  CustomQuestion,
+  QuestionInput,
+  StoredQuestion,
+} from "@/db/schemas/event";
 import { inputOf, mergeQuestions } from "@/lib/questions";
 
 /* Every expected list is worked out by hand from the spec's rules and these three questions. */
 
-const A: Question = {
+const A: CustomQuestion = {
   id: "a",
   label: "Transport?",
   scope: "reply",
@@ -14,7 +18,7 @@ const A: Question = {
   answered: true,
 };
 
-const B: Question = {
+const B: CustomQuestion = {
   id: "b",
   label: "Song",
   scope: "reply",
@@ -24,7 +28,7 @@ const B: Question = {
   answered: false,
 };
 
-const C: Question = {
+const C: CustomQuestion = {
   id: "c",
   label: "Meal",
   scope: "person",
@@ -39,10 +43,11 @@ const C: Question = {
 };
 
 /** A stored question as the editor sends it back: no `answered`. */
-const input = inputOf;
+const input = (question: CustomQuestion) =>
+  inputOf(question) as Extract<QuestionInput, { kind: string }>;
 
-const ids = (list: Question[]) => list.map(({ id }) => id);
-const byId = (list: Question[], id: string) =>
+const ids = (list: StoredQuestion[]) => list.map(({ id }) => id);
+const byId = (list: StoredQuestion[], id: string) =>
   list.find((question) => question.id === id);
 
 test("a question nobody answered is deleted when left out", () => {
@@ -76,7 +81,7 @@ test("an answered question keeps its type and scope", () => {
 
 test("rewording an answered question changes nothing else", () => {
   const result = mergeQuestions([A], [{ ...input(A), label: "Need a ride?" }]);
-  expect(result.questions[0].label).toBe("Need a ride?");
+  expect((result.questions[0] as CustomQuestion).label).toBe("Need a ride?");
   expect(result.kept).toEqual([]);
 });
 
@@ -120,8 +125,8 @@ test("an answered choice never grows past 8 options", () => {
     options: [{ id: "o1", label: "Fish" }, ...added],
   } as QuestionInput;
   const result = mergeQuestions([C], [sent]);
-  const options =
-    result.questions[0].kind === "choice" ? result.questions[0].options : [];
+  const [first] = result.questions as CustomQuestion[];
+  const options = first.kind === "choice" ? first.options : [];
   expect(options.map(({ id }) => id)).toEqual([
     "o1",
     "n1",
@@ -138,7 +143,7 @@ test("an answered choice never grows past 8 options", () => {
 test("a question nobody answered can change type", () => {
   const sent = { ...input(B), kind: "yesNo" } as QuestionInput;
   const result = mergeQuestions([B], [sent]);
-  expect(result.questions[0].kind).toBe("yesNo");
+  expect((result.questions[0] as CustomQuestion).kind).toBe("yesNo");
   expect(result.kept).toEqual([]);
 });
 
@@ -169,4 +174,53 @@ test("archive and restore are the host's", () => {
 test("one question kept for two reasons is named once", () => {
   const sent = { ...input(A), kind: "text", required: true } as QuestionInput;
   expect(mergeQuestions([A], [sent]).kept).toEqual(["a"]);
+});
+
+const AGE_CARD = {
+  id: "age",
+  suggested: true,
+  required: true,
+  archived: false,
+  answered: true,
+} as const;
+
+test("an answered suggested question can turn Required off", () => {
+  expect(
+    mergeQuestions([AGE_CARD], [{ ...inputOf(AGE_CARD), required: false }]),
+  ).toEqual({
+    questions: [{ ...AGE_CARD, required: false }],
+    kept: [],
+  });
+});
+
+test("an answered suggested question can't turn Required back on", () => {
+  const off = { ...AGE_CARD, required: false };
+  expect(mergeQuestions([off], [{ ...inputOf(off), required: true }])).toEqual({
+    questions: [off],
+    kept: ["age"],
+  });
+});
+
+test("an answered suggested question left out is archived", () => {
+  expect(mergeQuestions([AGE_CARD], [])).toEqual({
+    questions: [{ ...AGE_CARD, archived: true }],
+    kept: ["age"],
+  });
+});
+
+test("an unanswered suggested question left out is gone", () => {
+  expect(mergeQuestions([{ ...AGE_CARD, answered: false }], [])).toEqual({
+    questions: [],
+    kept: [],
+  });
+});
+
+test("archived suggested sent again un-archives", () => {
+  const archived = { ...AGE_CARD, archived: true };
+  expect(
+    mergeQuestions([archived], [{ ...inputOf(archived), archived: false }]),
+  ).toEqual({
+    questions: [{ ...AGE_CARD, archived: false }],
+    kept: [],
+  });
 });

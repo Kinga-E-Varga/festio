@@ -1,4 +1,4 @@
-import type { Question } from "@/db/schemas/event";
+import type { StoredQuestion } from "@/db/schemas/event";
 import type { ListName } from "@/types/guests";
 import { momentFromNow, type SeedReply } from "./build";
 
@@ -9,7 +9,21 @@ import { momentFromNow, type SeedReply } from "./build";
  * two replies (Elena, Maria), plain declines and one name still waiting.
  */
 
-export const questions: Question[] = [
+export const questions: StoredQuestion[] = [
+  {
+    id: "age",
+    suggested: true,
+    required: true,
+    archived: false,
+    answered: true,
+  },
+  {
+    id: "diet",
+    suggested: true,
+    required: true,
+    archived: false,
+    answered: true,
+  },
   {
     id: "q-main",
     label: "Fel principal",
@@ -72,17 +86,20 @@ export const replies: SeedReply[] = [
       {
         id: "r-maria",
         name: "Maria Popescu",
-        ageGroup: "adult",
-        diet: ["vegetarian"],
-        answers: { "q-main": "o-fish" },
+        answers: {
+          age: "adult",
+          diet: { needs: ["vegetarian"] },
+          "q-main": "o-fish",
+        },
       },
       {
         id: "r-andrei",
         name: "Andrei Popescu",
-        ageGroup: "adult",
-        diet: ["other"],
-        dietOther: "Fără ceapă",
-        answers: { "q-main": "o-beef" },
+        answers: {
+          age: "adult",
+          diet: { needs: ["other"], other: "Fără ceapă" },
+          "q-main": "o-beef",
+        },
       },
     ],
   },
@@ -105,30 +122,30 @@ export const replies: SeedReply[] = [
       {
         id: "r-mihai",
         name: "Mihai Dumitru",
-        ageGroup: "adult",
-        diet: [],
-        answers: { "q-main": "o-beef" },
+        answers: { age: "adult", diet: { needs: [] }, "q-main": "o-beef" },
       },
       {
         id: "r-ioana",
         name: "Ioana Dumitru",
-        ageGroup: "adult",
-        diet: ["glutenFree", "lactoseFree"],
-        answers: { "q-main": "o-fish" },
+        answers: {
+          age: "adult",
+          diet: { needs: ["glutenFree", "lactoseFree"] },
+          "q-main": "o-fish",
+        },
       },
       {
         id: "r-luca",
         name: "Luca Dumitru",
-        ageGroup: "child",
-        diet: ["nutAllergy"],
-        answers: { "q-main": "o-pasta" },
+        answers: {
+          age: "child",
+          diet: { needs: ["nutAllergy"] },
+          "q-main": "o-pasta",
+        },
       },
       {
         id: "r-sofia",
         name: "Sofia Dumitru",
-        ageGroup: "baby",
-        diet: [],
-        answers: { "q-main": null },
+        answers: { age: "baby", diet: { needs: [] }, "q-main": null },
       },
     ],
   },
@@ -143,9 +160,7 @@ export const replies: SeedReply[] = [
       {
         id: "r-gheorghe",
         name: "Gheorghe Popp",
-        ageGroup: "adult",
-        diet: null,
-        answers: { "q-main": null },
+        answers: { age: "adult", diet: null, "q-main": null },
       },
     ],
   },
@@ -160,9 +175,11 @@ export const replies: SeedReply[] = [
       {
         id: "r-elena-2",
         name: "Elena Ionescu",
-        ageGroup: "adult",
-        diet: ["vegan"],
-        answers: { "q-main": "o-fish" },
+        answers: {
+          age: "adult",
+          diet: { needs: ["vegan"] },
+          "q-main": "o-fish",
+        },
       },
     ],
   },
@@ -177,24 +194,25 @@ export const replies: SeedReply[] = [
       {
         id: "r-maria-2",
         name: "Maria Popescu",
-        ageGroup: "adult",
-        diet: [],
-        answers: { "q-main": "o-pasta" },
+        answers: { age: "adult", diet: { needs: [] }, "q-main": "o-pasta" },
       },
       {
         id: "r-cristina",
         name: "Cristina Popescu",
-        ageGroup: "child",
-        diet: ["vegetarian"],
-        answers: { "q-main": "o-pasta" },
+        answers: {
+          age: "child",
+          diet: { needs: ["vegetarian"] },
+          "q-main": "o-pasta",
+        },
       },
       {
         id: "r-radu",
         name: "Radu Constantin Alexandru Stan-Vlădescu Popovici",
-        ageGroup: "adult",
-        diet: ["other"],
-        dietOther: "Alergie la fructe de mare",
-        answers: { "q-main": "o-beef" },
+        answers: {
+          age: "adult",
+          diet: { needs: ["other"], other: "Alergie la fructe de mare" },
+          "q-main": "o-beef",
+        },
       },
     ],
   },

@@ -3,16 +3,12 @@
 import { useTranslations } from "next-intl";
 import { useId, useState } from "react";
 import {
-  AGE_KEY,
-  AGES,
-  DIET_KEY,
-  DIETS,
-} from "@/components/dashboard/guest-list/labels";
-import {
   MultiSelect,
   type MultiSelectSkin,
 } from "@/components/dashboard/guest-list/MultiSelect";
 import { GUEST_DATA_RETENTION_DAYS } from "@/lib/config";
+import type { Question } from "@/db/schemas/event";
+import type { NeedsPick } from "@/types/guests";
 import type { RsvpStatus } from "@/types/invitation";
 import { PlusIcon, XIcon } from "./icons";
 import { RsvpQuestion } from "./RsvpQuestion";
@@ -30,9 +26,7 @@ const CHOICES: { id: RsvpStatus; key: "going" | "notGoing" }[] = [
 const WARNING_KEY = {
   status: "statusWarning",
   name: "nameWarning",
-  age: "ageWarning",
-  diet: "dietWarning",
-  dietOther: "dietOtherWarning",
+  needsOther: "otherWarning",
   question: "questionWarning",
 } as const satisfies Record<RsvpProblem, string>;
 
@@ -47,7 +41,7 @@ type Row = RsvpFormState["values"]["rows"][number];
 export interface RsvpSkin {
   /** Field labels and the attendance legend. */
   label: string;
-  /** Names, the Other diet box and the note. */
+  /** Names, the Other box and the note. */
   input: string;
   /** Coming / Not coming. */
   choice: { picked: string; unpicked: string };
@@ -66,7 +60,7 @@ export interface RsvpSkin {
    */
   space: { group: string; field: string; legend: string; send: string };
   age: MultiSelectSkin;
-  diet: MultiSelectSkin;
+  needs: MultiSelectSkin;
 }
 
 /** Why the last Send didn't go through, as an `Rsvp` message key. */
@@ -83,7 +77,7 @@ interface RsvpFormProps {
 
 /**
  * The reply, for simple and modular invitations alike: one going choice for
- * the whole reply, names — each with age and dietary needs when coming — and
+ * the whole reply, names — each with the host's person questions when coming — and
  * an optional note. The layout is fixed; how each part looks is the `skin`'s.
  *
  * Nothing warns before the first Send. After it, one line above Send names
@@ -252,7 +246,7 @@ export function RsvpForm({
   );
 }
 
-/** Age, dietary needs and the host's per-person questions, asked of each person when the reply is Coming. */
+/** The host's per-person questions, in their order, asked of each person when the reply is Coming. */
 function PersonQuestions({
   form,
   skin,
@@ -268,56 +262,80 @@ function PersonQuestions({
   /** The start of this person's field ids. */
   id: string;
 }) {
-  const t = useTranslations("Rsvp");
   const { set } = form;
 
   return (
     <div className={`flex flex-col gap-4 pl-8 ${removable ? "pr-[26px]" : ""}`}>
-      <MultiSelect
-        label={t("ageLabel")}
-        placeholder={t("choose")}
-        options={AGES.map((age) => ({ value: age, label: t(AGE_KEY[age]) }))}
-        value={row.ageGroup === "" ? [] : [row.ageGroup]}
-        onPick={(age) => set.age(row.id, age)}
-        skin={skin.age}
-        single
-      />
-
-      <div>
-        <MultiSelect
-          label={t("dietLabel")}
-          placeholder={t("choose")}
-          options={DIETS.map((diet) => ({
-            value: diet,
-            label: t(diet === "none" ? "dietNone" : DIET_KEY[diet]),
-          }))}
-          value={row.diet}
-          onPick={(diet) => set.diet(row.id, diet)}
-          skin={skin.diet}
-        />
-        {row.diet.includes("other") ? (
-          <input
-            type="text"
-            value={row.dietOther}
-            maxLength={RSVP_ANSWER_MAX}
-            placeholder={t("dietOtherInput")}
-            aria-label={t("dietOtherInput")}
-            onChange={(control) => set.dietOther(row.id, control.target.value)}
-            className={`mt-2 ${skin.input}`}
+      {form.questions.person.map((question) =>
+        question.kind === "needs" ? (
+          <NeedsQuestion
+            key={question.id}
+            question={question}
+            form={form}
+            skin={skin}
+            row={row}
           />
-        ) : null}
-      </div>
+        ) : (
+          <RsvpQuestion
+            key={question.id}
+            id={`${id}-${question.id}`}
+            question={question}
+            value={row.answers[question.id]}
+            onChange={(value) => set.answer(row.id, question.id, value)}
+            skin={skin}
+          />
+        ),
+      )}
+    </div>
+  );
+}
 
-      {form.questions.person.map((question) => (
-        <RsvpQuestion
-          key={question.id}
-          id={`${id}-${question.id}`}
-          question={question}
-          value={row.answers[question.id]}
-          onChange={(value) => set.answer(row.id, question.id, value)}
-          skin={skin}
+/** A needs question: None and the options as ticks, with a box for Other's own words. */
+function NeedsQuestion({
+  question,
+  form,
+  skin,
+  row,
+}: {
+  question: Extract<Question, { kind: "needs" }>;
+  form: RsvpFormState;
+  skin: RsvpSkin;
+  row: Row;
+}) {
+  const t = useTranslations("Rsvp");
+  const { set } = form;
+  const picked = row.needs[question.id];
+  const options: { value: NeedsPick; label: string }[] = [
+    { value: "none", label: t("needsNone") },
+    ...question.options.map((option) => ({
+      value: option.id,
+      label: option.label,
+    })),
+  ];
+
+  return (
+    <div>
+      <MultiSelect
+        label={question.label}
+        placeholder={t("choose")}
+        options={options}
+        value={picked?.picks ?? []}
+        onPick={(pick) => set.needs(row.id, question.id, pick)}
+        skin={skin.needs}
+      />
+      {picked?.picks.includes("other") ? (
+        <input
+          type="text"
+          value={picked.other}
+          maxLength={RSVP_ANSWER_MAX}
+          placeholder={t("otherInput")}
+          aria-label={t("otherInput")}
+          onChange={(control) =>
+            set.needsOther(row.id, question.id, control.target.value)
+          }
+          className={`mt-2 ${skin.input}`}
         />
-      ))}
+      ) : null}
     </div>
   );
 }

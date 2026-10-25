@@ -1,8 +1,9 @@
-import type { EventDoc } from "@/db/schemas/event";
+import type { EventDoc, StoredQuestion } from "@/db/schemas/event";
 import type { ListName } from "@/types/guests";
 import type { InvitationDoc } from "@/db/schemas/invitation";
 import type { SeatingDoc } from "@/db/schemas/seating";
 import { DEFAULT_DATE_FORMAT } from "@/lib/invitation";
+import { DEFAULT_QUESTIONS } from "@/lib/suggested";
 import * as anaVlad from "./ana-vlad";
 import {
   TIME_ZONE,
@@ -47,6 +48,8 @@ interface Crowd {
   /** Pre-load a guest list from the names. */
   preloaded: boolean;
   seed: number;
+  /** The replies answer the other suggested questions too (`SUGGESTED_QUESTIONS`). */
+  suggested?: boolean;
 }
 
 /** Made-up replies (and a matching guest list) for the big events. */
@@ -57,6 +60,7 @@ function crowd({
   unknown = 0,
   preloaded,
   seed,
+  suggested = false,
 }: Crowd): Pick<SeedEvent, "replies" | "guestList"> {
   const used = new Set<string>();
   const going = households(coming, seed, used);
@@ -68,6 +72,7 @@ function crowd({
       index < going.length,
       1 + (index % 30),
       seed + index,
+      suggested,
     ),
   );
   if (!preloaded) return { replies, guestList: [] };
@@ -90,7 +95,31 @@ function crowd({
 }
 
 /** What every seeded event starts with. */
-const shared = { questions: [], dataDeleted: false, timeZone: TIME_ZONE };
+const shared = {
+  questions: DEFAULT_QUESTIONS,
+  dataDeleted: false,
+  timeZone: TIME_ZONE,
+};
+
+/** The default questions of an event whose replies already answer them. */
+const ANSWERED_QUESTIONS = DEFAULT_QUESTIONS.map((question) => ({
+  ...question,
+  answered: true,
+}));
+
+/** Age and diet, then every other suggested question, all answered by the replies. */
+const SUGGESTED_QUESTIONS: StoredQuestion[] = [
+  ...ANSWERED_QUESTIONS,
+  ...(
+    ["transport", "accommodation", "song", "phone", "accessibility"] as const
+  ).map((id) => ({
+    id,
+    suggested: true as const,
+    required: false,
+    archived: false,
+    answered: true,
+  })),
+];
 
 export const SEED_EVENTS: SeedEvent[] = [
   {
@@ -108,6 +137,7 @@ export const SEED_EVENTS: SeedEvent[] = [
       preloaded: true,
       package: "custom",
       templateId: "wolf-dance",
+      questions: SUGGESTED_QUESTIONS,
     },
     invitation: {
       kind: "simple",
@@ -133,6 +163,7 @@ export const SEED_EVENTS: SeedEvent[] = [
       unknown: 5,
       preloaded: true,
       seed: 1,
+      suggested: true,
     }),
     seating: {
       tables: [
@@ -161,6 +192,7 @@ export const SEED_EVENTS: SeedEvent[] = [
       expectedGuests: 70,
       preloaded: true,
       package: "standard",
+      questions: ANSWERED_QUESTIONS,
     },
     /* More replies than expected: past 100%. */
     ...crowd({ coming: 94, notComing: 11, preloaded: true, seed: 2 }),
@@ -251,6 +283,7 @@ export const SEED_EVENTS: SeedEvent[] = [
       password: "ana18ana",
       expectedGuests: 45,
       preloaded: false,
+      questions: ANSWERED_QUESTIONS,
       package: "free",
     },
     ...crowd({ coming: 30, notComing: 4, preloaded: false, seed: 3 }),

@@ -82,23 +82,6 @@ export function ReplyEditor({
   }, [setFocus, start]);
   useEffect(() => onDirty(isDirty), [onDirty, isDirty]);
 
-  /*
-   * Festio always asks age and diet, so they're required wherever the person
-   * is asked: someone new, someone switched to Coming, or an answer already
-   * there. Someone who was never asked them isn't held to them.
-   */
-  const required =
-    (field: "ageGroup" | "diet", index: number) =>
-    (next: ReplyValues["status"]) => {
-      const before = group[index];
-      return (
-        next === "going" &&
-        (before === undefined ||
-          before.status !== "going" ||
-          (before[field] !== undefined && before[field] !== null))
-      );
-    };
-
   /** One person: their name, then their questions when coming, set in a little under it. */
   function person(index: number) {
     const values = people[index];
@@ -117,18 +100,9 @@ export function ReplyEditor({
               control={control}
               index={index}
               questions={own}
-              requireAge={required("ageGroup", index)}
-              requireDiet={required("diet", index)}
-              dietOther={register(`people.${index}.dietOther`, {
-                /* Other alone tells nothing: picked, its words are required. */
-                validate: (value, all) =>
-                  all.status !== "going" ||
-                  !all.people[index]?.diet.includes("other") ||
-                  value.trim() !== "" ||
-                  t("dietOtherRequired"),
-              })}
-              dietOtherError={errors.people?.[index]?.dietOther?.message}
-              withOther={values?.diet.includes("other") ?? false}
+              register={register}
+              values={values}
+              errors={errors.people}
             />
           </div>
         ) : null}

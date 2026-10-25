@@ -2,21 +2,19 @@
 
 import { useState } from "react";
 import { useFieldArray, useForm, useWatch } from "react-hook-form";
-import { pickDiet } from "@/components/dashboard/guest-list/labels";
+import { pickNeeds } from "@/components/dashboard/guest-list/labels";
 import { newId } from "@/lib/id";
 import type { Answers } from "@/lib/answers";
 import type { Question } from "@/db/schemas/event";
-import type { AgeGroup, AnswerValue, DietNeed, DietPick } from "@/types/guests";
+import type { AnswerValue, NeedsPick, NeedsValue } from "@/types/guests";
 import type { GuestPersonInput } from "@/db/schemas/reply";
 import type { RsvpPayload, RsvpStatus } from "@/types/invitation";
 
 interface RsvpRow {
   value: string;
-  /** Empty = not answered yet. Asked only when the reply is Coming. */
-  ageGroup: AgeGroup | "";
-  diet: DietPick[];
-  dietOther: string;
-  /** The host's per-person questions; missing or null = not answered yet. */
+  /** Each needs question's picks by question id; none picked = not answered yet, None counts as an answer. */
+  needs: Record<string, NeedsValue>;
+  /** The other per-person questions, age included; missing or null = not answered yet. */
   answers: Answers;
 }
 
@@ -29,14 +27,11 @@ interface RsvpFieldValues {
 }
 
 /** What stops the reply from being sent, first one only, in the order the form reads. */
-export type RsvpProblem =
-  "status" | "name" | "age" | "diet" | "dietOther" | "question";
+export type RsvpProblem = "status" | "name" | "needsOther" | "question";
 
 const EMPTY_ROW: RsvpRow = {
   value: "",
-  ageGroup: "",
-  diet: [],
-  dietOther: "",
+  needs: {},
   answers: {},
 };
 
@@ -51,29 +46,53 @@ function blank(
   );
 }
 
+/** A needs question's answer as sent: None is no needs, nothing picked is skipped. */
+function sentNeeds(value: NeedsValue | undefined): AnswerValue | null {
+  if (!value || value.picks.length === 0) return null;
+  const needs = value.picks.filter((pick) => pick !== "none");
+  const other = value.other.trim();
+  return {
+    needs,
+    ...(needs.includes("other") && other !== "" ? { other } : {}),
+  };
+}
+
+/** A person's answer to one question as sent: text trimmed, blank as null (asked and skipped). */
+function sentValue(question: Question, row: RsvpRow): AnswerValue | null {
+  if (question.kind === "needs") return sentNeeds(row.needs[question.id]);
+  const value = row.answers[question.id];
+  if (blank(value)) return null;
+  return typeof value === "string" ? value.trim() : value;
+}
+
 /** A required question left blank, by anyone it is asked of. */
-function requiredBlank(
-  questions: Question[],
-  answers: (Answers | undefined)[],
-): boolean {
+function requiredBlank(questions: Question[], rows: RsvpRow[]): boolean {
   return questions.some(
     (question) =>
-      question.required && answers.some((each) => blank(each?.[question.id])),
+      question.required && rows.some((row) => blank(sentValue(question, row))),
+  );
+}
+
+/** A reply-wide question left blank. */
+function sharedBlank(questions: Question[], shared: Answers): boolean {
+  return questions.some(
+    (question) => question.required && blank(shared[question.id]),
   );
 }
 
 /**
- * Every question asked, as sent: each has a key (it was shown), text
- * trimmed, blank as null (asked and skipped). Undefined when none is asked.
+ * The reply's own answers as sent: every question asked has a key (it was
+ * shown), text trimmed, blank as null (asked and skipped). Undefined when
+ * none is asked.
  */
-function sentAnswers(
+function sentShared(
   questions: Question[],
-  answers: Answers | undefined,
+  answers: Answers,
 ): Answers | undefined {
   if (questions.length === 0) return undefined;
   return Object.fromEntries(
     questions.map((question): [string, AnswerValue | null] => {
-      const value = answers?.[question.id];
+      const value = answers[question.id];
       if (blank(value)) return [question.id, null];
       return [question.id, typeof value === "string" ? value.trim() : value];
     }),
@@ -90,50 +109,48 @@ function firstProblem(
   if (status === null) return "status";
   if (rows.some((row) => row.value.trim() === "")) return "name";
   if (status !== "going") return null;
-  if (rows.some((row) => row.ageGroup === "")) return "age";
-  if (rows.some((row) => row.diet.length === 0)) return "diet";
   /* Other alone tells the host nothing, so its words are asked for. */
   if (
-    rows.some(
-      (row) => row.diet.includes("other") && row.dietOther.trim() === "",
+    rows.some((row) =>
+      asked.person.some((question) => {
+        const value = row.needs[question.id];
+        return (
+          question.kind === "needs" &&
+          value?.picks.includes("other") &&
+          value.other.trim() === ""
+        );
+      }),
     )
   )
-    return "dietOther";
-  if (
-    requiredBlank(
-      asked.person,
-      rows.map((row) => row.answers),
-    ) ||
-    requiredBlank(asked.shared, [shared])
-  )
+    return "needsOther";
+  if (requiredBlank(asked.person, rows) || sharedBlank(asked.shared, shared))
     return "question";
   return null;
 }
 
-/** One person's answers as sent: age, diet and the host's questions only for someone coming. */
+/** One person's answers as sent: the questions asked, only for someone coming. */
 function person(
   row: RsvpRow,
   status: RsvpStatus,
   questions: Question[],
 ): GuestPersonInput {
   const name = row.value.trim();
-  if (status !== "going" || row.ageGroup === "") return { name };
-  const needs = row.diet.filter((pick): pick is DietNeed => pick !== "none");
-  const other = row.dietOther.trim();
-  const answers = sentAnswers(questions, row.answers);
+  if (status !== "going" || questions.length === 0) return { name };
   return {
     name,
-    ageGroup: row.ageGroup,
-    diet: needs,
-    ...(needs.includes("other") && other !== "" ? { dietOther: other } : {}),
-    ...(answers && { answers }),
+    answers: Object.fromEntries(
+      questions.map((question): [string, AnswerValue | null] => [
+        question.id,
+        sentValue(question, row),
+      ]),
+    ),
   };
 }
 
 /**
  * One reply, covering everyone the guest is answering for, with one going
- * choice for them all. `questions` are the host's own (archived ones are
- * not asked): each person's under their age and diet, the reply's once.
+ * choice for them all. `questions` are the host's, resolved (archived ones
+ * are not asked): each person's under their name, the reply's once.
  */
 export function useRsvpForm(questions: Question[] = []) {
   const { control, setValue, getValues } = useForm<RsvpFieldValues>({
@@ -167,25 +184,26 @@ export function useRsvpForm(questions: Question[] = []) {
     setValue(`rows.${index}.value`, value);
   }
 
-  function setAge(id: string, value: AgeGroup) {
+  function setNeeds(id: string, question: string, pick: NeedsPick) {
     const index = indexOf(id);
     if (index === -1) return;
-    setValue(`rows.${index}.ageGroup`, value);
+    const needs = getValues(`rows.${index}.needs`);
+    const now = needs[question] ?? { picks: [], other: "" };
+    setValue(`rows.${index}.needs`, {
+      ...needs,
+      [question]: { ...now, picks: pickNeeds(now.picks, pick) },
+    });
   }
 
-  function setDiet(id: string, pick: DietPick) {
+  function setNeedsOther(id: string, question: string, other: string) {
     const index = indexOf(id);
     if (index === -1) return;
-    setValue(
-      `rows.${index}.diet`,
-      pickDiet(getValues(`rows.${index}.diet`), pick),
-    );
-  }
-
-  function setDietOther(id: string, value: string) {
-    const index = indexOf(id);
-    if (index === -1) return;
-    setValue(`rows.${index}.dietOther`, value);
+    const needs = getValues(`rows.${index}.needs`);
+    const now = needs[question] ?? { picks: [], other: "" };
+    setValue(`rows.${index}.needs`, {
+      ...needs,
+      [question]: { ...now, other },
+    });
   }
 
   function setAnswer(id: string, question: string, value: AnswerValue | null) {
@@ -216,7 +234,7 @@ export function useRsvpForm(questions: Question[] = []) {
     if (problem !== null || status === null) return null;
     const trimmed = note.trim();
     const answers =
-      status === "going" ? sentAnswers(asked.shared, shared) : undefined;
+      status === "going" ? sentShared(asked.shared, shared) : undefined;
     return {
       id: replyId,
       status,
@@ -231,9 +249,7 @@ export function useRsvpForm(questions: Question[] = []) {
       rows: fields.map((field, index) => ({
         id: field.id,
         value: rows[index]?.value ?? "",
-        ageGroup: rows[index]?.ageGroup ?? "",
-        diet: rows[index]?.diet ?? [],
-        dietOther: rows[index]?.dietOther ?? "",
+        needs: rows[index]?.needs ?? {},
         answers: rows[index]?.answers ?? {},
       })),
       status,
@@ -243,9 +259,8 @@ export function useRsvpForm(questions: Question[] = []) {
     questions: asked,
     set: {
       name: setName,
-      age: setAge,
-      diet: setDiet,
-      dietOther: setDietOther,
+      needs: setNeeds,
+      needsOther: setNeedsOther,
       answer: setAnswer,
       sharedAnswer: setShared,
       addName,

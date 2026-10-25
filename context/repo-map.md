@@ -83,7 +83,7 @@ Two folders: `simple/` (basic invitations) and `modular/` (custom invitations). 
 - `Invitation.tsx` — owns both the card and the reply panel (one tree per panel).
 - `HostInvitationEditor.tsx` — host editing wrapper; `EditPanel.tsx` — the edit surface.
 - `EditorFrame.tsx` — the editors' page: the invitation or sheet, and the labelled strip at its right edge (Save or Export, the panel's views, Quit editor; Save last in the phone's top bar); the side panel opens beside it. Shared by the simple and modular editors and the print page. `SidePanel.tsx` — the panel itself: the open view's title and an X, then the caller's fields.
-- `RsvpPanel.tsx` / `RsvpForm.tsx` / `useRsvpForm.ts` — guest RSVP. `RsvpQuestion.tsx` — one of the host's own questions in the form (text, yes/no, choice).
+- `RsvpPanel.tsx` / `RsvpForm.tsx` / `useRsvpForm.ts` — guest RSVP. `RsvpQuestion.tsx` — one question in the form, suggested or the host's own (text, yes/no, choice).
 - `InviteNotice.tsx` — a guest page in the invitation's look standing in for it: `PasswordGate.tsx` (Protected), `CancelledNotice.tsx` (cancelled). A link whose event's data is deleted gets `MissingPage` (`src/components/MissingPage.tsx`, Festio's look) instead; an unknown or Hidden one, `invite/[invite]/not-found.tsx` (the same page).
 - `ScaledStage.tsx` — scales the invitation to its container.
 - `useInvitationSave.ts` — Save for both invitation editors: the confirm, one save at a time, the version, the toast.

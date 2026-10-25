@@ -16,20 +16,9 @@
     "nameNumber": "Name {number}",
     "removeName": "Remove name {number}",
     "addPerson": "Add person",
-    "ageLabel": "Age",
-    "ageAdult": "Adult",
-    "ageChild": "Child",
-    "ageBaby": "Baby",
-    "dietLabel": "Dietary needs",
-    "dietNone": "None",
-    "dietVegetarian": "Vegetarian",
-    "dietVegan": "Vegan",
-    "dietGlutenFree": "Gluten-free",
-    "dietLactoseFree": "Lactose-free",
-    "dietNutAllergy": "Nut allergy",
-    "dietOther": "Other",
+    "needsNone": "None",
     "choose": "Choose…",
-    "dietOtherInput": "Tell us more",
+    "otherInput": "Tell us more",
     "noteLabel": "Note for the host",
     "notePlaceholder": "Optional",
     "going": "Going",
@@ -38,9 +27,7 @@
     "no": "No",
     "statusWarning": "Please let us know if you're coming.",
     "nameWarning": "Please fill in a name for everyone you are replying for.",
-    "ageWarning": "Please pick an age group for everyone coming.",
-    "dietWarning": "Please pick dietary needs for everyone coming — or None.",
-    "dietOtherWarning": "Please tell us what the other dietary need is.",
+    "otherWarning": "Please tell us more where you picked Other.",
     "questionWarning": "Please answer every question the hosts need answered.",
     "submit": "Send reply",
     "privacy": "Your name and answers go only to the hosts of this event, and are deleted {days} days after it. Nothing is shared with anyone else.",
@@ -231,7 +218,10 @@
     "legendStillExpected": "<b>{count}</b> more expected",
     "legendOverExpected": "<b>{count}</b> over expected",
     "fullSummary": "See the full summary",
-    "customAnswered": "{count, plural, one {# guest answered your custom questions} other {# guests answered your custom questions}}",
+    "suggestedLine": {
+      "transport": "Transport needed",
+      "accommodation": "Accommodation needed"
+    },
     "editInvitation": "Edit invitation",
     "share": "Share",
     "hiddenShort": "only you can open it.",
@@ -248,17 +238,17 @@
     "price": "{amount, plural, =0 {Free} other {# RON}}",
     "free": {
       "name": "Free",
-      "blurb": "A simple invitation from the free templates, with a minimal reply form. No seating chart."
+      "blurb": "A simple invitation from the free templates, with your own reply questions. No seating chart."
     },
     "standard": {
       "name": "Standard",
-      "blurb": "Any simple template, with a minimal reply form and a seating chart.",
+      "blurb": "Any simple template, with your own reply questions and a seating chart.",
       "upsell": "Opens every simple template and adds a seating chart. You pay the difference, and nothing you have written is lost."
     },
     "custom": {
       "name": "Custom",
-      "blurb": "Every template, simple or modular: your own sections, reply questions, palette, fonts and images. Seating chart included.",
-      "upsell": "Unlocks modular templates with your own sections, reply questions, palette and fonts. You pay the difference, and nothing you have written is lost."
+      "blurb": "Every template, simple or modular: your own sections, palette, fonts and images. Seating chart included.",
+      "upsell": "Unlocks modular templates with your own sections, palette and fonts. You pay the difference, and nothing you have written is lost."
     }
   },
   "Occasions": {
@@ -460,13 +450,9 @@
     "pickColour": "Pick a colour."
   },
   "RepliesTab": {
-    "alwaysAsked": "Always asked",
-    "fixedName": "Name",
-    "fixedAge": "Age",
-    "fixedDiet": "Dietary needs",
     "yourQuestions": "Your questions",
     "count": "{count} of {max}",
-    "none": "No questions of your own yet.",
+    "none": "No questions yet.",
     "kindChoice": "Choice",
     "kindYesNo": "Yes / no",
     "kindText": "Text",
@@ -500,14 +486,16 @@
     "optionsBlank": "Name every option.",
     "suggestions": "Suggestions",
     "added": "{name}, already added",
-    "writeOwn": "Write your own question",
-    "suggestion": {
-      "transport": "Transport",
-      "song": "Song request",
-      "accessibility": "Accessibility",
-      "accommodation": "Accommodation",
-      "phone": "Phone number"
-    }
+    "writeOwn": "Write your own question"
+  },
+  "Suggested": {
+    "age": "Age",
+    "diet": "Dietary needs",
+    "transport": "Transport",
+    "song": "Song request",
+    "accessibility": "Accessibility",
+    "accommodation": "Accommodation",
+    "phone": "Phone number"
   },
   "PrintPanel": {
     "cardStyle": "card style",
@@ -608,9 +596,9 @@
     "summaryBabies": "Babies",
     "summaryYes": "Yes",
     "summaryNo": "No",
-    "summaryAnswered": "{count, plural, one {# guest answered this question} other {# guests answered this question}}",
+    "summaryAnswered": "Guests who answered",
     "summaryMessagesTitle": "Messages",
-    "summaryMessages": "{count, plural, one {# guest left you a message} other {# guests left you a message}}",
+    "summaryMessages": "Guests who left a message",
     "summaryEmpty": "No answers yet",
     "listCount": "{count, plural, one {# name on list} other {# names on list}}",
     "editList": "Edit invite list",
@@ -631,7 +619,13 @@
     "dietLactoseFree": "Lactose-free",
     "dietNutAllergy": "Nut allergy",
     "dietOther": "Other",
-    "dietNone": "None",
+    "accessLabel": "Accessibility",
+    "accessStepFree": "Wheelchair",
+    "accessWalking": "Walking help",
+    "accessHearing": "Hard of hearing",
+    "accessSight": "Low vision",
+    "accessOther": "Other",
+    "needsNone": "None",
     "skipped": "Skipped",
     "statusGoing": "Coming",
     "statusNotGoing": "Not coming",
@@ -662,10 +656,8 @@
     "toastSeparated": "Separated",
     "addPerson": "Add person",
     "removePerson": "Remove person {number}",
-    "ageRequired": "Pick an age group.",
-    "dietRequired": "Pick a dietary need, or None.",
-    "dietOtherRequired": "Describe the other dietary need.",
-    "dietOtherInput": "Other dietary need",
+    "otherRequired": "Describe the other need.",
+    "otherInput": "Other need",
     "matchTo": "Match to a name",
     "matchSearch": "Search your invite list",
     "noWaiting": "No names without a reply to match.",

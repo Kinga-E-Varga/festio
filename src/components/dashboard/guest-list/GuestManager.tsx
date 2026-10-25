@@ -129,6 +129,7 @@ export function GuestManager({ event, initial }: GuestManagerProps) {
         <div className={`@container mt-6 ${CONTENT_WIDTH.page}`}>
           <ReplySummary
             tally={list.tally}
+            questions={list.guests.questions}
             counts={list.counts}
             useList={list.useList}
             expected={event.expectedGuests}

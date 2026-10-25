@@ -10,7 +10,11 @@ import {
   TITLE_MAX,
   TITLE_MIN,
 } from "@/db/limits";
-import { ageGroupSchema, dietNeedSchema } from "@/db/schemas/reply";
+import {
+  accessNeedSchema,
+  ageGroupSchema,
+  dietNeedSchema,
+} from "@/db/schemas/reply";
 import { QUESTIONS_MAX } from "@/lib/config";
 import { SLUG_MAX, SLUG_MIN, SLUG_PATTERN } from "@/lib/slug";
 import {
@@ -44,6 +48,32 @@ export const slugSchema = z
 export const questionScopeSchema = z.enum(["person", "reply"]);
 
 /**
+ * Questions of ours the host can switch on or off. Their kind, scope, wording
+ * and options live in `src/lib/suggested.ts`; the card keeps only the switches.
+ */
+export const suggestedIdSchema = z.enum([
+  "age",
+  "diet",
+  "transport",
+  "song",
+  "accessibility",
+  "accommodation",
+  "phone",
+]);
+
+/** The suggested yes/no questions the summary counts, for the Overview. */
+export const suggestedCountIdSchema = suggestedIdSchema.extract([
+  "transport",
+  "accommodation",
+]);
+
+/** A host's own id never takes a suggested one, so an answer's key is never ambiguous. */
+const customIdSchema = idSchema.refine(
+  (id) => !suggestedIdSchema.safeParse(id).success,
+  "Taken by a suggested question",
+);
+
+/**
  * A question's fields, from its wording and options. The stored card takes
  * any length (a limit added later must never make a saved card unreadable);
  * what the host sends is held to the limits.
@@ -54,7 +84,7 @@ function questionKinds<Extra extends z.ZodRawShape>(
   extra: Extra,
 ) {
   const base = {
-    id: idSchema,
+    id: customIdSchema,
     /** The host's own wording, in the invitation's language. */
     label,
     scope: questionScopeSchema,
@@ -71,7 +101,7 @@ function questionKinds<Extra extends z.ZodRawShape>(
 }
 
 /** A host's own question. Asked only of people coming. */
-export const questionSchema = questionKinds(
+export const customQuestionSchema = questionKinds(
   z.string().trim().min(1),
   z.array(z.object({ id: idSchema, label: z.string().trim().min(1) })).min(1),
   {
@@ -85,8 +115,29 @@ export const questionSchema = questionKinds(
   },
 );
 
-/** A question as the host's editor sends it: held to the limits, no `answered`. */
-export const questionInputSchema = questionKinds(
+/** The card of a suggested question: only the host's switches. */
+const suggestedSwitches = {
+  id: suggestedIdSchema,
+  suggested: z.literal(true),
+  required: z.boolean(),
+  /** Hidden from the form; its answers still show and export. */
+  archived: z.boolean(),
+};
+
+export const suggestedQuestionSchema = z.object({
+  ...suggestedSwitches,
+  /** As on a host's own question. */
+  answered: z.boolean().default(false),
+});
+
+/** What the card stores for a question: the host's own, or a suggested one's switches. */
+export const storedQuestionSchema = z.union([
+  customQuestionSchema,
+  suggestedQuestionSchema,
+]);
+
+/** A host's question as the editor sends it: held to the limits, no `answered`. */
+const customInputSchema = questionKinds(
   z.string().trim().min(1).max(RSVP_QUESTION_MAX),
   z
     .array(
@@ -104,6 +155,12 @@ export const questionInputSchema = questionKinds(
 function unique(items: { id: string }[]): boolean {
   return new Set(items.map(({ id }) => id)).size === items.length;
 }
+
+/** A question as the host's editor sends it: held to the limits, no `answered`. */
+export const questionInputSchema = z.union([
+  customInputSchema,
+  z.object(suggestedSwitches),
+]);
 
 /** The host's whole list, archived ones too, in the form's order. */
 export const questionsInputSchema = z
@@ -150,13 +207,16 @@ export const eventCountsSchema = z.object({
 
 /**
  * What the Overview's Replies box shows of the people coming: how many in
- * each age group and with each diet, and how many answered the host's own
- * questions. Kept beside `counts`, each reply card adding on its own.
+ * each age group, with each diet and with each accessibility need, how many said yes to (or answered) each
+ * suggested question, and how many answered the host's own questions. Kept
+ * beside `counts`, each reply card adding on its own.
  */
 export const replySummarySchema = z.object({
   ages: z.record(ageGroupSchema, countSchema),
   diets: z.record(dietNeedSchema, countSchema),
-  answeredCustom: countSchema,
+  access: z.record(accessNeedSchema, countSchema),
+  /** The replies that said yes. */
+  suggested: z.record(suggestedCountIdSchema, countSchema),
 });
 
 /** The card's fields, without its cross-field rules: other schemas pick from it. */
@@ -184,7 +244,7 @@ export const eventFieldsSchema = z.object({
   package: packageSchema,
   /** Missing until the host picks a template. */
   templateId: z.string().min(1).optional(),
-  questions: z.array(questionSchema),
+  questions: z.array(storedQuestionSchema),
   print: printSettingsSchema.optional(),
   counts: eventCountsSchema,
   summary: replySummarySchema,
@@ -248,6 +308,27 @@ export const eventSettingsSchema = eventFieldsSchema
 
 export type EventDoc = z.infer<typeof eventSchema>;
 export type EventSettings = z.infer<typeof eventSettingsSchema>;
-export type Question = z.infer<typeof questionSchema>;
+export type SuggestedId = z.infer<typeof suggestedIdSchema>;
+export type CustomQuestion = z.infer<typeof customQuestionSchema>;
+export type StoredQuestion = z.infer<typeof storedQuestionSchema>;
 export type QuestionInput = z.infer<typeof questionInputSchema>;
 export type QuestionScope = z.infer<typeof questionScopeSchema>;
+
+/** A suggested question with its wording filled in, for the language it is read in. */
+export type ResolvedSuggested = {
+  id: SuggestedId;
+  suggested: true;
+  label: string;
+  scope: QuestionScope;
+  required: boolean;
+  archived: boolean;
+  answered: boolean;
+} & (
+  | { kind: "choice"; options: { id: string; label: string }[] }
+  | { kind: "yesNo" }
+  | { kind: "text" }
+  | { kind: "needs"; options: { id: string; label: string }[] }
+);
+
+/** A question as most code reads it: stored cards resolved, see `resolveQuestions`. */
+export type Question = CustomQuestion | ResolvedSuggested;

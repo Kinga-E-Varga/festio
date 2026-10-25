@@ -38,7 +38,7 @@ export const RSVP_NAME_MAX = 60;
 /** The longest note a guest leaves the host. */
 export const RSVP_NOTE_MAX = 300;
 
-/** The longest text answer, and the longest Other diet. */
+/** The longest text answer, and the longest Other of a needs question. */
 export const RSVP_ANSWER_MAX = 200;
 
 /** The most people one reply answers for. */

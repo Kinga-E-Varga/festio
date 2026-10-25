@@ -16,20 +16,9 @@
     "nameNumber": "{number}. név",
     "removeName": "{number}. név törlése",
     "addPerson": "Személy hozzáadása",
-    "ageLabel": "Életkor",
-    "ageAdult": "Felnőtt",
-    "ageChild": "Gyerek",
-    "ageBaby": "Baba",
-    "dietLabel": "Étrendi igények",
-    "dietNone": "Nincs",
-    "dietVegetarian": "Vegetáriánus",
-    "dietVegan": "Vegán",
-    "dietGlutenFree": "Gluténmentes",
-    "dietLactoseFree": "Laktózmentes",
-    "dietNutAllergy": "Dióallergia",
-    "dietOther": "Egyéb",
+    "needsNone": "Nincs",
     "choose": "Válassz…",
-    "dietOtherInput": "Írd le bővebben",
+    "otherInput": "Írd le bővebben",
     "noteLabel": "Üzenet a házigazdának",
     "notePlaceholder": "Nem kötelező",
     "going": "Jön",
@@ -38,9 +27,7 @@
     "no": "Nem",
     "statusWarning": "Kérjük, jelezd, hogy jössz-e.",
     "nameWarning": "Kérjük, add meg mindenki nevét, aki helyett válaszolsz.",
-    "ageWarning": "Kérjük, válassz korcsoportot mindenkinek, aki jön.",
-    "dietWarning": "Kérjük, válassz étrendi igényt mindenkinek, aki jön — vagy azt, hogy Nincs.",
-    "dietOtherWarning": "Kérjük, írd le, mi az egyéb étrendi igény.",
+    "otherWarning": "Kérjük, írd le bővebben ott, ahol az Egyéb lehetőséget választottad.",
     "questionWarning": "Kérjük, válaszolj minden kérdésre, amire a házigazdáknak szükségük van.",
     "submit": "Válasz küldése",
     "privacy": "A neved és a válaszaid csak az esemény házigazdáihoz jutnak el, és az esemény után {days} nappal töröljük őket. Semmit nem osztunk meg mással.",
@@ -231,7 +218,10 @@
     "legendStillExpected": "még <b>{count}</b> várható",
     "legendOverExpected": "<b>{count}</b> a vártnál több",
     "fullSummary": "Teljes összesítő",
-    "customAnswered": "{count} vendég válaszolt a saját kérdéseidre",
+    "suggestedLine": {
+      "transport": "Utazást kér",
+      "accommodation": "Szállást kér"
+    },
     "editInvitation": "Meghívó szerkesztése",
     "share": "Megosztás",
     "hiddenShort": "csak te nyithatod meg.",
@@ -248,17 +238,17 @@
     "price": "{amount, plural, =0 {Ingyenes} other {# RON}}",
     "free": {
       "name": "Ingyenes",
-      "blurb": "Egyszerű meghívó az ingyenes sablonokból, egyszerű válaszűrlappal. Ültetési rend nélkül."
+      "blurb": "Egyszerű meghívó az ingyenes sablonokból, saját kérdésekkel a válaszűrlapon. Ültetési rend nélkül."
     },
     "standard": {
       "name": "Standard",
-      "blurb": "Bármelyik egyszerű sablon, egyszerű válaszűrlappal és ültetési renddel.",
+      "blurb": "Bármelyik egyszerű sablon, saját kérdésekkel a válaszűrlapon és ültetési renddel.",
       "upsell": "Minden egyszerű sablont elérhetővé tesz, és ültetési rendet ad hozzá. Csak a különbözetet fizeted, és semmi sem vész el abból, amit megírtál."
     },
     "custom": {
       "name": "Egyedi",
-      "blurb": "Minden sablon, egyszerű vagy egyedileg alakítható: saját szakaszok, kérdések, színek, betűtípusok és képek. Tartalmaz ültetési rendet.",
-      "upsell": "Elérhetővé teszi az egyedileg alakítható sablonokat saját szakaszokkal, kérdésekkel, színekkel és betűtípusokkal. Csak a különbözetet fizeted, és semmi sem vész el abból, amit megírtál."
+      "blurb": "Minden sablon, egyszerű vagy egyedileg alakítható: saját szakaszok, színek, betűtípusok és képek. Tartalmaz ültetési rendet.",
+      "upsell": "Elérhetővé teszi az egyedileg alakítható sablonokat saját szakaszokkal, színekkel és betűtípusokkal. Csak a különbözetet fizeted, és semmi sem vész el abból, amit megírtál."
     }
   },
   "Occasions": {
@@ -460,13 +450,9 @@
     "pickColour": "Válassz színt."
   },
   "RepliesTab": {
-    "alwaysAsked": "Mindig kérdezzük",
-    "fixedName": "Név",
-    "fixedAge": "Korosztály",
-    "fixedDiet": "Étrendi igények",
     "yourQuestions": "Saját kérdéseid",
     "count": "{count} / {max}",
-    "none": "Még nincs saját kérdésed.",
+    "none": "Még nincs kérdés.",
     "kindChoice": "Választós",
     "kindYesNo": "Igen / nem",
     "kindText": "Szöveg",
@@ -500,14 +486,16 @@
     "optionsBlank": "Adj nevet minden lehetőségnek.",
     "suggestions": "Javaslatok",
     "added": "{name}, már hozzáadva",
-    "writeOwn": "Saját kérdés írása",
-    "suggestion": {
-      "transport": "Szállítás",
-      "song": "Kedvenc dal",
-      "accessibility": "Akadálymentesség",
-      "accommodation": "Szállás",
-      "phone": "Telefonszám"
-    }
+    "writeOwn": "Saját kérdés írása"
+  },
+  "Suggested": {
+    "age": "Korosztály",
+    "diet": "Étrendi igények",
+    "transport": "Szállítás",
+    "song": "Kedvenc dal",
+    "accessibility": "Akadálymentesség",
+    "accommodation": "Szállás",
+    "phone": "Telefonszám"
   },
   "PrintPanel": {
     "cardStyle": "kártya stílusa",
@@ -608,9 +596,9 @@
     "summaryBabies": "Babák",
     "summaryYes": "Igen",
     "summaryNo": "Nem",
-    "summaryAnswered": "{count, plural, one {# vendég válaszolt erre a kérdésre} other {# vendég válaszolt erre a kérdésre}}",
+    "summaryAnswered": "Válaszoló vendégek",
     "summaryMessagesTitle": "Üzenetek",
-    "summaryMessages": "{count, plural, one {# vendég hagyott üzenetet} other {# vendég hagyott üzenetet}}",
+    "summaryMessages": "Üzenetet hagyó vendégek",
     "summaryEmpty": "Még nincs válasz",
     "listCount": "{count, plural, one {# név a listán} other {# név a listán}}",
     "editList": "Meghívólista szerkesztése",
@@ -631,7 +619,13 @@
     "dietLactoseFree": "Laktózmentes",
     "dietNutAllergy": "Dióallergia",
     "dietOther": "Egyéb",
-    "dietNone": "Nincs",
+    "accessLabel": "Akadálymentesség",
+    "accessStepFree": "Kerekesszék",
+    "accessWalking": "Járássegítés",
+    "accessHearing": "Nagyothalló",
+    "accessSight": "Gyengénlátó",
+    "accessOther": "Egyéb",
+    "needsNone": "Nincs",
     "skipped": "Nem válaszolt",
     "statusGoing": "Jön",
     "statusNotGoing": "Nem jön",
@@ -662,10 +656,8 @@
     "toastSeparated": "Leválasztva",
     "addPerson": "Személy hozzáadása",
     "removePerson": "{number}. személy eltávolítása",
-    "ageRequired": "Válassz korcsoportot.",
-    "dietRequired": "Válassz étrendi igényt, vagy azt, hogy Nincs.",
-    "dietOtherRequired": "Írd le az egyéb étrendi igényt.",
-    "dietOtherInput": "Egyéb étrendi igény",
+    "otherRequired": "Írd le az egyéb igényt.",
+    "otherInput": "Egyéb igény",
     "matchTo": "Párosítás egy névvel",
     "matchSearch": "Keresés a meghívólistában",
     "noWaiting": "Nincs válasz nélküli név, amivel párosíthatnád.",

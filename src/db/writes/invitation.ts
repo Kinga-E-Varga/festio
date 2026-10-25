@@ -1,7 +1,11 @@
 import { db } from "@/db/admin";
 import { paths } from "@/db/paths";
 import { parseSnap } from "@/db/reads/parse";
-import type { EventDoc, Question, QuestionInput } from "@/db/schemas/event";
+import type {
+  EventDoc,
+  QuestionInput,
+  StoredQuestion,
+} from "@/db/schemas/event";
 import { invitationSchema, type InvitationDoc } from "@/db/schemas/invitation";
 import { ownEvent } from "@/db/writes/event";
 import { expectVersion } from "@/db/writes/save";
@@ -14,7 +18,7 @@ import { mergeQuestions } from "@/lib/questions";
  * (it throws to refuse), so a template changed meanwhile is never missed.
  * The event card's `invitationVersion` follows the new version.
  *
- * A modular editor sends its reply questions too: merged with the stored
+ * An editor (simple or modular) sends its reply questions too: merged with the stored
  * ones (`mergeQuestions`, so one answered meanwhile is kept) onto the event
  * card in the same update. Its `version` stays: the questions are the
  * invitation's, not Event settings'. Returns the questions as saved, and
@@ -25,7 +29,7 @@ export async function writeInvitation(
   eventId: string,
   fit: (event: EventDoc) => Promise<InvitationDoc>,
   questions?: QuestionInput[],
-): Promise<{ version: number; questions: Question[]; kept: string[] }> {
+): Promise<{ version: number; questions: StoredQuestion[]; kept: string[] }> {
   return db.runTransaction(async (tx) => {
     const ref = db.doc(paths.invitation(eventId));
     const [{ doc: event }, snap] = await Promise.all([

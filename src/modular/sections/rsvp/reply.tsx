@@ -42,7 +42,7 @@ const DROPDOWN = {
   placeholder: MUTED,
   chevron: MUTED,
 };
-/* A diet tick: the native checkbox, drawn square in the line, filled with the accent and an accent-ink tick once picked. */
+/* A needs tick: the native checkbox, drawn square in the line, filled with the accent and an accent-ink tick once picked. */
 const TICK =
   "grid size-4 shrink-0 cursor-pointer appearance-none place-content-center border-1 border-[var(--m-line)] bg-[var(--m-surface)] transition-colors checked:border-[var(--m-accent)] checked:bg-[var(--m-accent)] before:size-2.5 before:scale-0 before:bg-[var(--m-accent-ink)] before:transition-transform before:[clip-path:polygon(0_56%,40%_96%,100%_22%,90%_12%,40%_76%,10%_46%)] checked:before:scale-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--m-accent)]";
 
@@ -66,7 +66,7 @@ export const SKIN: RsvpSkin = {
     option: `${OPTION} has-checked:bg-[var(--m-accent-soft)] has-focus-visible:outline-1 has-focus-visible:-outline-offset-1 has-focus-visible:outline-[var(--m-accent)]`,
     tick: "sr-only",
   },
-  diet: {
+  needs: {
     ...DROPDOWN,
     panel: `${PANEL} grid-cols-2`,
     option: OPTION,
