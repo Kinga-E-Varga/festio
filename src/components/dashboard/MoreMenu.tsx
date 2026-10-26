@@ -15,8 +15,7 @@ import {
   MENU_BOX,
   MENU_ROW,
   SIDE_ICON,
-  TOP_BAR_CIRCLE,
-  TOP_BAR_ICON,
+  STRIP_ICON,
 } from "@/components/dashboard/styles";
 import type { SidePanel } from "@/components/dashboard/useSidePanel";
 import { Icon, FoldChevron } from "@/components/icons";
@@ -51,9 +50,9 @@ export function MoreMenu({ panel, bar }: { panel: SidePanel; bar: BarData }) {
         aria-haspopup="true"
         aria-label={t("more")}
         onClick={() => (open ? close() : setOpen(true))}
-        className={`${BAR_ICON} ${TOP_BAR_CIRCLE}`}
+        className={BAR_ICON}
       >
-        <Icon name="more" {...TOP_BAR_ICON} />
+        <Icon name="more" {...STRIP_ICON} />
       </button>
 
       {open ? (

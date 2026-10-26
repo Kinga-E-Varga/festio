@@ -128,6 +128,7 @@ test("what each page and save costs, against the baseline", async () => {
       kind: "simple",
       values: { title1: "Cost check" },
       envelope: true,
+      opening: "slide",
       version: 0,
     })),
   );

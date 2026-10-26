@@ -1,5 +1,4 @@
 import { useTranslations } from "next-intl";
-import type { ReactNode } from "react";
 import { BoxHead } from "@/components/dashboard/BoxHead";
 import { EventWhen } from "@/components/dashboard/EventWhen";
 import { StatusTag } from "@/components/dashboard/StatusTag";
@@ -10,49 +9,43 @@ import { eventStatus } from "@/lib/event";
 import type { DashboardEvent } from "@/types/dashboard";
 
 /**
- * Edit tucked into the picture's corner, its edges on the picture's own, its
- * outer corner rounded with it: the page's link on a light tag, edged in the
- * picture's colour; greyed, with its reason, when it can't open.
+ * Edit floating 12px in from the picture's top right corner: the page's link
+ * on a light tag, rounded and edged like the box; greyed, with its reason,
+ * when it can't open.
  */
-const EDIT = `absolute top-0 right-0 rounded-tr-ui rounded-bl-ui border ${PREVIEW_EDGE} bg-neutral-50 px-2.5 py-1`;
+const EDIT = `absolute top-3 right-3 rounded-ui border ${PREVIEW_EDGE} bg-neutral-50 px-2.5 py-1`;
 
-/**
- * The event itself: its name and status, its day, then its invitation as
- * guests see it, with Edit on its corner.
- */
+/** The event itself: its name and status, its day. */
 export function EventBox({
   event,
-  preview,
+  className = "",
 }: {
   event: DashboardEvent;
-  /** The invitation drawn live and shrunk; none before a design is picked. */
-  preview: ReactNode;
+  /** Joins it to the card's box under it, once the columns stack. */
+  className?: string;
 }) {
-  const t = useTranslations("Event");
-  const tEditor = useTranslations("EventEditor");
-
   return (
-    <section className={PAGE_BOX}>
+    <section className={`${PAGE_BOX} ${className}`}>
       <BoxHead
         title={event.title}
         aside={<StatusTag status={eventStatus(event)} large />}
       />
       <EventWhen event={event} />
-
-      {/*
-       * As wide as the box, as tall as the picture's own shape makes it, but
-       * never past 380px: once the columns stack the box is the page's width,
-       * and the picture would be twice the size it is beside the others. Centred in it then.
-       */}
-      <div className="relative mx-auto mt-5 max-w-[380px]">
-        {preview}
-        <PageLink
-          page={eventPage(event, "invitation")}
-          label={tEditor("edit")}
-          hint={t("editInvitation")}
-          className={EDIT}
-        />
-      </div>
     </section>
+  );
+}
+
+/** Edit on the Overview's invitation picture, which places it on its corner. */
+export function InvitationEdit({ event }: { event: DashboardEvent }) {
+  const t = useTranslations("Event");
+  const tEditor = useTranslations("EventEditor");
+
+  return (
+    <PageLink
+      page={eventPage(event, "invitation")}
+      label={tEditor("edit")}
+      hint={t("editInvitation")}
+      className={EDIT}
+    />
   );
 }

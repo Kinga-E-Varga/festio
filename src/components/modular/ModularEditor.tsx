@@ -17,6 +17,7 @@ import {
   useTabViews,
   type PanelTabId,
 } from "@/components/invitation/PanelTabs";
+import { PANEL_BESIDE, useEditing } from "@/components/invitation/useEditing";
 import { useInvitationSave } from "@/components/invitation/useInvitationSave";
 import { eventPath } from "@/lib/event";
 import type { Language } from "@/lib/language";
@@ -37,12 +38,6 @@ import { contentCardId } from "./content/ContentTab";
 import { designCardId } from "./design/SectionsList";
 import { ModularEditPanel } from "./ModularEditPanel";
 import { ModularInvitation } from "./ModularInvitation";
-
-/**
- * `--breakpoint-invite` written out: from here the panel sits beside the
- * invitation; below it, it covers the screen.
- */
-const PANEL_BESIDE = "(min-width: 1000px)";
 
 /**
  * A section into view, in the middle of the page — or from its top when it
@@ -111,8 +106,7 @@ export function ModularEditor({
   questions: initialQuestions,
 }: ModularEditorProps) {
   const t = useTranslations("HostEditor");
-  /* Closed on arrival: the host sees the invitation first and opens the panel from the strip. */
-  const [editing, setEditing] = useState(false);
+  const [editing, setEditing] = useEditing();
   const [state, setState] = useState(initial);
   const [saved, setSaved] = useState(initial);
   /* The reply questions: edited in the Replies tab, saved with the invitation. */
@@ -297,16 +291,19 @@ export function ModularEditor({
       openFields(id);
       afterDraw.current.push({ run: () => scrollToCard(contentCardId(id)) });
     },
-    [openFields],
+    [openFields, setEditing],
   );
 
   /* The preview's Design button: the panel on Design, that section's styles out. */
-  const editDesign = useCallback((id: string) => {
-    setEditing(true);
-    setTab("design");
-    setOpenStyles(id);
-    afterDraw.current.push({ run: () => scrollToCard(designCardId(id)) });
-  }, []);
+  const editDesign = useCallback(
+    (id: string) => {
+      setEditing(true);
+      setTab("design");
+      setOpenStyles(id);
+      afterDraw.current.push({ run: () => scrollToCard(designCardId(id)) });
+    },
+    [setEditing],
+  );
 
   /* Kept the same between renders, so the preview skips the ones that change nothing it draws. */
   const edit = useMemo(
@@ -320,7 +317,7 @@ export function ModularEditor({
     [editing, t, editDesign, editContent],
   );
   const testReply = useCallback(
-    () => showToast(t("testReply"), "warning"),
+    () => showToast(t("testReply")),
     [showToast, t],
   );
 

@@ -3,9 +3,9 @@ import type { ReactNode } from "react";
 /**
  * A box's head: its serif title, how many things it holds right after it,
  * a line under it, and what belongs at its far right. The space under it is
- * the box's padding (`BOX_PAD`), the space over it; whatever sits beside the
- * title is pulled in over and under (`-my-2`), so a button taller than the
- * title leaves that space alone.
+ * `--box-gap`, which looks as much as the box's padding over it (`BOX_PAD`).
+ * Whatever sits beside the title is pulled in over and under (`-my-2`), so a
+ * button taller than the title leaves that space alone.
  */
 export function BoxHead({
   title,
@@ -15,6 +15,7 @@ export function BoxHead({
   actions,
   as: Tag = "h2",
   id,
+  titleClass = "card-title",
 }: {
   title: string;
   count?: number;
@@ -28,15 +29,17 @@ export function BoxHead({
   as?: "h2" | "h3" | "span";
   /** The title's id, for a dialog's `aria-labelledby`. */
   id?: string;
+  /** The title's look: `card-face` takes the box's own colour (a warning dialog's). */
+  titleClass?: "card-title" | "card-face";
 }) {
   const Wrap = Tag === "span" ? "span" : "div";
 
   return (
-    <Wrap className="mb-(--box-pad) block @container">
+    <Wrap className="mb-(--box-gap) block @container">
       {/* The title takes the line's room (`basis-0`), so the aside stays beside it; only `actions` can wrap under. */}
       <Wrap className="flex flex-wrap items-baseline gap-x-2">
         <Wrap className="flex min-w-0 flex-1 basis-0 items-baseline gap-2">
-          <Tag id={id} className="card-title">
+          <Tag id={id} className={titleClass}>
             {title}
           </Tag>
           {count === undefined ? null : (

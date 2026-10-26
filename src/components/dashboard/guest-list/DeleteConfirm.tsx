@@ -1,8 +1,10 @@
 import { useTranslations } from "next-intl";
+import { AlertRow } from "@/components/dashboard/AlertRow";
 import {
-  GUEST_BTN_DANGER,
-  GUEST_BTN_DANGER_OUTLINE,
+  SMALL_BTN_DANGER,
+  SMALL_BTN_DANGER_SOLID,
 } from "@/components/dashboard/guest-list/styles";
+import { DANGER_ALERT } from "@/components/dashboard/styles";
 
 interface DeleteConfirmProps {
   message: string;
@@ -10,39 +12,33 @@ interface DeleteConfirmProps {
   keepLabel: string;
   onKeep: () => void;
   onDelete: () => void;
-  /** The buttons under the message, not beside it. */
-  stacked?: boolean;
+  /** Its space around, where the place it sits needs some. */
+  className?: string;
 }
 
-/** A delete asks first: the question in danger's colour, back out (outlined) or delete (solid). */
+/** A delete asks first: the warning prompt in danger's colours, back out (outlined) or delete (solid). */
 export function DeleteConfirm({
   message,
   keepLabel,
   onKeep,
   onDelete,
-  stacked = false,
+  className = "",
 }: DeleteConfirmProps) {
   const t = useTranslations("GuestList");
   return (
-    <div
-      role="alert"
-      className={`flex gap-2.5 meta-face text-danger-800 ${
-        stacked ? "flex-col" : "flex-wrap items-center pb-2"
-      }`}
-    >
-      <span className={stacked ? undefined : "mr-auto"}>{message}</span>
-      <div className="flex shrink-0 gap-2.5">
-        <button
-          type="button"
-          onClick={onKeep}
-          className={GUEST_BTN_DANGER_OUTLINE}
-        >
+    <div role="alert" className={`${className} ${DANGER_ALERT} @container`}>
+      <AlertRow title={message}>
+        <button type="button" onClick={onKeep} className={SMALL_BTN_DANGER}>
           {keepLabel}
         </button>
-        <button type="button" onClick={onDelete} className={GUEST_BTN_DANGER}>
+        <button
+          type="button"
+          onClick={onDelete}
+          className={SMALL_BTN_DANGER_SOLID}
+        >
           {t("delete")}
         </button>
-      </div>
+      </AlertRow>
     </div>
   );
 }

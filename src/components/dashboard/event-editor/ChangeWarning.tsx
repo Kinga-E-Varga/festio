@@ -28,11 +28,10 @@ export function ChangeWarning({
     /* With its row's 6px gap, as far from the hint above as from the rule below. */
     <Banner
       className="mt-1.5"
-      tone="warn"
       icon="alert"
       title={title}
       footer={
-        <label className="mt-[11px] flex cursor-pointer items-start gap-[9px] border-t border-current/50 pt-2.5 font-semibold">
+        <label className="mt-[11px] flex cursor-pointer items-start gap-[9px] border-t border-warning-600 pt-2.5 font-semibold">
           <Checkbox
             checked={warning.acknowledged}
             onChange={(control) => warning.toggle(control.target.checked)}

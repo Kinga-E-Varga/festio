@@ -5,6 +5,13 @@ export const NAV_ITEMS: NavItem[] = [
   { labelKey: "home", href: "/dashboard", icon: "home" },
 ];
 
+/* The landing bar's account menu heads with the way into the dashboard. */
+export const DASHBOARD_LINK: NavItem = {
+  labelKey: "dashboard",
+  href: "/dashboard",
+  icon: "home",
+};
+
 /* The side panel's account view, behind the account circle; keys into `Nav` too. */
 export const ACCOUNT_LINKS: NavItem[] = [
   { labelKey: "billing", href: "/dashboard/billing", icon: "billing" },

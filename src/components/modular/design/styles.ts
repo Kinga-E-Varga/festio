@@ -4,7 +4,7 @@ import { SUMMARY_SURFACE } from "@/components/dashboard/event-editor/SummarySwit
 /**
  * The Design tab's own summary box: the event editor's row, shorter, as the
  * side panel is a tighter place than the event page, and square like the
- * section cards. The Form tab's question rows are built on it.
+ * section cards.
  */
 export const DESIGN_BOX = `${SUMMARY_SURFACE} min-h-[45px] rounded-none! py-2 pl-3!`;
 
@@ -47,6 +47,14 @@ export const DESIGN_BAND = `${FIELD} flex cursor-pointer items-center ${BOX_GAP}
 export const DESIGN_BOX_BUTTON = `${DESIGN_BOX} group flex w-full cursor-pointer items-center ${BOX_GAP} text-left focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-neutral-500`;
 
 /**
+ * Every bar's surface in the side panel's tabs: the neutral-50 card, its
+ * neutral edge and side padding, no padding above or below — a bar is as
+ * tall as its `min-h-[45px]`.
+ */
+export const BAR_SURFACE =
+  "border border-neutral-400 bg-neutral-50 pr-4 pl-3 text-neutral-800";
+
+/**
  * A section's bar in the Design and Content tabs, the event editor's summary row: a neutral-50 card with a neutral
  * edge, the toggle where that row has an icon — a required section has
  * none, its name at the left — and the styles arrow on the right. On,
@@ -55,8 +63,7 @@ export const DESIGN_BOX_BUTTON = `${DESIGN_BOX} group flex w-full cursor-pointer
  * Hovered, it says "Change" or "Close" by the arrow, like the other Design
  * boxes.
  */
-export const SECTION_CARD =
-  "flex min-h-[45px] flex-col justify-center border border-neutral-400 bg-neutral-50 pr-4 pl-3 text-neutral-800";
+export const SECTION_CARD = `flex min-h-[45px] flex-col justify-center ${BAR_SURFACE}`;
 /**
  * An on section's whole bar: a button laid over the card, under its
  * switches, which sit above it.

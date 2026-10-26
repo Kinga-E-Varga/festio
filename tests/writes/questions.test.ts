@@ -35,6 +35,7 @@ function save(eventId: string, questions?: QuestionInput[]) {
       kind: "simple",
       values: {},
       envelope: true,
+      opening: "slide",
       version: 0,
     }),
     questions,

@@ -95,6 +95,7 @@ export default async function InvitationPage({ params }: Props) {
       questions={resolveQuestions(event.questions, language)}
       /* The host's saved switch, on for a card never saved. */
       envelope={stored?.kind === "simple" ? stored.envelope : true}
+      opening={stored?.kind === "simple" ? stored.opening : undefined}
     >
       <Card values={cardValues(values, language)} />
     </Invitation>

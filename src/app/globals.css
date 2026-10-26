@@ -37,12 +37,6 @@
   --spacing-drawer: 400px;
 
   /*
-   * The widest the landing page's content grows (`max-w-app`): the top bar's
-   * and the footer's strips span the window, their content stops here.
-   * 1536 is a 1920 screen at 125% scaling, so most laptops fill it exactly.
-   */
-  --container-app: 1536px;
-  /*
    * The widths a dashboard page's content picks from (`CONTENT_WIDTH`),
    * centred between the nav and the right-hand strip; the event bar and the
    * page's title span the whole width above it. Short forms and messages
@@ -256,11 +250,13 @@
   /*
    * The dashboard keeps the scrollbar's room even with nothing to scroll, so
    * a page growing past the window (a card rolling out) never pushes it
-   * sideways. The empty room is in the page's own colour, so it doesn't show.
+   * sideways. With no scrollbar the empty room shows the window's own
+   * ground, not the track's colour, so the window takes the page's colour too.
    */
   html:has([data-dashboard]) {
     --page-ground: var(--color-neutral-125);
     scrollbar-gutter: stable;
+    background-color: var(--page-ground);
   }
 
   /* The colour passes down; boxes that scroll keep the browser's own unless they set theirs. */
@@ -369,6 +365,11 @@
   @apply text-[11.5px] font-semibold tracking-[0.12em] uppercase;
 }
 
+/* A group's title or a field's label in the editors' side panels: the invitation editors' and the print page's. */
+@utility editor-heading {
+  @apply eyebrow text-neutral-700;
+}
+
 /*
  * The host app's shared text styles: size, weight and colour, so two texts
  * that look alike are written once. Line height stays with each use, except
@@ -415,9 +416,14 @@
   @apply text-[13.5px] text-neutral-950;
 }
 
+/* A row's size alone, for words that take their box's colour (the save confirm's). */
+@utility row-face {
+  @apply text-[13.5px];
+}
+
 /* A menu's items, the summary tables' rows, the link's fixed start. */
 @utility row-text {
-  @apply text-[13.5px] text-neutral-800;
+  @apply row-face text-neutral-800;
 }
 
 /* The size of the meta and muted texts alone, for a line on a coloured fill or a link. */
@@ -557,9 +563,10 @@
 
   /*
    * Replies bar: replies that said yes, then replies that said no, both
-   * measured against expected guests. Every colour and dimension lives here,
-   * so the component hands over only the two percentages and no
-   * presentation ends up in an inline style.
+   * measured against expected guests. Every dimension lives here, so the
+   * component hands over only the two percentages and no presentation ends
+   * up in an inline style; the two fills are the reply colours
+   * (`STATUS_FILL`), set on the spans.
    */
   .replies-bar {
     display: flex;
@@ -574,38 +581,17 @@
     block-size: 100%;
   }
 
+  /* The editor's meter: every reply in one fill (`RepliesMeter`). */
+  .replies-bar .replied {
+    inline-size: var(--replied);
+  }
+
   .replies-bar .attending {
     inline-size: var(--attending);
-    background-color: var(--color-primary-700);
   }
 
   .replies-bar .declined {
     inline-size: var(--declined);
-    background-color: var(--color-warning-400);
-  }
-
-  /*
-   * The editor's replies meter: one fill against the expected guests the
-   * host is setting. Same reasoning as above — the component hands over a percentage
-   * and nothing else, so no presentation ends up in an inline style.
-   */
-  .meter {
-    display: flex;
-    block-size: 9px;
-    overflow: hidden;
-    border-radius: 9999px;
-    background-color: var(--color-secondary-200);
-  }
-
-  .meter span {
-    display: block;
-    block-size: 100%;
-    inline-size: var(--fill);
-    background-color: var(--color-primary-600);
-  }
-
-  .meter[data-level="over"] span {
-    background-color: var(--color-danger-500);
   }
 
   /*

@@ -38,7 +38,7 @@ export function NextEventCard({ event }: { event?: DashboardEvent }) {
           ? tEvent("today")
           : t("countdown", { time: formatDuration(event.countdown, locale) })}
       </span>
-      <span className="mt-(--box-pad) block meta-text leading-[1.4]">
+      <span className="mt-(--box-gap) block meta-text leading-[1.4]">
         {event.title}
       </span>
       <span className="block meta-text leading-[1.4]">

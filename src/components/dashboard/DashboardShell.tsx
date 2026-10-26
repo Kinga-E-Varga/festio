@@ -186,9 +186,10 @@ export function DashboardShell({
        * From `nav` up, the top bar's actions stand down the right side, in
        * the nav's colours and built like it (`BarActions`), as wide as the
        * event bar is tall (56px, 64px from 1800px). The side panel opens
-       * beyond it, at the window's edge.
+       * beyond it, at the window's edge. Over the event bar (z-20, earlier in
+       * the page), so the buttons' tips reach across it.
        */}
-      <div className="sticky top-0 hidden h-screen w-topbar shrink-0 justify-center border-l border-neutral-300 bg-neutral-125 nav:flex wide:w-16">
+      <div className="sticky top-0 z-20 hidden h-screen w-topbar shrink-0 justify-center border-l border-neutral-300 bg-neutral-125 nav:flex wide:w-16">
         <BarActions panel={panel} bar={bar} />
       </div>
 

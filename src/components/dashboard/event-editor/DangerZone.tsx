@@ -9,8 +9,10 @@ import {
   ActionRow,
   SettingsCard,
 } from "@/components/dashboard/event-editor/SettingsCard";
-import { BTN_DANGER } from "@/components/dashboard/event-editor/styles";
-import { BTN_GHOST_LIGHT } from "@/components/dashboard/styles";
+import {
+  BTN_DANGER,
+  BTN_DANGER_OUTLINE,
+} from "@/components/dashboard/event-editor/styles";
 import type { ToastTone } from "@/components/dashboard/Toast";
 import { ButtonIcon } from "@/components/icons";
 import { useState, type ReactNode } from "react";
@@ -34,7 +36,7 @@ interface RowProps {
   below?: ReactNode;
   /** Beside its button: a link to a step to take first. */
   aside?: ReactNode;
-  /** The row's button; a row without one only explains. `quiet`: the accent outline, for a step back. */
+  /** The row's button; a row without one only explains. `quiet`: the danger outline, for a step back or Reopen. */
   action?: {
     icon?: IconName;
     label: string;
@@ -70,7 +72,7 @@ function Row({ title, children, below, aside, action }: RowProps) {
           <div className="flex flex-wrap items-center gap-x-5 gap-y-2">
             <button
               type="button"
-              className={action.quiet ? BTN_GHOST_LIGHT : BTN_DANGER}
+              className={action.quiet ? BTN_DANGER_OUTLINE : BTN_DANGER}
               onClick={action.onClick}
               disabled={action.disabled}
             >

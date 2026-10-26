@@ -79,7 +79,7 @@ Full spec in `context/features/print.md`.
 
 - Invitations can be saved at any time, public or not. Event details, content and template stay editable; only the **event date** is locked, from the start of the event day.
 - Visibility per invitation: **Hidden / Public / Protected**. Protected reveals a password field (min 4 chars, letters or digits). The password is printed on the physical card, directly below the link.
-- Saving changes while not Hidden requires acknowledging a blocking warning that guests won't be notified (shows current RSVP count); host must agree or cancel.
+- Saving an invitation's changes while not Hidden requires acknowledging a blocking warning that guests won't be notified (shows current RSVP count); host must agree or cancel. Event settings has no such confirm: each change guests would notice (date, link, password, language, visibility, an earlier close) raises its own warning the host must tick before Save unlocks.
 - **Cancel event:** detailed confirmation + host re-enters password. RSVP form closes; invitation page is replaced with a header plus a short custom host message.
 - **Postpone** = just change the date. Notifying guests is the host's responsibility in both cases; nothing is automated.
 
@@ -93,7 +93,7 @@ Standard and Custom only. Full spec in `context/features/seating-chart.md`. Not 
 - Links are guessable. Privacy comes from Protected mode; the link editor tells the host so.
 - The guest list is never shown on the invitation page.
 - `noindex` headers — invitations must never be indexed.
-- Hosts must enter their expected guests (people). Replies are shown against it and may pass 100%. The form pauses at a hidden reply cap: the larger of expected + 50% or expected + 20, both set in `src/lib/config.ts`. Hosts are told only that the form pauses if far more replies come in than expected, and that they can raise the number anytime.
+- Hosts must enter their expected guests (people), shown to them as **Guests invited**: every person a reply is for counts against it, coming or not. Replies are shown against it and may pass 100%. The form pauses at a hidden reply cap: the larger of expected + 50% or expected + 20, both set in `src/lib/config.ts`. Hosts are told only that the form pauses if far more replies come in than expected, and that they can raise the number anytime.
 - Rate limiting by IP, by the server, on RSVP submissions (e.g. 5 per link per hour) and wrong passwords. Invitation page views are not limited: the page's records are cached on the server, so repeated views cost little; if abuse shows up, a limit goes in front of the site.
 
 ## GDPR

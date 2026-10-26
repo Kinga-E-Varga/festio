@@ -1,12 +1,9 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { BANNER_TONE, INPUT } from "@/components/dashboard/styles";
-import {
-  CHOICE_OFF,
-  CHOICE_ON,
-} from "@/components/dashboard/guest-list/styles";
-import { PanelSwitch } from "@/components/invitation/PanelSwitch";
+import { INFO_SOFT, INPUT } from "@/components/dashboard/styles";
+import { PickCard } from "@/components/modular/design/PickCard";
+import { SwitchCard } from "@/components/modular/design/SwitchCard";
 import { SidePanel } from "@/components/invitation/SidePanel";
 import type { PrintSettings, PrintShape } from "@/types/print";
 
@@ -61,36 +58,25 @@ export function PrintPanel({
        */}
       <div className="flex flex-col w-full max-w-[640px] mx-auto">
         <fieldset className="flex flex-col mb-6">
-          <legend className="label-caps mb-2">{t("cardStyle")}</legend>
-          {/* Equal columns, each as wide as the longer label. */}
-          <div className="grid w-fit grid-cols-2 gap-1.5">
-            {SHAPES.map((shape) => (
-              <button
-                key={shape}
-                type="button"
-                aria-pressed={settings.shape === shape}
-                onClick={() => onChange("shape", shape)}
-                className={settings.shape === shape ? CHOICE_ON : CHOICE_OFF}
-              >
-                {t(shape)}
-              </button>
-            ))}
-          </div>
+          <legend className="mb-2.5 editor-heading">{t("cardStyle")}</legend>
+          <PickCard
+            id="print-shapes"
+            label={t("cardStyle")}
+            icon="card"
+            name={t(settings.shape)}
+            options={SHAPES.map((shape) => ({ value: shape, label: t(shape) }))}
+            value={settings.shape}
+            onPick={(shape) => onChange("shape", shape)}
+          />
         </fieldset>
 
         <fieldset className="flex flex-col mb-6">
-          <legend className="label-caps mb-2">{t("background")}</legend>
-          <PanelSwitch
+          <legend className="mb-2.5 editor-heading">{t("background")}</legend>
+          <SwitchCard
             id="print-tinted"
             label={t("tinted")}
             checked={settings.tinted}
             onChange={(on) => onChange("tinted", on)}
-            // The guest list's "Use an invite list" switch: a sentence, not a label.
-            heading={
-              <span className="text-[12.5px] font-medium text-neutral-800">
-                {t("tinted")}
-              </span>
-            }
           />
         </fieldset>
 
@@ -110,11 +96,11 @@ export function PrintPanel({
           onChange={(value) => onChange("note", value)}
         />
 
-        {/* The event editor's teal info banner. */}
+        {/* The event editor's info colours, its edge and rule a shade lighter than its words. */}
         <div
-          className={`flex flex-col rounded-ui border p-4 ${BANNER_TONE.info}`}
+          className={`flex flex-col rounded-ui border border-info-600 p-4 ${INFO_SOFT}`}
         >
-          <p className="mb-3 border-b border-info-500 pb-2 text-center text-[12.5px] font-semibold">
+          <p className="mb-3 border-b border-info-600 pb-2 text-center text-[12.5px] font-semibold">
             {t("instructions")}
           </p>
           {/*
@@ -168,7 +154,7 @@ function LineField({
 }: LineFieldProps) {
   return (
     <div className="mb-6 flex flex-col gap-1.5">
-      <label htmlFor={id} className="label-caps">
+      <label htmlFor={id} className="editor-heading">
         {label}
       </label>
       <textarea

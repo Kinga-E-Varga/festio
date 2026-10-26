@@ -261,6 +261,7 @@ export function QuestionForm({
 
       {confirming ? (
         <DeleteConfirm
+          className="mb-2"
           message={t("deleteConfirm")}
           keepLabel={t("cancel")}
           onKeep={() => setConfirming(false)}

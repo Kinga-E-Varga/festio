@@ -88,7 +88,8 @@ Two folders: `simple/` (basic invitations) and `modular/` (custom invitations). 
 - `ScaledStage.tsx` — scales the invitation to its container.
 - `useInvitationSave.ts` — Save for both invitation editors: the confirm, one save at a time, the version, the toast.
 - `PanelTabs.tsx` — the Design / Content / Form tabs (`TABS`, `useTabViews` for the strip), shared by both invitation editors.
-- `PanelSwitch.tsx` — the side panel's on/off switch; `Switch`, the switch alone (`md`, or `sm` on Content's head bars).
+- `PanelSwitch.tsx` — the side panel's on/off switch; `Switch`, the switch alone (`md`, `panel` on the Design tab's switch cards, or `sm` on Content's head bars).
+- `useEditing.ts` — whether an editor's side panel is open: open on arrival where it sits beside the invitation, shut where it would cover it. The simple, modular and print editors.
 - `styles.ts`, `icons.tsx` — local to invitations.
 
 ## Print — `src/components/print/`
@@ -119,7 +120,7 @@ Host actions go through `host-save.ts` (`hostSave`: signed in, the card's schema
 
 ## Landing — `src/components/landing/`
 
-- `LandingHeader.tsx` — the landing page's dark top bar (`TOP_BAR`), once a copy of the dashboard's phone top bar. Signed out, a Sign in link instead of the counts.
+- `LandingHeader.tsx` — the landing page's dark top bar (`TOP_BAR`), once a copy of the dashboard's phone top bar: bell, cart and account, each opening `HeaderPopover.tsx` (what the dashboard's side panel shows for it, in a box under the icon), and Dashboard. Signed out, a Sign in button instead.
 - `SiteFooter.tsx` — the site footer (links, search, language switcher); the landing page only, dashboards have none.
 
 ## Lib — `src/lib/`

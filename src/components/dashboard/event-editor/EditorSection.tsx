@@ -13,7 +13,7 @@ export function EditorHeading({
   className?: string;
 }) {
   return (
-    <h2 id={id} className={`mb-2.5 eyebrow text-neutral-700 ${className}`}>
+    <h2 id={id} className={`mb-2.5 editor-heading ${className}`}>
       {title}
     </h2>
   );

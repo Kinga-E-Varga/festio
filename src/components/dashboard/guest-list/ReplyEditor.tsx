@@ -23,7 +23,8 @@ import {
 } from "@/components/dashboard/guest-list/replyValues";
 import {
   ICON_BTN_EDITOR,
-  SMALL_BTN_EDITOR,
+  SMALL_BTN,
+  SMALL_BTN_DANGER_SOLID,
 } from "@/components/dashboard/guest-list/styles";
 import { ButtonIcon, Icon } from "@/components/icons";
 import { RSVP_NAME_MAX } from "@/db/limits";
@@ -153,7 +154,7 @@ export function ReplyEditor({
         <button
           type="button"
           onClick={() => append(personValues(null, questions))}
-          className={SMALL_BTN_EDITOR}
+          className={SMALL_BTN}
         >
           <ButtonIcon name="plus" />
           {t("addPerson")}
@@ -203,16 +204,15 @@ function DeleteReply({ names, onDelete }: DeleteReplyProps) {
           keepLabel={t("keepReply")}
           onKeep={() => setConfirming(false)}
           onDelete={onDelete}
-          stacked
         />
       ) : (
         <button
           type="button"
           onClick={() => setConfirming(true)}
-          className={SMALL_BTN_EDITOR}
+          className={SMALL_BTN_DANGER_SOLID}
         >
           <ButtonIcon name="trash" />
-          {t("deleteReply")}
+          {t(names.length > 1 ? "deleteGroupReply" : "deleteReply")}
         </button>
       )}
     </div>

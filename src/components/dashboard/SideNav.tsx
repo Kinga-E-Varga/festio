@@ -1,6 +1,7 @@
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { Icon } from "@/components/icons";
+import { LanguageMenu } from "@/components/dashboard/LanguageMenu";
 import { NavLink } from "@/components/dashboard/NavLink";
 import { EventNav } from "@/components/dashboard/event-nav/EventNav";
 import {
@@ -61,9 +62,16 @@ export function SideNav({ events, storedEventId }: SideNavProps) {
         <EventNav events={events} storedEventId={storedEventId} />
       </div>
 
-      {/* Leaving is rare, so it reads as a nav item, set apart by a rule. */}
+      {/*
+       * Set apart by a rule. Docked, the language, level with Quit dashboard
+       * at the strip's foot; in the phone's drawer, Quit itself (the
+       * language is in the More menu there).
+       */}
       <div className={`${NAV_MARGIN} ${QUIT_RULE}`}>
-        <Link href="/" className={`${QUIT_ITEM} wide:px-4`}>
+        <div className="max-nav:hidden">
+          <LanguageMenu />
+        </div>
+        <Link href="/" className={`${QUIT_ITEM} wide:px-4 nav:hidden`}>
           <Icon name="quit" {...SIDE_ICON} />
           <span>{t("quit")}</span>
         </Link>

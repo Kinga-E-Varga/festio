@@ -1,6 +1,7 @@
 import { Fragment } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import { RowLines } from "@/components/dashboard/RowLines";
+import { STATUS_FILL } from "@/components/dashboard/styles";
 import {
   countdownNow,
   deletionDate,
@@ -31,13 +32,14 @@ const STOP_DATE: Intl.DateTimeFormatOptions = {
 
 /**
  * Each kind of stop's dot. The event and the record's deletion stand out
- * with a light ring, the event a size up; today and the deadlines are plain
+ * with a light ring, the event a size up and in the app's one green (the
+ * replies' Coming); today and the deadlines are plain
  * dots in the line's own colour, as is a stop already behind today.
  */
 const DOT: Record<StopKind | "passed", string> = {
   today: "size-2.5 bg-neutral-300",
   deadline: "size-2.5 bg-neutral-300",
-  event: "size-4 bg-primary-700 ring-4 ring-primary-200",
+  event: `size-4 ${STATUS_FILL.going} ring-4 ring-primary-200`,
   later: "size-3 bg-accent-800 ring-4 ring-accent-200",
   passed: "size-2.5 bg-neutral-300",
 };

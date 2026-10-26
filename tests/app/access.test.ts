@@ -188,6 +188,7 @@ function saveCachedInvitation(title1: string, version: number) {
     kind: "simple",
     values: { title1 },
     envelope: true,
+    opening: "slide",
     version,
   }));
 }

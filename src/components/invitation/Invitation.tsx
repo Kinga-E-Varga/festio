@@ -1,7 +1,7 @@
 "use client";
 
 import { type ReactNode, useRef } from "react";
-import type { CardOpening } from "@/components/envelope/card";
+import { DEFAULT_OPENING, type CardOpening } from "@/components/envelope/card";
 import { Envelope } from "@/components/envelope/Envelope";
 import { useSealed } from "@/components/envelope/useSealed";
 import { inviteTheme, pageBackground } from "@/lib/invitation";
@@ -69,7 +69,7 @@ export function Invitation({
   onSubmit,
   questions,
   envelope = false,
-  opening = "rise",
+  opening = DEFAULT_OPENING,
 }: InvitationProps) {
   const { width, height, minScale, maxScale, shadow } = template.design;
   const ground = pageBackground(template);

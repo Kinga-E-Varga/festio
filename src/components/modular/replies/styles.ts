@@ -1,11 +1,11 @@
 import { BUTTON } from "@/components/dashboard/styles";
-import { BOX_GAP, DESIGN_BOX } from "../design/styles";
+import { BAR_SURFACE, BOX_GAP } from "../design/styles";
 
 /**
- * A question's bar in the Form tab: the Design tab's box, the handle in its
- * mark slot, the wording, and the arrow that opens its form.
+ * A question's bar in the Form tab: a section card's surface and height,
+ * the handle in its mark slot, the wording, and the arrow that opens its form.
  */
-export const QUESTION_ROW = `${DESIGN_BOX} relative flex items-center ${BOX_GAP}`;
+export const QUESTION_ROW = `${BAR_SURFACE} relative flex min-h-[45px] items-center ${BOX_GAP}`;
 
 /** A label over a field in the question form, like the dashboard's dropdowns. */
 export const FORM_LABEL = "mb-1.5 block label-caps";

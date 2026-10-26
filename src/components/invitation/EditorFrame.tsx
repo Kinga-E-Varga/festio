@@ -45,8 +45,8 @@ const STRIP_ITEM = `group flex w-16 flex-col items-center gap-0.5 rounded-ui tex
  * gold while its view is open. Only the icon, never the label.
  */
 const STRIP_CIRCLE = `grid ${ITEM_CIRCLE} place-items-center rounded-full transition-colors group-hover:bg-secondary-400/30 group-aria-expanded:bg-secondary-400`;
-/** The strip's short rule above Quit; none in the top bar. */
-const DIVIDER = "hidden w-12 border-t border-neutral-300 invite:block";
+/** The strip's rule above Quit, as wide as its circle, as on the dashboard's strip; none in the top bar. */
+const DIVIDER = "hidden w-btn border-t border-neutral-300 invite:block";
 const STRIP_LABEL = "text-[11px] leading-tight font-medium";
 
 interface EditorStripProps<Id extends string> {
@@ -64,11 +64,13 @@ interface EditorStripProps<Id extends string> {
  * right-hand strip but labelled, as hosts meet it rarely: Save (faded while
  * there is nothing to save) or Export on top, then the panel's views (each
  * opens the panel on it, the open one closes it), one column with one gap,
- * and Quit editor at the foot under a short rule. Where the panel covers the
+ * and Quit editor at the foot under a short rule, its icon alone, as the
+ * dashboard strip's Quit dashboard. Where the panel covers the
  * page (below `--breakpoint-invite`) it turns into a bar across the top, the
  * panel opening under it: Quit at the left, the views, Save at the right. Not along the bottom, where the simple
  * invitation's own reply bar sits. Festio's own chrome, never the
- * invitation's.
+ * invitation's. Level with the side panel (z-50) and after it, so Quit's tip
+ * lies over the open panel, not under it.
  */
 function EditorStrip<Id extends string>({
   views,
@@ -85,7 +87,7 @@ function EditorStrip<Id extends string>({
   const label = t(action.kind);
 
   return (
-    <div className="flex shrink-0 items-center border-neutral-300 bg-neutral-125 font-sans max-invite:order-first max-invite:h-topbar max-invite:justify-between max-invite:border-b max-invite:px-2 invite:h-full invite:w-[72px] invite:flex-col invite:border-l invite:pt-chrome-top invite:pb-chrome-top">
+    <div className="relative z-50 flex shrink-0 items-center border-neutral-300 bg-neutral-125 font-sans max-invite:order-first max-invite:h-topbar max-invite:justify-between max-invite:border-b max-invite:px-2 invite:h-full invite:w-[72px] invite:flex-col invite:border-l invite:pt-chrome-top invite:pb-chrome-top">
       <div className="flex items-center max-invite:flex-1 max-invite:justify-evenly invite:flex-col invite:gap-5">
         {views.map((each) => {
           const current = open && view === each.id;
@@ -129,20 +131,23 @@ function EditorStrip<Id extends string>({
       <div className="hidden flex-1 invite:block" />
 
       <div className="flex flex-col items-center max-invite:order-first">
-        <div className={`mb-4 ${DIVIDER}`} />
+        {/*
+         * Its circle where the dashboard strip's Quit dashboard sits: 12px
+         * under the rule, no label, but its name in a tip on hover, as there.
+         * As wide as its circle there, so the tip starts beside it; none in
+         * the top bar, where Quit is at the window's left edge.
+         */}
+        <div className={`mb-3 ${DIVIDER}`} />
         <button
           type="button"
           data-leaves
           onClick={quit}
           aria-label={t("quit")}
-          title={t("quit")}
-          className={STRIP_ITEM}
+          data-tip={t("quit")}
+          className={`${STRIP_ITEM} invite:w-auto invite:icon-tip`}
         >
           <span className={STRIP_CIRCLE}>
             <Icon name="quit" {...ITEM_ICON} />
-          </span>
-          <span aria-hidden="true" className={STRIP_LABEL}>
-            {t("quitShort")}
           </span>
         </button>
       </div>

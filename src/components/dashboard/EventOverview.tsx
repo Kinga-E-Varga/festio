@@ -10,6 +10,8 @@ import { PrivacyBox } from "@/components/dashboard/overview/PrivacyBox";
 import { RepliesBox } from "@/components/dashboard/overview/RepliesBox";
 import { ShareBox } from "@/components/dashboard/overview/ShareBox";
 import {
+  BOX_PAD_SIZE,
+  CARD_FRAME,
   CONTENT_WIDTH,
   PAGE_BOX,
   TWO_COLUMNS,
@@ -26,9 +28,26 @@ interface EventOverviewProps {
   todos: AttentionNotice[];
   /** Its latest replies, newest first. */
   latest: RsvpActivity[];
-  /** The invitation drawn live and shrunk; none before a design is picked. */
-  preview: ReactNode;
+  /** The invitation drawn live and shrunk, Edit on its corner; none before a design is picked. */
+  preview: OverviewPreview | null;
 }
+
+/** The Overview's invitation picture, and whether it is a simple card. */
+export interface OverviewPreview {
+  picture: ReactNode;
+  card: boolean;
+}
+
+/**
+ * A simple card's own box, the card filling it edge to edge. Once the
+ * columns stack the card is narrower than the page, so the box joins the
+ * event box above as one: no rule or corners between them, the card padded
+ * and centred under the date.
+ */
+const CARD_BOX = `${CARD_FRAME} overflow-clip ${BOX_PAD_SIZE} @max-[860px]:rounded-t-none @max-[860px]:border-t-0 @max-[860px]:p-(--box-pad) @max-[860px]:pt-(--box-gap)`;
+/** The event box above it, opened at its foot to join it. */
+const JOINED_EVENT =
+  "@max-[860px]:rounded-b-none @max-[860px]:border-b-0 @max-[860px]:pb-0";
 
 /**
  * One event's own home. A narrow column of the event with its invitation,
@@ -54,7 +73,18 @@ export function EventOverview({
       <div className={`@container mt-8 ${CONTENT_WIDTH.page}`}>
         <div className={TWO_COLUMNS}>
           <div className="flex flex-col gap-4">
-            <EventBox event={event} preview={preview} />
+            {preview?.card ? (
+              <div className="flex flex-col gap-4 @max-[860px]:gap-0">
+                <EventBox event={event} className={JOINED_EVENT} />
+                <div className={CARD_BOX}>{preview.picture}</div>
+              </div>
+            ) : (
+              <>
+                <EventBox event={event} />
+                {/* A box of its own, Edit on its corner. */}
+                {preview?.picture}
+              </>
+            )}
             <ShareBox event={event} />
             <PackageBox event={event} />
           </div>

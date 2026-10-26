@@ -2,11 +2,7 @@ import { useTranslations } from "next-intl";
 import { Icon } from "@/components/icons";
 import { AccountButton, type BarData } from "@/components/dashboard/BarActions";
 import { MoreMenu } from "@/components/dashboard/MoreMenu";
-import {
-  BAR_ICON,
-  TOP_BAR_CIRCLE,
-  TOP_BAR_ICON,
-} from "@/components/dashboard/styles";
+import { BAR_ICON, STRIP_ICON } from "@/components/dashboard/styles";
 import type { SidePanel } from "@/components/dashboard/useSidePanel";
 
 interface TopBarProps {
@@ -35,18 +31,14 @@ export function TopBar({ navOpen, onToggleNav, panel, bar }: TopBarProps) {
         onClick={onToggleNav}
         aria-expanded={navOpen}
         aria-label={t("openMenu")}
-        className={`${BAR_ICON} ${TOP_BAR_CIRCLE}`}
+        className={BAR_ICON}
       >
-        <Icon name="menu" {...TOP_BAR_ICON} />
+        <Icon name="menu" {...STRIP_ICON} />
       </button>
 
       <div className="flex items-center gap-2">
         <MoreMenu panel={panel} bar={bar} />
-        <AccountButton
-          panel={panel}
-          initials={bar.initials}
-          className={TOP_BAR_CIRCLE}
-        />
+        <AccountButton panel={panel} initials={bar.initials} />
       </div>
     </div>
   );

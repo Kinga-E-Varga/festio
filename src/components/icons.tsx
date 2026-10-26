@@ -42,6 +42,13 @@ const PATHS: Record<IconName, ReactNode> = {
       <path d="M9.5 9.25v10.5" />
     </>
   ),
+  /* An open folded card: two panels, the fold down the middle. */
+  card: (
+    <>
+      <path d="M12 6.25 3.25 4.25v14l8.75 2 8.75-2v-14z" />
+      <path d="M12 6.25v14" />
+    </>
+  ),
   palette: (
     <>
       <path d="M12 3.25a8.75 8.75 0 1 0 0 17.5c1 0 1.75-.75 1.75-1.7 0-.45-.18-.85-.45-1.15a1.7 1.7 0 0 1-.45-1.15c0-.95.78-1.7 1.75-1.7h2.05a4.1 4.1 0 0 0 4.1-4.1c0-4.3-3.92-7.7-8.75-7.7Z" />
@@ -212,11 +219,11 @@ const PATHS: Record<IconName, ReactNode> = {
       <path d="M9.25 7H17v7.75" />
     </>
   ),
-  /* The nav's way out: arrowUpRight with a longer head, drawn square-ended where it is used. */
+  /* The way out of the dashboard and the editors: arrowUpRight mirrored, pointing up-left like a "back", its head longer, drawn square-ended where it is used. */
   quit: (
     <>
-      <path d="M7 17 17 7" />
-      <path d="M8 7h9v9" />
+      <path d="M17 17 7 7" />
+      <path d="M16 7H7v9" />
     </>
   ),
   logout: (

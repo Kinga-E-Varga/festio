@@ -3,24 +3,23 @@
 import { useLocale, useTranslations } from "next-intl";
 import { type MouseEvent, useState } from "react";
 import {
+  ALERT,
   ICON_BTN,
   ICON_BTN_DANGER,
-  SUCCESS_DARK,
+  STATUS_FILL,
+  SUCCESS_SOFT,
   TAG,
   TAG_PAD,
   TAG_TEXT,
-  WARNING_DARK,
-} from "@/components/dashboard/styles";
-import { STATUS_KEY } from "@/components/dashboard/guest-list/labels";
-import {
-  ALERT,
-  fold,
+  WARNING_SOFT,
   SMALL_BTN_WARN,
   SMALL_BTN_WARN_SOLID,
-  STATUS_FILL,
-} from "@/components/dashboard/guest-list/styles";
+} from "@/components/dashboard/styles";
+import { STATUS_KEY } from "@/components/dashboard/guest-list/labels";
+import { fold } from "@/components/dashboard/guest-list/styles";
 import { useQuestionWords } from "@/components/dashboard/guest-list/useQuestionWords";
 import type { GuestActions } from "@/components/dashboard/guest-list/useGuestActions";
+import { AlertRow } from "@/components/dashboard/AlertRow";
 import { AttentionTag } from "@/components/dashboard/AttentionTag";
 import { DeleteConfirm } from "@/components/dashboard/guest-list/DeleteConfirm";
 import { UnknownFix } from "@/components/dashboard/guest-list/UnknownFix";
@@ -52,9 +51,10 @@ interface RowViewProps {
   inCard?: boolean;
 }
 
+/** Coming and Not coming, borderless in Home's Live and Hidden colours. */
 const STATUS_TONE = {
-  going: SUCCESS_DARK,
-  not_going: WARNING_DARK,
+  going: SUCCESS_SOFT,
+  not_going: WARNING_SOFT,
 } as const;
 
 /** A waiting name's invite, a tag like the status that ticks on a click. Sent or not it looks the same; only its words and the box change. */
@@ -310,6 +310,7 @@ export function RowView({
 
       {confirming === "delete" ? (
         <DeleteConfirm
+          className="mb-2"
           message={t("deleteConfirm", { name })}
           keepLabel={t("cancel")}
           onKeep={() => setConfirming(null)}
@@ -319,17 +320,13 @@ export function RowView({
 
       {/* Can't be undone, so it asks first. */}
       {confirming === "separate" && reply ? (
-        <div
-          role="alert"
-          className={`mb-2 ${ALERT} flex flex-wrap items-center gap-2.5`}
-        >
-          <span className="mr-auto">
-            {t("separateConfirm", {
+        <div role="alert" className={`mb-2 ${ALERT} @container`}>
+          <AlertRow
+            title={t("separateConfirm", {
               name,
               names: listFormat.format(party),
             })}
-          </span>
-          <div className="flex shrink-0 gap-2.5">
+          >
             <button
               type="button"
               onClick={() => setConfirming(null)}
@@ -347,7 +344,7 @@ export function RowView({
             >
               {t("separateOk")}
             </button>
-          </div>
+          </AlertRow>
         </div>
       ) : null}
     </div>

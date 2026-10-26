@@ -4,10 +4,16 @@ import { formatRelative } from "@/lib/event";
 import { AttentionTag } from "@/components/dashboard/AttentionTag";
 import {
   BOX_ROW,
-  DANGER_DARK,
-  SUCCESS_DARK,
+  DANGER_SOFT,
+  SUCCESS_SOFT,
 } from "@/components/dashboard/styles";
 import type { RsvpActivity } from "@/types/dashboard";
+
+/**
+ * The initials' circle in the tags' colours: red when the reply carries one
+ * (Unknown, Duplicate, `DANGER_SOFT`), else Coming's tag's green.
+ */
+const INITIALS_TONE = { attention: DANGER_SOFT, fine: SUCCESS_SOFT } as const;
 
 /**
  * The latest replies: who answered, across every event in the side panel, or
@@ -40,7 +46,7 @@ export function RepliesList({
           <span
             aria-hidden="true"
             className={`grid size-6 shrink-0 place-items-center wide:size-7 rounded-full border text-[10px] font-semibold ${
-              entry.tags.length > 0 ? DANGER_DARK : SUCCESS_DARK
+              INITIALS_TONE[entry.tags.length > 0 ? "attention" : "fine"]
             }`}
           >
             {entry.initials}

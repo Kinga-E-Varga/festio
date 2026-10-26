@@ -89,6 +89,7 @@
   },
   "Nav": {
     "aria": "Dashboard sections",
+    "dashboard": "Dashboard",
     "quit": "Quit dashboard",
     "home": "Home",
     "billing": "Billing",
@@ -149,7 +150,7 @@
     "greeting": "Hi, {name}",
     "emptyUpcoming": "No events yet. Pick a template to start your first invitation.",
     "came": "{count, plural, one {# came} other {# came}}",
-    "repliedShort": "{replied} of {expected} replied",
+    "repliedShort": "{replied} of {expected} answered",
     "createTitle": "Create a new event",
     "createLine": "Pick an invitation, add the details, share the link.",
     "nextEvent": "Next event",
@@ -160,11 +161,11 @@
     "events": "Events",
     "filter": "Show events",
     "filters": {
-      "upcoming": "Upcoming ({count})",
-      "live": "Live ({count})",
-      "hidden": "Hidden ({count})",
-      "past": "Past ({count})",
-      "all": "All events ({count})"
+      "upcoming": "Upcoming",
+      "live": "Live",
+      "hidden": "Hidden",
+      "past": "Past",
+      "all": "All events"
     },
     "status": {
       "active": "Live",
@@ -193,9 +194,9 @@
     "protectedNote": "Guests need a password to see the invitation, so only people you share it with see it. The password is printed on the card under the link.",
     "recordDeleted": "Record deleted",
     "replyFormCloses": "Reply form closes",
-    "meter": "<big>{replied}</big>/{expected} expected guests replied · {percent}%",
-    "meterAria": "{replied} of {expected} expected guests replied",
-    "barAria": "Replies: {attending} attending and {declined} declined, of {expected} expected guests",
+    "meter": "<big>{replied}</big>/{expected} guests invited answered · {percent}%",
+    "meterAria": "{replied} of {expected} guests invited answered",
+    "barAria": "Answers: {attending} coming and {declined} not coming, of {expected} guests invited",
     "seatingPaidOnly": "Seating charts come with paid invitations",
     "todo": "To do list",
     "copyLinkFor": "Copy invitation link for {title}",
@@ -214,9 +215,9 @@
     "keyDates": "Key dates",
     "legendComing": "<b>{count}</b> coming",
     "legendNotComing": "<b>{count}</b> not coming",
-    "repliedOfExpected": "<big>{replied}</big> of {expected} expected guests have replied · {percent}%",
-    "legendStillExpected": "<b>{count}</b> more expected",
-    "legendOverExpected": "<b>{count}</b> over expected",
+    "repliedOfExpected": "<big>{replied}</big> of {expected} guests invited have answered · {percent}%",
+    "legendStillExpected": "<b>{count}</b> yet to answer",
+    "legendOverExpected": "<b>{count}</b> more than invited",
     "fullSummary": "See the full summary",
     "suggestedLine": {
       "transport": "Transport needed",
@@ -230,7 +231,7 @@
     "upgrade": "Upgrade",
     "formOpen": "Reply form open until {date}",
     "formClosed": "Reply form closed on {date}",
-    "formPaused": "Reply form paused: far more replies came in than expected",
+    "formPaused": "Reply form paused: far more replies came in than guests invited",
     "dataPrivacy": "Data and privacy",
     "seeGuestList": "See the guest list"
   },
@@ -268,7 +269,7 @@
     "hiddenBody": "It's set to Hidden: nobody can open it, not even a guest with the link.",
     "deletingBody": "The invitation and every reply are deleted on {date}. Export them first if you want to keep them.",
     "attentionBody": "Unknown or repeated names. Sort them out at the top of Guests.",
-    "pausedBody": "Far more replies than expected, so the form is paused. Real guests? Raise the number. If not, report it."
+    "pausedBody": "Far more replies than guests invited, so the form is paused. Real guests? Raise the number. If not, report it."
   },
   "EventEditor": {
     "leaveUnsaved": "You have unsaved changes. Leave anyway?",
@@ -281,13 +282,13 @@
     "dateHint": "The date of your event, and the one shown on the invitation.",
     "dateLockedHint": "The event day has come, so the date can no longer change.",
     "languageWarningTitle": "Changing the invitation's language",
-    "languageWarning": "Guests who open your link from now on will find the reply form in the new language. Replies already sent are unaffected — they are stored against the question, not its wording. A printable you have already downloaded keeps the language it was made in; download it again to get the new one.",
+    "languageWarning": "Guests who open your link from now on will find the reply form in the new language. A printable you have already downloaded keeps the language it was made in; download it again to get the new one.",
     "dateWarningTitle": "Moving the date",
     "dateWarning": "Your invitation will show the new date, but Festio will not tell your guests — that part is yours to do. {count, plural, =0 {No one has replied for this event yet.} one {<b># guest has already replied</b> for this event.} other {<b># guests have already replied</b> for this event.}}",
     "closeAt": "Close the form at",
     "closeTooLate": "Pick a time no later than the 24-hour cut-off.",
-    "expectedTooLow": "{count, plural, one {You already have # reply.} other {You already have # replies.}} You can't expect fewer guests than have already replied.",
-    "expectedRequired": "Enter how many guests you expect.",
+    "expectedTooLow": "{count, plural, one {# guest has already answered.} other {# guests have already answered.}} You can't invite fewer guests than that.",
+    "expectedRequired": "Enter how many guests you invite.",
     "slugTooShort": "Use at least {min} characters — letters, digits and hyphens.",
     "slugTooLong": "Use {max} characters at most.",
     "slugTaken": "This link is already taken.",
@@ -299,7 +300,7 @@
     "addressHint": "If you have already shared the link, changing it will break every copy your guests are holding.",
     "copyLink": "Copy invitation link",
     "addressWarningTitle": "Changing the address",
-    "addressWarning": "The old link stops working the moment you save. Every copy your <b>{count, plural, one {# guest is holding} other {# guests are holding}}</b> leads nowhere, and passing on the new one is yours to do.",
+    "addressWarning": "The old link stops working the moment you save. Every copy {count, plural, =0 {you have shared or printed} one {<b># guest is holding</b>} other {<b># guests are holding</b>}} leads nowhere, and passing on the new one is yours to do.",
     "visibilityLegend": "Who can open the invitation",
     "password": "Password",
     "passwordAria": "Invitation password",
@@ -309,7 +310,7 @@
     "passwordWarningTitle": "Changing the password",
     "passwordWarning": "The old password stops working the moment you save. Guests will not be able to see the invitation until you give them the new one.",
     "noindex": "Never shown on Google or other search engines, whatever you pick.",
-    "expectedHint": "We use this to show how your replies are coming in. You can raise the number anytime.",
+    "expectedHint": "We use this to show how many have answered, coming or not. You can raise the number anytime.",
     "packagePaid": "{name} — {price} · paid",
     "deletedOn": "Everything is deleted on {date}",
     "deletedOnPast": "Everything was deleted on {date}",
@@ -361,7 +362,7 @@
     "unsavedChanges": "You have unsaved changes.",
     "keepEditing": "Keep editing",
     "discardChanges": "Discard changes",
-    "readExpectedLabel": "Expected guests",
+    "readExpectedLabel": "Guests invited",
     "readExpected": "{count, plural, one {# guest} other {# guests}}",
     "readReplied": "{count} replied so far",
     "readClosesLabel": "Reply form closes",
@@ -386,11 +387,17 @@
     "confirmPasswordHint": "Your Festio account password, to confirm it's you.",
     "confirmGoogleNote": "You sign in with Google, so Google's window opens to confirm it's you.",
     "confirmGoogleWrong": "That isn't the Google account you're signed in with.",
-    "cancelKeep": "Keep the event"
+    "cancelKeep": "Keep the event",
+    "hiddenWarningTitle": "Hiding the invitation",
+    "hiddenWarning": "Anyone who opens your link will find nothing there until you make it Public or Protected again. Festio will not tell your guests.",
+    "protectedWarningTitle": "Asking for a password",
+    "protectedWarning": "Guests will need the password to see the invitation and reply. Cards printed before now don't have it on them — passing it on is yours to do.",
+    "closeWarningTitle": "Closing replies earlier",
+    "closeWarning": "The reply form closes at the time you pick. Guests who haven't replied by then can't any more, and Festio will not tell them.",
+    "closeInPast": "Pick a time that hasn't passed yet."
   },
   "HostEditor": {
     "quit": "Quit editor",
-    "quitShort": "Quit",
     "settings": "Settings",
     "printSettings": "Print settings",
     "save": "Save",
@@ -436,7 +443,6 @@
     }
   },
   "ContentTab": {
-    "sections": "Sections",
     "open": "Edit {section}",
     "edit": "Edit",
     "add": "Add",
@@ -544,9 +550,9 @@
       "why": "The reply form closed on {date}. You can still add replies that reach you another way."
     },
     "paused": {
-      "action": "Raise expected",
-      "task": "Raise your expected guests",
-      "why": "Far more replies came in than you expected, so the reply form is paused."
+      "action": "Raise the number",
+      "task": "Raise the number of guests invited",
+      "why": "Far more replies came in than guests invited, so the reply form is paused."
     },
     "hidden": {
       "action": "Change visibility",
@@ -589,7 +595,7 @@
     "sectionSummary": "Summary",
     "sectionList": "Guest list",
     "summaryReplies": "Replies",
-    "summaryExpected": "Total expected",
+    "summaryExpected": "Guests invited",
     "summaryChange": "Change",
     "summaryAdults": "Adults",
     "summaryChildren": "Children",
@@ -642,6 +648,7 @@
     "delete": "Delete",
     "deleteConfirm": "Delete {name}? This can't be undone.",
     "deleteReply": "Delete reply",
+    "deleteGroupReply": "Delete group reply",
     "deleteReplyConfirm": "Delete the reply from {names}? Everyone in it is removed. This can't be undone.",
     "keepReply": "Keep reply",
     "unsaved": "You have unsaved changes.",
@@ -753,7 +760,7 @@
     "failed": "Something went wrong while saving. Please try again.",
     "slugTaken": "This link is already taken. Pick another one.",
     "dateLocked": "The date can't change from the day of the event.",
-    "expectedTooLow": "Expected guests can't be fewer than the replies already in.",
+    "expectedTooLow": "Guests invited can't be fewer than the guests who have already answered.",
     "closeTooLate": "Replies must close by the day before the event.",
     "wrongPassword": "That password isn't right.",
     "notAllowed": "This can't be done for this event."

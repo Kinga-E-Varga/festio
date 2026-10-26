@@ -63,7 +63,7 @@ export function useInvitationSave(
     if (names)
       toast.show(
         t("questionsKept", { names, count: saved?.kept.length ?? 0 }),
-        "warning",
+        "neutral",
       );
     else toast.show(t("saved"));
   }

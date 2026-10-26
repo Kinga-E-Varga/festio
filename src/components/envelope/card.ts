@@ -25,6 +25,8 @@ import { clamp01, cubic, easeInOut, LIFTED, SLIDE_MS } from "./motion";
  */
 export type CardOpening = "rise" | "slide";
 export const CARD_OPENINGS: CardOpening[] = ["rise", "slide"];
+/** What a guest sees, and the editor starts on. */
+export const DEFAULT_OPENING: CardOpening = "slide";
 
 /** `rise`: out of the pocket (ms). */
 const RISE_MS = 900;

@@ -145,8 +145,9 @@ export function expectedLevel(percent: number): ExpectedLevel {
  */
 export function repliesBarVars(event: ReplyCounts): CSSProperties {
   const scale = Math.max(event.expectedGuests, event.rsvp.replied);
-  const attending = scale > 0 ? (event.rsvp.attending / scale) * 100 : 0;
-  const declined = scale > 0 ? (event.rsvp.declined / scale) * 100 : 0;
+  /* Times 100 first, so whole shares stay whole (35 of 125 is 28, not 28.000…04). */
+  const attending = scale > 0 ? (event.rsvp.attending * 100) / scale : 0;
+  const declined = scale > 0 ? (event.rsvp.declined * 100) / scale : 0;
 
   return {
     "--attending": `${attending}%`,

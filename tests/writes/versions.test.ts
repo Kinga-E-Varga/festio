@@ -39,6 +39,7 @@ test("an invitation saved from an old version is refused", async () => {
         kind: "simple",
         values: { title },
         envelope: true,
+        opening: "slide",
         version: 0,
       })),
     );

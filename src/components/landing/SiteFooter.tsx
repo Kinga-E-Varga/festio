@@ -8,7 +8,7 @@ export function SiteFooter() {
 
   return (
     <footer className="bg-secondary-400 text-neutral-950">
-      <div className="mx-auto grid max-w-app grid-cols-2 gap-7 px-[18px] pt-8 pb-[26px] nav:grid-cols-[repeat(3,1fr)_1.2fr] nav:gap-10 nav:px-8 nav:pt-11 nav:pb-[34px]">
+      <div className="grid grid-cols-2 gap-7 px-[18px] pt-8 pb-[26px] nav:grid-cols-[repeat(3,1fr)_1.2fr] nav:gap-10 nav:px-8 nav:pt-11 nav:pb-[34px]">
         {FOOTER_COLUMNS.map((column) => (
           <div key={column.labelKey}>
             <h2 className="mb-3.5 label-caps">{t(column.labelKey)}</h2>

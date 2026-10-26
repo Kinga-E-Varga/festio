@@ -1,5 +1,9 @@
 import { getTranslations } from "next-intl/server";
-import { EventOverview } from "@/components/dashboard/EventOverview";
+import {
+  EventOverview,
+  type OverviewPreview,
+} from "@/components/dashboard/EventOverview";
+import { InvitationEdit } from "@/components/dashboard/overview/EventBox";
 import {
   ModularPreview,
   SimplePreview,
@@ -22,8 +26,13 @@ export async function generateMetadata({ params }: Props) {
   return eventMetadata((await params).id);
 }
 
-/** The invitation as guests see it, drawn live and shrunk; none before a design is picked. */
-async function invitationPreview(event: DashboardEvent) {
+/**
+ * The invitation as guests see it, drawn live and shrunk, and whether it is a
+ * simple card (`card`); none before a design is picked.
+ */
+async function invitationPreview(
+  event: DashboardEvent,
+): Promise<OverviewPreview | null> {
   if (!event.templateId) return null;
   const [loaded, stored, t] = await Promise.all([
     loadTemplate(event.templateId),
@@ -32,28 +41,36 @@ async function invitationPreview(event: DashboardEvent) {
   ]);
   if (!loaded) return null;
   const label = t("previewAlt", { title: event.title });
+  const corner = <InvitationEdit event={event} />;
   const { language } = event;
 
   /* Only a simple template file has a card of its own. */
   if (!("Card" in loaded)) {
     const library = loadLibrary();
-    return (
-      <ModularPreview
-        library={library}
-        state={modularStart(loaded.template, stored, library, language)}
-        basics={{ date: event.date }}
-        language={language}
-        label={label}
-      />
-    );
+    return {
+      card: false,
+      picture: (
+        <ModularPreview
+          library={library}
+          state={modularStart(loaded.template, stored, library, language)}
+          basics={{ date: event.date }}
+          language={language}
+          label={label}
+          corner={corner}
+        />
+      ),
+    };
   }
   const { template, Card } = loaded;
   const values = invitationValues(template, event, stored);
-  return (
-    <SimplePreview template={template} label={label}>
-      <Card values={cardValues(values, language)} />
-    </SimplePreview>
-  );
+  return {
+    card: true,
+    picture: (
+      <SimplePreview template={template} label={label} corner={corner}>
+        <Card values={cardValues(values, language)} />
+      </SimplePreview>
+    ),
+  };
 }
 
 export default async function EventOverviewPage({ params }: Props) {

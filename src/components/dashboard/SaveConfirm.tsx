@@ -3,7 +3,7 @@
 import { useTranslations } from "next-intl";
 import { type ReactNode, useState } from "react";
 import { Dialog, DialogActions } from "@/components/dashboard/Dialog";
-import { BTN_GHOST_LIGHT, BTN_PRIMARY } from "@/components/dashboard/styles";
+import { BTN_WARN, BTN_WARN_OUTLINE } from "@/components/dashboard/styles";
 import type { Visibility } from "@/types/dashboard";
 
 interface SaveConfirmProps {
@@ -17,13 +17,13 @@ interface SaveConfirmProps {
 export function SaveConfirm({ replied, onAgree, onCancel }: SaveConfirmProps) {
   const t = useTranslations("SaveConfirm");
   return (
-    <Dialog title={t("title")} onDismiss={onCancel}>
-      <p className="row-text">{t("body", { count: replied })}</p>
+    <Dialog title={t("title")} onDismiss={onCancel} warn>
+      <p className="row-face">{t("body", { count: replied })}</p>
       <DialogActions>
-        <button type="button" onClick={onCancel} className={BTN_GHOST_LIGHT}>
+        <button type="button" onClick={onCancel} className={BTN_WARN_OUTLINE}>
           {t("cancel")}
         </button>
-        <button type="button" onClick={onAgree} className={BTN_PRIMARY}>
+        <button type="button" onClick={onAgree} className={BTN_WARN}>
           {t("agree")}
         </button>
       </DialogActions>

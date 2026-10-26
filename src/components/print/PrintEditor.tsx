@@ -6,6 +6,7 @@ import { savePrintSettings } from "@/actions/event";
 import { orFailed } from "@/lib/action";
 import { useToast } from "@/components/dashboard/Toast";
 import { EditorFrame } from "@/components/invitation/EditorFrame";
+import { useEditing } from "@/components/invitation/useEditing";
 import { printVars, templateFontVars } from "@/lib/invitation";
 import type { InvitationTemplate } from "@/types/invitation";
 import type { PrintSettings } from "@/types/print";
@@ -86,10 +87,10 @@ export function PrintEditor({
   /*
    * Answered at every width. Below the breakpoint the form covers the
    * paper; above it the form sits beside the paper and closing it hands the
-   * width over — see `.sheet-form`. Closed on arrival: the host sees the
-   * paper first and opens the form from the strip.
+   * width over — see `.sheet-form`. Open on arrival only beside the paper
+   * (`useEditing`).
    */
-  const [editing, setEditing] = useState(false);
+  const [editing, setEditing] = useEditing();
   const t = useTranslations("HostEditor");
   const tError = useTranslations("SaveErrors");
   const toast = useToast();

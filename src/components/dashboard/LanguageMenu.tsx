@@ -5,7 +5,13 @@ import { useCallback, useRef, useState } from "react";
 import { usePathname, useRouter } from "@/i18n/navigation";
 import { routing } from "@/i18n/routing";
 import { useDismiss } from "@/components/dashboard/event-nav/useDismiss";
-import { BAR_ICON, MENU_BOX, MENU_ROW } from "@/components/dashboard/styles";
+import { Icon } from "@/components/icons";
+import {
+  MENU_BOX,
+  MENU_ROW,
+  QUIT_ITEM,
+  SIDE_ICON,
+} from "@/components/dashboard/styles";
 import { LANGUAGE_NAMES, type Language } from "@/lib/language";
 
 /**
@@ -48,8 +54,9 @@ export function LanguageOptions({ onPick }: { onPick: () => void }) {
 }
 
 /**
- * The host app's language behind one button at the right-hand strip's foot:
- * the current language's code, the menu opening to its left.
+ * The host app's language behind one row at the docked nav's foot, built
+ * like the nav's items: the globe, the current language's name, its code at
+ * the end; the menu opens above it, as wide as the row.
  */
 export function LanguageMenu() {
   const t = useTranslations("LanguageSwitcher");
@@ -67,15 +74,19 @@ export function LanguageMenu() {
         aria-haspopup="true"
         aria-label={`${t("label")}: ${LANGUAGE_NAMES[locale as Language]}`}
         onClick={() => setOpen((current) => !current)}
-        className={BAR_ICON}
+        className={`${QUIT_ITEM} w-full cursor-pointer wide:px-4`}
       >
-        <span aria-hidden="true" className="button-text">
+        <Icon name="globe" {...SIDE_ICON} />
+        <span aria-hidden="true" className="flex-1 text-left">
+          {LANGUAGE_NAMES[locale as Language]}
+        </span>
+        <span aria-hidden="true" className="hint-text tracking-[0.06em]">
           {t(locale as Language)}
         </span>
       </button>
 
       {open ? (
-        <div className={`${MENU_BOX} right-full bottom-0 mr-2 w-36`}>
+        <div className={`${MENU_BOX} bottom-full left-0 mb-2 w-full`}>
           <LanguageOptions onPick={close} />
         </div>
       ) : null}

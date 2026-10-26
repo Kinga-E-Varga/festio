@@ -1,8 +1,5 @@
 "use client";
 
-import { useTranslations } from "next-intl";
-import { EditorHeading } from "@/components/dashboard/event-editor/EditorSection";
-import { Switch } from "@/components/invitation/PanelSwitch";
 import type { Language } from "@/lib/language";
 import { DEFAULT_CORNERS, isCornersId } from "@/modular/corners";
 import type { ModularLibrary, ModularState } from "@/types/modular";
@@ -12,9 +9,8 @@ import {
   PalettePicker,
   PatternPicker,
 } from "./LookPickers";
+import { EnvelopeCard } from "./EnvelopeCard";
 import { SectionsList } from "./SectionsList";
-import { SectionBar } from "./SectionBar";
-import { SECTION_CARD as CARD } from "./styles";
 import { TemplatePicker } from "./TemplatePicker";
 
 interface DesignTabProps {
@@ -49,7 +45,6 @@ export function DesignTab({
   onOpenStyles,
   onStylePicked,
 }: DesignTabProps) {
-  const t = useTranslations("DesignTab");
   return (
     <div className="flex flex-col">
       <TemplatePicker
@@ -77,32 +72,10 @@ export function DesignTab({
         current={isCornersId(state.corners) ? state.corners : DEFAULT_CORNERS}
         onPick={(id) => onChange({ ...state, corners: id })}
       />
-      <div
-        role="group"
-        aria-labelledby="design-heading-envelope"
-        className="mb-8 flex flex-col"
-      >
-        <EditorHeading
-          id="design-heading-envelope"
-          title={t("envelopeHeading")}
-        />
-        {/* As a section's card in Sections, its switch set the same way. */}
-        <div className={CARD}>
-          <SectionBar
-            mark={
-              <Switch
-                size="panel"
-                tone="light"
-                id="envelope-switch"
-                label={t("envelope")}
-                checked={state.envelope}
-                onChange={(on) => onChange({ ...state, envelope: on })}
-              />
-            }
-            name={t("envelope")}
-          />
-        </div>
-      </div>
+      <EnvelopeCard
+        on={state.envelope}
+        onChange={(on) => onChange({ ...state, envelope: on })}
+      />
       <SectionsList
         library={library}
         state={state}

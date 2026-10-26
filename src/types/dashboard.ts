@@ -16,6 +16,7 @@ export type IconName =
   | "guests"
   | "seating"
   | "templates"
+  | "card"
   | "palette"
   | "brush"
   | "fonts"

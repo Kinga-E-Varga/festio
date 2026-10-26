@@ -1,8 +1,8 @@
 import { useTranslations } from "next-intl";
 import { Icon } from "@/components/icons";
-import { LanguageMenu } from "@/components/dashboard/LanguageMenu";
+import { Link } from "@/i18n/navigation";
 import { SIDE_PANEL_ID } from "@/components/dashboard/SidePanel";
-import { BAR_ICON, STRIP_ICON } from "@/components/dashboard/styles";
+import { BAR_ICON, QUIT_RULE, STRIP_ICON } from "@/components/dashboard/styles";
 import type {
   SidePanel,
   SidePanelView,
@@ -46,7 +46,7 @@ export function countedViews(bar: BarData): BarView[] {
     },
     {
       view: "replies",
-      icon: "guests",
+      icon: "envelope",
       count: { key: "repliesCount", value: bar.replies },
     },
   ];
@@ -56,12 +56,9 @@ export function countedViews(bar: BarData): BarView[] {
 export function AccountButton({
   panel,
   initials,
-  className = "",
 }: {
   panel: SidePanel;
   initials: string;
-  /** The phone's top bar's bigger circle. */
-  className?: string;
 }) {
   const t = useTranslations("TopBar");
 
@@ -72,7 +69,7 @@ export function AccountButton({
       aria-controls={SIDE_PANEL_ID}
       aria-expanded={panel.open && panel.view === "account"}
       aria-label={t("account")}
-      className={`grid size-btn place-items-center rounded-full bg-primary-800 pl-[0.06em] text-xs leading-none font-semibold tracking-[0.06em] text-neutral-100 transition-colors hover:bg-primary-900 ${className}`}
+      className="grid size-btn place-items-center rounded-full bg-primary-800 pl-[0.06em] text-xs leading-none font-semibold tracking-[0.06em] text-neutral-100 transition-colors hover:bg-primary-900"
     >
       {initials}
     </button>
@@ -80,15 +77,18 @@ export function AccountButton({
 }
 
 /**
- * Account, cart, alerts, latest replies and language down the strip from
- * `nav` up, built like the nav beside it, so each row lines up with its own:
- * the account in the logo's place (its top padding, 36px), the buttons in a
- * box padded like the nav's links, language at the foot like Quit, under the
- * same 1px rule (here clear) and 12px. Below `nav` the phone's top bar has
+ * Account, cart, alerts, latest replies and Quit dashboard down the strip
+ * from `nav` up, built like the nav beside it, so each row lines up with its
+ * own: the account in the logo's place (its top padding, 36px), the buttons
+ * in a box padded like the nav's links, Quit at the foot level with the
+ * nav's language, under the same 1px rule and 12px, the rule as wide as the
+ * button. The editors' strip has its Quit in the same place. Each button
+ * but the account names itself in a tip on hover (`icon-tip`). Below `nav` the phone's top bar has
  * the account and a More menu instead (`MoreMenu`).
  */
 export function BarActions({ panel, bar }: { panel: SidePanel; bar: BarData }) {
   const t = useTranslations("TopBar");
+  const tNav = useTranslations("Nav");
 
   return (
     <div className="flex h-full flex-col items-center pb-5 wide:pb-7">
@@ -96,8 +96,8 @@ export function BarActions({ panel, bar }: { panel: SidePanel; bar: BarData }) {
         <AccountButton panel={panel} initials={bar.initials} />
       </div>
 
-      {/* Each glyph carries hit area either side, so a gap reads wider than it is: 20px. */}
-      <div className="flex min-h-0 flex-1 flex-col items-center gap-5 pt-chrome-top pb-3">
+      {/* Circle to circle, the same room as the account has above them (20px, 28px on large screens). */}
+      <div className="flex min-h-0 flex-1 flex-col items-center gap-chrome-top pt-chrome-top pb-3">
         {countedViews(bar).map((each) => (
           <button
             key={each.view}
@@ -110,7 +110,8 @@ export function BarActions({ panel, bar }: { panel: SidePanel; bar: BarData }) {
                 ? t(each.count.key, { count: each.count.value })
                 : t(each.view)
             }
-            className={`group ${BAR_ICON}`}
+            data-tip={t(each.view)}
+            className={`group icon-tip ${BAR_ICON}`}
           >
             <Icon name={each.icon} {...STRIP_ICON} />
             {each.count ? (
@@ -122,8 +123,15 @@ export function BarActions({ panel, bar }: { panel: SidePanel; bar: BarData }) {
         ))}
       </div>
 
-      <div className="border-t border-transparent pt-3">
-        <LanguageMenu />
+      <div className={QUIT_RULE}>
+        <Link
+          href="/"
+          aria-label={tNav("quit")}
+          data-tip={tNav("quit")}
+          className={`icon-tip ${BAR_ICON}`}
+        >
+          <Icon name="quit" {...STRIP_ICON} />
+        </Link>
       </div>
     </div>
   );

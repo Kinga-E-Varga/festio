@@ -1,14 +1,12 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import { AlertRow } from "@/components/dashboard/AlertRow";
 import {
-  SMALL_BTN_DISCARD,
-  SMALL_BTN_KEEP,
-} from "@/components/dashboard/guest-list/styles";
-import { WARNING_DARK } from "@/components/dashboard/styles";
-
-/** The warning fill without the edge the other alerts have, so it asks rather than alarms. */
-const PROMPT = `rounded-ui px-4 py-3 meta-face ${WARNING_DARK}`;
+  ALERT,
+  SMALL_BTN_WARN,
+  SMALL_BTN_WARN_SOLID,
+} from "@/components/dashboard/styles";
 
 interface UnsavedPromptProps {
   title: string;
@@ -50,17 +48,16 @@ export function UnsavedPrompt({
     <div
       ref={prompt}
       role="alert"
-      className={`${className} ${PROMPT} flex scroll-mt-[88px] scroll-mb-4 flex-wrap items-center gap-2.5`}
+      className={`${className} ${ALERT} @container scroll-mt-[88px] scroll-mb-4`}
     >
-      <span className="mr-auto">{title}</span>
-      <div className="flex shrink-0 items-center gap-2.5">
-        <button type="button" onClick={onDiscard} className={SMALL_BTN_DISCARD}>
+      <AlertRow title={title}>
+        <button type="button" onClick={onDiscard} className={SMALL_BTN_WARN}>
           {discardLabel}
         </button>
-        <button type="button" onClick={onKeep} className={SMALL_BTN_KEEP}>
+        <button type="button" onClick={onKeep} className={SMALL_BTN_WARN_SOLID}>
           {keepLabel}
         </button>
-      </div>
+      </AlertRow>
     </div>
   );
 }

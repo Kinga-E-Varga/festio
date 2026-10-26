@@ -89,6 +89,7 @@
   },
   "Nav": {
     "aria": "Vezérlőpult szakaszai",
+    "dashboard": "Vezérlőpult",
     "quit": "Vezérlő elhagyása",
     "home": "Kezdőlap",
     "billing": "Számlázás",
@@ -149,7 +150,7 @@
     "greeting": "Szia, {name}",
     "emptyUpcoming": "Még nincs eseményed. Válassz sablont az elsőhöz.",
     "came": "{count} vendég jött el",
-    "repliedShort": "{expected} vendégből {replied} válaszolt",
+    "repliedShort": "{expected} meghívott vendégből {replied} válaszolt",
     "createTitle": "Új esemény létrehozása",
     "createLine": "Válassz meghívót, add meg a részleteket, oszd meg a linket.",
     "nextEvent": "Következő esemény",
@@ -160,11 +161,11 @@
     "events": "Események",
     "filter": "Események szűrése",
     "filters": {
-      "upcoming": "Közelgő ({count})",
-      "live": "Élő ({count})",
-      "hidden": "Rejtett ({count})",
-      "past": "Korábbi ({count})",
-      "all": "Minden esemény ({count})"
+      "upcoming": "Közelgő",
+      "live": "Élő",
+      "hidden": "Rejtett",
+      "past": "Korábbi",
+      "all": "Minden esemény"
     },
     "status": {
       "active": "Élő",
@@ -193,9 +194,9 @@
     "protectedNote": "A vendégeknek jelszó kell a meghívó megtekintéséhez, így csak azok látják, akikkel megosztod. A jelszó a nyomtatott kártyán, a link alatt szerepel.",
     "recordDeleted": "Adatok törlése",
     "replyFormCloses": "Válaszűrlap zárása",
-    "meter": "<big>{replied}</big>/{expected} várt vendég válaszolt · {percent}%",
-    "meterAria": "{expected} várt vendégből {replied} válaszolt",
-    "barAria": "Válaszok: {attending} részt vesz és {declined} nem vesz részt, {expected} várt vendégből",
+    "meter": "<big>{replied}</big>/{expected} meghívott vendég válaszolt · {percent}%",
+    "meterAria": "{expected} meghívott vendégből {replied} válaszolt",
+    "barAria": "Válaszok: {attending} részt vesz és {declined} nem vesz részt, {expected} meghívott vendégből",
     "seatingPaidOnly": "Az ültetési rend a fizetős meghívók része",
     "todo": "Teendőlista",
     "copyLinkFor": "{title} meghívólinkjének másolása",
@@ -214,9 +215,9 @@
     "keyDates": "Fontos dátumok",
     "legendComing": "<b>{count}</b> jön",
     "legendNotComing": "<b>{count}</b> nem jön",
-    "repliedOfExpected": "<big>{replied}</big> válaszolt a várt {expected} vendégből · {percent}%",
-    "legendStillExpected": "még <b>{count}</b> várható",
-    "legendOverExpected": "<b>{count}</b> a vártnál több",
+    "repliedOfExpected": "<big>{replied}</big> válaszolt az összes {expected} meghívott vendégből · {percent}%",
+    "legendStillExpected": "még <b>{count}</b> nem válaszolt",
+    "legendOverExpected": "<b>{count}</b> a meghívottaknál több",
     "fullSummary": "Teljes összesítő",
     "suggestedLine": {
       "transport": "Utazást kér",
@@ -230,7 +231,7 @@
     "upgrade": "Csomagváltás",
     "formOpen": "A válaszűrlap nyitva eddig: {date}",
     "formClosed": "A válaszűrlap lezárult: {date}",
-    "formPaused": "A válaszűrlap szünetel: jóval több válasz jött, mint vártad",
+    "formPaused": "A válaszűrlap szünetel: jóval több válasz jött, mint ahány meghívott vendég van",
     "dataPrivacy": "Adatok és adatvédelem",
     "seeGuestList": "Vendéglista megnyitása"
   },
@@ -268,7 +269,7 @@
     "hiddenBody": "Rejtettre van állítva: senki sem nyithatja meg, még a linkkel rendelkező vendég sem.",
     "deletingBody": "A meghívó és minden válasz törlődik: {date}. Ha meg szeretnéd őrizni, előtte exportáld.",
     "attentionBody": "Ismeretlen vagy ismétlődő nevek. A Vendégek oldal tetején rendezheted őket.",
-    "pausedBody": "A vártnál jóval több válasz érkezett, ezért az űrlap szünetel. Valódi vendégek? Emeld meg a számot. Ha nem, jelentsd."
+    "pausedBody": "Jóval több válasz érkezett, mint ahány meghívott vendég van, ezért az űrlap szünetel. Valódi vendégek? Emeld meg a számot. Ha nem, jelentsd."
   },
   "EventEditor": {
     "leaveUnsaved": "Mentetlen módosításaid vannak. Biztosan kilépsz?",
@@ -281,13 +282,13 @@
     "dateHint": "Az eseményed dátuma, ez jelenik meg a meghívón.",
     "dateLockedHint": "Elérkezett az esemény napja, így a dátum már nem módosítható.",
     "languageWarningTitle": "A meghívó nyelvének módosítása",
-    "languageWarning": "Aki mostantól megnyitja a linket, az új nyelven látja a válaszűrlapot. A már elküldött válaszokat ez nem érinti — a kérdéshez vannak mentve, nem a megfogalmazásához. A már letöltött nyomtatható fájl azon a nyelven marad, amelyen készült; töltsd le újra az új nyelvhez.",
+    "languageWarning": "Aki mostantól megnyitja a linket, az új nyelven látja a válaszűrlapot. A már letöltött nyomtatható fájl azon a nyelven marad, amelyen készült; töltsd le újra az új nyelvhez.",
     "dateWarningTitle": "A dátum áthelyezése",
     "dateWarning": "A meghívón az új dátum jelenik meg, de a Festio nem értesíti a vendégeidet — ez a te feladatod. {count, plural, =0 {Erre az eseményre még senki sem válaszolt.} other {Erre az eseményre <b>már # vendég válaszolt</b>.}}",
     "closeAt": "Az űrlap lezárása",
     "closeTooLate": "Olyan időpontot válassz, amely nem későbbi a 24 órás határidőnél.",
-    "expectedTooLow": "{count, plural, other {Már # válaszod van.}} Nem várhatsz kevesebb vendéget, mint ahányan már válaszoltak.",
-    "expectedRequired": "Add meg, hány vendéget vársz.",
+    "expectedTooLow": "{count, plural, other {Már # vendég válaszolt.}} Ennél kevesebb vendéget nem hívhatsz meg.",
+    "expectedRequired": "Add meg, hány vendéget hívsz meg.",
     "slugTooShort": "Legalább {min} karaktert használj — betűket, számokat és kötőjelet.",
     "slugTooLong": "Legfeljebb {max} karaktert használj.",
     "slugTaken": "Ez a link már foglalt.",
@@ -299,7 +300,7 @@
     "addressHint": "Ha már megosztottad a linket, a módosítása a vendégeidnél lévő összes példányt használhatatlanná teszi.",
     "copyLink": "Meghívólink másolása",
     "addressWarningTitle": "A cím módosítása",
-    "addressWarning": "A régi link a mentés pillanatában megszűnik működni. A link, amely <b>{count, plural, other {# vendégednél}}</b> megvan, sehová sem vezet, az új továbbadása pedig a te feladatod.",
+    "addressWarning": "A régi link a mentés pillanatában megszűnik működni. {count, plural, =0 {Minden kiküldött vagy kinyomtatott példánya} other {A link, amely <b># vendégednél</b> megvan,}} sehová sem vezet, az új továbbadása pedig a te feladatod.",
     "visibilityLegend": "Ki nyithatja meg a meghívót",
     "password": "Jelszó",
     "passwordAria": "A meghívó jelszava",
@@ -309,7 +310,7 @@
     "passwordWarningTitle": "A jelszó módosítása",
     "passwordWarning": "A régi jelszó a mentés pillanatában megszűnik működni. A vendégek addig nem látják a meghívót, amíg meg nem adod nekik az újat.",
     "noindex": "Soha nem jelenik meg a Google-ban vagy más keresőkben, bármit is választasz.",
-    "expectedHint": "Ebből mutatjuk meg, hogyan érkeznek a válaszok. A számot bármikor megemelheted.",
+    "expectedHint": "Ebből mutatjuk meg, hányan válaszoltak, akár jönnek, akár nem. A számot bármikor megemelheted.",
     "packagePaid": "{name} — {price} · kifizetve",
     "deletedOn": "Minden törlődik: {date}",
     "deletedOnPast": "Minden törlődött: {date}",
@@ -361,7 +362,7 @@
     "unsavedChanges": "Mentetlen módosításaid vannak.",
     "keepEditing": "Szerkesztés folytatása",
     "discardChanges": "Változások elvetése",
-    "readExpectedLabel": "Várt vendégek",
+    "readExpectedLabel": "Meghívott vendégek",
     "readExpected": "{count} vendég",
     "readReplied": "Eddig {count} válaszolt",
     "readClosesLabel": "A válaszűrlap zárása",
@@ -386,11 +387,17 @@
     "confirmPasswordHint": "A Festio-fiókod jelszava, hogy megerősítsd: te vagy az.",
     "confirmGoogleNote": "Google-lel lépsz be, ezért megnyílik a Google ablaka, hogy megerősítsd, hogy te vagy az.",
     "confirmGoogleWrong": "Ez nem az a Google-fiók, amellyel be vagy jelentkezve.",
-    "cancelKeep": "Esemény megtartása"
+    "cancelKeep": "Esemény megtartása",
+    "hiddenWarningTitle": "A meghívó elrejtése",
+    "hiddenWarning": "Aki megnyitja a linket, semmit sem talál ott, amíg újra Nyilvánossá vagy Védetté nem teszed. A Festio nem értesíti a vendégeidet.",
+    "protectedWarningTitle": "Jelszó kérése",
+    "protectedWarning": "A vendégeknek jelszó kell a meghívó megtekintéséhez és a válaszhoz. Az eddig nyomtatott kártyákon nincs rajta — a továbbadása a te feladatod.",
+    "closeWarningTitle": "A válaszadás korábbi lezárása",
+    "closeWarning": "A válaszűrlap a választott időpontban lezárul. Aki addig nem válaszolt, utána már nem tud, és a Festio nem értesíti őket.",
+    "closeInPast": "Olyan időpontot válassz, amely még nem múlt el."
   },
   "HostEditor": {
     "quit": "Szerkesztő elhagyása",
-    "quitShort": "Kilépés",
     "settings": "Beállítások",
     "printSettings": "Nyomtatási beállítások",
     "save": "Ment",
@@ -436,7 +443,6 @@
     }
   },
   "ContentTab": {
-    "sections": "Szakaszok",
     "open": "{section} szerkesztése",
     "edit": "Módosít",
     "add": "Hozzáadás",
@@ -545,8 +551,8 @@
     },
     "paused": {
       "action": "Szám növelése",
-      "task": "Emeld a várt vendégek számát",
-      "why": "A vártnál jóval több válasz érkezett, ezért a válaszűrlap szünetel."
+      "task": "Emeld a meghívott vendégek számát",
+      "why": "Jóval több válasz érkezett, mint ahány meghívott vendég van, ezért a válaszűrlap szünetel."
     },
     "hidden": {
       "action": "Láthatóság módosítása",
@@ -589,7 +595,7 @@
     "sectionSummary": "Összegzés",
     "sectionList": "Vendéglista",
     "summaryReplies": "Válaszok",
-    "summaryExpected": "Összes várt vendég",
+    "summaryExpected": "Meghívott vendégek",
     "summaryChange": "Módosítás",
     "summaryAdults": "Felnőttek",
     "summaryChildren": "Gyerekek",
@@ -642,6 +648,7 @@
     "delete": "Törlés",
     "deleteConfirm": "Törlöd: {name}? Ez nem vonható vissza.",
     "deleteReply": "Válasz törlése",
+    "deleteGroupReply": "Csoportos válasz törlése",
     "deleteReplyConfirm": "Törlöd a választ ({names})? Mindenki törlődik belőle. Ez nem vonható vissza.",
     "keepReply": "Válasz megtartása",
     "unsaved": "Mentetlen módosításaid vannak.",
@@ -753,7 +760,7 @@
     "failed": "Valami hiba történt mentés közben. Próbáld újra.",
     "slugTaken": "Ez a link már foglalt. Válassz másikat.",
     "dateLocked": "Az esemény napjától a dátum már nem módosítható.",
-    "expectedTooLow": "A várt vendégek száma nem lehet kevesebb a már beérkezett válaszoknál.",
+    "expectedTooLow": "A meghívott vendégek száma nem lehet kevesebb azoknál, akik már válaszoltak.",
     "closeTooLate": "A válaszadásnak legkésőbb az esemény előtti napon le kell zárulnia.",
     "wrongPassword": "A jelszó nem helyes.",
     "notAllowed": "Ez ennél az eseménynél nem lehetséges."

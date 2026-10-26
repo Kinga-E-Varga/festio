@@ -1,6 +1,7 @@
 "use client";
 
 import { useLocale, useTranslations } from "next-intl";
+import { ChangeWarning } from "@/components/dashboard/event-editor/ChangeWarning";
 import { Choice } from "@/components/dashboard/event-editor/Choice";
 import {
   EditRow,
@@ -75,7 +76,21 @@ export function GuestsSection({
 
           <EditRow
             label={t("readClosesLabel")}
-            error={derived.closeTooLate ? t("closeTooLate") : null}
+            error={
+              derived.closeTooLate
+                ? t("closeTooLate")
+                : derived.closeInPast
+                  ? t("closeInPast")
+                  : null
+            }
+            warning={
+              <ChangeWarning
+                title={t("closeWarningTitle")}
+                warning={form.warnings.close}
+              >
+                {t("closeWarning")}
+              </ChangeWarning>
+            }
           >
             <div
               role="radiogroup"

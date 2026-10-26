@@ -1,23 +1,24 @@
 "use client";
 
 import { useTranslations } from "next-intl";
+import { AlertRow } from "@/components/dashboard/AlertRow";
 import { BoxHead } from "@/components/dashboard/BoxHead";
 import { UnsavedPrompt } from "@/components/dashboard/UnsavedPrompt";
 import { type ChangeEvent, useEffect, useRef, useState } from "react";
 import { useForm, useWatch } from "react-hook-form";
 import {
+  ALERT,
   BOX_PAD,
   BTN_GHOST_LIGHT,
   BTN_PRIMARY,
   INPUT,
+  SMALL_BTN_WARN,
+  SMALL_BTN_WARN_SOLID,
 } from "@/components/dashboard/styles";
 import { DraftNameList } from "@/components/dashboard/guest-list/DraftNameList";
 import {
-  ALERT,
-  BTN_LIST,
-  BTN_LIST_OUTLINE,
-  SMALL_BTN_WARN,
-  SMALL_BTN_WARN_SOLID,
+  SMALL_BTN,
+  SMALL_BTN_OUTLINE,
 } from "@/components/dashboard/guest-list/styles";
 import { useListDraft } from "@/components/dashboard/guest-list/useListDraft";
 import { findRepeats, parseNames } from "@/lib/guests";
@@ -141,18 +142,16 @@ export function AddNamesBox({
 
       <div className="flex flex-col gap-3">
         {notice === "unadded" ? (
-          <div
-            role="alert"
-            className={`${ALERT} flex flex-wrap items-center gap-2.5`}
-          >
-            <span className="mr-auto">{t("unaddedTitle")}</span>
-            <button
-              type="button"
-              onClick={add}
-              className={SMALL_BTN_WARN_SOLID}
-            >
-              {t("addThem")}
-            </button>
+          <div role="alert" className={`${ALERT} @container`}>
+            <AlertRow title={t("unaddedTitle")}>
+              <button
+                type="button"
+                onClick={add}
+                className={SMALL_BTN_WARN_SOLID}
+              >
+                {t("addThem")}
+              </button>
+            </AlertRow>
           </div>
         ) : null}
         {notice === "discard" || ask ? (
@@ -206,14 +205,14 @@ export function AddNamesBox({
                 type="button"
                 onClick={clearInput}
                 disabled={text.length === 0}
-                className={BTN_LIST_OUTLINE}
+                className={SMALL_BTN_OUTLINE}
               >
                 {t("clearInput")}
               </button>
               <button
                 type="submit"
                 disabled={names.length === 0}
-                className={BTN_LIST}
+                className={SMALL_BTN}
               >
                 {t("addNamesSubmit", { count: names.length })}
               </button>

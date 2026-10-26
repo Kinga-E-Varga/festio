@@ -31,7 +31,8 @@ import type { DashboardEvent, EventKind, Visibility } from "@/types/dashboard";
  * warning the host has to take in before the save unlocks — Festio never
  * notifies guests, so acknowledging it is the whole point.
  */
-export type WarningId = "date" | "address" | "password" | "language";
+export type WarningId =
+  "date" | "address" | "password" | "language" | "visibility" | "close";
 
 export interface Warning {
   shown: boolean;
@@ -44,6 +45,8 @@ const NONE_ACKNOWLEDGED: Record<WarningId, boolean> = {
   address: false,
   password: false,
   language: false,
+  visibility: false,
+  close: false,
 };
 
 interface EventFieldValues {
@@ -79,6 +82,7 @@ export function useEventForm(event: DashboardEvent) {
     slug: event.slug,
     password: event.password ?? "",
     language: event.language,
+    closeAt: event.repliesCloseAt ?? "",
   };
 
   const { control, setValue, getValues, reset, formState } =
@@ -89,7 +93,7 @@ export function useEventForm(event: DashboardEvent) {
         language: original.language,
         date: event.date,
         closeEarly: Boolean(event.repliesCloseAt),
-        closeAt: event.repliesCloseAt ?? "",
+        closeAt: original.closeAt,
         slug: event.slug,
         visibility: event.visibility,
         password: original.password,
@@ -143,9 +147,15 @@ export function useEventForm(event: DashboardEvent) {
   const cutoffLabel = formatDeadline(cutoff, locale);
   const chosenClose = new Date(closeAt);
   const chosenReal = closeEarly && isRealDate(chosenClose);
+  /* When replies close now, as saved: its own time, or the cut-off. */
+  const savedClose = event.repliesCloseAt
+    ? new Date(event.repliesCloseAt)
+    : defaultReplyClose(event.date);
+  /* When the page opened: a closing time before it has already passed. */
+  const [openedAt] = useState(() => Date.now());
 
-  // Only a link someone is already holding can be broken by a change.
-  const shared = event.rsvp.replied > 0;
+  // A link may be out once guests can open it, or once anyone has replied.
+  const shared = event.visibility !== "hidden" || event.rsvp.replied > 0;
 
   function warning(id: WarningId, shown: boolean): Warning {
     return {
@@ -158,13 +168,26 @@ export function useEventForm(event: DashboardEvent) {
   const warnings: Record<WarningId, Warning> = {
     date: warning("date", date !== event.date),
     address: warning("address", shared && cleanSlug !== original.slug),
-    password: warning("password", shared && password !== original.password),
+    /* A new password only breaks one guests already use; a first one comes with the visibility's warning. */
+    password: warning(
+      "password",
+      event.visibility === "protected" && password !== original.password,
+    ),
     /*
      * A new language rewrites the reply form under guests who already have
      * the link — the same kind of change as moving the date, and warned
      * about the same way.
      */
     language: warning("language", shared && language !== original.language),
+    /* Hidden or Protected shuts out guests who could open the link until now. */
+    visibility: warning(
+      "visibility",
+      event.visibility !== "hidden" &&
+        visibility !== event.visibility &&
+        visibility !== "public",
+    ),
+    /* Only an earlier close takes time away from guests; a later one gives it back. */
+    close: warning("close", shared && chosenReal && chosenClose < savedClose),
   };
 
   const pending = Object.values(warnings).filter(
@@ -243,8 +266,19 @@ export function useEventForm(event: DashboardEvent) {
       ? t("passwordInvalid")
       : null;
 
-  /* Every card needs a name, so a missing or short one keeps Save shut. */
-  const canSave = formState.isDirty && pending === 0 && !titleError && !saving;
+  /* A closing time already past would close the form the moment it saves. */
+  const closeInPast =
+    chosenReal &&
+    chosenClose.getTime() < openedAt &&
+    closeAt !== original.closeAt;
+
+  /* Every card needs a name, so a missing or short one keeps Save shut; so does a close already past. */
+  const canSave =
+    formState.isDirty &&
+    pending === 0 &&
+    !titleError &&
+    !closeInPast &&
+    !saving;
 
   /** Sends the form to the server; saved, its values become the new starting point. */
   async function save() {
@@ -309,16 +343,24 @@ export function useEventForm(event: DashboardEvent) {
       },
       closeEarly: (value: boolean) => {
         edit("closeEarly")(value);
+        if (!value) acknowledge("close", false);
         // Switching on starts from the cut-off, which is the latest it can be.
         if (value && !closeAt) edit("closeAt")(toDateTimeLocal(cutoff));
       },
-      closeAt: edit("closeAt"),
+      closeAt: (value: string) => {
+        edit("closeAt")(value);
+        if (value === original.closeAt) acknowledge("close", false);
+      },
       slug: (value: string) => {
         edit("slug")(value);
         if (normalizeSlug(value) === original.slug)
           acknowledge("address", false);
       },
-      visibility: edit("visibility"),
+      visibility: (value: Visibility) => {
+        edit("visibility")(value);
+        /* Hidden and Protected each warn of their own thing: a new pick asks again. */
+        acknowledge("visibility", false);
+      },
       password: (value: string) => {
         edit("password")(value);
         if (value === original.password) acknowledge("password", false);
@@ -334,6 +376,8 @@ export function useEventForm(event: DashboardEvent) {
       closeDefaultLabel: cutoffLabel,
       /** Set while a chosen time sits past the cut-off, which cannot apply. */
       closeTooLate: chosenReal && chosenClose > cutoff,
+      /** Set while a newly chosen time has already passed. */
+      closeInPast,
       titleError,
       expectedValue,
       expectedError,

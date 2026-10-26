@@ -2,7 +2,6 @@
 
 import { useTranslations } from "next-intl";
 import { useState } from "react";
-import { useSaveConfirm } from "@/components/dashboard/SaveConfirm";
 import { Toast, useToast } from "@/components/dashboard/Toast";
 import { DangerZone } from "@/components/dashboard/event-editor/DangerZone";
 import { DetailsSection } from "@/components/dashboard/event-editor/DetailsSection";
@@ -35,8 +34,6 @@ export function EventEditor({ event, listCount, login }: EventEditorProps) {
   const tError = useTranslations("SaveErrors");
   const form = useEventForm(event);
   const toast = useToast();
-  /* The saved visibility: what guests can see now, not what the form holds. */
-  const confirm = useSaveConfirm(event.visibility, event.rsvp.replied);
   /* One card open at a time: Edit on another closes this one first. */
   const [open, setOpen] = useState<CardId | null>(null);
   /* The card asked for while the open one has unsaved changes, and how many times: the open card asks before they go. */
@@ -59,18 +56,17 @@ export function EventEditor({ event, listCount, login }: EventEditorProps) {
         setOpen(null);
         setPending(null);
       },
-      onSave: () => {
+      /* No confirm first: each change guests would notice has its own warning to tick. */
+      onSave: async () => {
         if (!form.save.canSave) return;
-        confirm.ask(async () => {
-          const result = await form.save.submit();
-          if (!result.success) {
-            toast.show(tError(result.error), "error");
-            return;
-          }
-          setOpen(null);
-          setPending(null);
-          toast.show(t("saved"));
-        });
+        const result = await form.save.submit();
+        if (!result.success) {
+          toast.show(tError(result.error), "error");
+          return;
+        }
+        setOpen(null);
+        setPending(null);
+        toast.show(t("saved"));
       },
       canSave: form.save.canSave,
       prompt:
@@ -106,7 +102,6 @@ export function EventEditor({ event, listCount, login }: EventEditorProps) {
         <PackageSection event={event} />
         <DangerZone event={event} login={login} onAction={toast.show} />
       </div>
-      {confirm.dialog}
       <Toast message={toast.message} tone={toast.tone} />
     </>
   );

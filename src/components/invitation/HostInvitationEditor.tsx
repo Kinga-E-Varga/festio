@@ -9,7 +9,7 @@ import {
 } from "next-intl";
 import { type ReactNode, Suspense, useMemo, useState } from "react";
 import { useToast } from "@/components/dashboard/Toast";
-import type { CardOpening } from "@/components/envelope/card";
+import { DEFAULT_OPENING, type CardOpening } from "@/components/envelope/card";
 import { cardValues } from "@/lib/invitation";
 import type { Language } from "@/lib/language";
 import { TemplateCard } from "@/templates/TemplateCard";
@@ -22,6 +22,7 @@ import { EditPanel } from "./EditPanel";
 import { EditorFrame } from "./EditorFrame";
 import { useTabViews, type PanelTabId } from "./PanelTabs";
 import { Invitation } from "./Invitation";
+import { useEditing } from "./useEditing";
 import { useInvitationSave } from "./useInvitationSave";
 
 interface HostInvitationEditorProps {
@@ -29,6 +30,8 @@ interface HostInvitationEditorProps {
   initial: TemplateValues;
   /** The saved envelope switch; on for a card never saved. */
   initialEnvelope?: boolean;
+  /** The saved way the card comes out; slides out for a card never saved. */
+  initialOpening?: CardOpening;
   /** The invitation's own language — what the card's date is written in. */
   language: Language;
   /**
@@ -53,6 +56,7 @@ export function HostInvitationEditor({
   template,
   initial,
   initialEnvelope = true,
+  initialOpening = DEFAULT_OPENING,
   language,
   guestMessages,
   backTo,
@@ -64,9 +68,8 @@ export function HostInvitationEditor({
   const hostMessages = useMessages();
   const [values, setValues] = useState(initial);
   const [saved, setSaved] = useState(initial);
-  /* Closed on arrival: the host sees the invitation first and opens the panel from the strip. */
-  const [editing, setEditing] = useState(false);
-  const [tab, setTab] = useState<PanelTabId>("content");
+  const [editing, setEditing] = useEditing();
+  const [tab, setTab] = useState<PanelTabId>("design");
   /* The reply questions: edited in the Form tab, saved with the invitation. */
   const [questions, setQuestions] = useState(initialQuestions);
   const [savedQuestions, setSavedQuestions] = useState(initialQuestions);
@@ -81,8 +84,8 @@ export function HostInvitationEditor({
   );
   const [envelope, setEnvelope] = useState(initialEnvelope);
   const [savedEnvelope, setSavedEnvelope] = useState(initialEnvelope);
-  /* Not saved: only to compare the two ways out while they are tried. */
-  const [opening, setOpening] = useState<CardOpening>("rise");
+  const [opening, setOpening] = useState(initialOpening);
+  const [savedOpening, setSavedOpening] = useState(initialOpening);
   const toast = useToast();
   const views = useTabViews();
   const { save, sending, dialog } = useInvitationSave(saving, toast, language);
@@ -97,6 +100,7 @@ export function HostInvitationEditor({
 
   const dirty =
     envelope !== savedEnvelope ||
+    opening !== savedOpening ||
     JSON.stringify(questions) !== JSON.stringify(savedQuestions) ||
     Object.keys(values).some((id) => values[id] !== saved[id]);
 
@@ -126,7 +130,7 @@ export function HostInvitationEditor({
        * never saves a reply — only the guest page will.
        */
       onSubmit={async () => {
-        toast.show(t("testReply"), "warning");
+        toast.show(t("testReply"));
         return { success: true, data: undefined };
       }}
       host={asHost(
@@ -171,10 +175,11 @@ export function HostInvitationEditor({
           dirty: dirty && !sending,
           onSave: () =>
             save(
-              { kind: "simple", values, envelope },
+              { kind: "simple", values, envelope, opening },
               (stored) => {
                 setSaved(values);
                 setSavedEnvelope(envelope);
+                setSavedOpening(opening);
                 setSavedQuestions(stored?.questions ?? questions);
                 if (!stored) return;
                 /*

@@ -1,15 +1,9 @@
 import type { ReactNode } from "react";
 import { Icon } from "@/components/icons";
-import { BANNER_ICON } from "@/components/dashboard/event-editor/styles";
-import {
-  BANNER_TITLE,
-  BANNER_TONE,
-  type BannerTone,
-} from "@/components/dashboard/styles";
+import { BANNER_TITLE, WARNING_SOFT } from "@/components/dashboard/styles";
 import type { IconName } from "@/types/dashboard";
 
 interface BannerProps {
-  tone: BannerTone;
   icon: IconName;
   title: string;
   children: ReactNode;
@@ -19,8 +13,8 @@ interface BannerProps {
   className?: string;
 }
 
+/** A warning in its own box: the icon in the words' colour, a title, then the text. */
 export function Banner({
-  tone,
   icon,
   title,
   children,
@@ -29,12 +23,12 @@ export function Banner({
 }: BannerProps) {
   return (
     <div
-      className={`${className} grid grid-cols-[auto_1fr] items-start gap-x-3 rounded-ui border px-[15px] py-2.5 meta-face leading-[1.5] ${BANNER_TONE[tone]}`}
+      className={`${className} grid grid-cols-[auto_1fr] items-start gap-x-3 rounded-ui border px-[15px] py-2.5 meta-face leading-[1.5] ${WARNING_SOFT}`}
     >
       <Icon
         name={icon}
         strokeWidth={2}
-        className={`mt-[1.5px] size-4 shrink-0 ${BANNER_ICON[tone]}`}
+        className="mt-[1.5px] size-4 shrink-0"
       />
       <div>
         <b className={BANNER_TITLE}>{title}</b>

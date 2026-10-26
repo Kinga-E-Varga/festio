@@ -13,13 +13,9 @@ import { localized, type Language } from "@/lib/language";
 import { RepliesTab } from "@/components/modular/replies/RepliesTab";
 import { DateFormatSelect } from "./DateFormatSelect";
 import { TAB_LABEL, type PanelTabId } from "./PanelTabs";
-import {
-  INPUT,
-  SOFT_ACTION_SHAPE,
-  SOFT_PICK,
-} from "@/components/dashboard/styles";
-import { CARD_OPENINGS, type CardOpening } from "@/components/envelope/card";
-import { PanelSwitch } from "./PanelSwitch";
+import { INPUT } from "@/components/dashboard/styles";
+import type { CardOpening } from "@/components/envelope/card";
+import { EnvelopeCard } from "@/components/modular/design/EnvelopeCard";
 import { SidePanel } from "./SidePanel";
 
 /** Content and Replies each show the fields of one scope; Design has the envelope switch. */
@@ -79,7 +75,6 @@ export function EditPanel({
   questions,
   onQuestions,
 }: EditPanelProps) {
-  const tDesign = useTranslations("DesignTab");
   const tHost = useTranslations("HostEditor");
   const scope = SCOPE[tab];
   const fields = scope
@@ -121,39 +116,11 @@ export function EditPanel({
             ) : null}
           </>
         ) : (
-          <>
-            <PanelSwitch
-              id="envelope-switch"
-              label={tDesign("envelope")}
-              checked={envelope}
-              onChange={onEnvelope}
-              className="mb-6"
-            />
-            {envelope ? (
-              <div
-                role="group"
-                aria-labelledby="envelope-opening"
-                className="mb-6 flex flex-col gap-2"
-              >
-                <span id="envelope-opening" className="label-caps">
-                  {tDesign("opening")}
-                </span>
-                <div className="flex gap-2">
-                  {CARD_OPENINGS.map((way) => (
-                    <button
-                      key={way}
-                      type="button"
-                      aria-pressed={opening === way}
-                      onClick={() => onOpening(way)}
-                      className={`${SOFT_ACTION_SHAPE} ${SOFT_PICK} flex-1`}
-                    >
-                      {tDesign(`openings.${way}`)}
-                    </button>
-                  ))}
-                </div>
-              </div>
-            ) : null}
-          </>
+          <EnvelopeCard
+            on={envelope}
+            onChange={onEnvelope}
+            opening={{ value: opening, onPick: onOpening }}
+          />
         )}
       </div>
     </SidePanel>
@@ -182,7 +149,7 @@ function Field({
   return (
     // Festio's own form, the event editor's fields — never the invitation's palette.
     <div className="mb-6 flex flex-col gap-1.5">
-      <label htmlFor={`field-${field.id}`} className="label-caps">
+      <label htmlFor={`field-${field.id}`} className="editor-heading">
         {localized(field.label, hostLocale)}
       </label>
       {field.type === "dateFormat" ? (

@@ -11,10 +11,11 @@ import { formatDay, PICKER_DATE_PARTS } from "@/lib/event";
 import { plainText } from "@/lib/language";
 import { writePickedEvent } from "@/lib/picked-event";
 import type { EventStatus, PickerEvent } from "@/types/dashboard";
+import { STATUS_FILL } from "@/components/dashboard/styles";
 
-/** Each event's dot: live, Hidden, or over. */
+/** Each event's dot: live (the guest list's Coming dot), Hidden, or over. */
 export const DOT: Record<EventStatus, string> = {
-  active: "bg-primary-700",
+  active: STATUS_FILL.going,
   hidden: "bg-warning-400",
   past: "bg-neutral-500",
 };

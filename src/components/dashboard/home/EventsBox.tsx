@@ -6,8 +6,8 @@ import { BoxHead } from "@/components/dashboard/BoxHead";
 import { RepliesBar } from "@/components/dashboard/RepliesSummary";
 import { RowLines } from "@/components/dashboard/RowLines";
 import { SearchField } from "@/components/dashboard/SearchField";
-import { Select } from "@/components/dashboard/event-editor/Select";
 import { StatusTag } from "@/components/dashboard/StatusTag";
+import { FilterMenu } from "./FilterMenu";
 import {
   BOX_ROWS,
   ICON_BTN,
@@ -72,20 +72,19 @@ export function EventsBox({ events }: { events: HomeEventRow[] }) {
         label={tNav("searchEvents")}
       />
       <div className="mt-2.5 w-fit min-w-[200px]">
-        <Select
-          aria-label={t("filter")}
+        <FilterMenu
+          label={t("filter")}
+          options={FILTERS.map((option) => ({
+            value: option,
+            name: t(`filters.${option}`),
+            count: lists[option].length,
+          }))}
           value={filter}
-          onChange={(control) => {
-            setFilter(control.target.value as Filter);
+          onPick={(option) => {
+            setFilter(option);
             setPage(0);
           }}
-        >
-          {FILTERS.map((option) => (
-            <option key={option} value={option}>
-              {t(`filters.${option}`, { count: lists[option].length })}
-            </option>
-          ))}
-        </Select>
+        />
       </div>
 
       {rows.length === 0 ? (
@@ -137,6 +136,9 @@ export function EventsBox({ events }: { events: HomeEventRow[] }) {
   );
 }
 
+/** How the replies stand, beside the words from 520px; narrower, the words only. The bar, a flex row, shows the same way as `flex`. */
+const WIDE_ONLY = "hidden shrink-0 @min-[520px]:block";
+
 /**
  * One event: its tag, its name over its day, and how the replies stand (how
  * many came, once it is over). It opens the Overview, unless its data is gone.
@@ -153,26 +155,27 @@ function EventRow({ event }: { event: HomeEventRow }) {
       <RowLines
         title={event.title}
         detail={`${formatDay(event.date, locale)} · ${formatRelative(event.countdown, locale)}`}
-      />
-      <span className="hidden shrink-0 items-center gap-3 @min-[520px]:flex">
-        {status === "past" ? (
-          <span className="meta-text">
-            {archived
-              ? tEvent("recordDeleted")
-              : t("came", { count: event.rsvp.attending })}
+        titleEnd={
+          status === "past" ? null : (
+            <RepliesBar
+              event={event}
+              className="hidden w-24 shrink-0 @min-[520px]:flex"
+            />
+          )
+        }
+        detailEnd={
+          <span className={`tabular-nums whitespace-nowrap ${WIDE_ONLY}`}>
+            {status !== "past"
+              ? t("repliedShort", {
+                  replied: event.rsvp.replied,
+                  expected: event.expectedGuests,
+                })
+              : archived
+                ? tEvent("recordDeleted")
+                : t("came", { count: event.rsvp.attending })}
           </span>
-        ) : (
-          <>
-            <RepliesBar event={event} className="w-[72px]" />
-            <span className="meta-text tabular-nums">
-              {t("repliedShort", {
-                replied: event.rsvp.replied,
-                expected: event.expectedGuests,
-              })}
-            </span>
-          </>
-        )}
-      </span>
+        }
+      />
     </>
   );
 

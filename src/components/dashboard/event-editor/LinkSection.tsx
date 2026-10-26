@@ -13,7 +13,7 @@ import {
   type CardEditing,
 } from "@/components/dashboard/event-editor/SettingsCard";
 import { INSET_INPUT } from "@/components/dashboard/event-editor/styles";
-import { ERROR, MINI } from "@/components/dashboard/styles";
+import { ERROR, INFO_SOFT, MINI } from "@/components/dashboard/styles";
 import type { EventForm } from "@/components/dashboard/event-editor/useEventForm";
 import { Icon } from "@/components/icons";
 import { BASE_DOMAIN } from "@/lib/domain";
@@ -66,7 +66,9 @@ function NoindexNote() {
   const t = useTranslations("EventEditor");
 
   return (
-    <span className="mt-2 flex w-full items-start gap-2 rounded-ui bg-info-100 px-2.5 py-1.5 meta-face leading-[1.5] font-medium text-info-700">
+    <span
+      className={`mt-2 flex w-full items-start gap-2 rounded-ui px-2.5 py-1.5 meta-face leading-[1.5] font-medium ${INFO_SOFT}`}
+    >
       <Icon name="shield" strokeWidth={2} className="size-[18px] shrink-0" />
       {t("noindex")}
     </span>
@@ -146,7 +148,19 @@ export function LinkSection({ event, form, editing }: SectionProps) {
             <p className="hint-text">{t("addressHint")}</p>
           </EditRow>
 
-          <EditRow label={t("visibilityLegend")}>
+          <EditRow
+            label={t("visibilityLegend")}
+            warning={
+              values.visibility === "public" ? null : (
+                <ChangeWarning
+                  title={t(`${values.visibility}WarningTitle`)}
+                  warning={form.warnings.visibility}
+                >
+                  {t(`${values.visibility}Warning`)}
+                </ChangeWarning>
+              )
+            }
+          >
             <div
               role="radiogroup"
               aria-label={t("visibilityLegend")}

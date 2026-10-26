@@ -5,24 +5,41 @@ export const LOCKUP =
 /**
  * The borderless tones: a fill a step deeper than the bordered ones' instead of
  * a border. The border stays, transparent, so a tag keeps its size. The event
- * status tags (Live, Hidden, Past); the warning one is the to-dos' too.
+ * status tags (Live, Hidden, Past), a reply's Coming and Not coming (in
+ * Live's and Hidden's) and the attention tags, and the latest replies'
+ * initials in the green or the red; the warning one is the to-dos' too.
  */
 export const SUCCESS_SOFT =
   "border-transparent bg-primary-200 text-primary-800";
 export const WARNING_SOFT =
   "border-transparent bg-warning-150 text-warning-700";
+/** The info one, its fill and words only (callers with an edge pick its colour): the event editor's notes, the print panel's instructions. */
+export const INFO_SOFT = "bg-info-150 text-info-700";
 export const NEUTRAL_SOFT =
   "border-transparent bg-neutral-300 text-neutral-800";
-/** The bordered warning: the warning banners, Not coming. */
-export const WARNING_DARK =
-  "border-warning-700/50 bg-warning-100 text-warning-700";
-/** The positive colouring (Coming): the dark warning's shades in green, its border, fill and ink a step darker. */
-export const SUCCESS_DARK =
-  "border-primary-800/50 bg-primary-150 text-primary-800";
-/** The info boxes' colouring: the dark warning's shades, in blue. */
-export const INFO_DARK = "border-info-700/50 bg-info-100 text-info-700";
-/** The danger colouring (Unknown and Duplicate tags, the danger zone): the dark warning's shades in brick, its fill and ink a step darker. */
+/** The danger one: Unknown and Duplicate. */
+export const DANGER_SOFT = "border-transparent bg-danger-200 text-danger-800";
+/**
+ * The replies bars' look, against expected guests (`.replies-bar`): 10px
+ * tall, each part apart from the next by a sliver of the card, the expected
+ * guests still to reply as a part of its own (`BAR_TRACK`). The Overview's
+ * and Home's bar, and the editor's meter.
+ */
+export const REPLIES_BAR = "replies-bar h-2.5 gap-0.5 bg-neutral-50";
+export const BAR_TRACK = "flex-1 bg-neutral-200";
+/** A reply's status as a fill: the guest list's dots, the replies bar and its legend; Coming's is the event picker's live dot and the editor's replies meter too. */
+export const STATUS_FILL = {
+  going: "bg-primary-700",
+  not_going: "bg-warning-400",
+} as const;
+/** A prompt's box, without colours: `ALERT` and `DANGER_ALERT`. */
+const ALERT_FRAME = "rounded-ui px-4 py-3 meta-face";
+/** A prompt inside an editor or a row (unsaved changes, keep together, the list box's questions): the to-dos' warning colours, with no edge, as the warning banners. */
+export const ALERT = `${ALERT_FRAME} ${WARNING_SOFT}`;
+/** The danger colouring (a delete's confirm, `DANGER_ALERT`): a pale brick fill, its border and ink in a dark brick. */
 export const DANGER_DARK = "border-danger-800/50 bg-danger-150 text-danger-800";
+/** The `ALERT` prompt in danger's colours, its edge unused: a delete's confirm. */
+export const DANGER_ALERT = `${ALERT_FRAME} ${DANGER_DARK}`;
 
 /**
  * A tag's words: its own whole-pixel line, so every tag is 18px tall wherever
@@ -37,7 +54,7 @@ export const TAG_PAD = "px-1.5 py-px";
 /** A small flag: Unknown, Duplicate beside a name or in the latest replies, a reply's Coming / Not coming, a waiting name's invite. */
 export const TAG = `rounded-ui border ${TAG_PAD} ${TAG_TEXT}`;
 /** Unknown and Duplicate: the tags that mark a reply needing attention. */
-export const ATTENTION_TAG = `${TAG} ${DANGER_DARK}`;
+export const ATTENTION_TAG = `${TAG} ${DANGER_SOFT}`;
 
 /** A text link without its colour, for a link coloured by what it acts on. Size is the caller's. */
 export const TEXT_LINK_SHAPE =
@@ -58,12 +75,8 @@ export const NAV_MARGIN = "mx-2.5";
 /** Every icon in the nav: one size, one line. */
 export const SIDE_ICON = { className: "size-[18px]", strokeWidth: 1.75 };
 
-/** The right-hand strip's icons and the side panel's X: a size up, the same line. */
+/** The right-hand strip's icons, the phone's top bar's and the side panel's X: a size up, the same line. */
 export const STRIP_ICON = { className: "size-[22px]", strokeWidth: 1.75 };
-
-/** The phone's top bar: its buttons a step over the strip's, 40px around 24px icons. */
-export const TOP_BAR_ICON = { className: "size-6", strokeWidth: 1.75 };
-export const TOP_BAR_CIRCLE = "max-nav:size-10";
 
 /**
  * An icon button on the right-hand strip, the phone's top bar and the
@@ -73,7 +86,7 @@ export const TOP_BAR_CIRCLE = "max-nav:size-10";
 export const BAR_ICON =
   "relative grid size-btn place-items-center rounded-full text-neutral-900 transition-colors hover:bg-secondary-400/30 hover:text-neutral-950 aria-expanded:bg-secondary-400 aria-expanded:text-neutral-950";
 
-/** The nav's way out at its foot, set apart by a rule: Quit dashboard, and the editors' Quit editor. */
+/** The bars' feet, set apart by a rule: the nav's language (Quit dashboard in the phone's drawer) and the strip's Quit dashboard. */
 export const QUIT_RULE = "border-t border-neutral-300 pt-3";
 export const QUIT_ITEM =
   "flex h-btn items-center gap-3 rounded-ui px-3 nav-text transition-colors hover:bg-secondary-400/30 hover:text-neutral-950";
@@ -87,9 +100,12 @@ export const PAGE_GUTTER = "px-[18px] nav:px-8 min-[1200px]:px-12";
  */
 export const BLEED = "ml-[calc(50%-var(--main-width)/2)] w-(--main-width)";
 
-/** The page boxes' padding as `--box-pad`, for a box that pads its parts with it (the guest list's); `--box-head-y`, a header bar's padding over and under, switches with it. */
+/**
+ * The page boxes' padding as `--box-pad`, for a box that pads its parts with it (the guest list's); `--box-head-y`, a header bar's padding over and under, switches with it.
+ * `--box-gap`, the padding less 2px: the space under a box's title (`BoxHead`) and between its groups, which looks as much as the padding over the title, as text lines keep room for descenders under their letters.
+ */
 export const BOX_PAD_SIZE =
-  "[--box-pad:18px] [--box-head-y:14px] @min-[600px]:[--box-pad:24px] @min-[600px]:[--box-head-y:18px]";
+  "[--box-pad:18px] [--box-head-y:14px] [--box-gap:calc(var(--box-pad)-2px)] @min-[600px]:[--box-pad:24px] @min-[600px]:[--box-head-y:18px]";
 
 /** A page box's padding, all round: for a box drawn some other way, too. Set as `--box-pad`, so its title (`BoxHead`) can leave the same space under it. */
 export const BOX_PAD = `p-(--box-pad) ${BOX_PAD_SIZE}`;
@@ -114,8 +130,8 @@ export const BOX_ROWS = "divide-y divide-neutral-200";
 /** One row ruled off from the one before, for a row that sets its own spacing: the same rule as `BOX_ROWS`. */
 export const BOX_ROW = "border-t border-neutral-200 first:border-t-0";
 
-/** The Overview's invitation preview edge, shared by its frame and the Edit tag on its corner: a box inside a box. */
-export const PREVIEW_EDGE = "border-neutral-200";
+/** The Overview's invitation picture's edge, shared by its frame and the Edit tag on its corner: the picture is a page box of its own, edged like the others. */
+export const PREVIEW_EDGE = "border-neutral-300";
 
 /** A floating menu's surface: the picker's list and the bars' and toolbar's menus. */
 export const MENU_SURFACE =
@@ -179,6 +195,26 @@ export const BUTTON =
 export const BTN_PRIMARY = `${BUTTON} border-accent-800 bg-accent-800 text-neutral-50 hover:border-accent-900 hover:bg-accent-900`;
 /** The outlined action, the main one's fill colour for its edge and words, on the inputs' fill to sit in a row with them. */
 export const BTN_GHOST_LIGHT = `${BUTTON} border-accent-800 bg-neutral-50 text-accent-800 hover:border-accent-950 hover:bg-accent-150 hover:text-accent-950`;
+/** The small action's shape, for the prompts on an alert, the row editor and an unknown reply's fixes. */
+export const SMALL_BTN_SHAPE =
+  "inline-flex cursor-pointer items-center gap-1.5 rounded-ui border px-3 py-1.5 button-text whitespace-nowrap transition-colors disabled:cursor-not-allowed disabled:opacity-50";
+
+/**
+ * The warning prompts' buttons' colours, at either size: filled in the
+ * warning's words colour with its fill for the words, for the choice the
+ * prompt leans to…
+ */
+const WARN_SOLID =
+  "border-warning-700 bg-warning-700 text-warning-150 hover:border-warning-800 hover:bg-warning-800";
+/** …or outlined in it, its edge and words darker when hovered. */
+const WARN_OUTLINE =
+  "border-warning-700 text-warning-700 hover:border-warning-900 hover:text-warning-900";
+/** The pair at full size, for the save confirm… */
+export const BTN_WARN = `${BUTTON} ${WARN_SOLID}`;
+export const BTN_WARN_OUTLINE = `${BUTTON} ${WARN_OUTLINE}`;
+/** …and small, on a warning prompt (`ALERT`). */
+export const SMALL_BTN_WARN_SOLID = `${SMALL_BTN_SHAPE} ${WARN_SOLID}`;
+export const SMALL_BTN_WARN = `${SMALL_BTN_SHAPE} ${WARN_OUTLINE}`;
 
 /** The quiet icon-only actions at the end of a row; a `data-tip` gives one its quick label. */
 const ICON_BASE =
@@ -194,15 +230,5 @@ export const MINI =
 /** A panel that hangs off the control above it, sharing its edge. */
 export const SUBBOX = "-mt-px rounded-b-ui border border-secondary-300 p-4";
 
-/** Deadlines, explanations and plain notices, each in its own tone. */
-export type BannerTone = "warn" | "info" | "notice";
-
 /** A banner's title, in the banner's own small type: also the info and warning boxes' titles. */
 export const BANNER_TITLE = "mb-[3px] block item-face leading-[1.5]";
-
-/** A banner's colours, also worn by the print panel's instructions. */
-export const BANNER_TONE: Record<BannerTone, string> = {
-  warn: WARNING_DARK,
-  info: INFO_DARK,
-  notice: "border-secondary-500 bg-secondary-200 text-secondary-600",
-};

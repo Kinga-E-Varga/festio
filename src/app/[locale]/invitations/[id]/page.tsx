@@ -69,6 +69,7 @@ export default async function HostInvitationPage({ params }: Props) {
       template={template}
       initial={invitationValues(template, event, stored)}
       initialEnvelope={stored?.kind === "simple" ? stored.envelope : true}
+      initialOpening={stored?.kind === "simple" ? stored.opening : undefined}
       language={language}
       guestMessages={await loadMessages(language)}
       backTo={eventPath(event.id)}

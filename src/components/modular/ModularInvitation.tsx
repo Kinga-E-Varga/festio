@@ -45,6 +45,12 @@ interface ModularInvitationProps {
   questions?: Question[];
   /** The editor in Edit mode: a section's Design and Content buttons. */
   edit?: SectionEdit;
+  /**
+   * Drawn at its content's height, not a screen's, nothing to scroll; the
+   * hero this tall (a CSS length), the cover filling it. The dashboard's
+   * picture of it.
+   */
+  hero?: string;
 }
 
 /** The two ways into a section from the preview, each with its name. */
@@ -102,6 +108,7 @@ export const ModularInvitation = memo(function ModularInvitation({
   onRsvp,
   questions,
   edit,
+  hero,
 }: ModularInvitationProps) {
   const [menuOpen, setMenuOpen] = useState(false);
   const [sealed, unseal, page, fade, onFade] = useSealed<HTMLDivElement>(
@@ -222,7 +229,10 @@ export const ModularInvitation = memo(function ModularInvitation({
     return (
       <>
         <div
-          className={`flex min-h-(--hero) flex-col [--cover-top:clamp(0px,(100cqw-var(--invite-column))/2,80px)] ${copy ? "[--hero:var(--strip-hero)]" : "[--hero:calc(100cqh-57px)] @5xl:[--hero:calc(100cqh-65px)]"}`}
+          style={
+            hero && !copy ? ({ "--hero": hero } as CSSProperties) : undefined
+          }
+          className={`flex min-h-(--hero) flex-col [--cover-top:clamp(0px,(100cqw-var(--invite-column))/2,80px)] ${copy ? "[--hero:var(--strip-hero)]" : hero ? "" : "[--hero:calc(100cqh-57px)] @5xl:[--hero:calc(100cqh-65px)]"}`}
         >
           {views.slice(0, split)}
         </div>
@@ -282,8 +292,14 @@ export const ModularInvitation = memo(function ModularInvitation({
         className="flex min-h-0 flex-1 flex-col outline-none"
       >
         {/* The page scrolls in here, not the window, so the header stays put. */}
-        {/* A size container, so the hero can read its height (`cqh`). */}
-        <div className="invite-scroll min-h-0 flex-1 overflow-y-auto scroll-smooth [container-type:size]">
+        {/* A size container, so the hero can read its height (`cqh`); given its hero, neither. */}
+        <div
+          className={
+            hero
+              ? undefined
+              : "invite-scroll min-h-0 flex-1 overflow-y-auto scroll-smooth [container-type:size]"
+          }
+        >
           {/*
            * The page's whole width: the container the header sizes itself
            * by, named so a section can still tell the page is wider than

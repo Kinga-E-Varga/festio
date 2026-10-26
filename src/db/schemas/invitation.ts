@@ -12,6 +12,8 @@ const simpleInvitationSchema = z.object({
   values: z.record(z.string(), z.string()),
   /** Guests open an envelope first. A card saved before the switch reads as on. */
   envelope: z.boolean().default(true),
+  /** How the card comes out of the envelope (`CardOpening`). A card saved before the choice slides out. */
+  opening: z.enum(["rise", "slide"]).default("slide"),
   version: versionSchema,
 });
 

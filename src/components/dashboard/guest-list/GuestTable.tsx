@@ -3,11 +3,8 @@
 import { useLocale, useTranslations } from "next-intl";
 import { type ReactNode, useId, useState } from "react";
 import { STATUS_KEY } from "@/components/dashboard/guest-list/labels";
-import {
-  fold,
-  SMALL_BTN,
-  STATUS_FILL,
-} from "@/components/dashboard/guest-list/styles";
+import { fold, BTN_LIST } from "@/components/dashboard/guest-list/styles";
+import { STATUS_FILL } from "@/components/dashboard/styles";
 import { AttentionTag } from "@/components/dashboard/AttentionTag";
 import { Dialog } from "@/components/dashboard/Dialog";
 import { NameEditor } from "@/components/dashboard/guest-list/NameEditor";
@@ -56,11 +53,11 @@ const CATEGORY = {
   },
   notGoing: {
     title: "categoryNotGoing",
-    ink: "border-warning-500",
+    ink: "border-warning-400",
     fill: STATUS_FILL.not_going,
-    line: "bg-warning-400",
-    dashed: "border-warning-400",
-    split: "border-warning-500",
+    line: "bg-warning-300",
+    dashed: "border-warning-300",
+    split: "border-warning-400",
   },
   waiting: {
     title: "categoryWaiting",
@@ -215,7 +212,7 @@ function Category({ category, groups, list, actions, editor }: CategoryProps) {
           aria-expanded={open}
           aria-controls={body}
           onClick={() => setOpen(!open)}
-          className={`flex w-full cursor-pointer items-center gap-2.5 px-(--box-pad) py-(--box-head-y) text-left transition-colors hover:bg-neutral-200 ${open ? "border-b border-neutral-200" : ""}`}
+          className={`flex w-full cursor-pointer items-center gap-2.5 px-(--box-pad) py-(--box-head-y) text-left transition-colors hover:bg-neutral-200 ${open ? "border-b border-neutral-300" : ""}`}
         >
           <span
             aria-hidden="true"
@@ -342,7 +339,7 @@ function SameNameReply({ row, list, actions, editor }: SameNameReplyProps) {
   }).format(new Date(row.reply.repliedAt));
 
   return (
-    <div className="@container rounded-ui border border-neutral-200 bg-neutral-50 px-3 py-2">
+    <div className="@container rounded-ui border border-neutral-300 bg-neutral-50 px-3 py-2">
       <p className="hint-text">{t("repliedOn", { date })}</p>
       {/* Standing alone to compare, each one keeps its status and edit. */}
       <RowItem
@@ -362,7 +359,7 @@ function SameNameReply({ row, list, actions, editor }: SameNameReplyProps) {
         <button
           type="button"
           onClick={() => editor.guard(() => actions.different(row.reply.id))}
-          className={`my-1.5 ${SMALL_BTN}`}
+          className={`my-1.5 ${BTN_LIST}`}
         >
           {t("differentPerson")}
         </button>

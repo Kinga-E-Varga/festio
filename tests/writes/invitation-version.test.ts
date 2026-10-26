@@ -23,6 +23,7 @@ test("saving the invitation raises the event card's invitationVersion", async ()
       kind: "simple",
       values: { title1: `Saved from ${version}` },
       envelope: true,
+      opening: "slide",
       version,
     }));
 

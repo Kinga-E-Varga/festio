@@ -31,8 +31,14 @@ export function clientAuth(): Auth {
     popupRedirectResolver: browserPopupRedirectResolver,
   });
   if (process.env.NEXT_PUBLIC_USE_EMULATORS === "true") {
+    /*
+     * At the address the page came from: `localhost` on the PC, its Wi-Fi
+     * address on a phone (the emulator listens on every address there,
+     * `firebase.json`).
+     */
     const { port } = firebaseConfig.emulators.auth;
-    connectAuthEmulator(clientAuthInstance, `http://127.0.0.1:${port}`, {
+    const host = window.location.hostname;
+    connectAuthEmulator(clientAuthInstance, `http://${host}:${port}`, {
       disableWarnings: true,
     });
   }

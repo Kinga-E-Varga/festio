@@ -118,16 +118,22 @@ export function pageBackground(template: InvitationTemplate): {
  * What an invitation's root wears: the template's palette and fonts as vars,
  * its faces' classes and its page ground. Every guest-facing page and the
  * dashboard's preview start from it, so the look is set in one place.
+ * `ground: false` leaves the page ground out, for a card drawn alone (the
+ * Overview's picture), where it would show at the card's edges.
  */
-export function inviteTheme(template: InvitationTemplate): {
+export function inviteTheme(
+  template: InvitationTemplate,
+  { ground = true }: { ground?: boolean } = {},
+): {
   className: string;
   style: CSSProperties;
 } {
-  const ground = pageBackground(template);
+  const page = ground ? pageBackground(template) : null;
   const { primary, secondary } = template.fonts;
+  const faces = `invite ${primary.className} ${secondary.className}`;
   return {
-    className: `invite ${primary.className} ${secondary.className} ${ground.className}`,
-    style: { ...templateVars(template), ...ground.style },
+    className: page ? `${faces} ${page.className}` : faces,
+    style: { ...templateVars(template), ...page?.style },
   };
 }
 

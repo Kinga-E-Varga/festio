@@ -1,7 +1,6 @@
 "use client";
 
 import { useLocale, useTranslations } from "next-intl";
-import { EditorHeading } from "@/components/dashboard/event-editor/EditorSection";
 import { SUBBOX } from "@/components/dashboard/styles";
 import { pad } from "@/lib/event";
 import { localized, type Language } from "@/lib/language";
@@ -61,12 +60,7 @@ export function ContentTab({
 
   return (
     <PaletteColors value={palette?.colors ?? null}>
-      <div
-        role="group"
-        aria-labelledby="content-heading-sections"
-        className="mb-8 flex flex-col"
-      >
-        <EditorHeading id="content-heading-sections" title={t("sections")} />
+      <div className="mb-8 flex flex-col">
         <div className="flex flex-col gap-5">
           {shown.map(({ definition, variant }, index) => {
             /* Numbered by its place on the page, even past one left out. */

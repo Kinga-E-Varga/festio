@@ -154,6 +154,7 @@ export const SEED_EVENTS: SeedEvent[] = [
         text4: "Restaurant Cetate, Cluj-Napoca",
       },
       envelope: true,
+      opening: "slide",
       version: 0,
     },
     ...crowd({

@@ -7,12 +7,8 @@ interface PanelSwitchProps {
   label: string;
   checked: boolean;
   onChange: (checked: boolean) => void;
-  /** Drawn in place of the label text; the switch is still named by `label`. */
-  heading?: ReactNode;
   /** Small controls at the row's right end. */
   end?: ReactNode;
-  /** Extra classes for the row. */
-  className?: string;
   /** The space between the switch and its label. */
   gap?: string;
   tone?: SwitchTone;
@@ -21,7 +17,7 @@ interface PanelSwitchProps {
 /**
  * The switch sizes: the track, the knob, and how far the knob travels (the
  * knob ends as far from the track's right edge as it starts from its left).
- * `panel` is the editors' side panel's, a step under `md`.
+ * `panel` is the switch cards' (Design tab, print background), a step under `md`.
  */
 const SIZES = {
   md: { track: "h-5 w-9", knob: "size-3.5", on: "translate-x-4" },
@@ -63,8 +59,8 @@ export type SwitchTone = keyof typeof TONES;
  * The switch alone, in neutral — solid neutral when on, a pale track
  * with a neutral edge when off. An invisible layer stretches the track's tap
  * area to 44px tall, enough for a finger, without making it look bigger.
- * `md` in the dashboard and the Form tab's question form, `panel` in the
- * rest of the editors' side panel, `sm` on the Content tab's head bars.
+ * `md` in the dashboard and the editors' side panel's own switches,
+ * `panel` on the switch cards, `sm` on the Content tab's head bars.
  */
 export function Switch({
   id,
@@ -100,33 +96,31 @@ export function Switch({
   );
 }
 
-/** An on/off switch in the side panel's chrome: the switch, then its label. */
+/**
+ * An on/off switch in the side panel's chrome: the switch, then its label,
+ * as the Form tab's question form draws its Required switch.
+ */
 export function PanelSwitch({
   id,
   label,
   checked,
   onChange,
-  heading,
   end,
-  className = "",
   gap = "gap-3",
   tone,
 }: PanelSwitchProps) {
   return (
-    <div
-      className={`flex min-h-10 items-center justify-between gap-3 ${className}`}
-    >
+    <div className="flex min-h-10 items-center justify-between gap-3">
       <div className={`flex min-w-0 items-center ${gap}`}>
         <Switch
           id={id}
           label={label}
           checked={checked}
           onChange={onChange}
-          size="panel"
           tone={tone}
         />
         {/* Not a `<label>`: only the switch itself flips, never its name. */}
-        {heading ?? <span className="label-caps">{label}</span>}
+        <span className="button-text text-neutral-700">{label}</span>
       </div>
       <div className="flex shrink-0 items-center gap-3">{end}</div>
     </div>

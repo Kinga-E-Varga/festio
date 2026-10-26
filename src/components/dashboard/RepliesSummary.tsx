@@ -1,11 +1,16 @@
 import { useTranslations } from "next-intl";
 import { expectedPercent, repliesBarVars } from "@/lib/event";
+import {
+  BAR_TRACK,
+  REPLIES_BAR,
+  STATUS_FILL,
+} from "@/components/dashboard/styles";
 import type { DashboardEvent } from "@/types/dashboard";
 
 /** The legend's dots: the bar's two fills, then its empty track. */
 const SWATCH = {
-  attending: "bg-primary-700",
-  declined: "bg-warning-400",
+  attending: STATUS_FILL.going,
+  declined: STATUS_FILL.not_going,
   /* The empty track: the expected guests still to reply. */
   stillExpected: "border border-neutral-400 bg-neutral-200",
 } as const;
@@ -116,7 +121,7 @@ export function RepliesBar({
         declined: event.rsvp.declined,
         expected,
       })}
-      className={`replies-bar h-2.5 gap-0.5 bg-neutral-50 ${className}`}
+      className={`${REPLIES_BAR} ${className}`}
       style={barVars}
     >
       {/*
@@ -125,13 +130,13 @@ export function RepliesBar({
        * so no gap doubles up.
        */}
       {event.rsvp.attending > 0 ? (
-        <span aria-hidden="true" className="attending" />
+        <span aria-hidden="true" className={`attending ${SWATCH.attending}`} />
       ) : null}
       {event.rsvp.declined > 0 ? (
-        <span aria-hidden="true" className="declined" />
+        <span aria-hidden="true" className={`declined ${SWATCH.declined}`} />
       ) : null}
       {replied < expected ? (
-        <span aria-hidden="true" className="flex-1 bg-neutral-200" />
+        <span aria-hidden="true" className={BAR_TRACK} />
       ) : null}
     </div>
   );
