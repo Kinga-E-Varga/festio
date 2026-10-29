@@ -6,6 +6,8 @@ import {
   TIME_COLUMN,
   TONE_TEXT,
   turnTone,
+  LEAD_ROW,
+  NARROW_LIST,
 } from "@/modular/styles";
 import type { ListItem } from "@/types/modular";
 
@@ -21,7 +23,7 @@ import type { ListItem } from "@/types/modular";
 export function WaysList({ ways }: { ways: ListItem[] }) {
   if (ways.length === 0) return null;
   return (
-    <ul className="mx-auto w-full max-w-[350px] border-y-1 border-[var(--m-line)] @3xl:mx-0 @3xl:max-w-none">
+    <ul className={`${NARROW_LIST} border-y-1 border-[var(--m-line)]`}>
       {ways.map((way, index) => (
         <li
           key={index}
@@ -44,9 +46,7 @@ export function WaysList({ ways }: { ways: ListItem[] }) {
  */
 export function WayRow({ way, index }: { way: ListItem; index: number }) {
   return (
-    <div
-      className={`grid grid-cols-[auto_minmax(0,1fr)] items-center gap-x-3 pb-3 ${way.label ? "" : "pt-3"}`}
-    >
+    <div className={`${LEAD_ROW} pb-3 ${way.label ? "" : "pt-3"}`}>
       <span className={`${TIME_COLUMN} ${TONE_TEXT[turnTone(index)]}`}>
         {String(index + 1).padStart(2, "0")}
       </span>

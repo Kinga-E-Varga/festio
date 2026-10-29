@@ -15,6 +15,7 @@ import {
   TONES,
   turnTone,
   CARD_STACK,
+  DISC_ROW,
 } from "@/modular/styles";
 import type { ListItem, SectionGround } from "@/types/modular";
 
@@ -38,9 +39,6 @@ const DISC = {
   accent: `${TONES.accent} group-hover/link:bg-[var(--m-accent)] group-hover/link:text-[color:var(--m-accent-soft)]`,
   secondary: `${TONES.secondary} group-hover/link:bg-[var(--m-secondary)] group-hover/link:text-[color:var(--m-secondary-soft)]`,
 };
-
-/* The two-line styles' row: the arrow on a soft disc, laid out as their icons. */
-const DISC_ROW = "grid grid-cols-[minmax(0,1fr)_2.375rem] items-center gap-6";
 
 /**
  * The stays, one row each between lines — or, with `cards`, each row a card
@@ -72,7 +70,7 @@ export function StayList({
         const link = safeLink(place.link);
         // Padded as a schedule's event: 12px under, and over the name when
         // there is no eyebrow (an eyebrow takes the place of a date).
-        const row = `${numbered ? NUMBERED_ROW : DISC_ROW} pb-3 ${place.distance ? "" : "pt-3"}`;
+        const row = `${numbered ? NUMBERED_ROW : `${DISC_ROW} items-center`} pb-3 ${place.distance ? "" : "pt-3"}`;
         const number = numbered ? (
           <span className={`${TIME_COLUMN} ${TONE_TEXT[turnTone(index)]}`}>
             {String(index + 1).padStart(2, "0")}

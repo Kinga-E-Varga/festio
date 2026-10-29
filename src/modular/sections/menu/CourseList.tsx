@@ -7,6 +7,9 @@ import {
   TIME_COLUMN,
   TONE_TEXT,
   turnTone,
+  DISC_ROW,
+  LEAD_ROW,
+  NARROW_LIST,
 } from "@/modular/styles";
 import type { ListItem } from "@/types/modular";
 import { Dishes, dishesOf } from "./Dishes";
@@ -36,12 +39,12 @@ export function CourseList({
   if (courses.length === 0) return null;
   return (
     <ul
-      className={`border-y-1 border-[var(--m-line)] ${numbered ? "mx-auto w-full max-w-[350px] @3xl:mx-0 @3xl:max-w-none" : ""}`}
+      className={`border-y-1 border-[var(--m-line)] ${numbered ? NARROW_LIST : ""}`}
     >
       {courses.map((course, index) => (
         <li
           key={index}
-          className={`border-[var(--m-line)] pt-4 pb-6 not-last:border-b-1 grid items-center ${numbered ? "grid-cols-[auto_minmax(0,1fr)] gap-x-3" : "grid-cols-[minmax(0,1fr)_2.375rem] gap-x-6"}`}
+          className={`border-[var(--m-line)] pt-4 pb-6 not-last:border-b-1 ${numbered ? LEAD_ROW : `${DISC_ROW} items-center`}`}
         >
           {numbered ? (
             <span className={`${TIME_COLUMN} ${TONE_TEXT[turnTone(index)]}`}>

@@ -1,18 +1,19 @@
 import { TurnIcon } from "@/modular/cards/CardIcon";
+import { Rows } from "@/modular/cards/Rows";
 import {
-  CARD_STACK,
+  DISC_ROW,
   INNER_EYEBROW,
   ITEM_TITLE,
+  LEAD_ROW,
   TIME_COLUMN,
   TONE_TEXT,
-  otherCard,
   turnTone,
 } from "@/modular/styles";
 import type { ListItem, SectionGround } from "@/types/modular";
 import { ContactLines } from "./ContactLines";
 
 /**
- * The people as rows between hairlines, as Transportation's Two-line &
+ * The people as rows between hairlines (`Rows`), as Transportation's Two-line &
  * list: each person's role over the row, their name, their number and email
  * under it where a way's note goes, their icon on a soft disc at the row's
  * end, the discs taking turns accent / secondary: Two-line & list (`3`).
@@ -33,33 +34,16 @@ export function PeopleList({
   /** The section's ground: each person a card on the other surface. */
   cards?: SectionGround;
 }) {
-  if (people.length === 0) return null;
-
   return (
-    <ul
-      className={
-        cards
-          ? CARD_STACK
-          : `border-t-1 border-[var(--m-line)] ${numbered ? "mx-auto w-full max-w-[350px] @3xl:mx-0 @3xl:max-w-none" : ""}`
+    <Rows items={people} cards={cards} narrow={numbered}>
+      {(person, index) =>
+        numbered ? (
+          <LeadRow person={person} index={index} />
+        ) : (
+          <EndRow person={person} index={index} />
+        )
       }
-    >
-      {people.map((person, index) => (
-        <li
-          key={index}
-          className={
-            cards
-              ? otherCard(cards)
-              : "border-b-1 border-[var(--m-line)] pt-4 pb-3"
-          }
-        >
-          {numbered ? (
-            <LeadRow person={person} index={index} />
-          ) : (
-            <EndRow person={person} index={index} />
-          )}
-        </li>
-      ))}
-    </ul>
+    </Rows>
   );
 }
 
@@ -91,7 +75,7 @@ function EndRow({ person, index }: { person: ListItem; index: number }) {
   return (
     <>
       <Role person={person} className="mb-1" />
-      <div className="grid grid-cols-[minmax(0,1fr)_2.375rem] items-start gap-6 py-3">
+      <div className={`${DISC_ROW} items-start py-3`}>
         <Person person={person} />
         <TurnIcon name={person.icon} index={index} className="self-center" />
       </div>
@@ -102,9 +86,7 @@ function EndRow({ person, index }: { person: ListItem; index: number }) {
 /** Icon & list's row, as Transportation's `WayRow`: the number, then the role over the person. */
 function LeadRow({ person, index }: { person: ListItem; index: number }) {
   return (
-    <div
-      className={`grid grid-cols-[auto_minmax(0,1fr)] items-center gap-x-3 pb-3 ${person.role ? "" : "pt-3"}`}
-    >
+    <div className={`${LEAD_ROW} pb-3 ${person.role ? "" : "pt-3"}`}>
       <span className={`${TIME_COLUMN} ${TONE_TEXT[turnTone(index)]}`}>
         {String(index + 1).padStart(2, "0")}
       </span>

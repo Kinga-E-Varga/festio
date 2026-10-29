@@ -27,7 +27,7 @@ the Commits rules in `.claude/skills/feature/rules.md`.
      report in plain lines, numbered: what it applied, and what it found but didn't apply
      (with why), then `Goals: all met` or the goals that look missing. Ask the user to check in the browser and answer `ok`, `do [n]`,
      `undo [n]` or anything else. Act on the answer, building again after any change,
-     until the user says `ok`.
+     until the user replies with just `ok`.
 2. Unless the Commits rules exempt the change (nothing outside the app changed), run
    `npm test`, and `npm run build` unless step 1 already built with no change since. Also
    run `npm run test:app` when the Commits rules call for it

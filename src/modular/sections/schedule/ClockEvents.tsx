@@ -7,6 +7,7 @@ import {
   TIME_COLUMN,
   TONE_TEXT,
   turnTone,
+  LEAD_ROW,
 } from "@/modular/styles";
 import type { Language } from "@/lib/language";
 import type { Group } from "@/types/modular";
@@ -34,10 +35,7 @@ export function ClockEvents({
   return (
     <ul>
       {day.items.map((event, eventIndex) => (
-        <li
-          key={eventIndex}
-          className="grid grid-cols-[auto_minmax(0,1fr)] items-center gap-x-3 py-3"
-        >
+        <li key={eventIndex} className={`${LEAD_ROW} py-3`}>
           {/*
            * The time in a column of its own, the title and note stacked
            * beside it; am or pm on a line of its own under the clock,

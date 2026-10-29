@@ -216,6 +216,20 @@ export const PAD = `${PAD_X} ${PAD_TOP} ${PAD_BOTTOM}`;
 /** A heading over its content. */
 export const STACK = "flex flex-col gap-8 @3xl:gap-11";
 
+/**
+ * Round a heading over a timeline: 16px more under it (24px from `@3xl`)
+ * than `STACK`'s gap, gone with the heading, so a timeline with none starts
+ * where it did. Schedule's Timeline and Our story's Moments.
+ */
+export const TIMELINE_HEADING = "mb-4 empty:hidden @3xl:mb-6";
+
+/** A timeline: 350px at most and centred on a phone, 960px from `@3xl`, its line down the middle. */
+export const TIMELINE = "mx-auto w-full max-w-[350px] @3xl:max-w-240";
+
+/** A timeline's stop: the line's column, then the stop; from `@3xl` the line in the middle, stops on either side. */
+export const TIMELINE_STOP =
+  "grid grid-cols-[2.375rem_minmax(0,1fr)] gap-x-4 @3xl:grid-cols-[minmax(0,1fr)_2.375rem_minmax(0,1fr)] @3xl:gap-x-6";
+
 /** Two columns side by side, the narrow one first (the venue card and photo). */
 export const SPLIT_COLUMNS = "@3xl:grid-cols-[2fr_3fr]";
 
@@ -270,6 +284,17 @@ export function otherCard(ground: SectionGround): string {
 
 /** Cards one under another, 12px apart (16px from `@3xl`). */
 export const CARD_STACK = "flex flex-col gap-3 @3xl:gap-4";
+
+/** A list 350px at most and centred on a phone; its column's width from `@3xl`. */
+export const NARROW_LIST =
+  "mx-auto w-full max-w-[350px] @3xl:mx-0 @3xl:max-w-none";
+
+/** A row ending in a disc's column (38px, `CARD_DISC`), 24px from its content. Its alignment is the variant's. */
+export const DISC_ROW = "grid grid-cols-[minmax(0,1fr)_2.375rem] gap-x-6";
+
+/** A row led by a number or icon column (`TIME_COLUMN`), 12px from its content, the two centred on each other. */
+export const LEAD_ROW =
+  "grid grid-cols-[auto_minmax(0,1fr)] items-center gap-x-3";
 
 /** Frosted glass: the page's surface, a touch see-through, blurring what passes under it. */
 export const FROSTED = "bg-[var(--m-surface)]/94 backdrop-blur-sm";

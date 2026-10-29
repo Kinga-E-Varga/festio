@@ -13,6 +13,9 @@ import {
   SECTION_GROUND,
   STACK,
   turnTone,
+  TIMELINE_HEADING,
+  TIMELINE,
+  TIMELINE_STOP,
 } from "@/modular/styles";
 import type { VariantProps } from "@/types/modular";
 
@@ -47,9 +50,11 @@ export function Variant({ values, language, ground }: VariantProps) {
 
   return (
     <div className={`${STACK} ${SECTION_GROUND[ground]} ${PAD}`}>
-      <SectionHeading values={values} />
+      <div className={TIMELINE_HEADING}>
+        <SectionHeading values={values} />
+      </div>
       {days.length > 0 ? (
-        <ol className="mx-auto w-full max-w-[350px] @3xl:max-w-240">
+        <ol className={TIMELINE}>
           {days.map((day, index) => {
             const tone = turnTone(index);
             const dateStop = dated && day.date ? firstStop[index] : null;
@@ -93,10 +98,7 @@ export function Variant({ values, language, ground }: VariantProps) {
                         eventIndex;
                       const left = (firstEvent[index] + eventIndex) % 2 === 0;
                       return (
-                        <li
-                          key={eventIndex}
-                          className="grid grid-cols-[2.375rem_minmax(0,1fr)] gap-x-4 @3xl:grid-cols-[minmax(0,1fr)_2.375rem_minmax(0,1fr)] @3xl:gap-x-6"
-                        >
+                        <li key={eventIndex} className={TIMELINE_STOP}>
                           <span className="relative col-start-1 row-start-1 flex justify-center @3xl:col-start-2">
                             <Line
                               first={stop === 0}

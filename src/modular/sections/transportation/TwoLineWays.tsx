@@ -1,16 +1,16 @@
 import { TurnIcon } from "@/modular/cards/CardIcon";
+import { Rows } from "@/modular/cards/Rows";
 import { list } from "@/modular/content";
 import { SectionHeading } from "@/modular/SectionHeading";
 import {
   BODY_SM,
+  DISC_ROW,
   INNER_EYEBROW,
   ITEM_TITLE,
   MUTED,
   PAD,
   SPLIT,
   SECTION_GROUND,
-  otherCard,
-  CARD_STACK,
 } from "@/modular/styles";
 import type { SectionGround, SectionValues } from "@/types/modular";
 
@@ -39,49 +39,30 @@ export function TwoLineWays({
       <div>
         <SectionHeading values={values} align="start" />
       </div>
-      {ways.length > 0 ? (
-        <ul
-          className={cards ? CARD_STACK : "border-t-1 border-[var(--m-line)]"}
-        >
-          {ways.map((way, index) => (
-            <li
-              key={index}
-              className={
-                cards
-                  ? otherCard(ground)
-                  : "border-b-1 border-[var(--m-line)] pt-4 pb-3"
-              }
-            >
-              {way.label ? (
-                <p
-                  className={`${INNER_EYEBROW} mb-1 text-[color:var(--m-secondary)]`}
-                >
-                  {way.label}
-                </p>
-              ) : null}
-              <div className="grid grid-cols-[minmax(0,1fr)_2.375rem] items-start gap-6 py-3">
-                <div className="min-w-0">
-                  {way.title ? (
-                    <h3 className={ITEM_TITLE}>{way.title}</h3>
-                  ) : null}
-                  {way.text ? (
-                    <p
-                      className={`${BODY_SM} ${MUTED} mt-1 whitespace-pre-line`}
-                    >
-                      {way.text}
-                    </p>
-                  ) : null}
-                </div>
-                <TurnIcon
-                  name={way.icon}
-                  index={index}
-                  className="self-center"
-                />
+      <Rows items={ways} cards={cards ? ground : undefined}>
+        {(way, index) => (
+          <>
+            {way.label ? (
+              <p
+                className={`${INNER_EYEBROW} mb-1 text-[color:var(--m-secondary)]`}
+              >
+                {way.label}
+              </p>
+            ) : null}
+            <div className={`${DISC_ROW} items-start py-3`}>
+              <div className="min-w-0">
+                {way.title ? <h3 className={ITEM_TITLE}>{way.title}</h3> : null}
+                {way.text ? (
+                  <p className={`${BODY_SM} ${MUTED} mt-1 whitespace-pre-line`}>
+                    {way.text}
+                  </p>
+                ) : null}
               </div>
-            </li>
-          ))}
-        </ul>
-      ) : null}
+              <TurnIcon name={way.icon} index={index} className="self-center" />
+            </div>
+          </>
+        )}
+      </Rows>
     </div>
   );
 }

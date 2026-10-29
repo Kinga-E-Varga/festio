@@ -11,6 +11,9 @@ import {
   STACK,
   TONE_TEXT,
   turnTone,
+  TIMELINE_HEADING,
+  TIMELINE,
+  TIMELINE_STOP,
 } from "@/modular/styles";
 import type { VariantProps } from "@/types/modular";
 
@@ -30,17 +33,16 @@ export function Variant({ values, ground }: VariantProps) {
 
   return (
     <div className={`${STACK} ${SECTION_GROUND[ground]} ${PAD}`}>
-      <SectionHeading values={values} />
+      <div className={TIMELINE_HEADING}>
+        <SectionHeading values={values} />
+      </div>
       {moments.length > 0 ? (
-        <ol className="mx-auto w-full max-w-[350px] @3xl:max-w-240">
+        <ol className={TIMELINE}>
           {moments.map((moment, index) => {
             const tone = TONE_TEXT[turnTone(index)];
             const left = index % 2 === 0;
             return (
-              <li
-                key={index}
-                className="grid grid-cols-[2.375rem_minmax(0,1fr)] gap-x-4 @3xl:grid-cols-[minmax(0,1fr)_2.375rem_minmax(0,1fr)] @3xl:gap-x-6"
-              >
+              <li key={index} className={TIMELINE_STOP}>
                 {/*
                  * The line through this moment, from its top to its bottom so
                  * the pieces join, but from the dot's centre on the first and

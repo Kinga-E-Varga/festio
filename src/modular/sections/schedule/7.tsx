@@ -1,6 +1,12 @@
 import { groups, scheduleDay } from "@/modular/content";
 import { IconHeading } from "@/modular/IconHeading";
-import { PAD, SPLIT, SECTION_GROUND, otherCard } from "@/modular/styles";
+import {
+  PAD,
+  SPLIT,
+  SECTION_GROUND,
+  otherCard,
+  NARROW_LIST,
+} from "@/modular/styles";
 import type { VariantProps } from "@/types/modular";
 import { ClockDate, ClockEvents, clockTone } from "./ClockEvents";
 
@@ -18,7 +24,7 @@ export function Variant({ values, language, ground }: VariantProps) {
     <div className={`${SPLIT} ${SECTION_GROUND[ground]} ${PAD}`}>
       <IconHeading icon="clock" values={values} />
       {days.length > 0 ? (
-        <ol className="mx-auto flex w-full max-w-[350px] flex-col gap-3 @3xl:mx-0 @3xl:max-w-none @3xl:gap-4">
+        <ol className={`${NARROW_LIST} flex flex-col gap-3 @3xl:gap-4`}>
           {days.map((day, index) => {
             const date = scheduleDay(day.values.date ?? "", language);
             const tone = clockTone(index);
