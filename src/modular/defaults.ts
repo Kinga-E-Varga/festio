@@ -27,11 +27,17 @@ export const DEFAULTS: Record<string, SectionSamples> = {
     },
   },
   title: {
-    decoration: "diamonds",
+    names: true,
     namesStart: "Maddie",
     namesMiddle: "&",
     namesEnd: "Claude",
-    secondLine: "",
+    firstLine: { en: "Domingo's", ro: "Ziua lui Domingo", hu: "Domingo" },
+    nextLine: { en: "6th birthday", ro: "6 ani", hu: "6. születésnapja" },
+    secondLine: {
+      en: "are getting married",
+      ro: "se căsătoresc",
+      hu: "összeházasodnak",
+    },
     eyebrow: {
       en: "Together with our families",
       ro: "Împreună cu familiile noastre",
@@ -45,6 +51,7 @@ export const DEFAULTS: Record<string, SectionSamples> = {
   },
   "date-time": {
     dateFormat: "shortWeekday",
+    monthName: "long",
     eyebrow: {
       en: "Mark your calendar",
       ro: "Notează în calendar",
@@ -74,6 +81,7 @@ export const DEFAULTS: Record<string, SectionSamples> = {
     },
   },
   location: {
+    photos: true,
     eyebrow: {
       en: "A place we love",
       ro: "Un loc pe care îl iubim",
@@ -93,18 +101,39 @@ export const DEFAULTS: Record<string, SectionSamples> = {
     venues: [
       {
         label: {
-          en: "Ceremony",
-          ro: "Ceremonia",
-          hu: "Szertartás",
+          en: "Civil ceremony",
+          ro: "Cununia civilă",
+          hu: "Polgári szertartás",
+        },
+        venue: "Hôtel de Ville de Cassis",
+        address: "Place Baragnon\n13260 Cassis, France",
+        mapsLink:
+          "https://www.google.com/maps/search/Hôtel+de+Ville+Place+Baragnon+Cassis",
+        detail: {
+          en: "The legal vows, with the officiant and our closest family",
+          ro: "Jurămintele oficiale, cu ofițerul de stare civilă și familia apropiată",
+          hu: "A hivatalos eskü az anyakönyvvezetővel és a legszűkebb családdal",
+        },
+        photo: "/modular/samples/townhall.jpg",
+        icon: "pin",
+      },
+      {
+        label: {
+          en: "Church ceremony",
+          ro: "Cununia religioasă",
+          hu: "Templomi szertartás",
         },
         venue: "Chapelle Saint-Clair",
         address: "Chemin de Saint-Clair\n13260 Cassis, France",
+        mapsLink:
+          "https://www.google.com/maps/search/Chemin+de+Saint-Clair+Cassis",
         detail: {
           en: "A short ceremony, then a shuttle up the coast road",
           ro: "O ceremonie scurtă, apoi un transfer pe drumul de coastă",
           hu: "Rövid szertartás, aztán transzfer a part menti úton",
         },
         photo: "/modular/samples/church.jpg",
+        icon: "heart",
       },
       {
         label: {
@@ -114,12 +143,14 @@ export const DEFAULTS: Record<string, SectionSamples> = {
         },
         venue: "Domaine de la Falaise",
         address: "Route des Crêtes\n13260 Cassis, France",
+        mapsLink: "https://www.google.com/maps/search/Route+des+Crêtes+Cassis",
         detail: {
           en: "Apéritif, dinner and dancing above the sea",
           ro: "Aperitiv, cină și dans deasupra mării",
           hu: "Aperitif, vacsora és tánc a tenger fölött",
         },
         photo: "/modular/samples/venue.jpg",
+        icon: "meal",
       },
     ],
   },
@@ -172,11 +203,25 @@ export const DEFAULTS: Record<string, SectionSamples> = {
         },
         items: [
           {
+            time: "11:00",
+            title: {
+              en: "The civil ceremony",
+              ro: "Cununia civilă",
+              hu: "A polgári szertartás",
+            },
+            note: {
+              en: "At the town hall, with the officiant and our closest family",
+              ro: "La primărie, cu ofițerul de stare civilă și familia apropiată",
+              hu: "A városházán, az anyakönyvvezetővel és a legszűkebb családdal",
+            },
+            icon: "heart",
+          },
+          {
             time: "15:30",
             title: {
-              en: "The ceremony",
-              ro: "Ceremonia",
-              hu: "A szertartás",
+              en: "The church ceremony",
+              ro: "Cununia religioasă",
+              hu: "A templomi szertartás",
             },
             note: {
               en: "In the little chapel, with you beside us",
@@ -240,16 +285,20 @@ export const DEFAULTS: Record<string, SectionSamples> = {
   },
   transportation: {
     eyebrow: {
-      en: "Getting here, together",
-      ro: "Cum ajungem, împreună",
-      hu: "Együtt odajutni",
+      en: "Finding your way",
+      ro: "Cum ne găsești",
+      hu: "Hogyan találsz ránk",
     },
     heading: {
-      en: "The journey is part of it",
-      ro: "Drumul face parte din poveste",
-      hu: "Az út is a része",
+      en: "Getting here",
+      ro: "Drumul spre noi",
+      hu: "Az odaút",
     },
-    headingItalic: "",
+    headingItalic: {
+      en: "is half the fun.",
+      ro: "e deja sărbătoare.",
+      hu: "már maga az ünnep.",
+    },
     note: {
       en: "By train, by shuttle or by car: however you come, we’ll help you find the way.",
       ro: "Cu trenul, cu transferul sau cu mașina: oricum ai veni, te ajutăm să găsești drumul.",
@@ -257,6 +306,7 @@ export const DEFAULTS: Record<string, SectionSamples> = {
     },
     ways: [
       {
+        icon: "train",
         label: {
           en: "By train",
           ro: "Cu trenul",
@@ -274,6 +324,7 @@ export const DEFAULTS: Record<string, SectionSamples> = {
         },
       },
       {
+        icon: "bus",
         label: {
           en: "A little lift",
           ro: "Te ducem noi",
@@ -291,6 +342,7 @@ export const DEFAULTS: Record<string, SectionSamples> = {
         },
       },
       {
+        icon: "car",
         label: {
           en: "By car",
           ro: "Cu mașina",
@@ -332,6 +384,7 @@ export const DEFAULTS: Record<string, SectionSamples> = {
     },
     places: [
       {
+        icon: "bed",
         name: "Domaine de la Falaise",
         note: {
           en: "On the estate · limited rooms",
@@ -346,6 +399,7 @@ export const DEFAULTS: Record<string, SectionSamples> = {
         link: "https://www.google.com/maps/search/Route+des+Crêtes+Cassis",
       },
       {
+        icon: "heart",
         name: "Cassis",
         note: {
           en: "By the port · 10 min drive",
@@ -360,6 +414,7 @@ export const DEFAULTS: Record<string, SectionSamples> = {
         link: "https://www.google.com/maps/search/hotels+Cassis+France",
       },
       {
+        icon: "pin",
         name: "La Ciotat",
         note: {
           en: "Seaside town · 15 min drive",
@@ -386,7 +441,11 @@ export const DEFAULTS: Record<string, SectionSamples> = {
       ro: "Un meniu fără grabă",
       hu: "Egy menü, amivel nem sietünk",
     },
-    headingItalic: "",
+    headingItalic: {
+      en: "and long conversations.",
+      ro: "și povești lungi.",
+      hu: "és hosszú beszélgetések.",
+    },
     note: {
       en: "A Provençal dinner, made with the season and meant to be shared.",
       ro: "O cină provensală, gătită cu ce aduce sezonul și făcută pentru a fi împărțită.",
@@ -394,13 +453,14 @@ export const DEFAULTS: Record<string, SectionSamples> = {
     },
     courses: [
       {
+        icon: "sparkle",
         label: {
           en: "To begin",
           ro: "La început",
           hu: "Kezdésnek",
         },
         title: {
-          en: "Panisse & tapenade",
+          en: "Panisse and tapenade",
           ro: "Panisse și tapenadă",
           hu: "Panisse és tapenade",
         },
@@ -411,6 +471,7 @@ export const DEFAULTS: Record<string, SectionSamples> = {
         },
       },
       {
+        icon: "meal",
         label: {
           en: "From the sea",
           ro: "Din mare",
@@ -428,6 +489,7 @@ export const DEFAULTS: Record<string, SectionSamples> = {
         },
       },
       {
+        icon: "meal",
         label: {
           en: "From the hills",
           ro: "De pe dealuri",
@@ -445,13 +507,14 @@ export const DEFAULTS: Record<string, SectionSamples> = {
         },
       },
       {
+        icon: "heart",
         label: {
           en: "To finish",
           ro: "La final",
           hu: "Végül",
         },
         title: {
-          en: "Fig & almond tart",
+          en: "Fig and almond tart",
           ro: "Tartă cu smochine și migdale",
           hu: "Fügés-mandulás pite",
         },
@@ -474,7 +537,11 @@ export const DEFAULTS: Record<string, SectionSamples> = {
       ro: "Câteva informații utile",
       hu: "Néhány hasznos tudnivaló",
     },
-    headingItalic: "",
+    headingItalic: {
+      en: "for an easy weekend.",
+      ro: "pentru un weekend fără griji.",
+      hu: "egy gondtalan hétvégéhez.",
+    },
     note: {
       en: "The details that make a lovely weekend feel effortless.",
       ro: "Detaliile care fac un weekend frumos să pară ușor.",
@@ -520,18 +587,27 @@ export const DEFAULTS: Record<string, SectionSamples> = {
     ],
   },
   "dress-code": {
+    icon: "sparkle",
     eyebrow: {
       en: "What to wear",
       ro: "Ce să porți",
       hu: "Mit vegyél fel",
     },
     heading: {
-      en: "Come as you feel",
-      ro: "Vino cum te simți bine",
-      hu: "Gyere úgy, ahogy jól érzed magad",
+      en: "Come as you feel.",
+      ro: "Vino cum te simți bine.",
+      hu: "Gyere úgy, ahogy jól érzed magad.",
     },
-    headingItalic: "",
-    note: "",
+    headingItalic: {
+      en: "Dress for the sea.",
+      ro: "Îmbracă-te pentru mare.",
+      hu: "Öltözz a tengerhez.",
+    },
+    note: {
+      en: "Comfortable shoes recommended — the evening ends on the terrace.",
+      ro: "Recomandăm încălțăminte comodă — seara se încheie pe terasă.",
+      hu: "Kényelmes cipőt ajánlunk — az est a teraszon ér véget.",
+    },
     title: {
       en: "Summer by the sea, with a little Provençal ease",
       ro: "Vară la mare, cu o lejeritate provensală",
@@ -544,7 +620,7 @@ export const DEFAULTS: Record<string, SectionSamples> = {
     },
     showSwatches: true,
     swatchLabel: {
-      en: "A few colors we love",
+      en: "A few colours we love",
       ro: "Câteva culori care ne plac",
       hu: "Néhány szín, amit szeretünk",
     },
@@ -557,18 +633,27 @@ export const DEFAULTS: Record<string, SectionSamples> = {
     ],
   },
   gifts: {
+    icon: "gift",
     eyebrow: {
       en: "With gratitude",
       ro: "Cu recunoștință",
       hu: "Hálával",
     },
     heading: {
-      en: "A note on gifts",
-      ro: "Despre cadouri",
-      hu: "Az ajándékokról",
+      en: "A note on gifts.",
+      ro: "Despre cadouri.",
+      hu: "Az ajándékokról.",
     },
-    headingItalic: "",
-    note: "",
+    headingItalic: {
+      en: "With thanks.",
+      ro: "Cu mulțumiri.",
+      hu: "Köszönettel.",
+    },
+    note: {
+      en: "Your presence is the best gift of all.",
+      ro: "Prezența voastră este cel mai frumos cadou.",
+      hu: "A jelenlétetek a legszebb ajándék.",
+    },
     title: {
       en: "Your presence is our present",
       ro: "Prezența ta e cel mai frumos dar",
@@ -711,9 +796,9 @@ export const DEFAULTS: Record<string, SectionSamples> = {
       hu: "Foglald le a helyed az asztalunknál. Kérjük, 2027. augusztus 1-ig válaszolj.",
     },
     thankYou: {
-      en: "Thank you",
-      ro: "Mulțumim",
-      hu: "Köszönjük",
+      en: "Thank you!",
+      ro: "Mulțumim!",
+      hu: "Köszönjük!",
     },
     thanks: {
       en: "Your reply is with us.",

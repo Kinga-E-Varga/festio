@@ -1,3 +1,4 @@
+import { otherGround } from "./ground";
 import type { SectionGround } from "@/types/modular";
 
 /*
@@ -10,16 +11,8 @@ import type { SectionGround } from "@/types/modular";
 
 /* ── Faces and headings ─────────────────────────────────────────────── */
 
-/** The heading face at medium, whatever the pair. */
-export const SERIF = "font-[family-name:var(--font-secondary)] font-medium";
-
-/** The heading face at semibold, whatever the pair: a small mark that would look thin. */
-export const SERIF_BOLDER =
-  "font-[family-name:var(--font-secondary)] font-semibold";
-
-/** The heading face at bold, whatever the pair: a short line that has to hold its own over a photo. */
-export const SERIF_BOLDEST =
-  "font-[family-name:var(--font-secondary)] font-bold";
+/** The heading face at regular weight, whatever the pair. */
+export const SERIF = "font-[family-name:var(--font-secondary)] font-normal";
 
 /**
  * Headings: the heading face, balanced, and free to break a word too long
@@ -28,35 +21,76 @@ export const SERIF_BOLDEST =
  */
 export const HEADING = `${SERIF} text-balance [overflow-wrap:anywhere]`;
 
+const H2_FACE = `${HEADING} leading-[1.15] tracking-[-0.03em]`;
+
 /** A section's main heading. */
-export const H2 = `${HEADING} text-[34px] leading-[1.15] tracking-[-0.03em] @3xl:text-[44px] @5xl:text-[48px]`;
+export const H2 = `${H2_FACE} text-[34px] @3xl:text-[44px] @5xl:text-[48px]`;
+
+/** A section's main heading a step smaller, for a card with little room: Playlist's Card. */
+export const H2_SMALL = `${H2_FACE} text-[28px] @3xl:text-[34px] @5xl:text-[38px]`;
+
+const CARD_HEADING = `${HEADING} leading-[1.3] text-[color:var(--m-ink)]`;
 
 /** A card's heading. */
-export const H3 = `${HEADING} text-[22px] leading-[1.3] text-[color:var(--m-ink)]`;
+export const H3 = `${CARD_HEADING} text-[24px]`;
+
+/** An item's heading in a card: an event, a way, a stay, a dish, a note. */
+export const H3_ITEM = `${CARD_HEADING} text-[22px]`;
 
 /** A small serif line: a question, an event, a stay, a closing line. Colour is the variant's. */
 export const H4 = `${HEADING} text-[17px] leading-[1.4] @3xl:text-[18px]`;
 
 /** A serif line in italic: the title's caption, the reply note. Colour is the variant's. */
-export const ITALIC_LINE = `${HEADING} text-[18px] leading-[1.4] italic @3xl:text-[20px]`;
+export const ITALIC_LINE = `${HEADING} text-[20px] leading-[1.4] italic`;
+
+/** A short serif line on the cover photo: the kicker's circle, the date's box. Colour is the variant's. */
+export const COVER_LINE = `${HEADING} text-[14px] leading-[1.25] @3xl:text-[18px]`;
 
 /** An item's title in the newer variants — an event, a way, a stay, a dish: `H4` in ink. */
 export const ITEM_TITLE = `${H4} text-[color:var(--m-ink)]`;
 
-/** A venue's name on a card, or one of several stops. Colour is the variant's. */
-export const VENUE = `${HEADING} text-[36px] leading-[1.1] tracking-[-0.03em] @3xl:text-[40px]`;
+/** A list's large time or number: the body face, bold, tabular digits. */
+export const TIME_TEXT =
+  "text-[22px] leading-none font-semibold tracking-[0.03em] tabular-nums";
+
+/*
+ * A list's large time or number, in its own column (Schedule's Icon & list,
+ * Transportation's lists): the body face, bold, as wide as the widest time
+ * can be — five tabular digits ("12:30") plus the tracking — so every row's
+ * title starts in the same place, in any font.
+ */
+export const TIME_COLUMN = `w-[5.3ch] ${TIME_TEXT}`;
 
 /** Large serif in the accent, set tight: the names, the day, the countdown, the mark. Size is the variant's. */
 export const DISPLAY = `${HEADING} leading-none tracking-[-0.06em] text-[color:var(--m-accent)]`;
 
 /**
- * Large serif set the way the optical size wants it: medium weight, a touch
+ * Large serif set the way the optical size wants it: regular weight, a touch
  * tight. The Plain date. Size and colour are the variant's.
  */
 export const DISPLAY_PLAIN = `${SERIF} text-balance [overflow-wrap:anywhere] leading-none tracking-[-0.03em]`;
 
-/** One large plain line on a band: the band date, the bold reply's heading. Colour is the variant's. */
-export const BAND_LINE = `${DISPLAY_PLAIN} text-[40px] @md:text-[48px] @3xl:text-[60px] @5xl:text-[68px]`;
+/** The title's names' size, the same in every variant. */
+export const NAMES_SIZE =
+  "text-[48px] @md:text-[56px] @3xl:text-[68px] @5xl:text-[80px]";
+
+/**
+ * Large text cut out of a pattern: an outline in the surface round each
+ * letter, drawn behind its fill, so only its outer half shows (half of
+ * `--m-text-cut`, set by the page: 0.1em with a pattern on, none without).
+ * The stickers' titles.
+ */
+export const TEXT_CUT =
+  "[-webkit-text-stroke:var(--m-text-cut,0)_var(--m-surface)] [paint-order:stroke_fill]";
+
+/** The title's names, in the accent, a touch looser than `DISPLAY`: also Date's big day. */
+export const NAMES = `${DISPLAY} ${NAMES_SIZE} tracking-[-0.03em]!`;
+
+/** A large line's size, 56px at most: Heading & date box's date, the bold reply's heading, Days first's days, the pages' side days. */
+export const BIG_LINE_SIZE = "text-[40px] @md:text-[48px] @3xl:text-[56px]";
+
+/** One large plain line on a band: the band date. Colour is the variant's. */
+export const BAND_LINE = `${DISPLAY_PLAIN} text-[40px] @md:text-[48px] @3xl:text-[60px]`;
 
 /** The middle part's size beside the line's other parts. */
 export const AMPERSAND_SIZE = "text-[0.8em]";
@@ -67,10 +101,7 @@ export const AMPERSAND = `${AMPERSAND_SIZE} ${AMPERSAND_INK}`;
 
 /* ── Running text ───────────────────────────────────────────────────── */
 
-/** Text under a section heading. */
-export const LEAD = "text-[15px] leading-[1.85]";
-
-/** A card's text: notes, answers, transport, the thank-you. */
+/** Running text: under a section heading, a card's notes, answers, transport, the thank-you. */
 export const BODY = "text-[14px] leading-[1.8]";
 
 /** Smaller text: an event's note, a course, a footnote, account details. */
@@ -81,14 +112,14 @@ export const CAPTION = "text-[12px] leading-[1.5]";
 
 /** The small uppercase line above a heading, a date or a card. Colour is the variant's. */
 export const EYEBROW =
-  "text-[11.5px] leading-[1.5] font-semibold tracking-[0.19em] uppercase @3xl:text-[12.5px]";
+  "text-[12.5px] leading-[1.5] font-semibold tracking-[0.14em] uppercase";
 
 /** The eyebrow inside a section — a card's, a day's — 11px at every width. Colour is the variant's. */
 export const INNER_EYEBROW =
   "text-[11px] leading-[1.5] font-semibold tracking-[0.19em] uppercase";
 
 /** A quieter uppercase label: a venue's kind, a course, units, a weekday, an account line. */
-export const CAPS = "text-[11px] leading-[1.5] tracking-[0.14em] uppercase";
+export const CAPS = "text-[10px] leading-[1.5] tracking-[0.14em] uppercase";
 
 /** The page's muted ink, for most running text. */
 export const MUTED = "text-[color:var(--m-ink-muted)]";
@@ -99,14 +130,11 @@ export const MUTED = "text-[color:var(--m-ink-muted)]";
 export const LINK =
   "group/link inline-flex min-h-11 items-center gap-2 text-[13px] font-semibold";
 
-/**
- * A link that reads as text, underlined in the colour around it: Open in
- * Maps, the FAQ's way to the reply form.
- */
-export const UNDERLINE_LINK = `${LINK} underline decoration-current underline-offset-6 transition-opacity hover:opacity-80`;
+/** `LINK` in the ink, fading a little on hover: Location's "Open in Maps", FAQ's link to the reply form. */
+export const INK_LINK = `${LINK} text-[color:var(--m-ink)] transition-opacity hover:opacity-80`;
 
 /** A quiet link in the muted ink, the secondary under the pointer: the header's sections, the way back up. */
-export const MUTED_LINK = `inline-flex min-h-11 items-center gap-2 text-[13px] ${MUTED} transition-colors hover:text-[color:var(--m-secondary)]`;
+export const MUTED_LINK = `inline-flex min-h-11 items-center gap-2 text-[12px] ${MUTED} transition-colors hover:text-[color:var(--m-secondary)]`;
 
 /** The arrow inside a `group/link`. */
 export const ARROW_NUDGE =
@@ -167,18 +195,15 @@ export const SECTION_GROUND: Record<SectionGround, string> = {
 
 /* ── Section layout ─────────────────────────────────────────────────── */
 
-/** A section's side padding: tighter on a phone, wide on a wide page. */
-export const PAD_X = "px-6 @3xl:px-14 @5xl:px-30";
+/** A section's side padding: 24px on a phone, 64px from `@3xl`, 100px from `@5xl`. */
+export const PAD_X = "px-6 @3xl:px-16 @5xl:px-25";
 
-/** A section's top and bottom padding, apart so a section may drop one. 80px at most, so a laptop's short screen still shows a fair part of a section. */
-export const PAD_TOP = "pt-16 @3xl:pt-20";
-export const PAD_BOTTOM = "pb-16 @3xl:pb-20";
+/** A section's top and bottom padding, apart so a section may drop one: 64px on a phone, 100px from `@3xl`. */
+export const PAD_TOP = "pt-16 @3xl:pt-25";
+export const PAD_BOTTOM = "pb-16 @3xl:pb-25";
 
 /** A section's padding. */
 export const PAD = `${PAD_X} ${PAD_TOP} ${PAD_BOTTOM}`;
-
-/** A tighter section padding: 56px top and bottom on a phone, 80px from `@3xl`. */
-export const PAD_SNUG = `${PAD_X} py-14 @3xl:py-20`;
 
 /** A heading over its content. */
 export const STACK = "flex flex-col gap-8 @3xl:gap-11";
@@ -218,11 +243,22 @@ export const FIELD_CORNER = "rounded-(--m-corner-field)";
 /** A card: a hairline edge, the corners and its padding. Its ground is the variant's. */
 export const CARD = `${CORNER} border-1 border-[var(--m-line)] p-6 @3xl:px-8 @3xl:py-7`;
 
+/** A card on the other surface from its section's (`otherGround`). */
+export function otherCard(ground: SectionGround): string {
+  return `${CARD} ${GROUND[otherGround(ground)]}`;
+}
+
+/** Cards one under another, 12px apart (16px from `@3xl`). */
+export const CARD_STACK = "flex flex-col gap-3 @3xl:gap-4";
+
 /** Frosted glass: the page's surface, a touch see-through, blurring what passes under it. */
 export const FROSTED = "bg-[var(--m-surface)]/94 backdrop-blur-sm";
 
 /** A round icon holder; its size is the variant's, its colours come from `TONES`. */
 export const ICON_DISC = "grid shrink-0 place-items-center rounded-full";
+
+/** A card's or list's icon holder: 38px, the same in every variant (its glyph is 22px). */
+export const CARD_DISC = `${ICON_DISC} size-9.5`;
 
 /** Icon on its soft ground, in either accent. */
 export const TONES = {
@@ -235,6 +271,11 @@ export const TONE_TEXT = {
   accent: "text-[color:var(--m-accent)]",
   secondary: "text-[color:var(--m-secondary)]",
 } as const;
+
+/** The tone a list's items take in turn: the first in the accent, the next in the secondary, and so on. */
+export function turnTone(index: number): "accent" | "secondary" {
+  return index % 2 === 0 ? "accent" : "secondary";
+}
 
 /*
  * Columns for one to six cards: up to four all in a row once there is room,
@@ -255,3 +296,31 @@ const COLUMNS = [
 export function columnsFor(count: number): string {
   return COLUMNS[Math.min(count, COLUMNS.length - 1)];
 }
+
+/** A grid of cards: as `columnsFor`, but two side by side are 520px each at most, centred. */
+export function cardColumns(count: number): string {
+  return count === 2
+    ? "@3xl:grid-cols-[repeat(2,minmax(0,520px))] @3xl:justify-center"
+    : columnsFor(count);
+}
+
+/** A card's content in a `columnsFor` grid: centred while the cards stack, from the left once they sit side by side. */
+export function centredWhenStacked(count: number): string {
+  return count > 1
+    ? "items-center text-center @3xl:items-start @3xl:text-left"
+    : "items-center text-center";
+}
+
+/**
+ * A grid with hairlines between its cells (Menu's courses, Location's
+ * venues without photos): a line above and below the whole, and each cell
+ * its own top line and a shorter left one that stops short of the lines
+ * above and below, pulled 1px up and left, so the lines follow whatever
+ * way the cells wrap; the grid clips the ones along its outer edge. Real
+ * lines, not 1px gaps: a gap at a fractional position can round away to
+ * nothing. Columns are the variant's (`columnsFor`).
+ */
+export const LINED_GRID =
+  "grid overflow-hidden border-y-1 border-[var(--m-line)]";
+export const LINED_CELL =
+  "relative -mt-px -ml-px border-t-1 border-[var(--m-line)] before:absolute before:inset-y-6 before:left-0 before:w-px before:bg-[var(--m-line)]";

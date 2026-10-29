@@ -1,7 +1,10 @@
 import { LABELS } from "@/modular/labels";
 import type { SectionDefinition } from "@/types/modular";
 
-/** The names, large, in three parts like the header's mark, between two lines. */
+/**
+ * The names, large, in three parts like the header's mark, between two
+ * lines; or, with Use names off, two plain title lines in their place.
+ */
 export const section: SectionDefinition = {
   id: "title",
   name: { en: "Title", ro: "Titlu", hu: "Cím" },
@@ -10,48 +13,84 @@ export const section: SectionDefinition = {
   variants: [
     {
       id: "1",
-      name: { en: "Colorful", ro: "Colorat", hu: "Színes" },
+      name: { en: "Colourful", ro: "Colorat", hu: "Színes" },
       shows: [
-        "decoration",
         "eyebrow",
+        "names",
         "namesStart",
         "namesMiddle",
         "namesEnd",
+        "firstLine",
+        "nextLine",
+        "secondLine",
         "caption",
       ],
     },
     {
-      id: "2",
-      name: { en: "Plain", ro: "Simplu", hu: "Egyszerű" },
+      id: "4",
+      name: {
+        en: "Colourful sticker",
+        ro: "Autocolant colorat",
+        hu: "Színes matrica",
+      },
       shows: [
-        "decoration",
-        "eyebrow",
+        "names",
         "namesStart",
         "namesMiddle",
         "namesEnd",
+        "firstLine",
+        "nextLine",
+        "secondLine",
+      ],
+    },
+    {
+      id: "2",
+      name: { en: "Simple", ro: "Simplu", hu: "Egyszerű" },
+      shows: [
+        "eyebrow",
+        "names",
+        "namesStart",
+        "namesMiddle",
+        "namesEnd",
+        "firstLine",
+        "nextLine",
         "secondLine",
         "caption",
+      ],
+    },
+    {
+      id: "3",
+      name: {
+        en: "Simple sticker",
+        ro: "Autocolant simplu",
+        hu: "Egyszerű matrica",
+      },
+      shows: [
+        "names",
+        "namesStart",
+        "namesMiddle",
+        "namesEnd",
+        "firstLine",
+        "nextLine",
+        "secondLine",
       ],
     },
   ],
   fields: [
     {
-      id: "decoration",
-      label: { en: "decoration", ro: "decor", hu: "díszítés" },
-      type: "choice",
-      options: [
-        { id: "none", label: { en: "None", ro: "Niciunul", hu: "Nincs" } },
-        {
-          id: "diamonds",
-          label: { en: "Diamonds", ro: "Romburi", hu: "Rombuszok" },
-        },
-      ],
-    },
-    {
       id: "eyebrow",
       label: LABELS.eyebrow,
       type: "text",
       maxLength: 60,
+    },
+    {
+      // Names (name, mark, name) and a title line for a couple; off, two
+      // plain title lines in their place, for any other event.
+      id: "names",
+      label: { en: "Use names", ro: "Folosește nume", hu: "Nevek használata" },
+      type: "toggle",
+      controls: ["namesStart", "namesMiddle", "namesEnd", "secondLine"],
+      controlsOff: ["firstLine", "nextLine"],
     },
     {
       id: "namesStart",
@@ -71,7 +110,7 @@ export const section: SectionDefinition = {
         hu: "jel",
       },
       type: "text",
-      maxLength: 12,
+      maxLength: 40,
     },
     {
       id: "namesEnd",
@@ -84,8 +123,20 @@ export const section: SectionDefinition = {
       maxLength: 40,
     },
     {
+      id: "firstLine",
+      label: { en: "first line", ro: "primul rând", hu: "első sor" },
+      type: "text",
+      maxLength: 40,
+    },
+    {
+      id: "nextLine",
+      label: { en: "second line", ro: "al doilea rând", hu: "második sor" },
+      type: "text",
+      maxLength: 40,
+    },
+    {
       id: "secondLine",
-      label: { en: "title line", ro: "rând de titlu", hu: "címsor" },
+      label: { en: "second line", ro: "al doilea rând", hu: "második sor" },
       type: "text",
       maxLength: 40,
     },

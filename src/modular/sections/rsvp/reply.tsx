@@ -14,7 +14,6 @@ import {
   CARD,
   FIELD_CORNER,
   H3,
-  HEADING,
   MUTED,
   PILL,
 } from "@/modular/styles";
@@ -121,15 +120,11 @@ export function ThankYouCard({
       className={`${CARD} ${className} flex min-h-72 flex-col items-center justify-center bg-[var(--m-surface)] text-center @3xl:min-h-80`}
     >
       <CardIcon name="check" tone="accent" />
-      {thankYou ? (
-        <p className={`${H3} mt-5 text-[color:var(--m-secondary)]!`}>
-          {thankYou}
-        </p>
-      ) : null}
+      {thankYou ? <p className={`${H3} mt-5`}>{thankYou}</p> : null}
       <h3
         ref={heading}
         tabIndex={-1}
-        className={`${HEADING} ${thankYou ? "mt-1.5" : "mt-5"} mb-2 text-[28px] outline-none text-[color:var(--m-ink)]`}
+        className={`${H3} ${thankYou ? "mt-1.5" : "mt-5"} mb-2 text-[color:var(--m-secondary)]! outline-none`}
       >
         {thanks || reply("sentTitle")}
       </h3>

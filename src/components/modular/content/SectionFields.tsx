@@ -109,17 +109,22 @@ export function FieldList({
   onSet: (field: string, value: SectionValues[string]) => void;
 }) {
   const host = useLocale() as Language;
-  /* Fields a switch controls are drawn after it, not in their own place. */
+  /* Fields a switch controls, on or off, are drawn after it, not in their own place. */
   const headed = new Set(
     fields.flatMap((field) =>
-      field.type === "toggle" ? (field.controls ?? []) : [],
+      field.type === "toggle"
+        ? [...(field.controls ?? []), ...(field.controlsOff ?? [])]
+        : [],
     ),
   );
   return fields.map((field) => {
     if (headed.has(field.id)) return null;
     /* A switch with fields under it, drawn right after it. */
-    if (field.type === "toggle" && field.controls) {
-      const controls = field.controls;
+    if (field.type === "toggle" && (field.controls || field.controlsOff)) {
+      const controls = [
+        ...(field.controls ?? []),
+        ...(field.controlsOff ?? []),
+      ];
       return (
         <Fragment key={field.id}>
           <FieldInput

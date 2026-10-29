@@ -171,10 +171,13 @@ export interface ToggleField {
   label: LocalizedText;
   type: "toggle";
   /**
-   * The fields it turns on and off. The Content tab draws these right
-   * after it, only while it is on.
+   * The fields it turns on and off: a field's id, or a list item's path
+   * (`venues.photo`). The Content tab draws them only while it is on, a
+   * field right after it, an item's in each item.
    */
   controls?: string[];
+  /** The fields in their place while it is off, drawn after it as `controls`. */
+  controlsOff?: string[];
 }
 
 /** One option picked from a short list (a dropdown); the value is the option's id. */
@@ -224,6 +227,11 @@ export interface VariantInfo {
    */
   band?: ColorRole;
   /**
+   * Drawn in two columns (`SPLIT`): the section right after it is told so
+   * (`afterSplit`) and may line up with its second column.
+   */
+  split?: boolean;
+  /**
    * The fields this variant draws, as paths: a field's id, `list.item` for a
    * list's item field, `groups.field` and `groups.items.field` for a groups
    * field. The Content tab shows only these; values it leaves out are kept.
@@ -260,6 +268,8 @@ export interface SectionDefinition {
    * of them on the page (`GOOD_TO_KNOW`).
    */
   menuLabel?: LocalizedText;
+  /** A hint under its styles in the Design tab. */
+  stylesHint?: LocalizedText;
   /**
    * Other sections whose values this one shows, by id — so content entered
    * once is read in both places (the footer's mark is the header's).
@@ -351,6 +361,8 @@ export interface VariantProps {
   related: Partial<Record<string, SectionValues>>;
   /** The ground the page gave this section; its cards take the other surface. */
   ground: SectionGround;
+  /** The section right before this one is drawn in two columns (`split`). */
+  afterSplit?: boolean;
   /** The RSVP variant hands the guest's reply up; every other one ignores it. */
   onRsvp?: (payload: RsvpPayload) => void;
   /** The host's own reply questions; only the RSVP variants read them. */

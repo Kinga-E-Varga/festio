@@ -1,4 +1,4 @@
-import { formatDay, isRealDate } from "@/lib/event";
+import { addDays, formatDay, isRealDate } from "@/lib/event";
 import { LANGUAGE_LOCALE, type Language } from "@/lib/language";
 import type { Group, ListItem, SectionValues } from "@/types/modular";
 
@@ -52,10 +52,38 @@ export function weekday(iso: string, language: Language): string {
   });
 }
 
-/** "September", in the invitation's language. */
-export function monthName(iso: string, language: Language): string {
+/** "September", or "Sep" when `short`, in the invitation's language. */
+export function monthName(
+  iso: string,
+  language: Language,
+  short = false,
+): string {
   return day(iso).toLocaleDateString(LANGUAGE_LOCALE[language], {
-    month: "long",
+    month: short ? "short" : "long",
+  });
+}
+
+/**
+ * The days from `reach` before `iso` to `reach` after, in order: each its
+ * distance from it, its day of the month and its short weekday ("Thu"), in
+ * the invitation's language.
+ */
+export function daysAround(
+  iso: string,
+  language: Language,
+  reach: number,
+): { offset: number; date: number; weekday: string }[] {
+  const start = day(iso);
+  return Array.from({ length: reach * 2 + 1 }, (_, at) => {
+    const offset = at - reach;
+    const date = addDays(start, offset);
+    return {
+      offset,
+      date: date.getDate(),
+      weekday: date.toLocaleDateString(LANGUAGE_LOCALE[language], {
+        weekday: "short",
+      }),
+    };
   });
 }
 
@@ -97,14 +125,28 @@ export function eventStart(iso: string): Date {
 }
 
 /**
- * A `time` value as the invitation writes it: EN "3:30 pm", RO and HU
- * "15:30". Anything that is not `HH:MM` is shown as typed.
+ * A `time` value in its two parts: EN `{ clock: "3:30", meridiem: "pm" }`,
+ * RO and HU `{ clock: "15:30", meridiem: "" }`. Anything that is not
+ * `HH:MM` is the clock as typed.
  */
-export function formatTime(time: string, language: Language): string {
-  if (!TIME.test(time) || language !== "en") return time;
+export function timeParts(
+  time: string,
+  language: Language,
+): { clock: string; meridiem: string } {
+  if (!TIME.test(time) || language !== "en")
+    return { clock: time, meridiem: "" };
   const [hours, minutes] = time.split(":");
   const hour = Number(hours);
-  return `${hour % 12 || 12}:${minutes} ${hour < 12 ? "am" : "pm"}`;
+  return {
+    clock: `${hour % 12 || 12}:${minutes}`,
+    meridiem: hour < 12 ? "am" : "pm",
+  };
+}
+
+/** A `time` value as the invitation writes it: EN "3:30 pm", RO and HU "15:30". */
+export function formatTime(time: string, language: Language): string {
+  const { clock, meridiem } = timeParts(time, language);
+  return meridiem ? `${clock} ${meridiem}` : clock;
 }
 
 export interface TimeLeft {
@@ -148,9 +190,4 @@ export function safeLink(value: string | undefined): string | null {
   } catch {
     return null;
   }
-}
-
-/** What "Open in Maps" searches for: the venue, then its address on one line. */
-export function mapsQuery(venue = "", address = ""): string {
-  return [venue, address.replace(/\n/g, ", ")].filter(Boolean).join(", ");
 }

@@ -1,24 +1,12 @@
-import { formatTime, groups, scheduleDay } from "@/modular/content";
-import { Icon, isIconName } from "@/modular/icons";
+import { groups } from "@/modular/content";
 import { SectionHeading } from "@/modular/SectionHeading";
-import {
-  BODY_SM,
-  INNER_EYEBROW,
-  ITEM_TITLE,
-  ICON_DISC,
-  MUTED,
-  PAD,
-  SPLIT,
-  TONES,
-  SECTION_GROUND,
-} from "@/modular/styles";
+import { PAD, SPLIT, SECTION_GROUND } from "@/modular/styles";
 import type { VariantProps } from "@/types/modular";
+import { DayEvents } from "./DayEvents";
 
 /**
- * The heading beside the days, each with its events. No day is singled
- * out: the icons take turns by day — the 1st, 3rd… in the accent, the 2nd,
- * 4th… in the secondary. An event with no known icon simply has none. A
- * single day shows no date.
+ * The heading beside the days, each with its events (`DayEvents`), between
+ * hairlines. No day is singled out. A single day shows no date.
  */
 export function Variant({ values, language, ground }: VariantProps) {
   const days = groups(values, "days");
@@ -30,53 +18,19 @@ export function Variant({ values, language, ground }: VariantProps) {
       </div>
       {days.length > 0 ? (
         <ol className={`border-t-1 border-[var(--m-line)]`}>
-          {days.map((day, index) => {
-            const tone = index % 2 === 0 ? TONES.accent : TONES.secondary;
-            const date = scheduleDay(day.values.date ?? "", language);
-            return (
-              <li
-                key={index}
-                className="border-b-1 border-[var(--m-line)] pt-4 pb-3"
-              >
-                {days.length > 1 && date ? (
-                  <p
-                    className={`${INNER_EYEBROW} mb-1.5 text-[color:var(--m-secondary)]`}
-                  >
-                    {date}
-                  </p>
-                ) : null}
-                {day.items.length > 0 ? (
-                  <ul>
-                    {day.items.map((event, eventIndex) => (
-                      <li
-                        key={eventIndex}
-                        className="grid grid-cols-[3.25rem_1fr_2.5rem] items-start gap-3 py-3 @3xl:grid-cols-[4rem_1fr_2.5rem]"
-                      >
-                        <span
-                          className={`${BODY_SM} ${MUTED} pt-0.5 tabular-nums`}
-                        >
-                          {formatTime(event.time, language)}
-                        </span>
-                        <div className="min-w-0">
-                          <h3 className={ITEM_TITLE}>{event.title}</h3>
-                          {event.note ? (
-                            <p className={`${BODY_SM} ${MUTED} mt-1`}>
-                              {event.note}
-                            </p>
-                          ) : null}
-                        </div>
-                        {isIconName(event.icon) ? (
-                          <span className={`${ICON_DISC} size-9 ${tone}`}>
-                            <Icon name={event.icon} className="size-5.5" />
-                          </span>
-                        ) : null}
-                      </li>
-                    ))}
-                  </ul>
-                ) : null}
-              </li>
-            );
-          })}
+          {days.map((day, index) => (
+            <li
+              key={index}
+              className="border-b-1 border-[var(--m-line)] pt-4 pb-3"
+            >
+              <DayEvents
+                day={day}
+                index={index}
+                showDate={days.length > 1}
+                language={language}
+              />
+            </li>
+          ))}
         </ol>
       ) : null}
     </div>

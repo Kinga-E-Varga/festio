@@ -33,7 +33,6 @@ export const template: ModularTemplate = {
   values: {
     header: { markStart: "Maddie", markEnd: "Claude" },
     title: {
-      decoration: "none",
       secondLine: {
         en: "are tying the knot",
         ro: "își unesc destinele",
@@ -60,9 +59,12 @@ export const template: ModularTemplate = {
     location: {
       venues: [
         {
+          icon: "pin",
           label: { en: "Celebration", ro: "Petrecere", hu: "Ünnepség" },
           venue: "Domaine de la Falaise",
           address: "Route des Crêtes\n13260 Cassis, France",
+          mapsLink:
+            "https://www.google.com/maps/search/Route+des+Crêtes+Cassis",
           detail: {
             en: "Ceremony & dinner, all in one place",
             ro: "Ceremonia și cina, în același loc",
@@ -166,15 +168,17 @@ export const template: ModularTemplate = {
       },
       courses: [
         {
+          icon: "sparkle",
           label: { en: "To start", ro: "Pentru început", hu: "Előétel" },
           title: {
-            en: "Panisse, tapenade & anchoïade\nTomato tart, fresh basil",
+            en: "Panisse, tapenade and anchoïade\nTomato tart, fresh basil",
             ro: "Panisse, tapenadă și anchoïade\nTartă cu roșii, busuioc proaspăt",
             hu: "Panisse, tapenade és anchoïade\nParadicsomos pite, friss bazsalikom",
           },
           note: "",
         },
         {
+          icon: "meal",
           label: { en: "Main", ro: "Fel principal", hu: "Főétel" },
           title: {
             en: "Sea bream, fennel, saffron sauce\nSlow lamb shoulder, herbes de Provence",
@@ -184,18 +188,20 @@ export const template: ModularTemplate = {
           note: "",
         },
         {
+          icon: "meal",
           label: { en: "Dessert", ro: "Desert", hu: "Desszert" },
           title: {
-            en: "Fig & almond tart\nLate-night lavender honey ice cream",
+            en: "Fig and almond tart\nLate-night lavender honey ice cream",
             ro: "Tartă cu smochine și migdale\nÎnghețată cu miere de lavandă, pentru târziu",
             hu: "Fügés-mandulás pite\nKéső esti levendulamézes fagylalt",
           },
           note: "",
         },
         {
+          icon: "heart",
           label: { en: "At the bar", ro: "La bar", hu: "A bárban" },
           title: {
-            en: "Cassis rosé, pastis & cold beer\nCocktails until the last dance",
+            en: "Cassis rosé, pastis and cold beer\nCocktails until the last dance",
             ro: "Rosé de Cassis, pastis și bere rece\nCocktailuri până la ultimul dans",
             hu: "Cassis-i rosé, pastis és hideg sör\nKoktélok az utolsó táncig",
           },

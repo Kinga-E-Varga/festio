@@ -12,7 +12,6 @@ export const section: SectionDefinition = {
   required: false,
   order: 80,
   menuLabel: { en: "Menu", ro: "Meniu", hu: "Menü" },
-  // No variant draws an italic second line under the heading.
   variants: [
     {
       id: "1",
@@ -20,8 +19,45 @@ export const section: SectionDefinition = {
       shows: [
         ...HEADING_SHOWS.filter((id) => id !== "headingItalic"),
         "courses.label",
-        // Draws a course's first dish only.
-        "courses.title.first",
+        "courses.title",
+        "courses.note",
+      ],
+    },
+    {
+      id: "4",
+      name: {
+        en: "Two-line & list",
+        ro: "Două rânduri & listă",
+        hu: "Kétsoros & lista",
+      },
+      shows: [
+        ...HEADING_SHOWS,
+        "courses.icon",
+        "courses.label",
+        "courses.title",
+        "courses.note",
+      ],
+    },
+    {
+      id: "7",
+      name: {
+        en: "Two-line & card",
+        ro: "Două rânduri & card",
+        hu: "Kétsoros & kártya",
+      },
+      shows: [...HEADING_SHOWS, "courses.label", "courses.title"],
+    },
+    {
+      id: "5",
+      name: {
+        en: "Icon & list",
+        ro: "Pictogramă & listă",
+        hu: "Ikon & lista",
+      },
+      shows: [
+        ...ICON_HEADING_SHOWS,
+        "courses.label",
+        "courses.title",
         "courses.note",
       ],
     },
@@ -29,13 +65,21 @@ export const section: SectionDefinition = {
       id: "2",
       name: {
         en: "Icon & card",
-        ro: "Pictogramă și card",
-        hu: "Ikon és kártya",
+        ro: "Pictogramă & card",
+        hu: "Ikon & kártya",
       },
+      shows: [...ICON_HEADING_SHOWS, "courses.label", "courses.title"],
+    },
+    {
+      id: "6",
+      name: { en: "Cards", ro: "Carduri", hu: "Kártyák" },
+      // No italic second line under the heading.
       shows: [
-        ...ICON_HEADING_SHOWS.filter((id) => id !== "headingItalic"),
+        ...HEADING_SHOWS.filter((id) => id !== "headingItalic"),
+        "courses.icon",
         "courses.label",
         "courses.title",
+        "courses.note",
       ],
     },
     {
@@ -45,8 +89,19 @@ export const section: SectionDefinition = {
         ro: "Card cu ramă",
         hu: "Keretes kártya",
       },
+      // No italic second line under the heading.
       shows: [
-        ...ICON_HEADING_SHOWS.filter((id) => id !== "headingItalic"),
+        ...HEADING_SHOWS.filter((id) => id !== "headingItalic"),
+        "courses.label",
+        "courses.title",
+      ],
+    },
+    {
+      id: "8",
+      name: { en: "Full card", ro: "Card întreg", hu: "Teljes kártya" },
+      // Framed card's fields: every heading field but the italic heading.
+      shows: [
+        ...HEADING_SHOWS.filter((id) => id !== "headingItalic"),
         "courses.label",
         "courses.title",
       ],
@@ -66,6 +121,7 @@ export const section: SectionDefinition = {
       type: "list",
       maxItems: 6,
       item: [
+        { id: "icon", label: LABELS.icon, type: "icon", maxLength: 20 },
         {
           id: "label",
           label: { en: "course", ro: "fel", hu: "fogás" },

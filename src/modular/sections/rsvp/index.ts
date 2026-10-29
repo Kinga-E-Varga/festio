@@ -19,16 +19,31 @@ export const section: SectionDefinition = {
   variants: [
     {
       id: "1",
-      name: { en: "Soft band", ro: "Bandă discretă", hu: "Lágy sáv" },
+      name: {
+        en: "Two-line & soft band",
+        ro: "Două rânduri & bandă discretă",
+        hu: "Kétsoros & lágy sáv",
+      },
       band: "secondary-soft",
       shows: [...HEADING_SHOWS],
+    },
+    {
+      id: "3",
+      name: {
+        en: "Icon & soft band",
+        ro: "Pictogramă & bandă discretă",
+        hu: "Ikon & lágy sáv",
+      },
+      band: "secondary-soft",
+      // Two-line & soft band with the icon heading: no eyebrow, no italic heading.
+      shows: ICON_HEADING_SHOWS,
     },
     {
       id: "2",
       name: { en: "Bold band", ro: "Bandă intensă", hu: "Élénk sáv" },
       band: "tertiary",
       // No italic second line under the heading.
-      shows: ICON_HEADING_SHOWS.filter((id) => id !== "headingItalic"),
+      shows: ICON_HEADING_SHOWS,
     },
   ],
   fields: [

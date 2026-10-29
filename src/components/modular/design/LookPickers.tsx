@@ -11,13 +11,14 @@ import type {
   ModularPalette,
   ModularPattern,
 } from "@/types/modular";
-import { OPTION_CARD, RollOut } from "./RollOut";
+import { OPTION_CARD, OptionTip, RollOut } from "./RollOut";
 
 /*
- * The roles the palette row shows as dots. Tailwind only sees whole class
- * names, so each fill is written out rather than built from the role.
+ * The roles a palette shows: squares in its box and on its cards, and
+ * along the template cards' foot. Tailwind only sees whole class names, so
+ * each fill is written out rather than built from the role.
  */
-const SWATCHES: [ColorRole, string][] = [
+export const SWATCHES: [ColorRole, string][] = [
   ["surface", "bg-[var(--m-surface)]"],
   ["ink", "bg-[var(--m-ink)]"],
   ["accent", "bg-[var(--m-accent)]"],
@@ -25,19 +26,16 @@ const SWATCHES: [ColorRole, string][] = [
   ["tertiary", "bg-[var(--m-tertiary)]"],
 ];
 
-/** A palette's colours as overlapping dots, in its own colours. */
+/** A palette's colours as squares side by side in one frame, as on its cards. */
 function Swatches({ palette }: { palette: ModularPalette }) {
   return (
     <span
       aria-hidden="true"
       style={paletteVars(palette)}
-      className="flex shrink-0 -space-x-1.5"
+      className="flex shrink-0 overflow-hidden rounded-ui border border-neutral-400"
     >
       {SWATCHES.map(([role, fill]) => (
-        <span
-          key={role}
-          className={`size-5 rounded-full border border-neutral-400 ${fill}`}
-        />
+        <span key={role} className={`size-[18px] ${fill}`} />
       ))}
     </span>
   );
@@ -45,9 +43,13 @@ function Swatches({ palette }: { palette: ModularPalette }) {
 
 /**
  * Whole palettes only: the box shows the current one's colours, and its
- * cards are tiny invitations in each palette's colours — its page, two
- * lines of its ink, dots of its accents. No names on show; screen readers
- * get them.
+ * cards are swatches — the same colours side by side, 112px wide as the
+ * template cards and 24px tall, so inside the 1px border each of the five
+ * is a 22px square. Picked, it shrinks as much as the others (0.83), not
+ * by its own height, or it would look far smaller: its ring then runs about
+ * 3px past it, into the space between the cards. No
+ * names on show: hovering a card shows its name as a hint, and screen
+ * readers get it.
  */
 export function PalettePicker({
   palettes,
@@ -75,25 +77,24 @@ export function PalettePicker({
         summary={palette ? <Swatches palette={palette} /> : null}
       >
         {palettes.map((option) => (
-          <button
-            key={option.id}
-            type="button"
-            aria-pressed={option.id === current}
-            aria-label={option.name}
-            onClick={() => onPick(option.id)}
-            style={paletteVars(option)}
-            className={`${OPTION_CARD} h-[60px] flex-col justify-between border border-[var(--m-line)] bg-[var(--m-surface)] p-2.5`}
-          >
-            <span aria-hidden="true" className="flex flex-col gap-1.5">
-              <span className="h-1 w-3/4 rounded-full bg-[var(--m-ink)]" />
-              <span className="h-1 w-1/2 rounded-full bg-[var(--m-ink-muted)]" />
-            </span>
-            <span aria-hidden="true" className="flex gap-1">
-              <span className="size-3 rounded-full bg-[var(--m-accent)]" />
-              <span className="size-3 rounded-full bg-[var(--m-secondary)]" />
-              <span className="size-3 rounded-full bg-[var(--m-tertiary)]" />
-            </span>
-          </button>
+          <OptionTip key={option.id} tip={option.name}>
+            <button
+              type="button"
+              aria-pressed={option.id === current}
+              aria-label={option.name}
+              onClick={() => onPick(option.id)}
+              style={paletteVars(option)}
+              className={`${OPTION_CARD} w-[112px] overflow-hidden border border-neutral-400 [--card-h:24px]`}
+            >
+              {SWATCHES.map(([role, fill]) => (
+                <span
+                  key={role}
+                  aria-hidden="true"
+                  className={`flex-1 ${fill}`}
+                />
+              ))}
+            </button>
+          </OptionTip>
         ))}
       </RollOut>
     </div>
@@ -102,15 +103,22 @@ export function PalettePicker({
 
 /**
  * A pattern's sample: drawn in the app's secondary colour on the pale fill — the shape,
- * not the colours, which the palette sets. Patterns draw in `--m-pattern`.
+ * not the colours, which the palette sets. Patterns draw in `--m-pattern`,
+ * and one that hides part of itself (Curvy, Waves) paints over it in `--m-surface`.
  */
 const PATTERN_SAMPLE =
-  "border border-neutral-400 bg-neutral-50 [--m-pattern:var(--color-neutral-400)]";
+  "border border-neutral-400 bg-neutral-50 [--m-pattern:var(--color-neutral-400)] [--m-surface:var(--color-neutral-50)]";
+
+/**
+ * Every pattern's sample at half its size, the same for all: drawn on a layer
+ * twice the card's size and shrunk into it, so more than a repeat shows.
+ */
+const SAMPLE_SCALE =
+  "absolute top-0 left-0 isolate size-[200%] origin-top-left scale-50";
 
 /**
  * Plain, or one of the patterns: the box with an icon and the pattern's
- * name, and its cards each a 60px square sample of one, as tall as the
- * palette's cards — Plain an empty one.
+ * name, and its cards each a 60px square sample of one — Plain an empty one.
  */
 export function PatternPicker({
   patterns,
@@ -138,20 +146,26 @@ export function PatternPicker({
       <EditorHeading id="design-heading-pattern" title={t("pattern")} />
       <RollOut
         id="design-patterns"
+        paged
         label={`${t("pattern")}: ${name}`}
         icon="pattern"
         summary={<span className="min-w-0">{name}</span>}
-        layout="flex flex-wrap gap-3"
       >
         {options.map((option) => (
-          <button
-            key={option.id ?? "plain"}
-            type="button"
-            aria-pressed={option.id === current}
-            aria-label={option.name}
-            onClick={() => onPick(option.id)}
-            className={`${OPTION_CARD} size-[60px] ${PATTERN_SAMPLE} ${option.className}`}
-          />
+          <OptionTip key={option.id ?? "plain"} tip={option.name}>
+            <button
+              type="button"
+              aria-pressed={option.id === current}
+              aria-label={option.name}
+              onClick={() => onPick(option.id)}
+              className={`${OPTION_CARD} w-[60px] overflow-hidden ${PATTERN_SAMPLE}`}
+            >
+              <span
+                aria-hidden="true"
+                className={`${SAMPLE_SCALE} ${option.className}`}
+              />
+            </button>
+          </OptionTip>
         ))}
       </RollOut>
     </div>
@@ -161,7 +175,8 @@ export function PatternPicker({
 /**
  * Whole pairs only: the box with an icon and the pair's name; its cards
  * each the pair's two faces named in themselves, one under the other —
- * the heading face, then the body face — each card as wide as its names.
+ * the heading face, then the body face — each card 112 × 60px, as the
+ * template cards; a name too long for it ends in an ellipsis.
  */
 export function FontPairPicker({
   fontPairs,
@@ -187,31 +202,31 @@ export function FontPairPicker({
         label={`${t("fontPair")}: ${pair?.name ?? ""}`}
         icon="fonts"
         summary={<span className="min-w-0 truncate">{pair?.name ?? ""}</span>}
-        layout="flex flex-wrap gap-3"
       >
         {fontPairs.map((option) => (
-          <button
-            key={option.id}
-            type="button"
-            aria-pressed={option.id === current}
-            aria-label={option.name}
-            onClick={() => onPick(option.id)}
-            style={fontVars(option)}
-            className={`${OPTION_CARD} h-[60px] max-w-full flex-col items-center justify-center gap-0.5 border border-neutral-400 bg-neutral-50 px-3 py-1.5 text-center text-neutral-950 ${fontClasses(option)}`}
-          >
-            <span
-              aria-hidden="true"
-              className={`max-w-full truncate ${SERIF} text-[15px] leading-tight sm:text-[18px]`}
+          <OptionTip key={option.id} tip={option.name}>
+            <button
+              type="button"
+              aria-pressed={option.id === current}
+              aria-label={option.name}
+              onClick={() => onPick(option.id)}
+              style={fontVars(option)}
+              className={`${OPTION_CARD} w-[112px] flex-col items-center justify-center gap-0.5 border border-neutral-400 bg-neutral-50 px-2 py-1.5 text-center text-neutral-950 ${fontClasses(option)}`}
             >
-              {option.faceNames.secondary}
-            </span>
-            <span
-              aria-hidden="true"
-              className="max-w-full truncate font-[family-name:var(--font-primary)] text-[12px] sm:text-[14px]"
-            >
-              {option.faceNames.primary}
-            </span>
-          </button>
+              <span
+                aria-hidden="true"
+                className={`max-w-full truncate ${SERIF} text-[16px] leading-tight`}
+              >
+                {option.faceNames.secondary}
+              </span>
+              <span
+                aria-hidden="true"
+                className="max-w-full truncate font-[family-name:var(--font-primary)] text-[12.5px]"
+              >
+                {option.faceNames.primary}
+              </span>
+            </button>
+          </OptionTip>
         ))}
       </RollOut>
     </div>
@@ -220,8 +235,7 @@ export function FontPairPicker({
 
 /**
  * One corners step for the whole page: the box with an icon and the step's
- * name, and its cards each a 60px square drawn with the step's box corners,
- * as tall as the other pickers' cards.
+ * name, and its cards each drawn with the step's box corners, 110 × 30px.
  */
 export function CornersPicker({
   current,
@@ -245,18 +259,18 @@ export function CornersPicker({
         label={`${t("corners")}: ${name}`}
         icon="corners"
         summary={<span className="min-w-0">{name}</span>}
-        layout="flex flex-wrap gap-3"
       >
         {CORNER_IDS.map((id) => (
-          <button
-            key={id}
-            type="button"
-            aria-pressed={id === current}
-            aria-label={t(`corner.${id}`)}
-            onClick={() => onPick(id)}
-            style={cornerVars(id)}
-            className={`${OPTION_CARD} size-[60px] rounded-(--m-corner)! border-2 border-neutral-400 bg-neutral-50`}
-          />
+          <OptionTip key={id} tip={t(`corner.${id}`)}>
+            <button
+              type="button"
+              aria-pressed={id === current}
+              aria-label={t(`corner.${id}`)}
+              onClick={() => onPick(id)}
+              style={cornerVars(id)}
+              className={`${OPTION_CARD} w-[110px] rounded-(--m-corner)! border [--card-h:30px] border-neutral-400 bg-neutral-50`}
+            />
+          </OptionTip>
         ))}
       </RollOut>
     </div>

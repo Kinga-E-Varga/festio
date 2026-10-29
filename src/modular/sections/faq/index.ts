@@ -10,17 +10,65 @@ export const section: SectionDefinition = {
   variants: [
     {
       id: "1",
-      name: { en: "Simple list", ro: "Listă simplă", hu: "Egyszerű lista" },
+      name: {
+        en: "Two-line & list",
+        ro: "Două rânduri & listă",
+        hu: "Kétsoros & lista",
+      },
       shows: [...HEADING_SHOWS, "linkLabel", "items.question", "items.answer"],
+    },
+    {
+      id: "4",
+      name: {
+        en: "Two-line & bars",
+        ro: "Două rânduri & bare",
+        hu: "Kétsoros & sávok",
+      },
+      shows: [...HEADING_SHOWS, "linkLabel", "items.question", "items.answer"],
+    },
+    {
+      id: "5",
+      name: {
+        en: "Icon & list",
+        ro: "Pictogramă & listă",
+        hu: "Ikon & lista",
+      },
+      shows: ["heading", "note", "linkLabel", "items.question", "items.answer"],
     },
     {
       id: "2",
       name: {
         en: "Icon & bars",
-        ro: "Pictogramă și bare",
-        hu: "Ikon és sávok",
+        ro: "Pictogramă & bare",
+        hu: "Ikon & sávok",
       },
       shows: ["heading", "note", "linkLabel", "items.question", "items.answer"],
+    },
+    {
+      id: "3",
+      name: { en: "Bars", ro: "Bare", hu: "Sávok" },
+      // No italic second line under the heading.
+      shows: [
+        ...HEADING_SHOWS.filter((id) => id !== "headingItalic"),
+        "linkLabel",
+        "items.question",
+        "items.answer",
+      ],
+    },
+    {
+      id: "6",
+      name: {
+        en: "Full card & list",
+        ro: "Card întreg & listă",
+        hu: "Teljes kártya & lista",
+      },
+      // Accommodation's Full card & list: no italic second line under the heading.
+      shows: [
+        ...HEADING_SHOWS.filter((id) => id !== "headingItalic"),
+        "linkLabel",
+        "items.question",
+        "items.answer",
+      ],
     },
   ],
   fields: [

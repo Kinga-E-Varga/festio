@@ -2,7 +2,14 @@
 
 import { RsvpForm } from "@/components/invitation/RsvpForm";
 import { text } from "@/modular/content";
-import { BAND_LINE, CARD, ITALIC_LINE, MUTED, PAD } from "@/modular/styles";
+import {
+  BIG_LINE_SIZE,
+  CARD,
+  DISPLAY_PLAIN,
+  ITALIC_LINE,
+  MUTED,
+  PAD,
+} from "@/modular/styles";
 import type { VariantProps } from "@/types/modular";
 import { SKIN, ThankYouCard, useReply } from "./reply";
 
@@ -52,9 +59,11 @@ export function Variant({ values, onRsvp, questions }: VariantProps) {
       <div
         className={`flex flex-col items-center gap-5 ${HEADING_COLUMN} ${ON_BAND}`}
       >
-        {/* Set like the band date, in the band's ink. */}
+        {/* Sized as Heading & date box's date, in the band's ink. */}
         {heading ? (
-          <h2 className={`${BAND_LINE} text-center text-[color:var(--m-ink)]`}>
+          <h2
+            className={`${DISPLAY_PLAIN} ${BIG_LINE_SIZE} text-center text-[color:var(--m-ink)]`}
+          >
             {heading}
           </h2>
         ) : null}

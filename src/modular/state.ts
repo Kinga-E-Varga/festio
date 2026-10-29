@@ -9,11 +9,14 @@ import {
   type NoteKind,
 } from "@/modular/notes";
 import type {
+  Group,
   ListItem,
   ModularDesign,
   ModularLibrary,
   ModularState,
   ModularTemplate,
+  SectionDefinition,
+  SectionValues,
 } from "@/types/modular";
 
 /** Helpful notes' permanent id. */
@@ -93,18 +96,109 @@ export function setSectionOn(
   };
 }
 
-/** Picks a section's variant. Values belong to the section, so nothing is lost. */
+/**
+ * Picks a section's variant. Values belong to the section, so nothing is
+ * lost. What the new variant shows and the old one did not, left empty,
+ * gets its sample from `samples` (the section's, in the invitation's
+ * language), so the host sees the whole variant and removes what they
+ * don't want. What both show stays as the host left it; switches too.
+ */
 export function setVariant(
   state: ModularState,
-  id: string,
+  definition: SectionDefinition,
   variant: string,
+  samples: SectionValues,
 ): ModularState {
+  const id = definition.id;
+  const from = state.sections.find(({ section }) => section === id)?.variant;
+  const before = new Set(shownPaths(definition, from));
+  const added = shownPaths(definition, variant).filter(
+    (path) => !before.has(path),
+  );
+  let values = state.values[id] ?? {};
+  for (const path of added)
+    values = fillPath(definition, values, samples, path);
   return {
     ...state,
     sections: state.sections.map((section) =>
       section.section === id ? { ...section, variant } : section,
     ),
+    values: { ...state.values, [id]: values },
   };
+}
+
+/** What a variant shows, `.first` dropped; an id the section does not list reads as its first. */
+function shownPaths(definition: SectionDefinition, variant?: string) {
+  const info =
+    definition.variants.find(({ id }) => id === variant) ??
+    definition.variants[0];
+  return info.shows.map((path) => path.replace(/\.first$/, ""));
+}
+
+function blank(value: unknown): boolean {
+  return (
+    value === undefined ||
+    (typeof value === "string" && !value.trim()) ||
+    (Array.isArray(value) && value.length === 0)
+  );
+}
+
+/** `item` with `key` from `sample` when it is empty there. */
+function fillItem(item: ListItem, sample: ListItem | undefined, key: string) {
+  return blank(item[key]) && sample?.[key] !== undefined
+    ? { ...item, [key]: sample[key] }
+    : item;
+}
+
+/**
+ * One shown path filled from the samples where empty: a field, a list
+ * item's (`venues.photo`), a group's (`days.label`) or a group item's
+ * (`days.items.time`). Each item takes the sample at its own place, the
+ * first one past the samples' end. An empty list takes the sample list.
+ */
+function fillPath(
+  definition: SectionDefinition,
+  values: SectionValues,
+  samples: SectionValues,
+  path: string,
+): SectionValues {
+  const [fieldId, ...rest] = path.split(".");
+  const field = definition.fields.find(({ id }) => id === fieldId);
+  const sample = samples[fieldId];
+  if (!field || field.type === "toggle" || sample === undefined) return values;
+  const value = values[fieldId];
+  if (blank(value)) return { ...values, [fieldId]: sample };
+  if (rest.length === 0 || !Array.isArray(value) || !Array.isArray(sample)) {
+    return values;
+  }
+  if (field.type === "list") {
+    const items = sample as ListItem[];
+    const filled = (value as ListItem[]).map((item, at) =>
+      fillItem(item, items[at] ?? items[0], rest[0]),
+    );
+    return { ...values, [fieldId]: filled };
+  }
+  if (field.type === "groups") {
+    const groups = sample as Group[];
+    const filled = (value as Group[]).map((group, g) => {
+      const own = groups[g] ?? groups[0];
+      if (rest[0] !== "items") {
+        return {
+          ...group,
+          values: fillItem(group.values, own?.values, rest[0]),
+        };
+      }
+      const items = own?.items ?? [];
+      return {
+        ...group,
+        items: group.items.map((item, at) =>
+          fillItem(item, items[at] ?? items[0], rest[1]),
+        ),
+      };
+    });
+    return { ...values, [fieldId]: filled };
+  }
+  return values;
 }
 
 function customNotes(state: ModularState): ListItem[] {

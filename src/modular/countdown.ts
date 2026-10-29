@@ -6,6 +6,9 @@ import type { InvitationBasics } from "@/types/modular";
 /** The countdown's units, largest first. */
 export const UNITS = ["days", "hours", "minutes", "seconds"] as const;
 
+/** The numbers' size in every variant: the section heading's (`H2`). */
+export const NUMBER_SIZE = "text-[34px] @3xl:text-[44px] @5xl:text-[48px]";
+
 /**
  * What a countdown says once there is nothing left to count: a fixed
  * eyebrow and a line, on the day and after it, as `Sections` message keys.

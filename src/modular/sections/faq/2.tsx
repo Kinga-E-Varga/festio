@@ -1,40 +1,7 @@
-import { list, text } from "@/modular/content";
-import { Icon } from "@/modular/icons";
-import { IconHeading } from "@/modular/IconHeading";
-import { SectionHeading } from "@/modular/SectionHeading";
-import {
-  ARROW_NUDGE,
-  PAD,
-  SPLIT,
-  UNDERLINE_LINK,
-  SECTION_GROUND,
-} from "@/modular/styles";
 import type { VariantProps } from "@/types/modular";
-import { otherGround } from "@/modular/ground";
-import { FaqList } from "./FaqList";
+import { FaqSplit } from "./FaqSplit";
 
-/**
- * Split with a question mark on its soft disc over the heading, in place of
- * the eyebrow, no italic second line, and each question a bar of its own
- * on the other surface.
- */
+/** Icon & bars: the question mark over the heading beside the questions as bars. (`FaqSplit`) */
 export function Variant({ values, ground }: VariantProps) {
-  const linkLabel = text(values, "linkLabel");
-
-  return (
-    <div className={`${SPLIT} ${SECTION_GROUND[ground]} ${PAD}`}>
-      <IconHeading icon="question" values={values}>
-        <div className="flex flex-col items-center gap-2 @3xl:items-start">
-          <SectionHeading values={values} align="start" />
-          {linkLabel ? (
-            <a href="#rsvp" className={UNDERLINE_LINK}>
-              {linkLabel}
-              <Icon name="arrow-up-right" className={ARROW_NUDGE} />
-            </a>
-          ) : null}
-        </div>
-      </IconHeading>
-      <FaqList items={list(values, "items")} box={otherGround(ground)} />
-    </div>
-  );
+  return <FaqSplit values={values} ground={ground} icon bars />;
 }

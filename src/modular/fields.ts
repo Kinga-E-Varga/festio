@@ -1,5 +1,6 @@
 import { localized, type Language } from "@/lib/language";
 import { groups, isOn, list, text } from "./content";
+import { DEFAULT_ICON } from "./icons";
 import { NOTE_KINDS } from "./notes";
 import { NOTES_ID, noteSwitchOn, sectionsOn } from "./state";
 import type {
@@ -19,7 +20,7 @@ export function hasContent(definition: SectionDefinition): boolean {
 }
 
 /** What `variant` draws; an id the section does not list reads as its first. */
-export function variantShows(
+function variantShows(
   definition: SectionDefinition,
   variant: string,
 ): Set<string> {
@@ -46,7 +47,7 @@ function showsOf(owner: object, paths: readonly string[]): Set<string> {
 }
 
 /** A list or groups field is shown when any of its parts is. */
-export function fieldShown(shows: Set<string>, field: SectionField): boolean {
+function fieldShown(shows: Set<string>, field: SectionField): boolean {
   if (field.type === "list" || field.type === "groups") {
     return [...shows].some((path) => path.startsWith(`${field.id}.`));
   }
@@ -105,9 +106,11 @@ export function fieldId(section: string, ...parts: (string | number)[]) {
   return ["content", section, ...parts].join("-");
 }
 
-/** A new, empty item: every field there, every value empty. */
+/** A new item: every field there, every value empty but an icon (`DEFAULT_ICON`). */
 export function emptyItem(fields: ItemField[]): ListItem {
-  return Object.fromEntries(fields.map(({ id }) => [id, ""]));
+  return Object.fromEntries(
+    fields.map(({ id, type }) => [id, type === "icon" ? DEFAULT_ICON : ""]),
+  );
 }
 
 /** A list item's title in the host's language: its item label and number ("location 2"), or the list's label without one. */
@@ -128,8 +131,19 @@ export function removeAt<T>(list: T[], index: number): T[] {
 }
 
 /**
- * The fields on screen: those the variant shows, less the ones under a
- * switch that is off. A switch the variant hides leaves its fields alone.
+ * What a switch hides as it stands: its `controls` while off, its
+ * `controlsOff` while on. Not a switch: nothing.
+ */
+function switchedOff(field: SectionField, values: SectionValues): string[] {
+  if (field.type !== "toggle") return [];
+  return isOn(values, field.id)
+    ? (field.controlsOff ?? [])
+    : (field.controls ?? []);
+}
+
+/**
+ * The fields on screen: those the variant shows, less the ones a switch
+ * hides as it stands. A switch the variant hides leaves its fields alone.
  */
 export function visibleFields(
   fields: SectionField[],
@@ -137,19 +151,53 @@ export function visibleFields(
   values: SectionValues,
 ): SectionField[] {
   const shown = fields.filter((field) => fieldShown(shows, field));
-  const off = new Set(
-    shown.flatMap((field) =>
-      field.type === "toggle" && !isOn(values, field.id)
-        ? (field.controls ?? [])
-        : [],
-    ),
-  );
+  const off = new Set(shown.flatMap((field) => switchedOff(field, values)));
   return shown.filter((field) => !off.has(field.id));
 }
 
-/** What Dress code and Gifts show inside Helpful notes: their card's fields. */
-export function twinShows(twin: SectionDefinition): Set<string> {
-  return showsOf(twin, twin.noteCard ?? []);
+/**
+ * `shows` less the item paths (`venues.photo`) a switch hides as it stands:
+ * the same Set each time for the same switches, like `showsOf`.
+ */
+function visibleShows(
+  fields: SectionField[],
+  shows: Set<string>,
+  values: SectionValues,
+): Set<string> {
+  const off = fields.flatMap((field) =>
+    shows.has(field.id)
+      ? switchedOff(field, values).filter((path) => shows.has(path))
+      : [],
+  );
+  if (off.length === 0) return shows;
+  const byOff = LESS.get(shows) ?? new Map<string, Set<string>>();
+  LESS.set(shows, byOff);
+  const key = off.join(" ");
+  let less = byOff.get(key);
+  if (!less) {
+    less = new Set([...shows].filter((path) => !off.includes(path)));
+    byOff.set(key, less);
+  }
+  return less;
+}
+
+const LESS = new WeakMap<Set<string>, Map<string, Set<string>>>();
+
+/**
+ * What Dress code and Gifts show inside Helpful notes: their card's fields,
+ * the icon only where the notes' style draws icons (`items.icon`). The
+ * card list itself owns the set without the icon.
+ */
+function twinShows(
+  twin: SectionDefinition,
+  notesShows: Set<string>,
+): Set<string> {
+  const paths = twin.noteCard ?? [];
+  if (notesShows.has("items.icon")) return showsOf(twin, paths);
+  return showsOf(
+    paths,
+    paths.filter((path) => path !== "icon"),
+  );
 }
 
 /**
@@ -180,7 +228,13 @@ export function contentParts(
   const values = state.values[definition.id] ?? {};
   if (definition.id !== NOTES_ID) {
     const fields = visibleFields(definition.fields, shows, values);
-    return [{ section: definition.id, shows, fields }];
+    return [
+      {
+        section: definition.id,
+        shows: visibleShows(definition.fields, shows, values),
+        fields,
+      },
+    ];
   }
   const own = definition.fields.filter((field) => field.type !== "list");
   const parts: FieldPart[] = [
@@ -206,7 +260,7 @@ export function contentParts(
     }
     const twin = library.sections.find(({ id }) => id === kind);
     if (!twin) continue;
-    const twinOnly = twinShows(twin);
+    const twinOnly = twinShows(twin, shows);
     parts.push({
       section: kind,
       shows: twinOnly,

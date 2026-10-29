@@ -41,6 +41,12 @@ extra context that isn't needed by default. The code is the source of truth.
 refactors — not skills, agents, context files or dev tooling), newest first. Write to it at close out; read
 it only when the user asks.
 
+## Seeing a change
+
+Before saying a layout or visual fix works, look at it with `npm run look` (the `look`
+skill, `context/dev-tools/look.md`) and measure; never guess at a screenshot you can't see.
+Measure first; take a screenshot only to find what is wrong, or when asked to see it.
+
 ## Reading the Next.js docs
 
 AGENTS.md requires reading the relevant guide in `node_modules/next/dist/docs/` before

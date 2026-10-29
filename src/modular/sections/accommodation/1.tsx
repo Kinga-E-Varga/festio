@@ -6,8 +6,7 @@ import { StayList } from "./StayList";
 
 /**
  * The mid band: heading left, the stays right. A stay with a safe
- * web address is a link with an arrow; one without is plain. On a phone
- * the side note moves under the name.
+ * web address is a link with an arrow; one without is plain.
  */
 export function Variant({ values, ground }: VariantProps) {
   const places = list(values, "places");

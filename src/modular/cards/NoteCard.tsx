@@ -6,8 +6,7 @@ import {
   CARD,
   INNER_EYEBROW,
   GROUND,
-  H3,
-  MEASURE,
+  H3_ITEM,
   MUTED,
   TONE_TEXT,
   type TONES,
@@ -40,7 +39,9 @@ interface NoteCardProps {
 
 /**
  * A detail card: icon and label, the text, and an optional side column. Three columns on a wide page; the side column drops under the
- * text on a mid-width one; everything stacks on a phone.
+ * text on a mid-width one; everything stacks, centred, on a phone, spaced
+ * as a row of cards' (Transportation's Cards): a 38px disc 20px over the
+ * label, 16px to the title.
  */
 export function NoteCard({
   icon,
@@ -55,25 +56,25 @@ export function NoteCard({
     <article
       className={`${CARD} relative grid gap-4 ${GROUND[ground]} @3xl:grid-cols-[7rem_minmax(0,1fr)] @3xl:items-center @3xl:gap-x-9 @3xl:gap-y-7 ${aside ? "@5xl:grid-cols-[7rem_minmax(0,1fr)_15rem]" : ""}`}
     >
-      <div className="flex items-center gap-3 @3xl:flex-col @3xl:gap-3.5 @3xl:text-center">
-        {icon ? <CardIcon name={icon} tone={tone} large /> : null}
+      <div className="flex flex-col items-center gap-5 text-center @3xl:gap-3.5">
+        {icon ? <CardIcon name={icon} tone={tone} /> : null}
         {label ? (
-          <span className={`${INNER_EYEBROW} ${TONE_TEXT[tone]}`}>{label}</span>
+          <span className={`${INNER_EYEBROW} ${TONE_TEXT.secondary}`}>
+            {label}
+          </span>
         ) : null}
       </div>
       {title || body ? (
-        <div className="flex flex-col gap-2.5">
-          {title ? <h3 className={H3}>{title}</h3> : null}
+        <div className="flex flex-col items-center gap-1 text-center @3xl:items-stretch @3xl:text-left">
+          {title ? <h3 className={H3_ITEM}>{title}</h3> : null}
           {body ? (
-            <p className={`${BODY} ${MUTED} ${MEASURE} whitespace-pre-line`}>
-              {body}
-            </p>
+            <p className={`${BODY} ${MUTED} whitespace-pre-line`}>{body}</p>
           ) : null}
         </div>
       ) : null}
       {aside ? (
         <aside
-          className={`flex flex-col justify-center gap-3 border-t-1 border-[var(--m-line)] pt-4 @3xl:col-span-2 @5xl:col-span-1 @5xl:items-center @5xl:border-t-0 @5xl:pt-0 @5xl:pl-6 ${FULL_RULE}`}
+          className={`flex flex-col items-center justify-center gap-3 border-t-1 border-[var(--m-line)] pt-4 @3xl:col-start-2 @3xl:items-start @5xl:col-start-3 @5xl:items-center @5xl:border-t-0 @5xl:pt-0 @5xl:pl-6 ${FULL_RULE}`}
         >
           {aside}
         </aside>

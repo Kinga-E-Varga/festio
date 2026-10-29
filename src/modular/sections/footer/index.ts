@@ -15,13 +15,23 @@ export const section: SectionDefinition = {
   variants: [
     {
       id: "1",
-      name: { en: "Plain", ro: "Simplu", hu: "Egyszerű" },
+      name: { en: "Colourful", ro: "Colorat", hu: "Színes" },
+      // A band of the surface, so the page's pattern stays off it, as Plain.
+      band: "surface",
       shows: [],
     },
     {
       id: "2",
-      name: { en: "Accent band", ro: "Bandă în accent", hu: "Kiemelő sáv" },
+      name: { en: "Accent", ro: "Accent", hu: "Kiemelt" },
       ground: "accent",
+      shows: [],
+    },
+    {
+      id: "3",
+      name: { en: "Simple", ro: "Simplu", hu: "Egyszerű" },
+      // Accent's footer on the page's surface, in its ink: a band of the
+      // surface, so the page's pattern stays off it.
+      band: "surface",
       shows: [],
     },
   ],

@@ -15,12 +15,31 @@ export const section: SectionDefinition = {
   variants: [
     {
       id: "1",
-      name: { en: "Simple list", ro: "Listă simplă", hu: "Egyszerű lista" },
+      name: {
+        en: "Two-line & list",
+        ro: "Două rânduri & listă",
+        hu: "Kétsoros & lista",
+      },
       shows: [
         ...HEADING_SHOWS,
+        "places.distance",
         "places.name",
         "places.note",
+        "places.link",
+      ],
+    },
+    {
+      id: "3",
+      name: {
+        en: "Two-line & cards",
+        ro: "Două rânduri & carduri",
+        hu: "Kétsoros & kártyák",
+      },
+      shows: [
+        ...HEADING_SHOWS,
         "places.distance",
+        "places.name",
+        "places.note",
         "places.link",
       ],
     },
@@ -28,15 +47,73 @@ export const section: SectionDefinition = {
       id: "2",
       name: {
         en: "Icon & list",
-        ro: "Pictogramă și listă",
-        hu: "Ikon és lista",
+        ro: "Pictogramă & listă",
+        hu: "Ikon & lista",
       },
       // No italic second line under the heading.
       shows: [
-        ...ICON_HEADING_SHOWS.filter((id) => id !== "headingItalic"),
+        ...ICON_HEADING_SHOWS,
+        "places.distance",
         "places.name",
         "places.note",
+        "places.link",
+      ],
+    },
+    {
+      id: "4",
+      name: {
+        en: "Icon & cards",
+        ro: "Pictogramă & carduri",
+        hu: "Ikon & kártyák",
+      },
+      // No italic second line under the heading.
+      shows: [
+        ...ICON_HEADING_SHOWS,
         "places.distance",
+        "places.name",
+        "places.note",
+        "places.link",
+      ],
+    },
+    {
+      id: "6",
+      name: { en: "Cards", ro: "Carduri", hu: "Kártyák" },
+      // Transportation's Cards; no italic second line under the heading.
+      shows: [
+        ...HEADING_SHOWS.filter((id) => id !== "headingItalic"),
+        "places.icon",
+        "places.distance",
+        "places.name",
+        "places.note",
+        "places.link",
+      ],
+    },
+    {
+      id: "5",
+      name: { en: "Grid", ro: "Grilă", hu: "Rács" },
+      // Transportation's Cards as a grid; no italic second line under the heading.
+      shows: [
+        ...HEADING_SHOWS.filter((id) => id !== "headingItalic"),
+        "places.distance",
+        "places.name",
+        "places.note",
+        "places.link",
+      ],
+    },
+    {
+      id: "7",
+      name: {
+        en: "Full card & list",
+        ro: "Card întreg & listă",
+        hu: "Teljes kártya & lista",
+      },
+      // Transportation's Full card & list: Cards' content, one stay under another.
+      shows: [
+        ...HEADING_SHOWS.filter((id) => id !== "headingItalic"),
+        "places.icon",
+        "places.distance",
+        "places.name",
+        "places.note",
         "places.link",
       ],
     },
@@ -55,14 +132,16 @@ export const section: SectionDefinition = {
       type: "list",
       maxItems: 6,
       item: [
-        { id: "name", label: LABELS.name, type: "text", maxLength: 60 },
-        { id: "note", label: LABELS.note, type: "text", maxLength: 60 },
+        { id: "icon", label: LABELS.icon, type: "icon", maxLength: 20 },
+        // Once a side note, now drawn as the stay's eyebrow; the id stays.
         {
           id: "distance",
-          label: { en: "side note", ro: "notă laterală", hu: "oldaljegyzet" },
+          label: LABELS.eyebrow,
           type: "text",
           maxLength: 40,
         },
+        { id: "name", label: LABELS.name, type: "text", maxLength: 60 },
+        { id: "note", label: LABELS.note, type: "text", maxLength: 60 },
         { id: "link", label: LABELS.link, type: "text", maxLength: 300 },
       ],
     },

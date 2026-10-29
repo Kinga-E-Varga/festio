@@ -23,14 +23,13 @@ export const section: SectionDefinition = {
   order: 90,
   menuLabel: GOOD_TO_KNOW,
   reads: ["dress-code", "gifts"],
-  // No variant draws an italic second line under the heading.
   variants: [
     {
       id: "1",
       name: {
-        en: "Cards with icons",
-        ro: "Carduri cu pictograme",
-        hu: "Kártyák ikonokkal",
+        en: "Wide cards",
+        ro: "Carduri late",
+        hu: "Széles kártyák",
       },
       shows: [
         ...HEADING_SHOWS.filter((id) => id !== "headingItalic"),
@@ -40,19 +39,90 @@ export const section: SectionDefinition = {
         "items.icon",
       ],
     },
+    {
+      id: "4",
+      name: {
+        en: "Two-line & list",
+        ro: "Două rânduri & listă",
+        hu: "Kétsoros & lista",
+      },
+      shows: [...HEADING_SHOWS, "items.label", "items.title", "items.text"],
+    },
+    {
+      id: "5",
+      name: {
+        en: "Two-line & cards",
+        ro: "Două rânduri & carduri",
+        hu: "Kétsoros & kártyák",
+      },
+      shows: [...HEADING_SHOWS, "items.label", "items.title", "items.text"],
+    },
     // "2" is retired (Simple, removed): never reuse it.
     {
       id: "3",
       name: {
         en: "Icon & list",
-        ro: "Pictogramă și listă",
-        hu: "Ikon és lista",
+        ro: "Pictogramă & listă",
+        hu: "Ikon & lista",
       },
       shows: [
-        ...ICON_HEADING_SHOWS.filter((id) => id !== "headingItalic"),
+        ...ICON_HEADING_SHOWS,
         "items.label",
         "items.title",
         "items.text",
+      ],
+    },
+    {
+      id: "6",
+      name: {
+        en: "Icon & cards",
+        ro: "Pictogramă & carduri",
+        hu: "Ikon & kártyák",
+      },
+      shows: [
+        ...ICON_HEADING_SHOWS,
+        "items.label",
+        "items.title",
+        "items.text",
+      ],
+    },
+    {
+      id: "8",
+      name: { en: "Cards", ro: "Carduri", hu: "Kártyák" },
+      // No italic second line under the heading.
+      shows: [
+        ...HEADING_SHOWS.filter((id) => id !== "headingItalic"),
+        "items.label",
+        "items.title",
+        "items.text",
+        "items.icon",
+      ],
+    },
+    {
+      id: "7",
+      name: { en: "Grid", ro: "Grilă", hu: "Rács" },
+      // No italic second line under the heading, no icons.
+      shows: [
+        ...HEADING_SHOWS.filter((id) => id !== "headingItalic"),
+        "items.label",
+        "items.title",
+        "items.text",
+      ],
+    },
+    {
+      id: "9",
+      name: {
+        en: "Full card & list",
+        ro: "Card întreg & listă",
+        hu: "Teljes kártya & lista",
+      },
+      // Cards' content, one note under another in a full card.
+      shows: [
+        ...HEADING_SHOWS.filter((id) => id !== "headingItalic"),
+        "items.label",
+        "items.title",
+        "items.text",
+        "items.icon",
       ],
     },
   ],

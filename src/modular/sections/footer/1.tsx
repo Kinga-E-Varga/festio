@@ -4,6 +4,7 @@ import { Icon } from "@/modular/icons";
 import { Mark, markParts } from "@/modular/Mark";
 import { DISPLAY, EYEBROW, MUTED_LINK } from "@/modular/styles";
 import type { VariantProps } from "@/types/modular";
+import { FOOTER } from "./styles";
 
 /** The mark again, the date, and the way back up. */
 export function Variant({ basics, language, related }: VariantProps) {
@@ -11,9 +12,9 @@ export function Variant({ basics, language, related }: VariantProps) {
   const mark = markParts(related.header ?? {}, "mark");
 
   return (
-    <div className="flex flex-col items-center justify-center px-6 pt-11 pb-6 text-center @3xl:pt-12 @3xl:pb-7">
+    <div className={FOOTER}>
       {mark.length > 0 ? (
-        <p className={`${DISPLAY} mb-3.5 text-[28px]`}>
+        <p className={`${DISPLAY} mb-3.5 text-[24px]`}>
           <Mark parts={mark} />
         </p>
       ) : null}

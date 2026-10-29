@@ -2,26 +2,35 @@
 
 import { useTranslations } from "next-intl";
 import { EditorHeading } from "@/components/dashboard/event-editor/EditorSection";
-import { paletteVars } from "@/modular/vars";
-import type { ModularPalette, ModularTemplate } from "@/types/modular";
-import { OPTION_CARD, RollOut } from "./RollOut";
+import { fontClasses, fontVars, paletteVars } from "@/modular/vars";
+import type {
+  FontPair,
+  ModularPalette,
+  ModularTemplate,
+} from "@/types/modular";
+import { SWATCHES } from "./LookPickers";
+import { OPTION_CARD, OptionTip, RollOut } from "./RollOut";
 
 interface TemplatePickerProps {
   templates: ModularTemplate[];
   /** To draw each template's card in its own colours. */
   palettes: ModularPalette[];
+  /** To write each template's name in its own heading face. */
+  fontPairs: FontPair[];
   current: string;
   onPick: (id: string) => void;
 }
 
 /**
  * The template the design started from: the box with its name, and its
- * cards each a tiny invitation in that template's palette, named — templates
- * can share a palette, so the colours alone would not tell them apart.
+ * cards each the template's name in its own heading face on its page colour
+ * and its colours as a strip along the foot
+ * (not the page's: it would blend into the card). Each card is 112px wide.
  */
 export function TemplatePicker({
   templates,
   palettes,
+  fontPairs,
   current,
   onPick,
 }: TemplatePickerProps) {
@@ -45,24 +54,35 @@ export function TemplatePicker({
       >
         {templates.map((template) => {
           const palette = palettes.find(({ id }) => id === template.palette);
+          const pair = fontPairs.find(({ id }) => id === template.fontPair);
           return (
-            <button
-              key={template.id}
-              type="button"
-              aria-pressed={template.id === current}
-              onClick={() => onPick(template.id)}
-              style={palette ? paletteVars(palette) : undefined}
-              className={`${OPTION_CARD} h-[60px] flex-col justify-between border border-[var(--m-line)] bg-[var(--m-surface)] p-2.5 text-left`}
-            >
-              <span aria-hidden="true" className="flex gap-1">
-                <span className="size-2.5 rounded-full bg-[var(--m-accent)]" />
-                <span className="size-2.5 rounded-full bg-[var(--m-secondary)]" />
-                <span className="size-2.5 rounded-full bg-[var(--m-tertiary)]" />
-              </span>
-              <span className="truncate text-[12.5px] font-medium text-[color:var(--m-ink)]">
-                {template.name}
-              </span>
-            </button>
+            <OptionTip key={template.id} tip={template.name}>
+              <button
+                type="button"
+                aria-pressed={template.id === current}
+                onClick={() => onPick(template.id)}
+                style={{
+                  ...(palette ? paletteVars(palette) : {}),
+                  ...(pair ? fontVars(pair) : {}),
+                }}
+                className={`${OPTION_CARD} w-[112px] flex-col overflow-hidden border border-neutral-400 bg-[var(--m-surface)] ${pair ? fontClasses(pair) : ""}`}
+              >
+                <span className="flex flex-1 items-center justify-center px-1.5">
+                  <span
+                    className={`max-w-full truncate font-[family-name:var(--font-secondary)] text-[13.5px] font-semibold leading-tight text-[color:var(--m-ink)]`}
+                  >
+                    {template.name}
+                  </span>
+                </span>
+                <span aria-hidden="true" className="flex h-3 shrink-0">
+                  {SWATCHES.filter(([role]) => role !== "surface").map(
+                    ([role, fill]) => (
+                      <span key={role} className={`flex-1 ${fill}`} />
+                    ),
+                  )}
+                </span>
+              </button>
+            </OptionTip>
           );
         })}
       </RollOut>

@@ -20,9 +20,9 @@ export const HEADING_FIELDS: readonly ScalarField[] = [
 /** Every heading field: what a variant drawing `SectionHeading` shows. */
 export const HEADING_SHOWS = HEADING_FIELDS.map(({ id }) => id);
 
-/** `IconHeading` leaves the eyebrow out. */
+/** `IconHeading` leaves the eyebrow and the italic heading out. */
 export const ICON_HEADING_SHOWS = HEADING_SHOWS.filter(
-  (id) => id !== "eyebrow",
+  (id) => id !== "eyebrow" && id !== "headingItalic",
 );
 
 /**

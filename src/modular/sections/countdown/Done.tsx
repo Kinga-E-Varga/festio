@@ -6,20 +6,25 @@ import { SectionHeading } from "@/modular/SectionHeading";
 
 /**
  * What a countdown shows once there is nothing left to count: a fixed
- * eyebrow in the heading's place, then one line in the numbers' face
- * (`className`). Shared by the countdown's variants.
+ * eyebrow in the heading's place (unless `eyebrow` is off, for the variants
+ * that never show one), then one line in the numbers' face (`className`).
+ * Shared by the countdown's variants.
  */
 export function Done({
   done,
   className,
+  eyebrow = true,
 }: {
   done: CountdownDone;
   className: string;
+  eyebrow?: boolean;
 }) {
   const t = useTranslations("Sections");
   return (
     <>
-      <SectionHeading values={{ eyebrow: t(COUNTDOWN_DONE[done].eyebrow) }} />
+      {eyebrow ? (
+        <SectionHeading values={{ eyebrow: t(COUNTDOWN_DONE[done].eyebrow) }} />
+      ) : null}
       <p className={`${className} text-center text-balance`}>
         {t(COUNTDOWN_DONE[done].line)}
       </p>

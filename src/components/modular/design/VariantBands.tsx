@@ -11,6 +11,8 @@ interface VariantBandsProps<T extends string> {
   options: { value: T; label: string }[];
   value: T;
   onPick: (value: T) => void;
+  /** A line under the bands, rolled out with them. */
+  hint?: string;
 }
 
 /**
@@ -24,6 +26,7 @@ export function VariantBands<T extends string>({
   options,
   value,
   onPick,
+  hint,
 }: VariantBandsProps<T>) {
   return (
     <RollPanel id={id} open={open}>
@@ -54,6 +57,7 @@ export function VariantBands<T extends string>({
             </button>
           );
         })}
+        {hint ? <p className="hint-text mt-2">{hint}</p> : null}
       </div>
     </RollPanel>
   );

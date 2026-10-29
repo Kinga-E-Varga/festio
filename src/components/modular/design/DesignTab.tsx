@@ -50,6 +50,7 @@ export function DesignTab({
       <TemplatePicker
         templates={library.templates}
         palettes={library.palettes}
+        fontPairs={library.fontPairs}
         current={templateId}
         onPick={onTemplate}
       />
@@ -78,6 +79,7 @@ export function DesignTab({
       />
       <SectionsList
         library={library}
+        templateId={templateId}
         state={state}
         language={language}
         onChange={onChange}

@@ -2,12 +2,7 @@ import { useTranslations } from "next-intl";
 import { SECTIONS_TRIGGER_ID } from "@/modular/nav";
 import { Icon } from "@/modular/icons";
 import { Mark, markParts } from "@/modular/Mark";
-import {
-  AMPERSAND_INK,
-  SERIF_BOLDER,
-  MUTED_LINK,
-  PILL,
-} from "@/modular/styles";
+import { AMPERSAND_INK, MUTED_LINK, PILL, SERIF } from "@/modular/styles";
 import type { VariantProps } from "@/types/modular";
 
 /* `FROSTED`, in the page's `--m-bar`: the surface, or the second surface once a pattern is on. */
@@ -20,7 +15,7 @@ interface HeaderBarProps extends VariantProps {
 
 /** The Reply button's text, the same in every variant. */
 const REPLY_TEXT =
-  "text-[12px] leading-[1.5] font-semibold tracking-[0.1em] uppercase";
+  "text-[11.5px] leading-[1.5] font-semibold tracking-[0.1em] uppercase";
 
 /** The Reply button's fill. */
 const ACCENT_FILL =
@@ -29,12 +24,12 @@ const SECONDARY_FILL =
   "border-[var(--m-secondary)] bg-[var(--m-secondary)] text-[color:var(--m-secondary-ink)]";
 
 /*
- * The mark, in every variant: the heading face a step bolder at 23px, set tight.
+ * The mark, in every variant: the heading face a step bolder at 24px, set tight.
  * Its optical size is pinned at 22, past Fraunces' 21.66 limit, so its
  * alternate letters (&, h, m, n, s) show; a face without
  * an optical size ignores it.
  */
-const MARK = `${SERIF_BOLDER} text-[23px] leading-none tracking-[-0.04em] [font-variation-settings:'opsz'_22]`;
+const MARK = `${SERIF} text-[24px] leading-none tracking-[-0.04em] [font-variation-settings:'opsz'_22]`;
 
 /** The mark's middle part: 20px in every variant; its colour is the variant's. */
 const MARK_MIDDLE = "text-[20px]";
@@ -45,19 +40,16 @@ const ROUNDED = {
   middle: AMPERSAND_INK,
   link: MUTED_LINK,
   links: "gap-7",
-  // The icon sits on the bar's edge; the button keeps its 44px for a thumb.
-  menu: "-mx-3",
   reply: `${REPLY_TEXT} ${SECONDARY_FILL} hover:border-[var(--m-accent)] hover:bg-[var(--m-accent)] hover:text-[color:var(--m-accent-ink)]`,
 };
 
-/** Each variant's mark colour and its middle's, section links (look, gap), ☰ and Reply button. */
+/** Each variant's mark colour and its middle's, section links (look, gap) and Reply button. */
 const LOOKS = {
   square: {
     mark: "text-[color:var(--m-accent)]",
     middle: AMPERSAND_INK,
     link: MUTED_LINK,
     links: "gap-7",
-    menu: "",
     // The eyebrow's look at 11px: a button, not an eyebrow.
     reply: `${REPLY_TEXT} ${ACCENT_FILL} hover:border-[var(--m-secondary)] hover:bg-[var(--m-secondary)] hover:text-[color:var(--m-secondary-ink)]`,
   },
@@ -90,13 +82,14 @@ export function HeaderBar({ values, nav, look }: HeaderBarProps) {
       {/* The bar spans the page; its content stays in the column. */}
       <div className="relative mx-auto flex h-14 max-w-(--invite-column) items-center gap-3 px-3 @5xl:h-16 @5xl:gap-8 @5xl:px-10">
         {links.length > 0 ? (
+          // The icon sits on the bar's edge; the button keeps its 44px for a thumb.
           <button
             type="button"
             aria-label={t("openSections")}
             id={SECTIONS_TRIGGER_ID}
             aria-expanded={nav?.menuOpen ?? false}
             onClick={nav?.onOpenMenu}
-            className={`flex size-11 shrink-0 items-center justify-center ${LOOKS[look].menu} @5xl:hidden`}
+            className="-mx-3 flex size-11 shrink-0 items-center justify-center @5xl:hidden"
           >
             <Icon name="menu" className="size-5" />
           </button>
@@ -127,7 +120,7 @@ export function HeaderBar({ values, nav, look }: HeaderBarProps) {
         </nav>
         <a
           href="#rsvp"
-          className={`${LOOKS[look].reply} ${PILL} inline-flex min-h-9 shrink-0 items-center border-1 px-5 transition-colors`}
+          className={`${LOOKS[look].reply} ${PILL} inline-flex h-8 shrink-0 items-center border-1 px-4 transition-colors`}
         >
           {t("rsvp")}
         </a>

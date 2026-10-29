@@ -130,6 +130,8 @@ export const ModularInvitation = memo(function ModularInvitation({
     ...cornerVars(design.corners),
     /* The header's fill: the second surface once a pattern is on, so the bar stands apart from the dots. */
     "--m-bar": design.pattern ? "var(--m-surface-alt)" : "var(--m-surface)",
+    /* An outline in the surface round large text (`TEXT_CUT`), only with a pattern on, so it reads over it. */
+    "--m-text-cut": design.pattern ? "0.1em" : "0",
   } as CSSProperties;
   const face = `invite font-[family-name:var(--font-primary)] text-[color:var(--m-ink)] ${fontClasses(design.fontPair)}`;
 
@@ -167,6 +169,11 @@ export const ModularInvitation = memo(function ModularInvitation({
   }
   function sections(copy: boolean) {
     const views = body.map(({ definition, variant }, index) => {
+      const before = body[index - 1];
+      const afterSplit = Boolean(
+        before?.definition.variants.find(({ id }) => id === before.variant)
+          ?.split,
+      );
       /* The cover takes up whatever the hero has to spare. */
       const grow = definition.id === COVER_ID;
       const band =
@@ -182,7 +189,7 @@ export const ModularInvitation = memo(function ModularInvitation({
               ? ({ "--band": `var(--m-${band})` } as CSSProperties)
               : undefined
           }
-          className={`group/edit relative scroll-mt-14 @5xl:scroll-mt-16 ${band ? "bg-(--band)" : GROUND_FILL[grounds[index]]} ${!band && grounds[index] === "surface" ? (design.pattern?.className ?? "") : ""} ${grow ? "flex flex-1 flex-col" : ""}`}
+          className={`group/edit relative scroll-mt-14 @5xl:scroll-mt-16 ${band ? "bg-(--band)" : grounds[index] === "surface" ? "" : GROUND_FILL[grounds[index]]} ${grow ? "flex flex-1 flex-col" : ""}`}
         >
           {/* At the page's edge, not the column's: past 1440px they sit clear of the content. */}
           {edit && !copy ? (
@@ -205,6 +212,7 @@ export const ModularInvitation = memo(function ModularInvitation({
                 basics={basics}
                 language={language}
                 ground={grounds[index]}
+                afterSplit={afterSplit}
                 onRsvp={copy ? undefined : onRsvp}
                 questions={definition.id === RSVP_ID ? questions : undefined}
               />
@@ -220,14 +228,20 @@ export const ModularInvitation = memo(function ModularInvitation({
      * (`CoverPhoto`). The scroller is the screen; the envelope's copy is
      * given the same height as `--strip-hero` (`Envelope.tsx`). Past the
      * column, the cover's gap above the photo (`--cover-top`) matches the
-     * page's margin beside it, up to a section's top padding (80px).
+     * page's margin beside it, up to 80px.
      */
     const heroEnd = body.findIndex(
       ({ definition }) => !HERO_IDS.includes(definition.id),
     );
     const split = heroEnd === -1 ? body.length : heroEnd;
+    /*
+     * The pattern runs once under every section, so it never breaks at a
+     * seam; a surface section paints nothing, the others cover it. Here, not
+     * on the page, so the envelope's copy (no header) lines up with it. Its
+     * own stacking box, for a pattern drawn on a layer behind (Pebbles).
+     */
     return (
-      <>
+      <div className={`relative isolate ${design.pattern?.className ?? ""}`}>
         <div
           style={
             hero && !copy ? ({ "--hero": hero } as CSSProperties) : undefined
@@ -237,7 +251,7 @@ export const ModularInvitation = memo(function ModularInvitation({
           {views.slice(0, split)}
         </div>
         {views.slice(split)}
-      </>
+      </div>
     );
   }
   /* A copy for the envelope, in the page's own vars and fonts, filling the box it is given. */

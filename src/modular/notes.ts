@@ -1,5 +1,6 @@
 import type { LocalizedText } from "@/lib/language";
-import { isOn } from "@/modular/content";
+import { isOn, text } from "@/modular/content";
+import { isIconName, type IconName } from "@/modular/icons";
 import type { ListItem, SectionValues } from "@/types/modular";
 
 /**
@@ -11,6 +12,12 @@ export const GOOD_TO_KNOW: LocalizedText = {
   ro: "Bine de știut",
   hu: "Jó tudni",
 };
+
+/** Dress code's or Gifts' icon, the host's pick: none when none is picked, as any icon. */
+export function twinIcon(values: SectionValues): IconName | undefined {
+  const icon = text(values, "icon");
+  return isIconName(icon) ? icon : undefined;
+}
 
 /** What a Helpful notes subsection can be. Dress code and Gifts read their own sections. */
 export const NOTE_KINDS = ["dress-code", "gifts", "custom"] as const;

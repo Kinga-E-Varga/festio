@@ -1,6 +1,7 @@
 import { isOn, list, text } from "@/modular/content";
-import { CAPS, MUTED } from "@/modular/styles";
+import { INNER_EYEBROW, MUTED, type TONES } from "@/modular/styles";
 import type { ColorRole, Ground, SectionValues } from "@/types/modular";
+import { twinIcon } from "@/modular/notes";
 import { NoteCard } from "./NoteCard";
 
 const HEX = /^#[0-9a-f]{6}$/i;
@@ -41,14 +42,21 @@ interface DressCodeCardProps {
   values: SectionValues;
   label: string;
   ground: Ground;
+  /** The icon's colour: the secondary unless the list it sits in takes turns. */
+  tone?: keyof typeof TONES;
 }
 
 /** What to wear, with the host's colour swatches beside it. */
-export function DressCodeCard({ values, label, ground }: DressCodeCardProps) {
+export function DressCodeCard({
+  values,
+  label,
+  ground,
+  tone = "secondary",
+}: DressCodeCardProps) {
   return (
     <NoteCard
-      icon="sparkle"
-      tone="secondary"
+      icon={twinIcon(values)}
+      tone={tone}
       label={label}
       title={text(values, "title")}
       body={text(values, "body")}
@@ -96,9 +104,10 @@ export function DressCodeSwatches({
   const swatches = swatchesOf(values);
 
   return (
-    <>
+    /* The caption 8px over the swatches; lined up as the parent lines up its own. */
+    <div className="flex flex-col items-[inherit] gap-2">
       {swatchLabel ? (
-        <span className={`${CAPS} ${MUTED} font-medium`}>{swatchLabel}</span>
+        <span className={`${INNER_EYEBROW} ${MUTED}`}>{swatchLabel}</span>
       ) : null}
       {swatches.length > 0 ? (
         <ul
@@ -126,6 +135,6 @@ export function DressCodeSwatches({
           ))}
         </ul>
       ) : null}
-    </>
+    </div>
   );
 }

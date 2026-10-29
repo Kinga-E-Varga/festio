@@ -27,7 +27,7 @@ export const section: SectionDefinition = {
     },
     {
       id: "3",
-      name: { en: "Plain", ro: "Simplu", hu: "Egyszerű" },
+      name: { en: "Simple", ro: "Simplu", hu: "Egyszerű" },
       shows: ["markStart", "markMiddle", "markEnd"],
     },
   ],

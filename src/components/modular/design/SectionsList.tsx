@@ -5,12 +5,13 @@ import { EditorHeading } from "@/components/dashboard/event-editor/EditorSection
 import { Icon } from "@/components/icons";
 import { Switch } from "@/components/invitation/PanelSwitch";
 import { localized, type Language } from "@/lib/language";
-import { customNoteSample } from "@/modular/samples";
+import { customNoteSample, sectionValues } from "@/modular/samples";
 import { NOTES_ID, setSectionOn, setVariant, showNotes } from "@/modular/state";
 import type {
   ModularLibrary,
   ModularState,
   SectionDefinition,
+  SectionSamples,
   SectionState,
 } from "@/types/modular";
 import { RollArrow } from "./RollOut";
@@ -25,6 +26,8 @@ import { VariantBands } from "./VariantBands";
 
 interface SectionsListProps {
   library: ModularLibrary;
+  /** The template shown as current: its samples fill a picked style's new fields. */
+  templateId: string;
   state: ModularState;
   /** The invitation's language: a custom note added here is written in it. */
   language: Language;
@@ -50,6 +53,7 @@ export function designCardId(section: string) {
  */
 export function SectionsList({
   library,
+  templateId,
   state,
   language,
   onChange,
@@ -75,6 +79,11 @@ export function SectionsList({
             <SectionRow
               key={section.section}
               definition={definition}
+              samples={
+                library.templates.find(({ id }) => id === templateId)?.values?.[
+                  definition.id
+                ]
+              }
               section={section}
               state={state}
               language={language}
@@ -92,6 +101,7 @@ export function SectionsList({
 
 function SectionRow({
   definition,
+  samples,
   section,
   state,
   language,
@@ -101,10 +111,15 @@ function SectionRow({
   onStyles,
 }: {
   definition: SectionDefinition;
+  /** The current template's own samples for the section, if any. */
+  samples?: SectionSamples;
   section: SectionState;
   stylesOpen: boolean;
   onStyles: (open: boolean) => void;
-} & Omit<SectionsListProps, "library" | "openStyles" | "onOpenStyles">) {
+} & Omit<
+  SectionsListProps,
+  "library" | "templateId" | "openStyles" | "onOpenStyles"
+>) {
   const t = useTranslations("DesignTab");
   const host = useLocale() as Language;
   const name = localized(definition.name, host);
@@ -186,13 +201,29 @@ function SectionRow({
         <VariantBands
           id={stylesId}
           open={stylesOpen}
-          options={definition.variants.map((variant) => ({
-            value: variant.id,
-            label: localized(variant.name, host),
-          }))}
+          // A to Z in the host's language, so a new style needs no place.
+          options={definition.variants
+            .map((variant) => ({
+              value: variant.id,
+              label: localized(variant.name, host),
+            }))
+            .sort((a, b) => a.label.localeCompare(b.label, host))}
           value={section.variant}
+          hint={
+            definition.stylesHint
+              ? localized(definition.stylesHint, host)
+              : undefined
+          }
           onPick={(variant) => {
-            onChange(setVariant(state, definition.id, variant), definition.id);
+            onChange(
+              setVariant(
+                state,
+                definition,
+                variant,
+                sectionValues(definition, language, samples),
+              ),
+              definition.id,
+            );
             onStylePicked();
           }}
         />

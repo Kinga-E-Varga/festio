@@ -24,7 +24,7 @@ export function CoverPhoto({
      * title below. Never shorter than a phone's 440px. Once the page is
      * wider than `INVITE_COLUMN` (1440px), the photo stops at the column and
      * drops below the header as far as the page's margin beside it, at most
-     * a section's top padding (`PAD_TOP`, 80px; `--cover-top`), so it sits
+     * 80px (`--cover-top`), so it sits
      * on the band rather than looking cut off. There it is never
      * wider than 2:1 (720px tall) unless the screen is too short for that,
      * so the title joins the first screen only when the screen is tall

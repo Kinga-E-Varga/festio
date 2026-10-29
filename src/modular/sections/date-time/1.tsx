@@ -1,7 +1,16 @@
+import { SectionHeading } from "@/modular/SectionHeading";
+import { PAD, SPLIT, SECTION_GROUND } from "@/modular/styles";
 import type { VariantProps } from "@/types/modular";
-import { Calendar } from "./Calendar";
+import { DateBox } from "./DateBox";
 
-/** The heading beside a calendar card, the month over the day. */
-export function Variant(props: VariantProps) {
-  return <Calendar {...props} look="calendar" />;
+/** The heading beside the date in a card on the accent (`DateBox`). */
+export function Variant({ values, basics, language, ground }: VariantProps) {
+  return (
+    <div className={`${SPLIT} items-center ${SECTION_GROUND[ground]} ${PAD}`}>
+      <div>
+        <SectionHeading values={values} align="start" />
+      </div>
+      <DateBox date={basics.date} language={language} ground="accent" />
+    </div>
+  );
 }

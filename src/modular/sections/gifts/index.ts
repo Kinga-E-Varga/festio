@@ -1,4 +1,8 @@
-import { HEADING_FIELDS, HEADING_SHOWS } from "@/modular/heading";
+import {
+  HEADING_FIELDS,
+  HEADING_SHOWS,
+  ICON_HEADING_SHOWS,
+} from "@/modular/heading";
 import { LABELS } from "@/modular/labels";
 import { GOOD_TO_KNOW } from "@/modular/notes";
 import type { SectionDefinition } from "@/types/modular";
@@ -22,7 +26,7 @@ export const section: SectionDefinition = {
   required: false,
   order: 110,
   menuLabel: GOOD_TO_KNOW,
-  noteCard: CARD,
+  noteCard: ["icon", ...CARD],
   variants: [
     {
       id: "1",
@@ -32,12 +36,38 @@ export const section: SectionDefinition = {
         ...HEADING_SHOWS.filter(
           (id) => id !== "headingItalic" && id !== "note",
         ),
+        "icon",
         ...CARD,
       ],
+    },
+    {
+      id: "3",
+      name: {
+        en: "Two-line & card",
+        ro: "Două rânduri & card",
+        hu: "Kétsoros & kártya",
+      },
+      shows: [...HEADING_SHOWS, ...CARD],
+    },
+    {
+      id: "2",
+      name: {
+        en: "Icon & card",
+        ro: "Pictogramă & card",
+        hu: "Ikon & kártya",
+      },
+      shows: [...ICON_HEADING_SHOWS, "icon", ...CARD],
+    },
+    {
+      id: "4",
+      name: { en: "Full card", ro: "Card întreg", hu: "Teljes kártya" },
+      // The icon, the heading's intro line and the card's own fields only.
+      shows: ["icon", "eyebrow", ...CARD],
     },
   ],
   fields: [
     ...HEADING_FIELDS,
+    { id: "icon", label: LABELS.icon, type: "icon", maxLength: 20 },
     {
       id: "title",
       label: LABELS.title,

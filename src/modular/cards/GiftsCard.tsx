@@ -1,17 +1,21 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { useId, useState, type ReactNode } from "react";
+import { useEffect, useId, useRef, useState, type ReactNode } from "react";
 import { isOn, safeLink, text } from "@/modular/content";
 import {
   BODY_SM,
   CAPS,
+  CORNER,
+  GROUND,
   MUTED,
   OUTLINE_BUTTON,
   OUTLINE_SECONDARY,
+  type TONES,
 } from "@/modular/styles";
 import type { Ground, SectionValues } from "@/types/modular";
 import { CopyButton } from "./CopyButton";
+import { twinIcon } from "@/modular/notes";
 import { NoteCard } from "./NoteCard";
 
 interface GiftsCardProps {
@@ -19,6 +23,8 @@ interface GiftsCardProps {
   values: SectionValues;
   label: string;
   ground: Ground;
+  /** The icon's colour: the secondary unless the list it sits in takes turns. */
+  tone?: keyof typeof TONES;
 }
 
 /**
@@ -26,11 +32,16 @@ interface GiftsCardProps {
  * account details to open — each only while the host has it switched on
  * and filled in.
  */
-export function GiftsCard({ values, label, ground }: GiftsCardProps) {
+export function GiftsCard({
+  values,
+  label,
+  ground,
+  tone = "secondary",
+}: GiftsCardProps) {
   return (
     <NoteCard
-      icon="gift"
-      tone="secondary"
+      icon={twinIcon(values)}
+      tone={tone}
       label={label}
       title={text(values, "title")}
       body={text(values, "body")}
@@ -110,10 +121,14 @@ function Row({ label, children }: { label: string; children: ReactNode }) {
 }
 
 /**
- * The registry and the account as two buttons of one width — the wider
- * one's — side by side, or `stacked` and centred in a card's side column on
- * a wide page. The registry opens its page, the account opens its details
- * under the buttons.
+ * The registry and the account as two buttons side by side, sharing the
+ * row, stacking once their words would wrap; or `stacked`, of one width,
+ * one under the other: a card's side column, Helpful notes' Grid and
+ * Cards. The registry opens its page; the account opens its details in a
+ * box floating 8px under its button, on the page's surface. The box is
+ * the browser's popover, drawn over the whole page so no parent clips it (a
+ * grid with hairlines would), and closed by the button, Escape or a click
+ * outside it; placed when it opens, and again on scroll or resize.
  */
 export function GiftActions({
   values,
@@ -125,43 +140,145 @@ export function GiftActions({
   const t = useTranslations("Sections");
   const [open, setOpen] = useState(false);
   const detailsId = useId();
+  const button = useRef<HTMLButtonElement>(null);
+  const box = useRef<HTMLDivElement>(null);
   const link = registryLink(values);
   const account = hasAccount(values);
 
+  /*
+   * Under the button, 8px from it, or over it when the screen has no room
+   * below; across, centred on it or in line with one of its edges (`boxLeft`).
+   */
+  const place = () => {
+    if (!button.current || !box.current) return;
+    const at = button.current.getBoundingClientRect();
+    const { offsetWidth: width, offsetHeight: height } = box.current;
+    const left = boxLeft(at, width);
+    const below = at.bottom + GAP;
+    const top =
+      below + height > window.innerHeight - EDGE &&
+      at.top - GAP - height >= EDGE
+        ? at.top - GAP - height
+        : below;
+    box.current.style.setProperty("--box-x", `${left}px`);
+    box.current.style.setProperty("--box-y", `${top}px`);
+  };
+
+  useEffect(() => {
+    if (!open) return;
+    window.addEventListener("scroll", place, true);
+    window.addEventListener("resize", place);
+    return () => {
+      window.removeEventListener("scroll", place, true);
+      window.removeEventListener("resize", place);
+    };
+  });
+
   return (
-    <div
-      className={`flex flex-col items-start gap-4 ${stacked ? "@5xl:items-center" : ""}`}
-    >
-      <div
-        className={`grid gap-3 ${stacked ? "" : "@md:auto-cols-fr @md:grid-flow-col"}`}
-      >
-        {link ? (
-          <a
-            href={link}
-            target="_blank"
-            rel="noopener noreferrer"
-            className={OUTLINE_BUTTON}
-          >
-            {t("seeRegistry")}
-          </a>
-        ) : null}
-        {account ? (
+    <div className={`gap-x-3 gap-y-4 ${stacked ? "grid" : "flex flex-wrap"}`}>
+      {link ? (
+        <a
+          href={link}
+          target="_blank"
+          rel="noopener noreferrer"
+          className={`${OUTLINE_BUTTON} ${stacked ? "" : SIDE_BY_SIDE}`}
+        >
+          <Labels
+            shown={t("seeRegistry")}
+            hidden={account ? [t("seeAccount"), t("hideAccount")] : []}
+          />
+        </a>
+      ) : null}
+      {account ? (
+        <>
           <button
+            ref={button}
             type="button"
+            popoverTarget={detailsId}
             aria-expanded={open}
-            aria-controls={detailsId}
-            onClick={() => setOpen(!open)}
-            className={`${OUTLINE_BUTTON} cursor-pointer`}
+            className={`${OUTLINE_BUTTON} ${stacked ? "" : SIDE_BY_SIDE} cursor-pointer`}
           >
-            {open ? t("hideAccount") : t("seeAccount")}
+            {/* Opening never changes its width: Hide account is in it too, hidden. */}
+            <Labels
+              shown={open ? t("hideAccount") : t("seeAccount")}
+              hidden={[
+                open ? t("seeAccount") : t("hideAccount"),
+                ...(link ? [t("seeRegistry")] : []),
+              ]}
+            />
           </button>
-        ) : null}
-      </div>
-      {account && open ? (
-        <div id={detailsId} className="flex flex-col items-start gap-3">
-          <GiftAccount values={values} stacked={stacked} />
-        </div>
+          {/*
+           * No display on the box itself: the browser hides a closed popover
+           * with `display: none`, which a `flex` here would override.
+           */}
+          <div
+            ref={box}
+            id={detailsId}
+            popover="auto"
+            onToggle={(event) => {
+              const nowOpen =
+                (event.nativeEvent as ToggleEvent).newState === "open";
+              if (nowOpen) place();
+              setOpen(nowOpen);
+            }}
+            className={`inset-auto top-(--box-y) left-(--box-x) m-0 max-h-[calc(100vh-1.5rem)] w-72 max-w-[calc(100vw-1.5rem)] overflow-auto ${CORNER} border-1 border-[var(--m-line)] p-5 text-left shadow-lg shadow-(color:--m-shadow)/20 ${GROUND.surface}`}
+          >
+            <div className="flex flex-col items-start gap-3">
+              <GiftAccount values={values} stacked={stacked} />
+            </div>
+          </div>
+        </>
       ) : null}
     </div>
   );
 }
+
+/*
+ * Side by side, the two share the row evenly but never get narrower than
+ * their words, so they stack instead of wrapping them; stacked, each takes
+ * the row. Not in a side column (`stacked`): there always one under the
+ * other. Each holds the other's words too, hidden (`Labels`), so the two
+ * are always as wide as each other.
+ */
+const SIDE_BY_SIDE = "min-w-max flex-1 basis-0";
+
+/**
+ * A button's words, and in the same cell, hidden, every other label the
+ * buttons show: the button is as wide as the longest of them.
+ */
+function Labels({ shown, hidden }: { shown: string; hidden: string[] }) {
+  return (
+    <span className="grid text-center">
+      <span className="col-start-1 row-start-1">{shown}</span>
+      {hidden.map((label) => (
+        <span
+          key={label}
+          aria-hidden="true"
+          className="invisible col-start-1 row-start-1"
+        >
+          {label}
+        </span>
+      ))}
+    </span>
+  );
+}
+
+/**
+ * The floating box's left edge: centred on its button; if that passes a
+ * side of the screen, in line with the button's right edge, or else its
+ * left; failing both, kept off the screen's edges.
+ */
+function boxLeft(at: DOMRect, width: number): number {
+  const fits = (left: number) =>
+    left >= EDGE && left + width <= window.innerWidth - EDGE;
+  const centred = at.left + (at.width - width) / 2;
+  if (fits(centred)) return centred;
+  if (fits(at.right - width)) return at.right - width;
+  if (fits(at.left)) return at.left;
+  return Math.max(EDGE, Math.min(centred, window.innerWidth - width - EDGE));
+}
+
+/** The floating box's least distance from the screen's edges, in px. */
+const EDGE = 12;
+/** Between the floating box and its button, in px. */
+const GAP = 8;

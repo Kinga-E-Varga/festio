@@ -4,47 +4,156 @@ import type { SectionDefinition } from "@/types/modular";
 
 /**
  * One to three locations, each with its own venue, address and photo — the
- * invitation's, not the event's.
+ * invitation's, not the event's. Every style's `photos` switch leaves the
+ * photos out.
  */
 export const section: SectionDefinition = {
   id: "location",
   name: { en: "Location", ro: "Locația", hu: "Helyszín" },
   required: true,
   order: 50,
+  stylesHint: {
+    en: "Every style can leave the photos out: switch Use photos off in the Content tab.",
+    ro: "Orice stil poate fi fără fotografii: dezactivează Folosește fotografii în fila Conținut.",
+    hu: "Bármelyik stílus mehet fotók nélkül: kapcsold ki a Fotók használata kapcsolót a Tartalom fülön.",
+  },
   variants: [
     {
       id: "1",
       name: {
-        en: "Photo cards",
-        ro: "Carduri cu fotografie",
-        hu: "Fotós kártyák",
+        en: "Accent cards",
+        ro: "Carduri accent",
+        hu: "Kiemelt kártyák",
       },
       // Every heading field but the italic heading.
       shows: [
+        "photos",
         ...HEADING_SHOWS.filter((id) => id !== "headingItalic"),
         "venues.label",
         "venues.venue",
         "venues.address",
+        "venues.mapsLink",
+        "venues.detail",
         "venues.photo",
+        "venues.icon",
+      ],
+    },
+    {
+      id: "6",
+      name: { en: "Cards", ro: "Carduri", hu: "Kártyák" },
+      // Accent cards on a surface: every heading field but the italic heading.
+      shows: [
+        "photos",
+        ...HEADING_SHOWS.filter((id) => id !== "headingItalic"),
+        "venues.label",
+        "venues.venue",
+        "venues.address",
+        "venues.mapsLink",
+        "venues.detail",
+        "venues.photo",
+        "venues.icon",
       ],
     },
     {
       id: "2",
       name: {
-        en: "Icon & photo",
-        ro: "Pictogramă și fotografie",
-        hu: "Ikon és fotó",
+        en: "Simple",
+        ro: "Simplu",
+        hu: "Egyszerű",
       },
       shows: [
+        "photos",
         "venues.label",
         "venues.venue",
         "venues.address",
+        "venues.mapsLink",
+        "venues.detail",
+        "venues.photo",
+      ],
+    },
+    {
+      id: "7",
+      name: {
+        en: "Two-line",
+        ro: "Două rânduri",
+        hu: "Kétsoros",
+      },
+      // Simple with the detail as the name's first line.
+      shows: [
+        "photos",
+        "venues.label",
+        "venues.venue",
+        "venues.address",
+        "venues.mapsLink",
+        "venues.detail",
+        "venues.photo",
+      ],
+    },
+    // "4" is retired (Cards, now Cards with photos off): never reuse it.
+    {
+      id: "5",
+      name: {
+        en: "Icon",
+        ro: "Pictogramă",
+        hu: "Ikon",
+      },
+      // Simple with the icon where the label goes.
+      shows: [
+        "photos",
+        "venues.icon",
+        "venues.venue",
+        "venues.address",
+        "venues.mapsLink",
+        "venues.detail",
+        "venues.photo",
+      ],
+    },
+    {
+      id: "3",
+      name: {
+        en: "List & grid",
+        ro: "Listă & grilă",
+        hu: "Lista & rács",
+      },
+      // Every heading field but the italic heading.
+      shows: [
+        "photos",
+        ...HEADING_SHOWS.filter((id) => id !== "headingItalic"),
+        "venues.label",
+        "venues.venue",
+        "venues.address",
+        "venues.mapsLink",
+        "venues.detail",
+        "venues.photo",
+      ],
+    },
+    {
+      id: "8",
+      name: { en: "Full card", ro: "Card întreg", hu: "Teljes kártya" },
+      // List & grid in one card: every heading field but the italic heading.
+      shows: [
+        "photos",
+        ...HEADING_SHOWS.filter((id) => id !== "headingItalic"),
+        "venues.label",
+        "venues.venue",
+        "venues.address",
+        "venues.mapsLink",
         "venues.detail",
         "venues.photo",
       ],
     },
   ],
   fields: [
+    {
+      id: "photos",
+      label: {
+        en: "use photos",
+        ro: "folosește fotografii",
+        hu: "fotók használata",
+      },
+      type: "toggle",
+      controls: ["venues.photo"],
+    },
     ...HEADING_FIELDS,
     {
       id: "venues",
@@ -59,6 +168,7 @@ export const section: SectionDefinition = {
       maxItems: 3,
       minItems: 1,
       item: [
+        { id: "icon", label: LABELS.icon, type: "icon", maxLength: 20 },
         {
           id: "label",
           label: {
@@ -75,6 +185,16 @@ export const section: SectionDefinition = {
           label: LABELS.address,
           type: "longText",
           maxLength: 160,
+        },
+        {
+          id: "mapsLink",
+          label: {
+            en: "maps link",
+            ro: "link de hartă",
+            hu: "térképlink",
+          },
+          type: "text",
+          maxLength: 300,
         },
         {
           id: "detail",
