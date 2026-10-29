@@ -16,8 +16,17 @@ export const section: SectionDefinition = {
   order: 0,
   variants: [
     {
-      id: "1",
+      id: "6",
       name: { en: "Colourful", ro: "Colorat", hu: "Színes" },
+      shows: ["markStart", "markMiddle", "markEnd"],
+    },
+    {
+      id: "1",
+      name: {
+        en: "Colourful accent",
+        ro: "Colorat accent",
+        hu: "Színes kiemelt",
+      },
       shows: ["markStart", "markMiddle", "markEnd"],
     },
     {
@@ -26,8 +35,26 @@ export const section: SectionDefinition = {
       shows: ["markStart", "markMiddle", "markEnd"],
     },
     {
+      id: "5",
+      name: {
+        en: "Balanced accent",
+        ro: "Echilibrat accent",
+        hu: "Kiegyensúlyozott kiemelt",
+      },
+      shows: ["markStart", "markMiddle", "markEnd"],
+    },
+    {
       id: "3",
       name: { en: "Simple", ro: "Simplu", hu: "Egyszerű" },
+      shows: ["markStart", "markMiddle", "markEnd"],
+    },
+    {
+      id: "4",
+      name: {
+        en: "Simple accent",
+        ro: "Simplu accent",
+        hu: "Egyszerű kiemelt",
+      },
       shows: ["markStart", "markMiddle", "markEnd"],
     },
   ],

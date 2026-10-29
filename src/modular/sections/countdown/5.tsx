@@ -4,9 +4,8 @@ import { useTranslations } from "next-intl";
 import { pad } from "@/lib/event";
 import { NUMBER_SIZE, UNITS, useCountdown } from "@/modular/countdown";
 import {
+  BAND_LINE,
   CAPS,
-  BIG_LINE_SIZE,
-  DISPLAY_PLAIN,
   H3,
   ITALIC_LINE,
   MUTED,
@@ -24,7 +23,7 @@ const NUMBER = `${SERIF} ${NUMBER_SIZE} leading-none text-[color:var(--m-accent)
 const SMALL = `${H3} text-[color:var(--m-secondary)]! leading-none tabular-nums`;
 
 /**
- * The days first, set as the bold reply's heading (`BIG_LINE_SIZE`) but
+ * The days first, set as the bold reply's heading (`BAND_LINE`) but
  * in the accent, "days to go" in italic, muted, under them, then hours,
  * minutes and seconds small in a row under a hairline. No eyebrow, not even once
  * the day has come. Until the first tick the numbers are dashes.
@@ -49,7 +48,7 @@ export function Variant({ basics, ground }: VariantProps) {
         >
           <span
             aria-hidden="true"
-            className={`${DISPLAY_PLAIN} ${BIG_LINE_SIZE} text-[color:var(--m-accent)] tabular-nums`}
+            className={`${BAND_LINE} text-[color:var(--m-accent)] tabular-nums`}
           >
             {left ? left.days : "––"}
           </span>

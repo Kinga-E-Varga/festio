@@ -34,28 +34,45 @@ const MARK = `${SERIF} text-[24px] leading-none tracking-[-0.04em] [font-variati
 /** The mark's middle part: 20px in every variant; its colour is the variant's. */
 const MARK_MIDDLE = "text-[20px]";
 
-/** Balanced's look, which Plain shares but for the mark's middle. */
+/*
+ * The Reply button, the eyebrow's look at 11px (a button, not an eyebrow):
+ * in the accent, the secondary under the pointer, or the other way round.
+ */
+const REPLY_ACCENT = `${REPLY_TEXT} ${ACCENT_FILL} hover:border-[var(--m-secondary)] hover:bg-[var(--m-secondary)] hover:text-[color:var(--m-secondary-ink)]`;
+const REPLY_SECONDARY = `${REPLY_TEXT} ${SECONDARY_FILL} hover:border-[var(--m-accent)] hover:bg-[var(--m-accent)] hover:text-[color:var(--m-accent-ink)]`;
+
+/** Balanced's look, which the others share but for the mark's colours and the Reply button. */
 const ROUNDED = {
   mark: "text-[color:var(--m-ink)]",
   middle: AMPERSAND_INK,
   link: MUTED_LINK,
   links: "gap-7",
-  reply: `${REPLY_TEXT} ${SECONDARY_FILL} hover:border-[var(--m-accent)] hover:bg-[var(--m-accent)] hover:text-[color:var(--m-accent-ink)]`,
+  reply: REPLY_SECONDARY,
+};
+
+/** Colourful accent's: the mark in the accent, its middle in the secondary, Reply in the accent. */
+const SQUARE = {
+  ...ROUNDED,
+  mark: "text-[color:var(--m-accent)]",
+  reply: REPLY_ACCENT,
 };
 
 /** Each variant's mark colour and its middle's, section links (look, gap) and Reply button. */
 const LOOKS = {
-  square: {
-    mark: "text-[color:var(--m-accent)]",
-    middle: AMPERSAND_INK,
-    link: MUTED_LINK,
-    links: "gap-7",
-    // The eyebrow's look at 11px: a button, not an eyebrow.
-    reply: `${REPLY_TEXT} ${ACCENT_FILL} hover:border-[var(--m-secondary)] hover:bg-[var(--m-secondary)] hover:text-[color:var(--m-secondary-ink)]`,
-  },
+  square: SQUARE,
+  // Colourful accent with Reply in the secondary.
+  colorful: { ...SQUARE, reply: REPLY_SECONDARY },
   rounded: ROUNDED,
+  // Balanced with the mark's middle and Reply in the accent.
+  roundedAccent: {
+    ...ROUNDED,
+    middle: "text-[color:var(--m-accent)]",
+    reply: REPLY_ACCENT,
+  },
   // The middle in the mark's own colour: one ink across the whole mark.
   plain: { ...ROUNDED, middle: "" },
+  // Simple with Reply in the accent.
+  plainAccent: { ...ROUNDED, middle: "", reply: REPLY_ACCENT },
 };
 
 /**

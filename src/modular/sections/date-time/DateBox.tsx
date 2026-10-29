@@ -1,5 +1,6 @@
 import { dayOfMonth, monthName, weekday, yearOf } from "@/modular/content";
 import {
+  ACCENT_CARD,
   CARD,
   GROUND,
   H3,
@@ -33,7 +34,7 @@ export function DateBox({
   return (
     <time
       dateTime={date}
-      className={`${CARD} ${GROUND[ground]} flex w-full items-center justify-center self-stretch text-center`}
+      className={`${ground === "accent" ? ACCENT_CARD : `${CARD} ${GROUND[ground]}`} flex w-full items-center justify-center self-stretch text-center`}
     >
       {/* Its own span: the card's ground sets the ink, the secondary wins here. */}
       <span

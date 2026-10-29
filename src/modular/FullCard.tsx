@@ -1,7 +1,14 @@
 import type { ReactNode } from "react";
 import { text } from "./content";
 import { SectionHeading } from "./SectionHeading";
-import { CORNER, GROUND_FILL, PAD, SECTION_GROUND, STACK } from "./styles";
+import {
+  CORNER,
+  GROUND_FILL,
+  LINED_CELL,
+  PAD,
+  SECTION_GROUND,
+  STACK,
+} from "./styles";
 import type { SectionGround, SectionValues } from "@/types/modular";
 
 /** A full card's padding; Menu's Framed card's inner frame too. */
@@ -63,3 +70,27 @@ export function FullCard({
     </FullCardFrame>
   );
 }
+
+/* A full card grid's columns from `@3xl`, by how many items: up to three in a row, four as two rows of two, five or six three to a row. */
+const GRID_COLUMNS = [
+  "",
+  "",
+  "@3xl:grid-cols-2",
+  "@3xl:grid-cols-3",
+  "@3xl:grid-cols-2",
+  "@3xl:grid-cols-3",
+  "@3xl:grid-cols-3",
+];
+
+/**
+ * Items side by side in a full card, between its lines (`GRID_COLUMNS`),
+ * one column on a phone, hairlines between them as the Grid's cells
+ * (`LINED_CELL`): Contact's, Special people's and Accommodation's Full
+ * card & grid.
+ */
+export function fullCardGrid(count: number): string {
+  return `grid overflow-hidden ${GRID_COLUMNS[count]}`;
+}
+
+/** A full card grid's cell, its content centred; its sides a little narrower than a Grid's, as the card is. */
+export const FULL_CARD_CELL = `${LINED_CELL} flex flex-col items-center px-6 py-8 text-center @3xl:px-4 @3xl:py-10`;

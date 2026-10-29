@@ -115,8 +115,11 @@ export const section: SectionDefinition = {
         ro: "Cronologie",
         hu: "Idővonal",
       },
-      // No heading: the timeline alone.
+      // Every heading field but the italic heading and the note.
       shows: [
+        ...HEADING_SHOWS.filter(
+          (id) => id !== "headingItalic" && id !== "note",
+        ),
         "days.date",
         "days.items.time",
         "days.items.title",

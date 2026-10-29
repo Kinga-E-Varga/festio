@@ -1,7 +1,7 @@
 import { HeaderBar } from "@/modular/HeaderBar";
 import type { VariantProps } from "@/types/modular";
 
-/** The header with a display mark, plain links and an accent Reply button. */
+/** Colourful accent: the mark in the accent, its middle in the secondary, plain links and an accent Reply button. */
 export function Variant(props: VariantProps) {
   return <HeaderBar {...props} look="square" />;
 }

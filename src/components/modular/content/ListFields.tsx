@@ -167,10 +167,13 @@ function ItemInputs({
   fields,
   item,
   showErrors,
+  hintId,
   onItem,
 }: {
   /** The item's element id; each field's is it plus the field's id. */
   idBase: string;
+  /** The list's phone warning, drawn once above the items. */
+  hintId?: string;
   fields: ItemField[];
   item: ListItem;
   showErrors: boolean;
@@ -195,6 +198,7 @@ function ItemInputs({
             field={field}
             value={item[field.id] ?? ""}
             showErrors={showErrors}
+            hintId={hintId}
             onChange={(value) => onItem({ ...item, [field.id]: String(value) })}
           />
         ),
@@ -236,6 +240,7 @@ const ItemRow = memo(function ItemRow({
   fields,
   item,
   showErrors,
+  hintId,
   onReplace,
   onRemove,
 }: {
@@ -246,6 +251,7 @@ const ItemRow = memo(function ItemRow({
   fields: ItemField[];
   item: ListItem;
   showErrors: boolean;
+  hintId?: string;
   onReplace: (index: number, item: ListItem) => void;
   onRemove: (index: number) => void;
 }) {
@@ -261,6 +267,7 @@ const ItemRow = memo(function ItemRow({
         fields={fields}
         item={item}
         showErrors={showErrors}
+        hintId={hintId}
         onItem={(next) => onReplace(index, next)}
       />
     </div>
@@ -282,6 +289,7 @@ export function ItemList({
   canRemove,
   keep,
   add,
+  hintId,
   onItems,
 }: {
   items: ListItem[];
@@ -292,6 +300,8 @@ export function ItemList({
   canRemove: boolean;
   keep?: (item: ListItem) => boolean;
   add: { label: string; text?: string; disabled: boolean; item: ListItem };
+  /** The list's phone warning, which its phone fields point to. */
+  hintId?: string;
   onItems: (items: ListItem[]) => void;
 }) {
   const edit = useListEdit(items, onItems);
@@ -308,6 +318,7 @@ export function ItemList({
             fields={fields}
             item={item}
             showErrors={showErrors}
+            hintId={hintId}
             onReplace={edit.replace}
             onRemove={edit.remove}
           />
@@ -346,10 +357,20 @@ export function ListFields({
   onItems: (items: ListItem[]) => void;
 }) {
   const host = useLocale() as Language;
+  const t = useTranslations("ContentTab");
   const label = localized(field.label, host);
+  // A list of phone numbers or emails says once, above its items, that they are public.
+  const hintId = shown.some(({ type }) => type === "phone" || type === "email")
+    ? fieldId(section, field.id, "phone-hint")
+    : undefined;
 
   return (
     <div role="group" aria-label={label} className={LIST}>
+      {hintId ? (
+        <p id={hintId} className="hint-text">
+          {t("phoneHint")}
+        </p>
+      ) : null}
       <ItemList
         items={items}
         fields={shown}
@@ -363,6 +384,7 @@ export function ListFields({
           disabled: items.length >= field.maxItems,
           item: emptyItem(field.item),
         }}
+        hintId={hintId}
         onItems={onItems}
       />
     </div>

@@ -22,7 +22,7 @@ const NUMBER = `${SERIF} ${NUMBER_SIZE} leading-none ${MUTED}`;
  * The time left written out as one line ("Only 68 days, 8 hours… to go."),
  * the words as an eyebrow (`EYEBROW`) and the closing line in the muted
  * ink, the numbers a 34px serif heading, in the accent. It shares
- * the date's band, as Joined does, so it has no top padding of its own. No
+ * the date's band, as Simple joined does, so it has no top padding of its own. No
  * eyebrow, not even once the day has come. Until the first tick the
  * numbers are dashes. After a section in two columns (`afterSplit`) it sits
  * in the second (`JoinedColumn`).

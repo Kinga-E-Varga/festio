@@ -29,7 +29,7 @@ Each event has one package. It only ever goes up (Free → Standard → Custom);
 **Modular:** host adds/removes/edits sections. Also gets template customization (palette, fonts, images). Custom only.
 
 - Base sections, always present: header, hero/cover, title, date & time, location, RSVP, footer.
-- Optional sections: countdown, helpful notes, dress code, gift preferences, playlist, FAQ, schedule, menu, accommodation, transportation.
+- Optional sections: countdown, helpful notes, dress code, gift preferences, playlist, FAQ, schedule, menu, accommodation, transportation, text box, special people, our story, contact.
 - **Sections, palettes and font pairs are shared libraries** in `src/modular/`. Each section has one or more variants; a palette is 14 colour roles, the rest mixed from them; more may be added; a font pair is body + headings. Hosts pick a whole palette or pair, never single colours or fonts.
 - **A modular template is a preset over them:** a palette, a font pair and the sections with a variant each, in the fixed order. It is a starting point the host can change later.
 - Events store template, section, variant, palette and font-pair ids, so those ids are permanent. A simple event is drawn from its template; a modular one only started from it (its own choices are on the event), so a later change to a modular template doesn't reach it.

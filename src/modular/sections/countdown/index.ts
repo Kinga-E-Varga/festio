@@ -29,21 +29,55 @@ export const section: SectionDefinition = {
     },
     {
       id: "3",
-      name: { en: "Joined", ro: "Alăturat", hu: "Csatolt" },
+      name: {
+        en: "Simple joined",
+        ro: "Simplu alăturat",
+        hu: "Egyszerű csatolt",
+      },
       // In the date's band, whatever its colour.
       ground: "joined",
       shows: ["eyebrow"],
     },
     {
+      id: "7",
+      name: {
+        en: "Cards joined",
+        ro: "Carduri alăturate",
+        hu: "Csatolt kártyák",
+      },
+      // Cards in the date's band, whatever its colour.
+      ground: "joined",
+      shows: ["eyebrow"],
+    },
+    {
+      id: "8",
+      name: {
+        en: "Cards joined accent",
+        ro: "Carduri alăturate accent",
+        hu: "Kiemelt csatolt kártyák",
+      },
+      // Cards joined, the cards on the accent.
+      ground: "joined",
+      shows: ["eyebrow"],
+    },
+    {
       id: "4",
-      name: { en: "Sentence", ro: "Propoziție", hu: "Mondat" },
+      name: {
+        en: "Sentence joined",
+        ro: "Propoziție alăturată",
+        hu: "Csatolt mondat",
+      },
       // In the date's band, whatever its colour.
       ground: "joined",
       shows: [],
     },
     {
       id: "6",
-      name: { en: "Clock", ro: "Ceas", hu: "Óra" },
+      name: {
+        en: "Clock joined",
+        ro: "Ceas alăturat",
+        hu: "Csatolt óra",
+      },
       // In the date's band, whatever its colour.
       ground: "joined",
       shows: [],

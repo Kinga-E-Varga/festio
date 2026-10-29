@@ -1,3 +1,4 @@
+import { TurnIcon } from "@/modular/cards/CardIcon";
 import { imageSrc, isOn, list } from "@/modular/content";
 import { Icon } from "@/modular/icons";
 import { MapsLink } from "@/modular/MapsLink";
@@ -41,7 +42,9 @@ const PHOTO_SIZES = "(min-width: 1100px) 512px, (min-width: 768px) 50vw, 320px";
  * row each — the photo (left, then right, in turn), the label, venue,
  * address and detail, and the way there. The photo is required while photos are on;
  * while it is missing the other surface stands in. With photos off, the
- * venues one under another, a line between each.
+ * venues one under another, a line between each. Either way each venue's
+ * icon, when it has one, on a soft disc over its label, the discs taking
+ * turns accent / secondary, as Accommodation's Full card & list.
  */
 export function Variant({ values, ground }: VariantProps) {
   const venues = list(values, "venues");
@@ -53,12 +56,7 @@ export function Variant({ values, ground }: VariantProps) {
       {photos ? (
         <ol className="text-center">
           {venues.map((venue, index) => (
-            <VenueRow
-              key={index}
-              venue={venue}
-              ground={ground}
-              flipped={index % 2 === 1}
-            />
+            <VenueRow key={index} venue={venue} ground={ground} index={index} />
           ))}
         </ol>
       ) : (
@@ -69,7 +67,7 @@ export function Variant({ values, ground }: VariantProps) {
               key={index}
               className={`${SECTION_GROUND[ground]} px-5 py-8 text-center @3xl:py-10`}
             >
-              <VenueText venue={venue} />
+              <VenueText venue={venue} index={index} />
             </li>
           ))}
         </ol>
@@ -81,13 +79,14 @@ export function Variant({ values, ground }: VariantProps) {
 function VenueRow({
   venue,
   ground,
-  flipped,
+  index,
 }: {
   venue: ListItem;
   ground: SectionGround;
-  flipped: boolean;
+  index: number;
 }) {
   const photo = imageSrc(venue.photo ?? "");
+  const flipped = index % 2 === 1;
 
   return (
     /*
@@ -102,21 +101,32 @@ function VenueRow({
           <WashedPhoto src={photo} sizes={PHOTO_SIZES} ground={ground} />
         ) : null}
       </div>
-      <VenueText venue={venue} className="[direction:ltr] @3xl:self-center" />
+      <VenueText
+        venue={venue}
+        index={index}
+        className="[direction:ltr] @3xl:self-center"
+      />
     </li>
   );
 }
 
-/** The venue and the way there: the card's sizes and spacing (`AccentVenue`), in the section's inks. */
+/**
+ * The venue and the way there: the card's sizes and spacing (`AccentVenue`),
+ * in the section's inks, its icon, when it has one, on a soft disc over its
+ * label, the discs taking turns accent / secondary by `index`.
+ */
 function VenueText({
   venue,
+  index,
   className = "",
 }: {
   venue: ListItem;
+  index: number;
   className?: string;
 }) {
   return (
     <div className={`flex min-w-0 flex-col ${className}`}>
+      <TurnIcon name={venue.icon} index={index} className="mb-5 self-center" />
       {venue.label ? (
         <p className={`${INNER_EYEBROW} ${TONE_TEXT.secondary} mb-4`}>
           {venue.label}

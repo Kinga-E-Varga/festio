@@ -49,6 +49,19 @@ export const DEFAULTS: Record<string, SectionSamples> = {
       hu: "meghívnak, hogy velük ünnepeld közös életük kezdetét",
     },
   },
+  textbox: {
+    italic: true,
+    largeText: {
+      en: "Love is patient, love is kind. It always protects, always trusts, always hopes, always perseveres.",
+      ro: "Dragostea este îndelung răbdătoare, este binevoitoare. Acoperă totul, crede totul, nădăjduiește totul, suferă totul.",
+      hu: "A szeretet türelmes, a szeretet jóságos. Mindent elfedez, mindent hisz, mindent remél, mindent elvisel.",
+    },
+    smallText: {
+      en: "1 Corinthians 13:4–7",
+      ro: "1 Corinteni 13:4–7",
+      hu: "1Korinthus 13:4–7",
+    },
+  },
   "date-time": {
     dateFormat: "shortWeekday",
     monthName: "long",
@@ -79,6 +92,101 @@ export const DEFAULTS: Record<string, SectionSamples> = {
       ro: "Numărăm zilele",
       hu: "Számoljuk a napokat",
     },
+  },
+  people: {
+    eyebrow: {
+      en: "With the blessing of",
+      ro: "Cu binecuvântarea",
+      hu: "Szüleink áldásával",
+    },
+    heading: { en: "Our families", ro: "Familiile noastre", hu: "Családjaink" },
+    headingItalic: {
+      en: "and those who guide us",
+      ro: "și cei care ne călăuzesc",
+      hu: "és akik utunkat kísérik",
+    },
+    groups: [
+      {
+        icon: "heart",
+        label: {
+          en: "Parents of the bride",
+          ro: "Părinții miresei",
+          hu: "A menyasszony szülei",
+        },
+        names: "Ana Popescu\nMihai Popescu",
+      },
+      {
+        icon: "heart",
+        label: {
+          en: "Parents of the groom",
+          ro: "Părinții mirelui",
+          hu: "A vőlegény szülei",
+        },
+        names: "Elena Ionescu\nVictor Ionescu",
+      },
+      {
+        icon: "sparkle",
+        label: { en: "Godparents", ro: "Nași", hu: "Keresztszülők" },
+        names: "Ioana Marin\nAndrei Marin",
+      },
+    ],
+  },
+  story: {
+    photo: "/modular/samples/our-story.jpg",
+    photoAlt: {
+      en: "Our two hands holding up our rings against the sky",
+      ro: "Mâinile noastre ridicând verighetele spre cer",
+      hu: "Kezünk az égnek tartja a gyűrűinket",
+    },
+    eyebrow: {
+      en: "How it began",
+      ro: "Cum a început",
+      hu: "Hogyan kezdődött",
+    },
+    heading: { en: "Our story", ro: "Povestea noastră", hu: "Történetünk" },
+    headingItalic: { en: "so far", ro: "până acum", hu: "eddig" },
+    story: {
+      en: "It started with a coffee in Cluj that went on until the café closed. The second date never really ended.\n\nNine years, two cities and one very patient dog later, a question on a hill above Cassis — and the easiest yes.",
+      ro: "Totul a început cu o cafea în Cluj care a ținut până la închiderea cafenelei. A doua întâlnire nu s-a mai terminat cu adevărat.\n\nNouă ani, două orașe și un câine foarte răbdător mai târziu, o întrebare pe un deal deasupra Cassis-ului — și cel mai ușor da.",
+      hu: "Egy kolozsvári kávéval kezdődött, ami a kávézó zárásáig tartott. A második randevú igazából sosem ért véget.\n\nKilenc év, két város és egy nagyon türelmes kutya után egy kérdés egy Cassis fölötti dombon — és a legkönnyebb igen.",
+    },
+    moments: [
+      {
+        year: "2017",
+        title: {
+          en: "A coffee in Cluj",
+          ro: "O cafea în Cluj",
+          hu: "Egy kávé Kolozsváron",
+        },
+        text: {
+          en: "We talked until the café closed.",
+          ro: "Am vorbit până s-a închis cafeneaua.",
+          hu: "Zárásig beszélgettünk.",
+        },
+      },
+      {
+        year: "2020",
+        title: {
+          en: "Our first home",
+          ro: "Prima noastră casă",
+          hu: "Az első otthonunk",
+        },
+        text: {
+          en: "Two flatmates, one very patient dog.",
+          ro: "Doi colegi de apartament, un câine foarte răbdător.",
+          hu: "Két lakótárs, egy nagyon türelmes kutya.",
+        },
+      },
+      {
+        year: "2026",
+        title: { en: "The question", ro: "Întrebarea", hu: "A kérdés" },
+        text: {
+          en: "On a hill above Cassis, at sunset.",
+          ro: "Pe un deal deasupra Cassis-ului, la apus.",
+          hu: "Egy Cassis fölötti dombon, naplementekor.",
+        },
+      },
+    ],
   },
   location: {
     photos: true,
@@ -805,5 +913,49 @@ export const DEFAULTS: Record<string, SectionSamples> = {
       ro: "Am primit răspunsul tău.",
       hu: "Megkaptuk a válaszod.",
     },
+  },
+  contact: {
+    eyebrow: {
+      en: "Need a hand?",
+      ro: "Ai nevoie de ajutor?",
+      hu: "Segítség kell?",
+    },
+    heading: { en: "We're here", ro: "Suntem aici", hu: "Itt vagyunk" },
+    headingItalic: {
+      en: "just give us a call",
+      ro: "sună-ne oricând",
+      hu: "hívj bátran",
+    },
+    note: {
+      en: "For anything about the day, we're a call away.",
+      ro: "Pentru orice legat de ziua cea mare, suntem la un telefon distanță.",
+      hu: "Bármi kérdésed van a nagy nappal kapcsolatban, csak hívj.",
+    },
+    people: [
+      {
+        icon: "heart",
+        role: { en: "The bride", ro: "Mireasa", hu: "A menyasszony" },
+        name: "Maddie",
+        phone: "+40 722 123 456",
+        email: "maddie@example.com",
+      },
+      {
+        icon: "rings",
+        role: { en: "The groom", ro: "Mirele", hu: "A vőlegény" },
+        name: "Claude",
+        phone: "+40 733 654 321",
+        email: "claude@example.com",
+      },
+      {
+        icon: "phone",
+        role: {
+          en: "On the day",
+          ro: "În ziua evenimentului",
+          hu: "A nagy napon",
+        },
+        name: "Ioana",
+        phone: "+40 744 555 010",
+      },
+    ],
   },
 };

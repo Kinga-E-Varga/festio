@@ -453,6 +453,7 @@
     "remove": "Remove",
     "changePhoto": "Change photo",
     "photoSoon": "Photo uploads are coming soon.",
+    "phoneHint": "Shown to anyone with the invitation's link. To keep it private, set the invitation to Protected.",
     "required": "Fill this in.",
     "noIcon": "No icon",
     "moreIcons": "More",

@@ -103,11 +103,11 @@ export const section: SectionDefinition = {
     {
       id: "7",
       name: {
-        en: "Full card & list",
-        ro: "Card întreg & listă",
-        hu: "Teljes kártya & lista",
+        en: "Full card & grid",
+        ro: "Card întreg & grilă",
+        hu: "Teljes kártya & rács",
       },
-      // Transportation's Full card & list: Cards' content, one stay under another.
+      // Cards' content, the stays side by side in a full card.
       shows: [
         ...HEADING_SHOWS.filter((id) => id !== "headingItalic"),
         "places.icon",

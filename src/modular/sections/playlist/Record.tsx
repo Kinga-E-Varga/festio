@@ -2,14 +2,19 @@ import type { SectionGround } from "@/types/modular";
 
 /*
  * By the ground the record sits on: the colour it is mixed from
- * (`--record-base`, the ground's own) and its label's. Written out whole, as
- * Tailwind only sees whole class names.
+ * (`--record-base`, the ground's own). Written out whole, as Tailwind only
+ * sees whole class names.
  */
 const ON: Record<SectionGround, string> = {
-  accent: "[--record-base:var(--m-accent)] [--record-label:var(--m-secondary)]",
-  surface: "[--record-base:var(--m-surface)] [--record-label:var(--m-accent)]",
-  "surface-alt":
-    "[--record-base:var(--m-surface-alt)] [--record-label:var(--m-accent)]",
+  accent: "[--record-base:var(--m-accent)]",
+  surface: "[--record-base:var(--m-surface)]",
+  "surface-alt": "[--record-base:var(--m-surface-alt)]",
+};
+
+/* The label's colour: by default the secondary on the accent, the accent on a surface. */
+const LABEL = {
+  accent: "[--record-label:var(--m-accent)]",
+  secondary: "[--record-label:var(--m-secondary)]",
 };
 
 /**
@@ -33,11 +38,18 @@ export const RECORD_SIZE = "[--record:180px] @3xl:[--record:260px]";
  * label (not the hole) lights the grooves. The label is the secondary colour
  * on the accent band, the accent on a surface.
  */
-export function Record({ on }: { on: SectionGround }) {
+export function Record({
+  on,
+  label = on === "accent" ? "secondary" : "accent",
+}: {
+  on: SectionGround;
+  /** The label's colour, past its ground's default: Card accent's, on the accent card. */
+  label?: keyof typeof LABEL;
+}) {
   return (
     <div
       aria-hidden="true"
-      className={`relative ${ON[on]} ${RECORD_SIZE} size-(--record) shrink-0 drop-shadow-xl drop-shadow-(color:--record-shadow)/70 [--record-line:oklch(from_var(--record-base)_calc((l_*_0.2_+_0.145_+_clamp(0,(0.46_-_l)_*_100,1)_*_0.015)_*_(1_-_clamp(0,(0.36_-_l)_*_100,1))_+_(l_+_0.15)_*_clamp(0,(0.36_-_l)_*_100,1))_calc(c*0.5)_h)] [--record-shadow:color-mix(in_oklab,var(--record-base),black_55%)]`}
+      className={`relative ${ON[on]} ${LABEL[label]} ${RECORD_SIZE} size-(--record) shrink-0 drop-shadow-xl drop-shadow-(color:--record-shadow)/70 [--record-line:oklch(from_var(--record-base)_calc((l_*_0.2_+_0.145_+_clamp(0,(0.46_-_l)_*_100,1)_*_0.015)_*_(1_-_clamp(0,(0.36_-_l)_*_100,1))_+_(l_+_0.15)_*_clamp(0,(0.36_-_l)_*_100,1))_calc(c*0.5)_h)] [--record-shadow:color-mix(in_oklab,var(--record-base),black_55%)]`}
     >
       <svg viewBox="0 0 260 260" className="size-full">
         <circle

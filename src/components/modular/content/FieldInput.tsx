@@ -19,6 +19,11 @@ export interface FieldInputProps {
   value: string | boolean;
   /** Save was tried: an empty required field shows its error without a blur. */
   showErrors: boolean;
+  /**
+   * A phone field's warning drawn elsewhere, once for a whole list: the
+   * field points to it instead of drawing its own.
+   */
+  hintId?: string;
   onChange: (value: string | boolean) => void;
 }
 
@@ -32,6 +37,7 @@ export function FieldInput({
   field,
   value,
   showErrors,
+  hintId,
   onChange,
 }: FieldInputProps) {
   const t = useTranslations("ContentTab");
@@ -78,13 +84,20 @@ export function FieldInput({
   const required = field.required === true;
   const invalid = required && !current.trim() && (left || showErrors);
   const errorId = `${id}-error`;
+  const publicHint =
+    field.type === "phone" || field.type === "email"
+      ? (hintId ?? `${id}-hint`)
+      : null;
+  const describedBy =
+    [invalid ? errorId : null, publicHint].filter(Boolean).join(" ") ||
+    undefined;
   const shared = {
     id,
     value: current,
     maxLength: field.maxLength,
     "aria-required": required || undefined,
     "aria-invalid": invalid || undefined,
-    "aria-describedby": invalid ? errorId : undefined,
+    "aria-describedby": describedBy,
     /* Back in the field, the host is typing again: no error until they leave. */
     onFocus: () => setLeft(false),
     onBlur: () => setLeft(true),
@@ -99,7 +112,8 @@ export function FieldInput({
       {field.type === "longText" ? (
         <textarea
           {...shared}
-          rows={3}
+          /* A long text (Our story's, 1200 characters) gets room to read back; a note, three lines. */
+          rows={field.maxLength > 600 ? 10 : 3}
           onChange={(event) => onChange(event.target.value)}
           className={`${INPUT} resize-none`}
         />
@@ -113,7 +127,16 @@ export function FieldInput({
         <input
           {...shared}
           type={
-            field.type === "time" || field.type === "date" ? field.type : "text"
+            field.type === "time" || field.type === "date"
+              ? field.type
+              : field.type === "phone"
+                ? "tel"
+                : field.type === "email"
+                  ? "email"
+                  : "text"
+          }
+          autoComplete={
+            field.type === "phone" || field.type === "email" ? "off" : undefined
           }
           onChange={(event) =>
             onChange([event.target.value, ...rest].join("\n"))
@@ -124,6 +147,11 @@ export function FieldInput({
       {invalid ? (
         <p id={errorId} className={ERROR}>
           {t("required")}
+        </p>
+      ) : null}
+      {publicHint && !hintId ? (
+        <p id={publicHint} className="hint-text">
+          {t("phoneHint")}
         </p>
       ) : null}
     </div>

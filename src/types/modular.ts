@@ -97,10 +97,21 @@ export interface FontPair {
  * holds an ISO `YYYY-MM-DD` day, written out by the variant in one fixed way;
  * `lines` holds short lines joined by `\n` (a course's dishes), each line its
  * own input in the Content tab; `color` holds a hex colour or a palette
- * role's id ("accent"), picked with a colour picker.
+ * role's id ("accent"), picked with a colour picker; `phone` holds a phone
+ * number as the host typed it, drawn as plain text; `email` an email
+ * address, drawn as plain text.
  */
 export type ScalarFieldType =
-  "text" | "longText" | "time" | "date" | "image" | "icon" | "lines" | "color";
+  | "text"
+  | "longText"
+  | "time"
+  | "date"
+  | "image"
+  | "icon"
+  | "lines"
+  | "color"
+  | "phone"
+  | "email";
 
 /** One field inside a list item — what a repeated group is made of. */
 export interface ItemField {

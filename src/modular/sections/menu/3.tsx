@@ -3,10 +3,10 @@ import { FULL_CARD_PAD, FULL_CARD_WIDTH } from "@/modular/FullCard";
 import { otherGround } from "@/modular/ground";
 import { SectionHeading } from "@/modular/SectionHeading";
 import {
-  CORNER,
   INNER_EYEBROW,
   GROUND,
   H3_ITEM,
+  HAIRLINE_FRAME,
   PAD,
   STACK,
   TONE_TEXT,
@@ -21,9 +21,6 @@ import { Dishes } from "./Dishes";
  */
 const RULE =
   "bg-[linear-gradient(var(--m-line),var(--m-line))] bg-[length:7rem_1px] bg-top bg-no-repeat";
-
-/* Each frame: a hairline in the line, with the corners step. */
-const FRAME = `${CORNER} border-1 border-[var(--m-line)]`;
 
 /**
  * One card down the middle, as wide as a full card (`FULL_CARD_WIDTH`),
@@ -44,9 +41,11 @@ export function Variant({ values, ground }: VariantProps) {
   return (
     <div className={`${SECTION_GROUND[ground]} ${PAD}`}>
       <div
-        className={`${FULL_CARD_WIDTH} p-2.5 ${FRAME} ${GROUND[otherGround(ground)]}`}
+        className={`${FULL_CARD_WIDTH} p-2.5 ${HAIRLINE_FRAME} ${GROUND[otherGround(ground)]}`}
       >
-        <div className={`${STACK} text-center ${FRAME} ${FULL_CARD_PAD}`}>
+        <div
+          className={`${STACK} text-center ${HAIRLINE_FRAME} ${FULL_CARD_PAD}`}
+        >
           <SectionHeading values={values} />
           {courses.length > 0 ? (
             <ul

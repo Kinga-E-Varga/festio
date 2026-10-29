@@ -12,7 +12,7 @@ import {
   PAD_TOP,
   PAD_X,
   SECTION_GROUND,
-  TEXT_CUT,
+  STICKER_TEXT,
 } from "@/modular/styles";
 import type { VariantProps } from "@/types/modular";
 
@@ -26,18 +26,19 @@ const NAMES_SPACE = "mt-6 mb-3 @3xl:mt-7";
 
 /**
  * The stickers' names: the title's names (`NAMES`) in medium, cut out of a
- * pattern (`TEXT_CUT`).
+ * pattern (`STICKER_TEXT`).
  */
-const STICKER = `${NAMES} ${TEXT_CUT} font-medium!`;
+const STICKER = `${NAMES} ${STICKER_TEXT}`;
 
 /**
  * Each variant's names and their middle part: in the accent with the middle
  * in the secondary, or all in the ink. Colourful and Simple have the small
  * line over them as an eyebrow in the secondary, and the caption under.
- * All have the title line under the names, set like them. Simple sticker
- * is Simple in medium, cut out of a pattern, with nothing but the names and
- * that line (`null`: not drawn), so no room around them either; Colourful
- * sticker the same in Colourful's colours. With Use names off, `nextLine` is the second
+ * All have the title line under the names, set like them. Sticker accent
+ * is Simple in medium and all in the accent, the middle part too, cut out
+ * of a pattern, with nothing but the names and that line (`null`: not
+ * drawn), so no room around them either; Sticker colourful the same with
+ * Colourful's secondary middle; Sticker simple all in the ink. With Use names off, `nextLine` is the second
  * line's colour: the secondary in the colourful ones, as the mark.
  */
 const LOOKS = {
@@ -56,6 +57,13 @@ const LOOKS = {
     caption: MUTED,
   },
   sticker: {
+    names: STICKER,
+    middle: AMPERSAND_SIZE,
+    nextLine: "",
+    eyebrow: null,
+    caption: null,
+  },
+  stickerInk: {
     names: `${STICKER} text-[color:var(--m-ink)]!`,
     middle: AMPERSAND_SIZE,
     nextLine: "",
@@ -124,7 +132,7 @@ export function TitleNames({ values, ground, look }: TitleNamesProps) {
       ) : null}
       {caption ? (
         <p
-          className={`${ITALIC_LINE} ${LOOKS[look].caption ?? ""} mt-4 max-w-md @3xl:mt-5 @3xl:max-w-2xl`}
+          className={`${ITALIC_LINE} ${LOOKS[look].caption ?? ""} mt-4 max-w-md whitespace-pre-line @3xl:mt-5 @3xl:max-w-2xl`}
         >
           {caption}
         </p>

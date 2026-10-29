@@ -39,6 +39,16 @@ export const section: SectionDefinition = {
       // Record on the page (`2`), its words centred in a full card, the record lying over its left side.
       shows: SHOWS,
     },
+    {
+      id: "4",
+      name: {
+        en: "Card accent",
+        ro: "Card accent",
+        hu: "Kártya kiemelt",
+      },
+      // Card, the card on the accent.
+      shows: SHOWS,
+    },
   ],
   fields: [...HEADING_FIELDS],
 };

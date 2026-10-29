@@ -134,6 +134,7 @@ export const section: SectionDefinition = {
       shows: [
         "photos",
         ...HEADING_SHOWS.filter((id) => id !== "headingItalic"),
+        "venues.icon",
         "venues.label",
         "venues.venue",
         "venues.address",

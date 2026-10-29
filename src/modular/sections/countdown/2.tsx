@@ -1,35 +1,19 @@
 "use client";
 
-import { useTranslations } from "next-intl";
-import { pad } from "@/lib/event";
-import { NUMBER_SIZE, UNITS, useCountdown } from "@/modular/countdown";
-import { otherGround } from "@/modular/ground";
+import { useCountdown } from "@/modular/countdown";
 import { SectionHeading } from "@/modular/SectionHeading";
-import {
-  CAPS,
-  CORNER,
-  GROUND,
-  MUTED,
-  PAD,
-  SECTION_GROUND,
-  SERIF,
-} from "@/modular/styles";
+import { PAD, SECTION_GROUND } from "@/modular/styles";
 import type { VariantProps } from "@/types/modular";
+import { CARD_NUMBER, CountdownCards } from "./CountdownCards";
 import { Done } from "./Done";
 
-/** The numbers' face, size and colour; the big-day line wears it too. */
-const NUMBER = `${SERIF} ${NUMBER_SIZE} leading-none text-[color:var(--m-ink)]`;
-
 /**
- * Days, hours, minutes and seconds to the start of the day, live, each
- * in a card on the other surface, the number in the ink — two by two on a
- * narrow column, in a row from `@xl`. A section of its own: it takes its turn
- * of the grounds and its full padding. Until the first tick the numbers are
- * dashes; on the day, and after it, a fixed eyebrow and one line say so in
- * their place.
+ * Days, hours, minutes and seconds to the start of the day, live, each in
+ * a card (`CountdownCards`). A section of its own: it takes its turn of the
+ * grounds and its full padding. On the day, and after it, a fixed eyebrow
+ * and one line say so in their place.
  */
 export function Variant({ values, basics, ground }: VariantProps) {
-  const t = useTranslations("Sections");
   const { left, done } = useCountdown(basics);
 
   return (
@@ -37,32 +21,11 @@ export function Variant({ values, basics, ground }: VariantProps) {
       className={`flex flex-col items-center gap-7 ${SECTION_GROUND[ground]} ${PAD}`}
     >
       {done ? (
-        <Done done={done} className={NUMBER} />
+        <Done done={done} className={CARD_NUMBER} />
       ) : (
         <>
           <SectionHeading values={values} />
-          <div
-            role="timer"
-            aria-label={
-              left ? t("countdownLabel", { count: left.days }) : undefined
-            }
-            className="grid w-full max-w-sm grid-cols-2 gap-2.5 @xl:max-w-xl @xl:grid-cols-4 @3xl:w-auto @3xl:max-w-none @3xl:gap-4"
-          >
-            {UNITS.map((unit) => (
-              <div
-                key={unit}
-                aria-hidden="true"
-                className={`flex flex-col items-center gap-2 ${CORNER} border-1 border-[var(--m-line)] ${GROUND[otherGround(ground)]} px-2 py-4 @3xl:min-w-39 @3xl:px-6 @3xl:py-6`}
-              >
-                <span className={`${NUMBER} tabular-nums`}>
-                  {left ? pad(left[unit]) : "––"}
-                </span>
-                <span className={`${CAPS} ${MUTED} font-medium`}>
-                  {t(unit, { count: left?.[unit] ?? 0 })}
-                </span>
-              </div>
-            ))}
-          </div>
+          <CountdownCards left={left} ground={ground} />
         </>
       )}
     </div>

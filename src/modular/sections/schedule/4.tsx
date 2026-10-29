@@ -1,5 +1,6 @@
 import { formatTime, groups, scheduleDay } from "@/modular/content";
 import { Icon, isIconName } from "@/modular/icons";
+import { SectionHeading } from "@/modular/SectionHeading";
 import {
   BODY_SM,
   EYEBROW,
@@ -10,12 +11,14 @@ import {
   TONES,
   TONE_TEXT,
   SECTION_GROUND,
+  STACK,
   turnTone,
 } from "@/modular/styles";
 import type { VariantProps } from "@/types/modular";
 
 /**
- * No heading, the timeline alone: one line down the middle from the first
+ * The full cards' heading, eyebrow and heading only, centred over the
+ * timeline: one line down the middle from the first
  * stop to the last, on through the days, stopping only around a centred
  * date; each event's icon on a soft disc on it — a small dot where it has
  * none — and the events taking turns left and right, on across the days.
@@ -43,7 +46,8 @@ export function Variant({ values, language, ground }: VariantProps) {
   const lastStop = sum(stops) - 1;
 
   return (
-    <div className={`${SECTION_GROUND[ground]} ${PAD}`}>
+    <div className={`${STACK} ${SECTION_GROUND[ground]} ${PAD}`}>
+      <SectionHeading values={values} />
       {days.length > 0 ? (
         <ol className="mx-auto w-full max-w-[350px] @3xl:max-w-240">
           {days.map((day, index) => {

@@ -107,6 +107,11 @@ export function VenueCards({
   );
 }
 
+/** A card's hairline edge: none on the accent, whose fill is its edge (`ACCENT_FILL_CARD`). */
+function edge(fill: SectionGround): string {
+  return fill === "accent" ? "" : "border-1 border-[var(--m-line)]";
+}
+
 function VenueCard({
   venue,
   ground,
@@ -125,7 +130,7 @@ function VenueCard({
 
   return (
     <li
-      className={`${CORNER} ${COLUMN} overflow-hidden border-1 border-[var(--m-line)] ${look.card}`}
+      className={`${CORNER} ${COLUMN} overflow-hidden ${edge(fill)} ${look.card}`}
     >
       <AccentVenue
         venue={venue}
@@ -172,7 +177,7 @@ function TextCard({
 }) {
   return (
     <li
-      className={`${CORNER} flex flex-col overflow-hidden border-1 border-[var(--m-line)] ${COLUMN}`}
+      className={`${CORNER} flex flex-col overflow-hidden ${edge(fill)} ${COLUMN}`}
     >
       <AccentVenue
         venue={venue}

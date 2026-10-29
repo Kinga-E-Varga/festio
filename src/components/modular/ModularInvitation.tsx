@@ -239,9 +239,14 @@ export const ModularInvitation = memo(function ModularInvitation({
      * seam; a surface section paints nothing, the others cover it. Here, not
      * on the page, so the envelope's copy (no header) lines up with it. Its
      * own stacking box, for a pattern drawn on a layer behind (Pebbles).
+     * `data-pattern` while one is on, for what a section leaves out then
+     * (`in-data-pattern:`).
      */
     return (
-      <div className={`relative isolate ${design.pattern?.className ?? ""}`}>
+      <div
+        data-pattern={design.pattern ? "" : undefined}
+        className={`relative isolate ${design.pattern?.className ?? ""}`}
+      >
         <div
           style={
             hero && !copy ? ({ "--hero": hero } as CSSProperties) : undefined

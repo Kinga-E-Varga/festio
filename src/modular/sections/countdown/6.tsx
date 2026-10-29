@@ -22,7 +22,7 @@ const NUMBER = `${SERIF} ${NUMBER_SIZE} leading-none text-[color:var(--m-accent)
 /**
  * Days, hours, minutes and seconds like a clock: the numbers in the accent
  * with colons between them in the muted ink at 30%, each unit under its
- * number, centred. It shares the date's band, as Joined does, so it has no top padding of
+ * number, centred. It shares the date's band, as Simple joined does, so it has no top padding of
  * its own; after a section in two columns (`afterSplit`) it sits in the
  * second (`JoinedColumn`), at its phone spacing. No eyebrow, not even once the day has come.
  * Until the first tick the numbers are dashes.

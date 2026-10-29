@@ -2,11 +2,10 @@ import { daysAround, monthName, weekday, yearOf } from "@/modular/content";
 import { otherGround } from "@/modular/ground";
 import { SectionHeading } from "@/modular/SectionHeading";
 import {
-  BIG_LINE_SIZE,
+  BAND_LINE,
   CAPS,
   CORNER,
   DISPLAY,
-  DISPLAY_PLAIN,
   GROUND,
   MUTED,
   PAD,
@@ -22,7 +21,7 @@ const STRIP =
 /*
  * The pages' widths and the day's number. They grow only once five fit at the
  * larger size: 340px + 4 × 170px + gaps needs about 1300px of column. The side
- * pages' numbers are a big line (`BIG_LINE_SIZE`).
+ * pages' numbers are a big line (`BAND_LINE`).
  */
 const DAY_PAGE = "w-75 max-w-full @min-[1300px]:w-85";
 const DAY_NUMBER = "text-[94px] @min-[1300px]:text-[128px]";
@@ -33,19 +32,20 @@ const PAGE = `${CORNER} flex-none overflow-hidden border-1 border-[var(--m-line)
 
 /*
  * The days beside it, by their distance: the nearest from `@3xl`, the
- * farther from `@5xl`, each fainter than the one nearer the day.
+ * farther from `@5xl`, each fainter than the one nearer the day. None while
+ * a pattern is on: faded, they would let it show through.
  */
 const NEIGHBOUR = {
-  1: "hidden opacity-60 @3xl:block",
-  2: "hidden opacity-35 @5xl:block",
+  1: "hidden opacity-60 @3xl:block in-data-pattern:hidden!",
+  2: "hidden opacity-35 @5xl:block in-data-pattern:hidden!",
 };
 
 /**
  * The event's day as a tear-off calendar page in the middle — its weekday
  * on an accent strip, the day large, the month and year under it — with
  * the two days before and after as smaller pages fading out beside it.
- * Only the eyebrow over it, no other heading part. A phone shows the day
- * alone.
+ * Only the eyebrow over it, no other heading part. A phone, or a pattern,
+ * shows the day alone.
  */
 export function Variant({ values, basics, language, ground }: VariantProps) {
   const days = daysAround(basics.date, language, 2);
@@ -110,9 +110,7 @@ function SmallPage({
       >
         {weekday}
       </span>
-      <span className={`${DISPLAY_PLAIN} ${MUTED} ${BIG_LINE_SIZE} block py-4`}>
-        {date}
-      </span>
+      <span className={`${BAND_LINE} ${MUTED} block py-4`}>{date}</span>
     </div>
   );
 }

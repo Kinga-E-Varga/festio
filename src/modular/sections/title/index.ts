@@ -29,9 +29,9 @@ export const section: SectionDefinition = {
     {
       id: "4",
       name: {
-        en: "Colourful sticker",
+        en: "Sticker colourful",
         ro: "Autocolant colorat",
-        hu: "Színes matrica",
+        hu: "Matrica színes",
       },
       shows: [
         "names",
@@ -61,9 +61,26 @@ export const section: SectionDefinition = {
     {
       id: "3",
       name: {
-        en: "Simple sticker",
+        en: "Sticker accent",
+        ro: "Autocolant accent",
+        hu: "Matrica kiemelt",
+      },
+      shows: [
+        "names",
+        "namesStart",
+        "namesMiddle",
+        "namesEnd",
+        "firstLine",
+        "nextLine",
+        "secondLine",
+      ],
+    },
+    {
+      id: "5",
+      name: {
+        en: "Sticker simple",
         ro: "Autocolant simplu",
-        hu: "Egyszerű matrica",
+        hu: "Matrica egyszerű",
       },
       shows: [
         "names",
@@ -142,8 +159,9 @@ export const section: SectionDefinition = {
     },
     {
       id: "caption",
-      label: { en: "subtitle", ro: "subtitlu", hu: "alcím" },
-      type: "text",
+      label: { en: "short message", ro: "mesaj scurt", hu: "rövid üzenet" },
+      // A box, so the host can break it into lines.
+      type: "longText",
       maxLength: 120,
     },
   ],

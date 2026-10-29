@@ -77,20 +77,28 @@ export const NAMES_SIZE =
 /**
  * Large text cut out of a pattern: an outline in the surface round each
  * letter, drawn behind its fill, so only its outer half shows (half of
- * `--m-text-cut`, set by the page: 0.1em with a pattern on, none without).
- * The stickers' titles.
+ * `--m-text-cut`, set by the page: 0.1em with a pattern on, none without),
+ * times `--m-text-cut-scale` where a use sets one (`TEXT_CUT_THICK`).
+ * Part of `STICKER_TEXT`.
  */
 export const TEXT_CUT =
-  "[-webkit-text-stroke:var(--m-text-cut,0)_var(--m-surface)] [paint-order:stroke_fill]";
+  "[-webkit-text-stroke:calc(var(--m-text-cut,0)*var(--m-text-cut-scale,1))_var(--m-surface)] [paint-order:stroke_fill]";
+
+/** `TEXT_CUT` a little thicker: the Text box's Sticker joined, its text smaller than the title's names. */
+export const TEXT_CUT_THICK = "[--m-text-cut-scale:1.6]";
+
+/**
+ * The sticker look for large heading-face text: medium, cut out of a pattern
+ * (`TEXT_CUT`). Forced medium, as the heading face sets regular. The title's
+ * stickers' names, the Text box's Sticker joined.
+ */
+export const STICKER_TEXT = `${TEXT_CUT} font-medium!`;
 
 /** The title's names, in the accent, a touch looser than `DISPLAY`: also Date's big day. */
 export const NAMES = `${DISPLAY} ${NAMES_SIZE} tracking-[-0.03em]!`;
 
-/** A large line's size, 56px at most: Heading & date box's date, the bold reply's heading, Days first's days, the pages' side days. */
-export const BIG_LINE_SIZE = "text-[40px] @md:text-[48px] @3xl:text-[56px]";
-
-/** One large plain line on a band: the band date. Colour is the variant's. */
-export const BAND_LINE = `${DISPLAY_PLAIN} text-[40px] @md:text-[48px] @3xl:text-[60px]`;
+/** One large plain line: the band date, Heading & date's date, the date box's date, Days first's days, the calendar's side days, the bold reply's heading. Colour is the variant's. */
+export const BAND_LINE = `${DISPLAY_PLAIN} text-[40px] @md:text-[48px] @3xl:text-[54px] @5xl:text-[60px]`;
 
 /** The middle part's size beside the line's other parts. */
 export const AMPERSAND_SIZE = "text-[0.8em]";
@@ -114,9 +122,9 @@ export const CAPTION = "text-[12px] leading-[1.5]";
 export const EYEBROW =
   "text-[12.5px] leading-[1.5] font-semibold tracking-[0.14em] uppercase";
 
-/** The eyebrow inside a section — a card's, a day's — 11px at every width. Colour is the variant's. */
+/** The eyebrow inside a section — a card's, a day's — 11px at every width, its lines balanced. Colour is the variant's. */
 export const INNER_EYEBROW =
-  "text-[11px] leading-[1.5] font-semibold tracking-[0.19em] uppercase";
+  "text-[11px] leading-[1.5] font-semibold tracking-[0.19em] text-balance uppercase";
 
 /** A quieter uppercase label: a venue's kind, a course, units, a weekday, an account line. */
 export const CAPS = "text-[10px] leading-[1.5] tracking-[0.14em] uppercase";
@@ -240,8 +248,20 @@ export const PILL = "rounded-(--m-corner-pill)";
 /** A form field's or its dropdown list's corners: the box's, but never rounder than soft's. */
 export const FIELD_CORNER = "rounded-(--m-corner-field)";
 
+/** A card's padding. */
+const CARD_PAD = "p-6 @3xl:px-8 @3xl:py-7";
+
+/** A hairline frame with the corners step: each of a double frame's two (Menu's Framed card, Text box's Framed). */
+export const HAIRLINE_FRAME = `${CORNER} border-1 border-[var(--m-line)]`;
+
 /** A card: a hairline edge, the corners and its padding. Its ground is the variant's. */
-export const CARD = `${CORNER} border-1 border-[var(--m-line)] p-6 @3xl:px-8 @3xl:py-7`;
+export const CARD = `${HAIRLINE_FRAME} ${CARD_PAD}`;
+
+/** A card on the accent, its padding the variant's: no hairline, its fill is its edge, as Location's accent cards. */
+export const ACCENT_FILL_CARD = `${CORNER} ${GROUND.accent}`;
+
+/** `ACCENT_FILL_CARD` with a card's padding. */
+export const ACCENT_CARD = `${ACCENT_FILL_CARD} ${CARD_PAD}`;
 
 /** A card on the other surface from its section's (`otherGround`). */
 export function otherCard(ground: SectionGround): string {
