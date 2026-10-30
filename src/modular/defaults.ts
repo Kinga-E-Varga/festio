@@ -25,6 +25,11 @@ export const DEFAULTS: Record<string, SectionSamples> = {
       ro: "Un weekend la Cassis",
       hu: "Egy hétvége Cassis-ban",
     },
+    details: {
+      en: "Dinner at 7 · Villa Cassis",
+      ro: "Cina la 19 · Villa Cassis",
+      hu: "Vacsora 19-kor · Villa Cassis",
+    },
   },
   title: {
     names: true,
@@ -214,6 +219,11 @@ export const DEFAULTS: Record<string, SectionSamples> = {
           hu: "Polgári szertartás",
         },
         venue: "Hôtel de Ville de Cassis",
+        headingItalic: {
+          en: "where we say yes",
+          ro: "unde ne spunem da",
+          hu: "ahol kimondjuk az igent",
+        },
         address: "Place Baragnon\n13260 Cassis, France",
         mapsLink:
           "https://www.google.com/maps/search/Hôtel+de+Ville+Place+Baragnon+Cassis",
@@ -232,6 +242,11 @@ export const DEFAULTS: Record<string, SectionSamples> = {
           hu: "Templomi szertartás",
         },
         venue: "Chapelle Saint-Clair",
+        headingItalic: {
+          en: "above the bay",
+          ro: "deasupra golfului",
+          hu: "az öböl fölött",
+        },
         address: "Chemin de Saint-Clair\n13260 Cassis, France",
         mapsLink:
           "https://www.google.com/maps/search/Chemin+de+Saint-Clair+Cassis",
@@ -250,6 +265,11 @@ export const DEFAULTS: Record<string, SectionSamples> = {
           hu: "Fogadás",
         },
         venue: "Domaine de la Falaise",
+        headingItalic: {
+          en: "dinner till late",
+          ro: "cină până târziu",
+          hu: "vacsora késő estig",
+        },
         address: "Route des Crêtes\n13260 Cassis, France",
         mapsLink: "https://www.google.com/maps/search/Route+des+Crêtes+Cassis",
         detail: {

@@ -12,9 +12,8 @@ import type { ListItem } from "@/types/modular";
 
 /**
  * A location of Simple: its name as large as a heading, the
- * address, its detail and the way there. `twoLine`: the detail first, the
- * name under it in italic, as a section's two-line heading, and no detail
- * under the address.
+ * address, its detail and the way there. `twoLine`: the name with an
+ * italic second line under it, as a section's two-line heading.
  */
 export function Venue({
   venue,
@@ -23,24 +22,20 @@ export function Venue({
   venue: ListItem;
   twoLine?: boolean;
 }) {
-  const first = twoLine ? venue.detail : "";
+  const italic = twoLine ? venue.headingItalic : "";
   return (
     <>
       <h3 className={`${H2} mb-3.25 text-[color:var(--m-ink)]`}>
-        {first}
-        {first && venue.venue ? <br /> : null}
-        {first ? (
-          <em className="italic text-[color:var(--m-secondary)]">
-            {venue.venue}
-          </em>
-        ) : (
-          venue.venue
-        )}
+        {venue.venue}
+        {venue.venue && italic ? <br /> : null}
+        {italic ? (
+          <em className="italic text-[color:var(--m-secondary)]">{italic}</em>
+        ) : null}
       </h3>
       <p className={`${BODY_SM} ${MUTED} max-w-sm whitespace-pre-line`}>
         {venue.address}
       </p>
-      {venue.detail && !twoLine ? (
+      {venue.detail ? (
         <p
           className={`${BODY} mt-6.5 font-semibold whitespace-pre-line text-[color:var(--m-ink)]`}
         >

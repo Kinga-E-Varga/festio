@@ -2,7 +2,7 @@ import { imageSrc } from "@/modular/content";
 import { WashedPhoto } from "@/modular/WashedPhoto";
 import {
   COLUMN,
-  CORNER,
+  HAIRLINE_FRAME,
   GROUND,
   SPLIT_COLUMNS,
   turnTone,
@@ -107,11 +107,6 @@ export function VenueCards({
   );
 }
 
-/** A card's hairline edge: none on the accent, whose fill is its edge (`ACCENT_FILL_CARD`). */
-function edge(fill: SectionGround): string {
-  return fill === "accent" ? "" : "border-1 border-[var(--m-line)]";
-}
-
 function VenueCard({
   venue,
   ground,
@@ -129,9 +124,7 @@ function VenueCard({
   const look = CARD_LAYOUT[layout];
 
   return (
-    <li
-      className={`${CORNER} ${COLUMN} overflow-hidden ${edge(fill)} ${look.card}`}
-    >
+    <li className={`${HAIRLINE_FRAME} ${COLUMN} overflow-hidden ${look.card}`}>
       <AccentVenue
         venue={venue}
         fill={fill}
@@ -176,9 +169,7 @@ function TextCard({
   tone: Tone;
 }) {
   return (
-    <li
-      className={`${CORNER} flex flex-col overflow-hidden ${edge(fill)} ${COLUMN}`}
-    >
+    <li className={`${HAIRLINE_FRAME} flex flex-col overflow-hidden ${COLUMN}`}>
       <AccentVenue
         venue={venue}
         fill={fill}

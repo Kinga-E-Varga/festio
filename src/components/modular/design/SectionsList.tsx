@@ -6,7 +6,15 @@ import { Icon } from "@/components/icons";
 import { Switch } from "@/components/invitation/PanelSwitch";
 import { localized, type Language } from "@/lib/language";
 import { customNoteSample, sectionValues } from "@/modular/samples";
-import { NOTES_ID, setSectionOn, setVariant, showNotes } from "@/modular/state";
+import {
+  NOTES_ID,
+  TITLE_ID,
+  isRequired,
+  posterOn,
+  setSectionOn,
+  setVariant,
+  showNotes,
+} from "@/modular/state";
 import type {
   ModularLibrary,
   ModularState,
@@ -62,6 +70,7 @@ export function SectionsList({
   onStylePicked,
 }: SectionsListProps) {
   const t = useTranslations("DesignTab");
+  const poster = posterOn(state, library);
 
   return (
     <div
@@ -75,6 +84,8 @@ export function SectionsList({
           const definition = library.sections.find(
             ({ id }) => id === section.section,
           );
+          /* Under a poster cover the Title is the cover's, edited there. */
+          if (poster && section.section === TITLE_ID) return null;
           return definition ? (
             <SectionRow
               key={section.section}
@@ -85,6 +96,7 @@ export function SectionsList({
                 ]
               }
               section={section}
+              poster={poster}
               state={state}
               language={language}
               onChange={onChange}
@@ -103,6 +115,7 @@ function SectionRow({
   definition,
   samples,
   section,
+  poster,
   state,
   language,
   onChange,
@@ -114,6 +127,8 @@ function SectionRow({
   /** The current template's own samples for the section, if any. */
   samples?: SectionSamples;
   section: SectionState;
+  /** A poster cover is on: Date is optional then. */
+  poster: boolean;
   stylesOpen: boolean;
   onStyles: (open: boolean) => void;
 } & Omit<
@@ -125,6 +140,9 @@ function SectionRow({
   const name = localized(definition.name, host);
   const switchId = `design-section-${definition.id}`;
   const stylesId = `design-variants-${definition.id}`;
+  const required = isRequired(definition, poster);
+  /* A required section is on even if it was switched off under a poster. */
+  const on = section.on || required;
 
   function turn(on: boolean) {
     onChange(
@@ -138,7 +156,7 @@ function SectionRow({
    * Only a section that is on has styles to pick. Only a picture: the bar
    * under it is the button.
    */
-  const arrow = section.on ? (
+  const arrow = on ? (
     <RollArrow
       open={stylesOpen}
       reveal="group-has-[[data-reveal]:focus-visible]:opacity-100"
@@ -149,7 +167,7 @@ function SectionRow({
     <div id={designCardId(definition.id)} className="flex flex-col">
       <div className={`${CARD} group relative`}>
         {/* Laid first, so the switches are drawn over it. */}
-        {section.on ? (
+        {on ? (
           <button
             type="button"
             data-reveal
@@ -160,7 +178,7 @@ function SectionRow({
             className={REVEAL}
           />
         ) : null}
-        {definition.required ? (
+        {required ? (
           <SectionBar
             /* A lock where the switch would be: always on, nothing to flip. */
             mark={
@@ -188,7 +206,7 @@ function SectionRow({
                 tone="light"
                 id={switchId}
                 label={name}
-                checked={section.on}
+                checked={on}
                 onChange={turn}
               />
             }
@@ -197,7 +215,7 @@ function SectionRow({
           />
         )}
       </div>
-      {section.on ? (
+      {on ? (
         <VariantBands
           id={stylesId}
           open={stylesOpen}

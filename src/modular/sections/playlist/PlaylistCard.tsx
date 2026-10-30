@@ -31,7 +31,7 @@ const CARD_HEIGHT = "@3xl:min-h-[calc(var(--record)-20px)]";
 /**
  * Simple (`2`) with its words in a full card: the heading, as
  * any section's a step smaller (`H2_SMALL`), and note centred in one card on the section's own
- * ground (with `accent`, on the accent, no hairline, its words in the
+ * ground (with `accent`, on the accent with its hairline, its words in the
  * accent's ink: Card accent, `4`), as wide as the full cards (`FULL_CARD_WIDTH`), so a loud pattern
  * can stay on the page around it. The record lies over the card: on a phone over its top edge, centred;
  * from `@3xl` centred on the card's left edge, half over the card and

@@ -78,11 +78,12 @@ export const section: SectionDefinition = {
         ro: "Două rânduri",
         hu: "Kétsoros",
       },
-      // Simple with the detail as the name's first line.
+      // Simple with an italic line under each name, as a two-line heading.
       shows: [
         "photos",
         "venues.label",
         "venues.venue",
+        "venues.headingItalic",
         "venues.address",
         "venues.mapsLink",
         "venues.detail",
@@ -181,6 +182,12 @@ export const section: SectionDefinition = {
           maxLength: 40,
         },
         { id: "venue", label: LABELS.place, type: "text", maxLength: 80 },
+        {
+          id: "headingItalic",
+          label: LABELS.headingItalic,
+          type: "text",
+          maxLength: 80,
+        },
         {
           id: "address",
           label: LABELS.address,

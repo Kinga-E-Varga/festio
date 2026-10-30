@@ -14,6 +14,8 @@ export const section: SectionDefinition = {
   id: "date-time",
   name: { en: "Date", ro: "Data", hu: "Dátum" },
   required: true,
+  // A poster cover shows the date: there the host may switch it off.
+  posterOptional: true,
   order: 30,
   menuLabel: { en: "The day", ro: "Ziua", hu: "A nap" },
   variants: [

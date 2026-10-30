@@ -62,6 +62,11 @@ export const template: ModularTemplate = {
           icon: "pin",
           label: { en: "Celebration", ro: "Petrecere", hu: "Ünnepség" },
           venue: "Domaine de la Falaise",
+          headingItalic: {
+            en: "by the sea",
+            ro: "lângă mare",
+            hu: "a tenger mellett",
+          },
           address: "Route des Crêtes\n13260 Cassis, France",
           mapsLink:
             "https://www.google.com/maps/search/Route+des+Crêtes+Cassis",

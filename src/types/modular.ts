@@ -237,6 +237,8 @@ export interface VariantInfo {
    * behind the variant's column. Left out, the page's surface.
    */
   band?: ColorRole;
+  /** Drawn the page's whole width, not stopping at the column (`INVITE_COLUMN`). */
+  wide?: boolean;
   /**
    * Drawn in two columns (`SPLIT`): the section right after it is told so
    * (`afterSplit`) and may line up with its second column.
@@ -248,6 +250,13 @@ export interface VariantInfo {
    * field. The Content tab shows only these; values it leaves out are kept.
    */
   shows: string[];
+  /**
+   * A poster cover: the Title's fields it draws in the Title's place, as
+   * paths. While it is on, the Title is left off the page and the editor,
+   * and the Cover's Content card offers these fields as the Title's; its
+   * values stay the Title's, so another cover brings it back as it was.
+   */
+  poster?: string[];
 }
 
 export type SectionField =
@@ -271,6 +280,11 @@ export interface SectionDefinition {
   name: LocalizedText;
   /** Header, cover, title, date, location and RSVP are always on. */
   required: boolean;
+  /**
+   * Required, but optional while a poster cover is on, as the cover shows
+   * its content too (Date): the host may switch it off there.
+   */
+  posterOptional?: boolean;
   /** The section's place in the fixed order: header 0, cover 10, title 20… */
   order: number;
   /**

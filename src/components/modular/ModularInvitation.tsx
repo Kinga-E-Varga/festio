@@ -176,10 +176,9 @@ export const ModularInvitation = memo(function ModularInvitation({
       );
       /* The cover takes up whatever the hero has to spare. */
       const grow = definition.id === COVER_ID;
+      const chosen = definition.variants.find(({ id }) => id === variant);
       const band =
-        groundRule(definition, variant) === "own"
-          ? definition.variants.find(({ id }) => id === variant)?.band
-          : undefined;
+        groundRule(definition, variant) === "own" ? chosen?.band : undefined;
       return (
         <section
           key={definition.id}
@@ -199,9 +198,9 @@ export const ModularInvitation = memo(function ModularInvitation({
               content={hasContent(definition)}
             />
           ) : null}
-          {/* The column: the container the section sizes itself by. */}
+          {/* The column: the container the section sizes itself by. A `wide` variant's has no cap. */}
           <div
-            className={`@container relative mx-auto w-full max-w-(--invite-column) ${grow ? "flex flex-1 flex-col" : ""}`}
+            className={`@container relative mx-auto w-full ${chosen?.wide ? "" : "max-w-(--invite-column)"} ${grow ? "flex flex-1 flex-col" : ""}`}
           >
             <Suspense fallback={<SectionSkeleton />}>
               <SectionView

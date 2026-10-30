@@ -27,6 +27,12 @@ export const section: SectionDefinition = {
       shows: ["largeText", "italic", "smallText"],
     },
     {
+      id: "10",
+      name: { en: "Sticker", ro: "Autocolant", hu: "Matrica" },
+      // Simple, the large text as the title's stickers.
+      shows: ["largeText", "italic", "smallText"],
+    },
+    {
       id: "6",
       name: {
         en: "Sticker joined",

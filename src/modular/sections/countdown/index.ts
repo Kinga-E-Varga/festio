@@ -14,6 +14,17 @@ export const section: SectionDefinition = {
       shows: ["eyebrow"],
     },
     {
+      id: "9",
+      name: {
+        en: "Simple accent",
+        ro: "Simplu accent",
+        hu: "Egyszerű kiemelt",
+      },
+      // Simple on the accent.
+      ground: "accent",
+      shows: ["eyebrow"],
+    },
+    {
       id: "5",
       name: {
         en: "Days first",

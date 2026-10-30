@@ -2,7 +2,13 @@ import { localized, type Language } from "@/lib/language";
 import { groups, isOn, list, text } from "./content";
 import { DEFAULT_ICON } from "./icons";
 import { NOTE_KINDS } from "./notes";
-import { NOTES_ID, noteSwitchOn, sectionsOn } from "./state";
+import {
+  NOTES_ID,
+  TITLE_ID,
+  noteSwitchOn,
+  sectionsOn,
+  variantInfo,
+} from "./state";
 import type {
   ItemField,
   ListField,
@@ -24,9 +30,7 @@ function variantShows(
   definition: SectionDefinition,
   variant: string,
 ): Set<string> {
-  const info =
-    definition.variants.find(({ id }) => id === variant) ??
-    definition.variants[0];
+  const info = variantInfo(definition, variant);
   return showsOf(info, info.shows);
 }
 
@@ -228,7 +232,9 @@ export function contentParts(
   const values = state.values[definition.id] ?? {};
   if (definition.id !== NOTES_ID) {
     const fields = visibleFields(definition.fields, shows, values);
+    /* A poster cover's own fields follow the Title's, as it draws them. */
     return [
+      ...posterPart(state, library, definition, variant),
       {
         section: definition.id,
         shows: visibleShows(definition.fields, shows, values),
@@ -268,6 +274,27 @@ export function contentParts(
     });
   }
   return parts;
+}
+
+/** A poster cover's Title fields, edited as the Title's: none for any other variant. */
+function posterPart(
+  state: ModularState,
+  library: ModularLibrary,
+  definition: SectionDefinition,
+  variant: string,
+): FieldPart[] {
+  const paths = variantInfo(definition, variant).poster;
+  const title = library.sections.find(({ id }) => id === TITLE_ID);
+  if (!paths || !title) return [];
+  const shows = showsOf(paths, paths);
+  const values = state.values[TITLE_ID] ?? {};
+  return [
+    {
+      section: TITLE_ID,
+      shows: visibleShows(title.fields, shows, values),
+      fields: visibleFields(title.fields, shows, values),
+    },
+  ];
 }
 
 /** An empty required field: the section card it is in, and its element id. */

@@ -13,7 +13,7 @@ import type { VariantProps } from "@/types/modular";
 
 /**
  * The section's heading centred, the eyebrow over it and the note under
- * it, and the date centred under them in an accent box, no hairline
+ * it, and the date centred under them in an accent box with a hairline
  * (`ACCENT_FILL_CARD`), the invitation's corners, 960px at most (`COLUMN`), in the
  * accent's ink, set as `BAND_LINE`, in the format the host picked.
  */

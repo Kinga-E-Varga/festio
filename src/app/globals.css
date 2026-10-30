@@ -194,6 +194,57 @@
       translate: 0 -6px;
     }
   }
+
+  /*
+   * The Champagne cover's motion, about 20 seconds, then still: the bubbles
+   * rise and fade five times, then fade back in where they rest; the stars
+   * twinkle five times, the fizz shimmers eight. Each ends as it rests, so
+   * nothing jumps. `translate` and `scale`, not `transform`, so a star's
+   * `rotate-*` stays as it is.
+   */
+  --animate-rise: rise 3.6s ease-out 5, appear 0.8s ease-out 18s;
+  --animate-twinkle: twinkle 4s ease-in-out 5;
+  --animate-fizz: fizz 2.4s ease-in-out 8;
+
+  @keyframes appear {
+    from {
+      opacity: 0;
+    }
+  }
+
+  @keyframes rise {
+    0% {
+      translate: 0 14px;
+      opacity: 0;
+    }
+    25% {
+      opacity: 1;
+    }
+    100% {
+      translate: 0 -26px;
+      opacity: 0;
+    }
+  }
+
+  @keyframes twinkle {
+    0%,
+    100% {
+      scale: 1;
+    }
+    50% {
+      scale: 0.75;
+    }
+  }
+
+  @keyframes fizz {
+    0%,
+    100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.45;
+    }
+  }
 }
 
 /*

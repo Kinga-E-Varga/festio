@@ -271,8 +271,8 @@ export const HAIRLINE_FRAME = `${CORNER} border-1 border-[var(--m-line)]`;
 /** A card: a hairline edge, the corners and its padding. Its ground is the variant's. */
 export const CARD = `${HAIRLINE_FRAME} ${CARD_PAD}`;
 
-/** A card on the accent, its padding the variant's: no hairline, its fill is its edge, as Location's accent cards. */
-export const ACCENT_FILL_CARD = `${CORNER} ${GROUND.accent}`;
+/** A card on the accent, its padding the variant's: the hairline edge, as every card's. */
+export const ACCENT_FILL_CARD = `${HAIRLINE_FRAME} ${GROUND.accent}`;
 
 /** `ACCENT_FILL_CARD` with a card's padding. */
 export const ACCENT_CARD = `${ACCENT_FILL_CARD} ${CARD_PAD}`;
