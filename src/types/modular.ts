@@ -288,9 +288,10 @@ export interface SectionDefinition {
   /** The section's place in the fixed order: header 0, cover 10, title 20… */
   order: number;
   /**
-   * Shown as a link in the header and the mobile drawer when present.
-   * Sections given the very same label object share one link, to the first
-   * of them on the page (`GOOD_TO_KNOW`).
+   * Its link's text in the header and the mobile drawer, when its name
+   * won't do; the link itself is there when `MENU_RANK` picks it
+   * (`src/modular/nav.ts`). Sections given the very same label object share
+   * one link, to the first of them on the page (`GOOD_TO_KNOW`).
    */
   menuLabel?: LocalizedText;
   /** A hint under its styles in the Design tab. */

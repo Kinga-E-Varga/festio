@@ -16,7 +16,7 @@ import { localized, type Language, type LocalizedText } from "@/lib/language";
 import { cornerVars } from "@/modular/corners";
 import { hasContent } from "@/modular/fields";
 import { bandOf, groundRule, sectionGrounds } from "@/modular/ground";
-import { HEADER_ID, RSVP_ID } from "@/modular/nav";
+import { HEADER_ID, MENU_MAX, MENU_RANK, RSVP_ID } from "@/modular/nav";
 import { GROUND_FILL } from "@/modular/styles";
 import { fontClasses, modularVars } from "@/modular/vars";
 import type { Question } from "@/db/schemas/event";
@@ -69,19 +69,35 @@ function relatedValues(
   );
 }
 
+/** A section's menu link text: its `menuLabel`, else its name; none outside `MENU_RANK`. */
+function menuLabel(definition: SectionDefinition): LocalizedText | undefined {
+  return MENU_RANK.includes(definition.id)
+    ? (definition.menuLabel ?? definition.name)
+    : undefined;
+}
+
 /**
- * The menu, in page order: one link per label, to the first section that
- * has it — a label shared by several sections is listed once.
+ * The menu: the most important links of the sections that are on
+ * (`MENU_RANK`), at most `MENU_MAX`, listed in page order. A label shared
+ * by several sections is one link, to the first of them on the page.
  */
 function menuLinks(
   sections: ModularDesign["sections"],
   language: Language,
 ): MenuLink[] {
+  const labelOf = new Map(
+    sections.map(({ definition }) => [definition.id, menuLabel(definition)]),
+  );
+  const picked = new Set<LocalizedText>();
+  for (const id of MENU_RANK) {
+    const label = labelOf.get(id);
+    if (label && picked.size < MENU_MAX) picked.add(label);
+  }
   const listed = new Set<LocalizedText>();
   const links: MenuLink[] = [];
   for (const { definition } of sections) {
-    const label = definition.menuLabel;
-    if (!label || listed.has(label)) continue;
+    const label = menuLabel(definition);
+    if (!label || !picked.has(label) || listed.has(label)) continue;
     listed.add(label);
     links.push({ id: definition.id, label: localized(label, language) });
   }

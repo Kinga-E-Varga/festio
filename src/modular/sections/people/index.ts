@@ -23,6 +23,7 @@ export const section: SectionDefinition = {
   },
   required: false,
   order: 45,
+  menuLabel: { en: "Family", ro: "Familia", hu: "Család" },
   variants: [
     {
       id: "1",
