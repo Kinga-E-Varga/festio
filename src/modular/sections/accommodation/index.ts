@@ -89,6 +89,23 @@ export const section: SectionDefinition = {
       ],
     },
     {
+      id: "8",
+      name: {
+        en: "Cards accent",
+        ro: "Carduri accent",
+        hu: "Kiemelt kártyák",
+      },
+      // Cards, the cards on the accent, every disc in the secondary.
+      shows: [
+        ...HEADING_SHOWS.filter((id) => id !== "headingItalic"),
+        "places.icon",
+        "places.distance",
+        "places.name",
+        "places.note",
+        "places.link",
+      ],
+    },
+    {
       id: "5",
       name: { en: "Grid", ro: "Grilă", hu: "Rács" },
       // Transportation's Cards as a grid; no italic second line under the heading.
@@ -101,13 +118,42 @@ export const section: SectionDefinition = {
       ],
     },
     {
+      id: "9",
+      name: { en: "Accent", ro: "Accent", hu: "Kiemelt" },
+      // Grid on the accent, no hairlines, each stay's icon over its eyebrow.
+      ground: "accent",
+      shows: [
+        ...HEADING_SHOWS.filter((id) => id !== "headingItalic"),
+        "places.icon",
+        "places.distance",
+        "places.name",
+        "places.note",
+        "places.link",
+      ],
+    },
+    {
       id: "7",
-      name: {
-        en: "Full card & grid",
-        ro: "Card întreg & grilă",
-        hu: "Teljes kártya & rács",
-      },
+      name: { en: "Full card", ro: "Card întreg", hu: "Teljes kártya" },
       // Cards' content, the stays side by side in a full card.
+      shows: [
+        ...HEADING_SHOWS.filter((id) => id !== "headingItalic"),
+        "places.icon",
+        "places.distance",
+        "places.name",
+        "places.note",
+        "places.link",
+      ],
+    },
+    {
+      id: "10",
+      name: {
+        en: "Full card accent",
+        ro: "Card întreg accent",
+        hu: "Kiemelt teljes kártya",
+      },
+      // Full card on the accent, no lines, every disc in the
+      // secondary; always on the page's surface, whatever its turn.
+      ground: "surface",
       shows: [
         ...HEADING_SHOWS.filter((id) => id !== "headingItalic"),
         "places.icon",

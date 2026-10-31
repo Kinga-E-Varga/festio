@@ -1,4 +1,5 @@
 import { list } from "@/modular/content";
+import { Icon, isIconName } from "@/modular/icons";
 import { SectionHeading } from "@/modular/SectionHeading";
 import {
   BODY_SM,
@@ -9,6 +10,7 @@ import {
   PAD,
   SECTION_GROUND,
   STACK,
+  TONES,
   TONE_TEXT,
   turnTone,
   TIMELINE_HEADING,
@@ -20,9 +22,10 @@ import type { VariantProps } from "@/types/modular";
 /**
  * The full cards' heading, eyebrow and heading only, centred over the
  * moments, laid out as Schedule's Timeline (`4`): one line down the middle from the first moment to the last, a small dot
- * on it for each, the moments taking turns left and right, those on the
- * left leaning on the line. Each its year as an eyebrow over its
- * title and its line. The dots, the years and the line's pieces take turns:
+ * on it for each (its icon on a disc, when it has one), the moments taking
+ * turns left and right, those on the left leaning on the line. Each its year
+ * as an eyebrow over its title and its line. The discs, dots, years and the
+ * line's pieces take turns:
  * the 1st, 3rd… in the accent, the 2nd, 4th… in the secondary. On a phone
  * the line runs down the left, every moment right of it, the whole no wider
  * than 350px and centred.
@@ -39,7 +42,8 @@ export function Variant({ values, ground }: VariantProps) {
       {moments.length > 0 ? (
         <ol className={TIMELINE}>
           {moments.map((moment, index) => {
-            const tone = TONE_TEXT[turnTone(index)];
+            const turn = turnTone(index);
+            const tone = TONE_TEXT[turn];
             const left = index % 2 === 0;
             return (
               <li key={index} className={TIMELINE_STOP}>
@@ -58,9 +62,15 @@ export function Variant({ values, ground }: VariantProps) {
                       className={`absolute inset-y-0 left-4.75 w-px bg-current/50 @3xl:left-1/2 ${index === 0 ? "top-4.75" : ""} ${index === last ? "bottom-auto h-4.75" : ""}`}
                     />
                   ) : null}
-                  <span className={`${CARD_DISC} relative`}>
-                    <span className="size-2.5 rounded-full bg-current" />
-                  </span>
+                  {isIconName(moment.icon) ? (
+                    <span className={`${CARD_DISC} relative ${TONES[turn]}`}>
+                      <Icon name={moment.icon} className="size-5.5" />
+                    </span>
+                  ) : (
+                    <span className={`${CARD_DISC} relative`}>
+                      <span className="size-2.5 rounded-full bg-current" />
+                    </span>
+                  )}
                 </span>
                 <div
                   className={`col-start-2 row-start-1 min-w-0 pt-1.5 ${index === last ? "" : "pb-9"} ${left ? "@3xl:col-start-1 @3xl:text-right" : "@3xl:col-start-3"}`}

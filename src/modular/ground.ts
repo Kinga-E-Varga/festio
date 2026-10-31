@@ -21,13 +21,29 @@ export function groundRule(
   );
 }
 
+/** A variant's `band`: the colour the page paints behind an `own` section. */
+export function bandOf(definition: SectionDefinition, variant: string) {
+  return definition.variants.find(({ id }) => id === variant)?.band;
+}
+
+/** An `own` section's ground: its band, when that is one of the grounds; else the page's surface. */
+function ownGround(
+  definition: SectionDefinition,
+  variant: string,
+): SectionGround {
+  const band = bandOf(definition, variant);
+  return band === "accent" || band === "surface-alt" ? band : "surface";
+}
+
 /**
  * Each section's ground, in page order, by its variant's rule or else its
  * own (`GroundRule`). The surfaces take turns, starting with `surface`, so
  * whatever the host leaves out no two neighbours match. An `own` or
  * `accent` section breaks the turns, and the next one starts again at
- * `surface`; a `joined` one takes the ground of the section right before.
- * An `own` section's value is never drawn.
+ * `surface`; a `joined` one takes the ground of the section right before
+ * (an `own` one's band) and the turns carry on from it; a `surface` one is
+ * always on the `surface`, and the next one takes the other. An `own` section's
+ * value only reaches a `joined` one after it; the page paints its band.
  */
 export function sectionGrounds(
   sections: { definition: SectionDefinition; variant: string }[],
@@ -39,9 +55,13 @@ export function sectionGrounds(
     let ground: SectionGround;
     if (rule === "own" || rule === "accent") {
       turn = null;
-      ground = rule === "accent" ? "accent" : "surface";
+      ground = rule === "accent" ? "accent" : ownGround(definition, variant);
     } else if (rule === "joined") {
       ground = before;
+      turn = before === "accent" ? null : before;
+    } else if (rule === "surface") {
+      turn = "surface";
+      ground = turn;
     } else {
       turn = turn ? otherGround(turn) : "surface";
       ground = turn;

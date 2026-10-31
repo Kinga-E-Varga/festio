@@ -2,27 +2,22 @@ import type { ReactNode } from "react";
 import { text } from "./content";
 import { SectionHeading } from "./SectionHeading";
 import {
+  COLUMN,
   CORNER,
   GROUND_FILL,
   LINED_CELL,
   PAD,
   SECTION_GROUND,
   STACK,
+  UNLINED_PULL,
 } from "./styles";
 import type { SectionGround, SectionValues } from "@/types/modular";
 
 /** A full card's padding; Menu's Framed card's inner frame too. */
 export const FULL_CARD_PAD = "px-6 py-12 @3xl:px-12 @3xl:py-16";
 
-/**
- * A full card's width, centred: 75% of the section's, never under 640px
- * (the whole width where there is less) nor over 960px. Menu's Framed card
- * too.
- */
-export const FULL_CARD_WIDTH = "mx-auto w-[clamp(640px,75%,960px)] max-w-full";
-
-/* The card: the section's own fill, so it hides the page's pattern, with the host's corners. */
-const CARD = `${FULL_CARD_WIDTH} ${CORNER} ${FULL_CARD_PAD}`;
+/* The card: as wide as the section's content, 960px at most (`COLUMN`), the section's own fill, so it hides the page's pattern, with the host's corners. */
+const CARD = `${COLUMN} ${CORNER} ${FULL_CARD_PAD}`;
 
 /** The full card alone, on the section's padding: Dress code's and Gifts' Full card. */
 export function FullCardFrame({
@@ -42,27 +37,34 @@ export function FullCardFrame({
 /**
  * A full card style: the whole section in one card on its own ground. The
  * heading centred (`SectionHeading`), then the content between two lines
- * in the palette's line colour, the top one only under a heading. No
- * other line is the card's.
+ * in the palette's line colour, the top one only under a heading; with
+ * `accent`, the card on the accent and no lines. No other line is the card's.
  */
 export function FullCard({
   values,
   ground,
+  accent = false,
   children,
 }: {
   values: SectionValues;
   ground: SectionGround;
+  /** The card on the accent, no lines: the Full card accent styles. */
+  accent?: boolean;
   children: ReactNode;
 }) {
   const heading =
     text(values, "eyebrow") || text(values, "heading") || text(values, "note");
 
   return (
-    <FullCardFrame ground={ground}>
+    <FullCardFrame ground={accent ? "accent" : ground}>
       <div className={STACK}>
         <SectionHeading values={values} />
         <div
-          className={`${heading ? "border-t-1" : ""} border-b-1 border-[var(--m-line)]`}
+          className={
+            !accent
+              ? `${heading ? "border-t-1" : ""} border-b-1 border-[var(--m-line)]`
+              : ""
+          }
         >
           {children}
         </div>
@@ -88,9 +90,15 @@ const GRID_COLUMNS = [
  * (`LINED_CELL`): Contact's, Special people's and Accommodation's Full
  * card & grid.
  */
-export function fullCardGrid(count: number): string {
-  return `grid overflow-hidden ${GRID_COLUMNS[count]}`;
+export function fullCardGrid(count: number, accent = false): string {
+  return `grid overflow-hidden ${GRID_COLUMNS[count]} ${accent ? UNLINED_PULL : ""}`;
 }
 
-/** A full card grid's cell, its content centred; its sides a little narrower than a Grid's, as the card is. */
-export const FULL_CARD_CELL = `${LINED_CELL} flex flex-col items-center px-6 py-8 text-center @3xl:px-4 @3xl:py-10`;
+/* A full card grid's cell without its hairlines, its content centred; its sides a little narrower than a Grid's, as the card is. */
+const CELL_NO_LINES =
+  "flex flex-col items-center px-6 py-8 text-center @3xl:px-4 @3xl:py-10";
+
+/** A full card grid's cell: with the Grid's hairlines (`LINED_CELL`), or none on the accent. */
+export function fullCardCell(accent = false): string {
+  return accent ? CELL_NO_LINES : `${LINED_CELL} ${CELL_NO_LINES}`;
+}

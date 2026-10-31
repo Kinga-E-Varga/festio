@@ -46,7 +46,9 @@ export const section: SectionDefinition = {
         ro: "Card accent",
         hu: "Kártya kiemelt",
       },
-      // Card, the card on the accent.
+      // Card, the card on the accent; always on the page's surface, whatever
+      // its turn, as the Full card accents.
+      ground: "surface",
       shows: SHOWS,
     },
   ],

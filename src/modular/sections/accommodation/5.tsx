@@ -3,6 +3,7 @@ import { SectionHeading } from "@/modular/SectionHeading";
 import {
   LINED_CELL,
   LINED_GRID,
+  UNLINED_PULL,
   PAD,
   STACK,
   columnsFor,
@@ -10,6 +11,7 @@ import {
 } from "@/modular/styles";
 import type { VariantProps } from "@/types/modular";
 import { StayCell } from "./StayList";
+import { ItemIcon } from "@/modular/cards/CardIcon";
 
 /* A cell's contents, centred down it. */
 const CELL =
@@ -20,22 +22,31 @@ const CELL =
  * cells between hairlines (`LINED_GRID`): up to six side by side (rows of
  * three past four), under the heading centred; each its eyebrow, name and
  * note. A stay with a safe web address is a link, the whole cell, with the
- * arrow after its name. One column on a phone.
+ * arrow after its name. One column on a phone. On the accent (Accent,
+ * `9`) no hairlines, and each stay's icon, when it has one, on the
+ * palette's secondary disc over its eyebrow (`ItemIcon`'s `accent`).
  */
 export function Variant({ values, ground }: VariantProps) {
   const places = list(values, "places").slice(0, 6);
+  const lined = ground !== "accent";
 
   return (
     <div className={`${STACK} ${SECTION_GROUND[ground]} ${PAD}`}>
       <SectionHeading values={values} />
       {places.length > 0 ? (
-        <ol className={`${LINED_GRID} ${columnsFor(places.length)}`}>
+        <ol
+          className={`${lined ? LINED_GRID : `grid ${UNLINED_PULL}`} ${columnsFor(places.length)}`}
+        >
           {places.map((place, index) => (
             <li
               key={index}
-              className={`${LINED_CELL} ${SECTION_GROUND[ground]}`}
+              className={`${lined ? LINED_CELL : ""} ${SECTION_GROUND[ground]}`}
             >
-              <StayCell place={place} className={CELL} />
+              <StayCell place={place} className={CELL}>
+                {lined ? null : (
+                  <ItemIcon name={place.icon} accent className="mb-5" />
+                )}
+              </StayCell>
             </li>
           ))}
         </ol>

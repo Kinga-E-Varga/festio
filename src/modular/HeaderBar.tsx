@@ -1,7 +1,8 @@
 import { useTranslations } from "next-intl";
 import { SECTIONS_TRIGGER_ID } from "@/modular/nav";
+import { isOn } from "@/modular/content";
 import { Icon } from "@/modular/icons";
-import { Mark, markParts } from "@/modular/Mark";
+import { headerMark, Mark } from "@/modular/Mark";
 import { AMPERSAND_INK, MUTED_LINK, PILL, SERIF } from "@/modular/styles";
 import type { VariantProps } from "@/types/modular";
 
@@ -41,19 +42,27 @@ const MARK_MIDDLE = "text-[20px]";
 const REPLY_ACCENT = `${REPLY_TEXT} ${ACCENT_FILL} hover:border-[var(--m-secondary)] hover:bg-[var(--m-secondary)] hover:text-[color:var(--m-secondary-ink)]`;
 const REPLY_SECONDARY = `${REPLY_TEXT} ${SECONDARY_FILL} hover:border-[var(--m-accent)] hover:bg-[var(--m-accent)] hover:text-[color:var(--m-accent-ink)]`;
 
-/** Balanced's look, which the others share but for the mark's colours and the Reply button. */
+/* The mark's colours, by role. */
+const INK = "text-[color:var(--m-ink)]";
+const ACCENT = "text-[color:var(--m-accent)]";
+
+/**
+ * Balanced's look, which the others share but for the mark's colours and
+ * the Reply button. `text`: the mark with monograms off, one plain text.
+ */
 const ROUNDED = {
-  mark: "text-[color:var(--m-ink)]",
+  mark: INK,
   middle: AMPERSAND_INK,
+  text: AMPERSAND_INK,
   link: MUTED_LINK,
   links: "gap-7",
   reply: REPLY_SECONDARY,
 };
 
-/** Colourful accent's: the mark in the accent, its middle in the secondary, Reply in the accent. */
+/** Colourful accent's: the mark in the accent, its middle and the plain text in the secondary, Reply in the accent. */
 const SQUARE = {
   ...ROUNDED,
-  mark: "text-[color:var(--m-accent)]",
+  mark: ACCENT,
   reply: REPLY_ACCENT,
 };
 
@@ -61,18 +70,20 @@ const SQUARE = {
 const LOOKS = {
   square: SQUARE,
   // Colourful accent with Reply in the secondary.
-  colorful: { ...SQUARE, reply: REPLY_SECONDARY },
+  // Colourful accent with the plain text in the accent and Reply in the secondary.
+  colorful: { ...SQUARE, text: ACCENT, reply: REPLY_SECONDARY },
   rounded: ROUNDED,
-  // Balanced with the mark's middle and Reply in the accent.
+  // Balanced with the mark's middle, the plain text and Reply in the accent.
   roundedAccent: {
     ...ROUNDED,
-    middle: "text-[color:var(--m-accent)]",
+    middle: ACCENT,
+    text: ACCENT,
     reply: REPLY_ACCENT,
   },
   // The middle in the mark's own colour: one ink across the whole mark.
-  plain: { ...ROUNDED, middle: "" },
+  plain: { ...ROUNDED, middle: "", text: INK },
   // Simple with Reply in the accent.
-  plainAccent: { ...ROUNDED, middle: "", reply: REPLY_ACCENT },
+  plainAccent: { ...ROUNDED, middle: "", text: INK, reply: REPLY_ACCENT },
 };
 
 /**
@@ -86,11 +97,7 @@ const LOOKS = {
 export function HeaderBar({ values, nav, look }: HeaderBarProps) {
   const t = useTranslations("Sections");
   const links = nav?.links ?? [];
-  const mark = markParts(
-    values,
-    "mark",
-    `${MARK_MIDDLE} ${LOOKS[look].middle}`,
-  );
+  const mark = headerMark(values, `${MARK_MIDDLE} ${LOOKS[look].middle}`);
 
   return (
     <header
@@ -114,7 +121,7 @@ export function HeaderBar({ values, nav, look }: HeaderBarProps) {
         {mark.length > 0 ? (
           <a
             href="#cover"
-            className={`${MARK} ${LOOKS[look].mark} flex min-h-11 min-w-0 flex-1 items-center @5xl:flex-none`}
+            className={`${MARK} ${isOn(values, "monogram") ? LOOKS[look].mark : LOOKS[look].text} flex min-h-11 min-w-0 flex-1 items-center @5xl:flex-none`}
           >
             {/* Never clipped: a mark too long for a phone's bar wraps to two balanced lines, which the bar's height holds. */}
             <span className="text-balance [overflow-wrap:anywhere] leading-[1.1]">

@@ -6,14 +6,13 @@ import {
   MUTED,
   TIME_COLUMN,
   TONE_TEXT,
-  turnTone,
   DISC_ROW,
   LEAD_ROW,
   NARROW_LIST,
 } from "@/modular/styles";
 import type { ListItem } from "@/types/modular";
 import { Dishes, dishesOf } from "./Dishes";
-import { TurnIcon } from "@/modular/cards/CardIcon";
+import { ItemIcon } from "@/modular/cards/CardIcon";
 
 /**
  * The courses as a list for Two-line & list and Icon & list: a hairline
@@ -22,10 +21,8 @@ import { TurnIcon } from "@/modular/cards/CardIcon";
  * dishes; spaced as Transportation's lists: 16px over the label, or 28px
  * over the dishes without one, 16px from the label to the dishes and 24px
  * under. Its icon, when it has one, on a soft disc at the row's end,
- * centred on the course, the discs taking turns — the 1st, 3rd… in the
- * accent, the 2nd, 4th… in the secondary — as Transportation's Two-line &
- * list. `numbered`: no icons; each course's number (01, 02…) beside it, taking
- * turns accent / secondary, in a column as wide as the schedule's times
+ * centred on the course, every disc in the secondary — as Transportation's Two-line &
+ * list. `numbered`: no icons; each course's number (01, 02…) beside it, in the accent, in a column as wide as the schedule's times
  * (`TIME_COLUMN`), centred on the course, as Transportation's Icon & list,
  * and on a phone the list 350px at most, centred.
  */
@@ -47,7 +44,7 @@ export function CourseList({
           className={`border-[var(--m-line)] pt-4 pb-6 not-last:border-b-1 ${numbered ? LEAD_ROW : `${DISC_ROW} items-center`}`}
         >
           {numbered ? (
-            <span className={`${TIME_COLUMN} ${TONE_TEXT[turnTone(index)]}`}>
+            <span className={`${TIME_COLUMN} ${TONE_TEXT.accent}`}>
               {pad(index + 1)}
             </span>
           ) : null}
@@ -70,7 +67,7 @@ export function CourseList({
               </p>
             ) : null}
           </div>
-          {!numbered && <TurnIcon name={course.icon} index={index} />}
+          {!numbered && <ItemIcon name={course.icon} />}
         </li>
       ))}
     </ul>

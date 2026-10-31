@@ -93,6 +93,22 @@ export const section: SectionDefinition = {
       ],
     },
     {
+      id: "9",
+      name: {
+        en: "Cards accent",
+        ro: "Carduri accent",
+        hu: "Kiemelt kártyák",
+      },
+      // Cards, the cards on the accent.
+      shows: [
+        ...HEADING_SHOWS.filter((id) => id !== "headingItalic"),
+        "days.date",
+        "days.items.time",
+        "days.items.title",
+        "days.items.note",
+      ],
+    },
+    {
       id: "3",
       name: {
         en: "Grid",
@@ -128,12 +144,45 @@ export const section: SectionDefinition = {
       ],
     },
     {
-      id: "8",
+      id: "10",
+      name: { en: "Accent", ro: "Accent", hu: "Kiemelt" },
+      // Timeline on the accent, every disc in the secondary.
+      ground: "accent",
+      shows: [
+        ...HEADING_SHOWS.filter(
+          (id) => id !== "headingItalic" && id !== "note",
+        ),
+        "days.date",
+        "days.items.time",
+        "days.items.title",
+        "days.items.note",
+        "days.items.icon",
+      ],
+    },
+    {
+      id: "11",
       name: {
-        en: "Full card alternate",
-        ro: "Card întreg alternat",
-        hu: "Teljes kártya váltakozó",
+        en: "Full card accent",
+        ro: "Card întreg accent",
+        hu: "Kiemelt teljes kártya",
       },
+      // Timeline in a full card on the accent, every disc in the secondary;
+      // always on the page's surface, whatever its turn.
+      ground: "surface",
+      shows: [
+        ...HEADING_SHOWS.filter(
+          (id) => id !== "headingItalic" && id !== "note",
+        ),
+        "days.date",
+        "days.items.time",
+        "days.items.title",
+        "days.items.note",
+        "days.items.icon",
+      ],
+    },
+    {
+      id: "8",
+      name: { en: "Full card", ro: "Card întreg", hu: "Teljes kártya" },
       // Icon & list's (`2`) days under every heading field but the italic heading.
       shows: [
         ...HEADING_SHOWS.filter((id) => id !== "headingItalic"),

@@ -1,4 +1,4 @@
-import { TurnIcon } from "@/modular/cards/CardIcon";
+import { ItemIcon } from "@/modular/cards/CardIcon";
 import { Rows } from "@/modular/cards/Rows";
 import { list } from "@/modular/content";
 import { SectionHeading } from "@/modular/SectionHeading";
@@ -18,7 +18,7 @@ import type { SectionGround, SectionValues } from "@/types/modular";
  * The two-line heading beside the ways of arriving, spaced as Schedule's
  * Two-line & list spaces a day: each way's eyebrow where the date goes, its
  * title and note as an event, its icon, when it has one, on a soft disc at
- * the row's end, centred on it, the discs taking turns accent / secondary.
+ * the row's end, centred on it, every disc in the secondary.
  * No numbers. Between hairlines (Two-line & list, `3`), or with `cards`
  * each way a card on the other surface, stacked as Schedule's Two-line &
  * cards' days (Two-line & cards, `5`).
@@ -40,7 +40,7 @@ export function TwoLineWays({
         <SectionHeading values={values} align="start" />
       </div>
       <Rows items={ways} cards={cards ? ground : undefined}>
-        {(way, index) => (
+        {(way) => (
           <>
             {way.label ? (
               <p
@@ -58,7 +58,7 @@ export function TwoLineWays({
                   </p>
                 ) : null}
               </div>
-              <TurnIcon name={way.icon} index={index} className="self-center" />
+              <ItemIcon name={way.icon} className="self-center" />
             </div>
           </>
         )}

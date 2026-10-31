@@ -18,7 +18,8 @@ import type { Ground, ListItem } from "@/types/modular";
  * own, its neighbour keeping its height. `ask`: one more bar last, in the
  * secondary, its words a link to the reply form. `divided`: the rows with a
  * line only between them, for a full card, whose own lines close the list;
- * `ask` then one more row last, as the bar.
+ * `ask` then one more row last, as the bar. `lines` off (with `divided`):
+ * no line between them either, for a full card on the accent.
  */
 export function FaqList({
   items,
@@ -26,12 +27,14 @@ export function FaqList({
   columns = false,
   ask = "",
   divided = false,
+  lines = true,
 }: {
   items: ListItem[];
   box?: Ground;
   columns?: boolean;
   ask?: string;
   divided?: boolean;
+  lines?: boolean;
 }) {
   if (items.length === 0) return null;
   return (
@@ -42,7 +45,9 @@ export function FaqList({
             ? "grid items-start gap-3 @3xl:grid-cols-2"
             : "flex flex-col gap-3"
           : divided
-            ? "divide-y-1 divide-[var(--m-line)]"
+            ? lines
+              ? "divide-y-1 divide-[var(--m-line)]"
+              : ""
             : "border-t-1 border-[var(--m-line)]"
       }
     >

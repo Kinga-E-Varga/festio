@@ -1,4 +1,3 @@
-import { FULL_CARD_WIDTH } from "@/modular/FullCard";
 import { SectionHeading } from "@/modular/SectionHeading";
 import {
   ACCENT_FILL_CARD,
@@ -7,6 +6,7 @@ import {
   H2_SMALL,
   PAD,
   SECTION_GROUND,
+  COLUMN,
 } from "@/modular/styles";
 import type { VariantProps } from "@/types/modular";
 import { Record, RECORD_SIZE } from "./Record";
@@ -32,7 +32,7 @@ const CARD_HEIGHT = "@3xl:min-h-[calc(var(--record)-20px)]";
  * Simple (`2`) with its words in a full card: the heading, as
  * any section's a step smaller (`H2_SMALL`), and note centred in one card on the section's own
  * ground (with `accent`, on the accent with its hairline, its words in the
- * accent's ink: Card accent, `4`), as wide as the full cards (`FULL_CARD_WIDTH`), so a loud pattern
+ * accent's ink: Card accent, `4`), as wide as the full cards (`COLUMN`), so a loud pattern
  * can stay on the page around it. The record lies over the card: on a phone over its top edge, centred;
  * from `@3xl` centred on the card's left edge, half over the card and
  * half past it: the card starts half a record in, so the two stay
@@ -46,7 +46,7 @@ export function PlaylistCard({
   return (
     <div className={`${SECTION_GROUND[ground]} ${PAD}`}>
       <div
-        className={`relative flex flex-col items-center ${RECORD_SIZE} @3xl:pl-[calc(var(--record)/2)] ${FULL_CARD_WIDTH}`}
+        className={`relative flex flex-col items-center ${RECORD_SIZE} @3xl:pl-[calc(var(--record)/2)] ${COLUMN}`}
       >
         <div className="relative z-10 -mb-20 @3xl:absolute @3xl:top-1/2 @3xl:left-0 @3xl:mb-0 @3xl:-translate-y-1/2">
           <Record on={ground} label={accent ? "secondary" : undefined} />

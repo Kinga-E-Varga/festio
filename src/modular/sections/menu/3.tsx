@@ -1,5 +1,5 @@
 import { list, text } from "@/modular/content";
-import { FULL_CARD_PAD, FULL_CARD_WIDTH } from "@/modular/FullCard";
+import { FULL_CARD_PAD } from "@/modular/FullCard";
 import { otherGround } from "@/modular/ground";
 import { SectionHeading } from "@/modular/SectionHeading";
 import {
@@ -11,19 +11,14 @@ import {
   STACK,
   TONE_TEXT,
   SECTION_GROUND,
+  COLUMN,
 } from "@/modular/styles";
 import type { VariantProps } from "@/types/modular";
 import { Dishes } from "./Dishes";
-
-/*
- * The short line under the heading, centred, 112px wide: drawn over the
- * list's top, the courses 32px under it (40px from `@3xl`).
- */
-const RULE =
-  "bg-[linear-gradient(var(--m-line),var(--m-line))] bg-[length:7rem_1px] bg-top bg-no-repeat";
+import { SHORT_RULE } from "./FullCardCourses";
 
 /**
- * One card down the middle, as wide as a full card (`FULL_CARD_WIDTH`),
+ * One card down the middle, as wide as a full card (`COLUMN`),
  * like the menu on the table, and nothing outside it: on the other
  * surface, with a double frame — a hairline, a gap of the card's own
  * surface, a second hairline — and no shadow. Inside, centred: the heading
@@ -41,7 +36,7 @@ export function Variant({ values, ground }: VariantProps) {
   return (
     <div className={`${SECTION_GROUND[ground]} ${PAD}`}>
       <div
-        className={`${FULL_CARD_WIDTH} p-2.5 ${HAIRLINE_FRAME} ${GROUND[otherGround(ground)]}`}
+        className={`${COLUMN} p-2.5 ${HAIRLINE_FRAME} ${GROUND[otherGround(ground)]}`}
       >
         <div
           className={`${STACK} text-center ${HAIRLINE_FRAME} ${FULL_CARD_PAD}`}
@@ -49,7 +44,7 @@ export function Variant({ values, ground }: VariantProps) {
           <SectionHeading values={values} />
           {courses.length > 0 ? (
             <ul
-              className={`flex flex-col gap-8 ${heading ? `${RULE} pt-8 @3xl:pt-10` : ""}`}
+              className={`flex flex-col gap-8 ${heading ? `${SHORT_RULE} pt-8 @3xl:pt-10` : ""}`}
             >
               {courses.map((course, index) => (
                 <li key={index} className="flex flex-col items-center gap-3">

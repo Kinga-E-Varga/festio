@@ -15,7 +15,7 @@ import { Icon } from "@/components/icons";
 import { localized, type Language, type LocalizedText } from "@/lib/language";
 import { cornerVars } from "@/modular/corners";
 import { hasContent } from "@/modular/fields";
-import { groundRule, sectionGrounds } from "@/modular/ground";
+import { bandOf, groundRule, sectionGrounds } from "@/modular/ground";
 import { HEADER_ID, RSVP_ID } from "@/modular/nav";
 import { GROUND_FILL } from "@/modular/styles";
 import { fontClasses, modularVars } from "@/modular/vars";
@@ -177,8 +177,16 @@ export const ModularInvitation = memo(function ModularInvitation({
       /* The cover takes up whatever the hero has to spare. */
       const grow = definition.id === COVER_ID;
       const chosen = definition.variants.find(({ id }) => id === variant);
+      const rule = groundRule(definition, variant);
+      /* A `joined` section after an `own` one is painted in that one's band, whatever its colour. */
       const band =
-        groundRule(definition, variant) === "own" ? chosen?.band : undefined;
+        rule === "own"
+          ? bandOf(definition, variant)
+          : rule === "joined" &&
+              before &&
+              groundRule(before.definition, before.variant) === "own"
+            ? bandOf(before.definition, before.variant)
+            : undefined;
       return (
         <section
           key={definition.id}

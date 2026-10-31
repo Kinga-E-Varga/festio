@@ -19,10 +19,16 @@ function isSwatchRole(color: string): color is ColorRole {
   return SWATCH_ROLES.includes(color as ColorRole);
 }
 
-/** A swatch's colour: its hex, or its palette role's; empty when it is neither. */
+/* The roles an accent fill points at its own ink (`ON_ACCENT`); a swatch reads their palette copy (`page-*`) instead. */
+const PAGE_COPY: ColorRole[] = ["ink", "accent", "secondary"];
+
+/** A swatch's colour: its hex, or its palette role's, whatever it stands on; empty when it is neither. */
 function swatchColor(color = ""): string {
   if (HEX.test(color)) return color;
-  return isSwatchRole(color) ? `var(--m-${color})` : "";
+  if (!isSwatchRole(color)) return "";
+  return PAGE_COPY.includes(color)
+    ? `var(--m-page-${color})`
+    : `var(--m-${color})`;
 }
 
 /**

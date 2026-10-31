@@ -1,4 +1,4 @@
-# Current Feature: New modular cover: Champagne
+# Current Feature: Accent modular variants
 
 ## Status
 
@@ -6,29 +6,23 @@ Completed
 
 ## Goals
 
-- A new **Cover** variant that needs **no photo**: a drawn champagne coupe, for a dinner or birthday party. It's the first of the picture-free covers; more come later.
-- A **poster cover**: the cover shows the Title's content itself (intro line, Use names, name / mark / name or the two title lines, the second line) in the Title's place. Not the caption, and not the cover's own kicker (both kept, for photo covers).
-  - The Cover's Content card shows the Title's own fields before its own (the details line last); editing them edits the Title.
-  - The Title steps aside from the page, the Content tab and the Design list; Save doesn't check it.
-  - Switching to Box or Badge brings it back with everything typed. Nothing is deleted.
-  - **Date** becomes optional (a switch in the Design list, on by default). With Box or Badge it's required again and drawn whatever the switch says; the host's off is kept for the next poster cover.
-  - Fills the whole first screen at every width (no 2:1 cap). The envelope's preview shows the names.
-- The drawing, after the Paper Culture card (`context/features/new-covers.md`): a wide, shallow coupe; the drink in its lower part with fizz dots; a bow tie on the stem; bubbles rising above; a few stars by the glass, and small stars of mixed sizes and angles scattered over the whole cover, kept clear of the text.
-- **Colours from the palette**, like the playlist's record (`src/modular/sections/playlist/Record.tsx`): the ground is the accent, and every part of the drawing is mixed from it (glass lighter, drink near white, bow tie much darker). Text in `accent-ink`. One design works in every palette.
-- **Text:** the intro line in small caps, the names large and italic in the heading face, sized by the cover's box (fits 440px tall), then in caps the event's date (`longDate`) and the host's free **details line** (a new optional cover field), e.g. "Dinner at 7 · Villa Cassis".
-- **Layout:** desktop, the glass on the left and the text on the right; phone, the glass on top and the text below.
-- **Motion:** the bubbles rise and fade, the stars twinkle, the fizz shimmers; gentle and looping. Still under `prefers-reduced-motion`.
-- **Name:** Champagne (ro Șampanie, hu Pezsgő).
-- Existing events keep working: a new variant id, no change to stored ids or to the shape of saved data.
+- **Grounds:** a `joined` section after a cover takes the cover's background (Champagne's accent band, or the surface behind a photo); the next section stays apart. New ground rule `surface`: always on the page's surface, the next takes the other.
+- **New accent styles** (ro Carduri accent / Accent / Card întreg accent, hu Kiemelt kártyák / Kiemelt / Kiemelt teljes kártya):
+  - Cards accent (the cards on the accent): Countdown `10`, Schedule `9`, Transportation `9`, Accommodation `8`, Special people `8`, Contact `8`, Helpful notes `10`, Menu `9`.
+  - Accent (on the accent band): Location `9`, Schedule `10`, Transportation `11`, Accommodation `9`, Special people `9`, Contact `9`, Helpful notes `11`, Menu `11`, Story `8`, Dress code and Gifts `6`, FAQ `8`.
+  - Full card accent (the card on the accent, no lines, ground `surface`): Location `10`, Schedule `11`, Transportation `10`, Accommodation `10`, Special people `10`, Contact `10`, Helpful notes `12`, Menu `10`, Story `7`, Dress code and Gifts `5`, FAQ `7`.
+  - On the accent, icons and the gift buttons on the palette's secondary (`AccentIcon`, `ACCENT_BUTTON`); unlined grids pulled out by their cells' padding (`UNLINED_PULL`).
+- **Icons:** no longer take turns outside Schedule and Story: every item's icon on the secondary disc (`ItemIcon`).
+- **Widths:** everything that took the full card's width now takes `COLUMN` (`FULL_CARD_WIDTH` removed); timelines 64px under their heading.
+- **Renames:** Full card & grid / & list / alternate → Full card; Location's Accent cards → Cards accent; Our story → Story.
+- **Story:** Moments get an optional icon (`moments.icon`); a Use a photo switch (`photos`); the photo/no-photo pairs merged (`2`, `5` retired); without the photo, the heading beside the story.
+- **Header:** a Use monograms switch (`monogram`); off, a plain text (`markText`) in the header and the footer, coloured per style.
+- **Layouts:** Location and Transportation full cards side by side without photos.
+- **Playlist:** Card accent (`4`) on ground `surface`, as the Full card accents.
+- **Fixes:** Timeline's line half a pixel off under a date; Location Icon's second venue 40px low; Dress code's role swatches on the accent.
 
 ## Notes
 
-Spec: `context/features/new-covers.md`. The mockup (visual companion) is scratch, not kept.
-
-The event has no start time stored anywhere, so time and place are one free line the host writes.
-
-**Also in this feature** (related, or small fixes found while building it): Countdown's Simple accent style; Text box's Sticker style; Location's heading in italic (`headingItalic`); Location's cards on the shared hairline frame (`HAIRLINE_FRAME`); accent cards' hairline change (`ACCENT_FILL_CARD`); comment fixes in Date & time and Playlist.
-
-- Simplify: ran 2026-10-30
-
-**Later, not in this feature:** the other picture-free covers, mood and poster, listed in the spec.
+- Tests: `tests/lib/joined-ground.test.ts`, `tests/lib/surface-ground.test.ts`.
+- Simplify: ran 2026-10-31
+- No change to stored ids; new optional fields only (`moments.icon`, Story's `photos`, the header's `monogram` and `markText`); Story's `2` and `5` retired.

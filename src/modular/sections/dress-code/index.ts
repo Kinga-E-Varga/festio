@@ -62,6 +62,25 @@ export const section: SectionDefinition = {
       // The icon, the heading's intro line and the card's own fields only.
       shows: ["icon", "eyebrow", ...CARD],
     },
+    {
+      id: "5",
+      name: {
+        en: "Full card accent",
+        ro: "Card întreg accent",
+        hu: "Kiemelt teljes kártya",
+      },
+      // Full card on the accent; always on the page's surface, whatever its turn.
+      ground: "surface",
+      shows: ["icon", "eyebrow", ...CARD],
+    },
+    {
+      id: "6",
+      name: { en: "Accent", ro: "Accent", hu: "Kiemelt" },
+      // On the accent band: the card's title and text as the heading and
+      // its note, under the eyebrow, no icon; the colours under them.
+      ground: "accent",
+      shows: ["eyebrow", ...CARD],
+    },
   ],
   fields: [
     ...HEADING_FIELDS,

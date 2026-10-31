@@ -1,6 +1,6 @@
-import { FULL_CARD_PAD, FULL_CARD_WIDTH } from "@/modular/FullCard";
+import { FULL_CARD_PAD } from "@/modular/FullCard";
 import { otherGround } from "@/modular/ground";
-import { GROUND, HAIRLINE_FRAME } from "@/modular/styles";
+import { GROUND, HAIRLINE_FRAME, COLUMN } from "@/modular/styles";
 import type { Ground, SectionGround, SectionValues } from "@/types/modular";
 import { TextBoxWords } from "./TextBoxWords";
 
@@ -21,9 +21,7 @@ export function FramedText({
   card?: Ground;
 }) {
   return (
-    <div
-      className={`${FULL_CARD_WIDTH} p-2.5 ${HAIRLINE_FRAME} ${GROUND[card]}`}
-    >
+    <div className={`${COLUMN} p-2.5 ${HAIRLINE_FRAME} ${GROUND[card]}`}>
       <div className={`${HAIRLINE_FRAME} ${FULL_CARD_PAD}`}>
         <TextBoxWords values={values} />
       </div>

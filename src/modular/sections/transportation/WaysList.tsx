@@ -5,7 +5,6 @@ import {
   MUTED,
   TIME_COLUMN,
   TONE_TEXT,
-  turnTone,
   LEAD_ROW,
   NARROW_LIST,
 } from "@/modular/styles";
@@ -14,7 +13,7 @@ import type { ListItem } from "@/types/modular";
 /**
  * The ways of arriving for Icon & list: a hairline above and below and
  * between the ways; each way a row, its number (01, 02…) large in the body
- * face, taking turns accent / secondary, where the schedule has the time,
+ * face, in the accent, where the schedule has the time,
  * its column as wide as the schedule's (`TIME_COLUMN`), its eyebrow, title
  * and note beside it, centred on each other; spaced as Two-line & list:
  * 16px over the eyebrow, or 28px over the title without one, and 24px
@@ -37,7 +36,7 @@ export function WaysList({ ways }: { ways: ListItem[] }) {
 }
 
 /**
- * One way: its number (01, 02…) large, taking turns accent / secondary, in
+ * One way: its number (01, 02…) large, in the accent, in
  * a column as wide as the schedule's times (`TIME_COLUMN`), its eyebrow,
  * title and note beside it, centred on each other. The lists' rows and
  * Icon & cards' cards, padded as a schedule's event: 12px under the note,
@@ -47,7 +46,7 @@ export function WaysList({ ways }: { ways: ListItem[] }) {
 export function WayRow({ way, index }: { way: ListItem; index: number }) {
   return (
     <div className={`${LEAD_ROW} pb-3 ${way.label ? "" : "pt-3"}`}>
-      <span className={`${TIME_COLUMN} ${TONE_TEXT[turnTone(index)]}`}>
+      <span className={`${TIME_COLUMN} ${TONE_TEXT.accent}`}>
         {String(index + 1).padStart(2, "0")}
       </span>
       <div className="min-w-0">

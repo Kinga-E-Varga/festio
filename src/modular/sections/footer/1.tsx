@@ -1,7 +1,7 @@
 import { useTranslations } from "next-intl";
 import { longDate } from "@/modular/content";
 import { Icon } from "@/modular/icons";
-import { Mark, markParts } from "@/modular/Mark";
+import { headerMark, Mark } from "@/modular/Mark";
 import { DISPLAY, EYEBROW, MUTED_LINK } from "@/modular/styles";
 import type { VariantProps } from "@/types/modular";
 import { FOOTER } from "./styles";
@@ -9,7 +9,7 @@ import { FOOTER } from "./styles";
 /** The mark again, the date, and the way back up. */
 export function Variant({ basics, language, related }: VariantProps) {
   const t = useTranslations("Sections");
-  const mark = markParts(related.header ?? {}, "mark");
+  const mark = headerMark(related.header ?? {});
 
   return (
     <div className={FOOTER}>

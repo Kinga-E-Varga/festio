@@ -14,9 +14,11 @@ export const DEFAULT_BASICS: InvitationBasics = { date: "2027-09-18" };
 /** Each section's sample values, by section id, then field id. */
 export const DEFAULTS: Record<string, SectionSamples> = {
   header: {
+    monogram: true,
     markStart: "M",
     markMiddle: "&",
     markEnd: "C",
+    markText: "Maddie & Claude",
   },
   cover: {
     photo: "/modular/samples/olive-garden.jpg",
@@ -137,6 +139,7 @@ export const DEFAULTS: Record<string, SectionSamples> = {
     ],
   },
   story: {
+    photos: true,
     photo: "/modular/samples/our-story.jpg",
     photoAlt: {
       en: "Our two hands holding up our rings against the sky",
@@ -157,6 +160,7 @@ export const DEFAULTS: Record<string, SectionSamples> = {
     },
     moments: [
       {
+        icon: "coffee",
         year: "2017",
         title: {
           en: "A coffee in Cluj",
@@ -170,6 +174,7 @@ export const DEFAULTS: Record<string, SectionSamples> = {
         },
       },
       {
+        icon: "house",
         year: "2020",
         title: {
           en: "Our first home",
@@ -183,6 +188,7 @@ export const DEFAULTS: Record<string, SectionSamples> = {
         },
       },
       {
+        icon: "rings",
         year: "2026",
         title: { en: "The question", ro: "Întrebarea", hu: "A kérdés" },
         text: {

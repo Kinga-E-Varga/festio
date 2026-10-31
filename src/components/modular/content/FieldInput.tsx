@@ -112,7 +112,7 @@ export function FieldInput({
       {field.type === "longText" ? (
         <textarea
           {...shared}
-          /* A long text (Our story's, 1200 characters) gets room to read back; a note, three lines. */
+          /* A long text (Story's, 1200 characters) gets room to read back; a note, three lines. */
           rows={field.maxLength > 600 ? 10 : 3}
           onChange={(event) => onChange(event.target.value)}
           className={`${INPUT} resize-none`}

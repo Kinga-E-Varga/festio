@@ -6,7 +6,7 @@ import type { VariantProps } from "@/types/modular";
 import { VenueCards } from "./VenueCards";
 
 /**
- * Accent cards on a surface: the section's heading over the location
+ * Cards accent on a surface: the section's heading over the location
  * cards, the venues on the other surface instead of the accent.
  */
 export function Variant({ values, ground }: VariantProps) {

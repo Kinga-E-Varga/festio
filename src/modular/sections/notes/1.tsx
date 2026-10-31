@@ -6,14 +6,9 @@ import { list } from "@/modular/content";
 import { isIconName } from "@/modular/icons";
 import { noteItems } from "@/modular/notes";
 import { SectionHeading } from "@/modular/SectionHeading";
-import { COLUMN, PAD, STACK, SECTION_GROUND, turnTone } from "@/modular/styles";
+import { PAD, STACK, SECTION_GROUND, COLUMN } from "@/modular/styles";
 import type { VariantProps } from "@/types/modular";
 import { otherGround } from "@/modular/ground";
-
-/** The icons taking turns: the 1st, 3rd… in the accent, the 2nd, 4th… in the secondary. */
-function tone(index: number) {
-  return turnTone(index);
-}
 
 /** The subsections as cards, one under another. */
 export function Variant({ values, related, ground }: VariantProps) {
@@ -35,7 +30,7 @@ export function Variant({ values, related, ground }: VariantProps) {
                   values={related["dress-code"] ?? {}}
                   label={t("dressCode")}
                   ground={cardGround}
-                  tone={tone(index)}
+                  tone="secondary"
                 />
               );
             }
@@ -46,7 +41,7 @@ export function Variant({ values, related, ground }: VariantProps) {
                   values={related.gifts ?? {}}
                   label={t("gifts")}
                   ground={cardGround}
-                  tone={tone(index)}
+                  tone="secondary"
                 />
               );
             }
@@ -54,7 +49,7 @@ export function Variant({ values, related, ground }: VariantProps) {
               <NoteCard
                 key={index}
                 icon={isIconName(item.icon) ? item.icon : undefined}
-                tone={tone(index)}
+                tone="secondary"
                 label={item.label ?? ""}
                 title={item.title}
                 body={item.text}

@@ -328,9 +328,10 @@ export type SectionGround = Ground | "accent";
  * two surfaces in turn. `own`: it draws its own colour (a photo). `accent`:
  * it is an accent band. After either, the turns start again at `surface`.
  * `joined`: the same ground as the section right before, whatever it is, so
- * the two read as one band.
+ * the two read as one band. `surface`: always the page's surface, whatever
+ * its turn; the next one takes the other.
  */
-export type GroundRule = "own" | "accent" | "joined";
+export type GroundRule = "own" | "accent" | "joined" | "surface";
 
 /** A section folder's `index.ts`. */
 export interface SectionModule {

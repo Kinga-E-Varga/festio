@@ -1,3 +1,4 @@
+import { LABELS } from "@/modular/labels";
 import type { SectionDefinition } from "@/types/modular";
 
 /**
@@ -7,7 +8,8 @@ import type { SectionDefinition } from "@/types/modular";
  *
  * Every variant is 56px tall, 64px from `@5xl` (`h-14 @5xl:h-16`): the
  * sections' `scroll-margin` and the page's loading bar assume it. The
- * footer reads its mark (`markStart`, `markMiddle`, `markEnd`).
+ * footer reads its mark (`markStart`, `markMiddle`, `markEnd`, or with
+ * `monogram` off `markText`).
  */
 export const section: SectionDefinition = {
   id: "header",
@@ -18,7 +20,7 @@ export const section: SectionDefinition = {
     {
       id: "6",
       name: { en: "Colourful", ro: "Colorat", hu: "Színes" },
-      shows: ["markStart", "markMiddle", "markEnd"],
+      shows: ["monogram", "markStart", "markMiddle", "markEnd", "markText"],
     },
     {
       id: "1",
@@ -27,12 +29,12 @@ export const section: SectionDefinition = {
         ro: "Colorat accent",
         hu: "Színes kiemelt",
       },
-      shows: ["markStart", "markMiddle", "markEnd"],
+      shows: ["monogram", "markStart", "markMiddle", "markEnd", "markText"],
     },
     {
       id: "2",
       name: { en: "Balanced", ro: "Echilibrat", hu: "Kiegyensúlyozott" },
-      shows: ["markStart", "markMiddle", "markEnd"],
+      shows: ["monogram", "markStart", "markMiddle", "markEnd", "markText"],
     },
     {
       id: "5",
@@ -41,12 +43,12 @@ export const section: SectionDefinition = {
         ro: "Echilibrat accent",
         hu: "Kiegyensúlyozott kiemelt",
       },
-      shows: ["markStart", "markMiddle", "markEnd"],
+      shows: ["monogram", "markStart", "markMiddle", "markEnd", "markText"],
     },
     {
       id: "3",
       name: { en: "Simple", ro: "Simplu", hu: "Egyszerű" },
-      shows: ["markStart", "markMiddle", "markEnd"],
+      shows: ["monogram", "markStart", "markMiddle", "markEnd", "markText"],
     },
     {
       id: "4",
@@ -55,10 +57,22 @@ export const section: SectionDefinition = {
         ro: "Simplu accent",
         hu: "Egyszerű kiemelt",
       },
-      shows: ["markStart", "markMiddle", "markEnd"],
+      shows: ["monogram", "markStart", "markMiddle", "markEnd", "markText"],
     },
   ],
   fields: [
+    {
+      // The monogram (name, mark, name); off, one plain text in its place.
+      id: "monogram",
+      label: {
+        en: "Use monograms",
+        ro: "Folosește monograme",
+        hu: "Monogramok használata",
+      },
+      type: "toggle",
+      controls: ["markStart", "markMiddle", "markEnd"],
+      controlsOff: ["markText"],
+    },
     {
       id: "markStart",
       label: {
@@ -89,5 +103,6 @@ export const section: SectionDefinition = {
       type: "text",
       maxLength: 12,
     },
+    { id: "markText", label: LABELS.text, type: "text", maxLength: 30 },
   ],
 };

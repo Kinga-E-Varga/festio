@@ -16,21 +16,25 @@ import { Venue } from "./Venue";
 /* The photo, the split's content column: 620px at most. */
 const PHOTO_SIZES = "(min-width: 768px) 620px, 100vw";
 
+/* A stacked venue's top and bottom padding from `@3xl`. */
+const STACKED_WIDE = "@3xl:py-10";
+
 /*
  * The venues without photos side by side, by how many: two from `@3xl`,
  * three only from `@5xl`, where names at a heading's size still fit; the
  * hairlines between them then stand upright, each venue 36px from them.
  */
 const IN_A_ROW = [
-  { row: "", cell: "" },
-  { row: "", cell: "" },
+  { row: "", cell: STACKED_WIDE },
+  { row: "", cell: STACKED_WIDE },
   {
     row: "@3xl:grid-cols-2 @3xl:divide-y-0 @3xl:divide-x-1",
+    // In a row from `@3xl`: no stacked padding there to outweigh its own.
     cell: "@3xl:px-9 @3xl:py-0 @3xl:first:pl-0 @3xl:last:pr-0",
   },
   {
     row: "@5xl:grid-cols-3 @5xl:divide-y-0 @5xl:divide-x-1",
-    cell: "@5xl:px-9 @5xl:py-0 @5xl:first:pl-0 @5xl:last:pr-0",
+    cell: `${STACKED_WIDE} @5xl:px-9 @5xl:py-0 @5xl:first:pl-0 @5xl:last:pr-0`,
   },
 ];
 
@@ -91,7 +95,7 @@ export function VenueRows({
             venue={venue}
             lead={lead}
             twoLine={twoLine}
-            className={`py-7 first:pt-0 last:pb-0 @3xl:py-10 ${rowWithoutPhotos ? `items-start text-left ${IN_A_ROW[venues.length].cell}` : ""}`}
+            className={`py-7 first:pt-0 last:pb-0 ${rowWithoutPhotos ? `items-start text-left ${IN_A_ROW[venues.length].cell}` : STACKED_WIDE}`}
           />
         ))}
       </div>

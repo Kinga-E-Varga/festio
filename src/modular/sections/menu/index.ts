@@ -83,6 +83,22 @@ export const section: SectionDefinition = {
       ],
     },
     {
+      id: "9",
+      name: {
+        en: "Cards accent",
+        ro: "Carduri accent",
+        hu: "Kiemelt kártyák",
+      },
+      // Cards, the cards on the accent, every disc in the secondary.
+      shows: [
+        ...HEADING_SHOWS.filter((id) => id !== "headingItalic"),
+        "courses.icon",
+        "courses.label",
+        "courses.title",
+        "courses.note",
+      ],
+    },
+    {
       id: "3",
       name: {
         en: "Framed card",
@@ -97,9 +113,36 @@ export const section: SectionDefinition = {
       ],
     },
     {
+      id: "11",
+      name: { en: "Accent", ro: "Accent", hu: "Kiemelt" },
+      // On the accent band, the heading over Icon & card's menu card.
+      ground: "accent",
+      shows: [
+        ...HEADING_SHOWS.filter((id) => id !== "headingItalic"),
+        "courses.label",
+        "courses.title",
+      ],
+    },
+    {
       id: "8",
       name: { en: "Full card", ro: "Card întreg", hu: "Teljes kártya" },
       // Framed card's fields: every heading field but the italic heading.
+      shows: [
+        ...HEADING_SHOWS.filter((id) => id !== "headingItalic"),
+        "courses.label",
+        "courses.title",
+      ],
+    },
+    {
+      id: "10",
+      name: {
+        en: "Full card accent",
+        ro: "Card întreg accent",
+        hu: "Kiemelt teljes kártya",
+      },
+      // Full card on the accent, Framed card's short line under the heading;
+      // always on the page's surface, whatever its turn.
+      ground: "surface",
       shows: [
         ...HEADING_SHOWS.filter((id) => id !== "headingItalic"),
         "courses.label",

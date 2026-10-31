@@ -1,5 +1,5 @@
 import { Fragment, type ReactNode } from "react";
-import { text } from "./content";
+import { isOn, text } from "./content";
 import { AMPERSAND } from "./styles";
 import type { SectionValues } from "@/types/modular";
 
@@ -24,6 +24,19 @@ export function markParts(
     middle ? <span className={middleClass}>{middle}</span> : "",
     end,
   ].filter(Boolean);
+}
+
+/**
+ * The header's mark, drawn by the header and the footer: its three parts
+ * (`markParts`) while `monogram` is on, else its `markText` alone.
+ */
+export function headerMark(
+  values: SectionValues,
+  middleClass?: string,
+): ReactNode[] {
+  if (isOn(values, "monogram")) return markParts(values, "mark", middleClass);
+  const words = text(values, "markText").trim();
+  return words ? [words] : [];
 }
 
 /** The parts, a space between each. */

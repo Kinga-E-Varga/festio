@@ -13,7 +13,6 @@ import {
   TIME_COLUMN,
   TONE_TEXT,
   TONES,
-  turnTone,
   CARD_STACK,
   DISC_ROW,
 } from "@/modular/styles";
@@ -43,10 +42,9 @@ const DISC = {
 /**
  * The stays, one row each between lines — or, with `cards`, each row a card
  * on that surface, the cards stacked. With `numbered`, each stay's number
- * (01, 02…) first, large, taking turns accent / secondary, as
+ * (01, 02…) first, large, in the accent, as
  * Transportation's Icon & list (`TIME_COLUMN`); without, the arrow on a
- * soft disc as Transportation's Two-line & list's icons, taking turns
- * accent / secondary, its colours swapping on hover. Spaced as
+ * soft disc as Transportation's Two-line & list's icons, in the secondary, its colours swapping on hover. Spaced as
  * Transportation's lists and cards: 16px from the eyebrow to the name,
  * 4px to the note. Shared by every style.
  */
@@ -72,7 +70,7 @@ export function StayList({
         // there is no eyebrow (an eyebrow takes the place of a date).
         const row = `${numbered ? NUMBERED_ROW : `${DISC_ROW} items-center`} pb-3 ${place.distance ? "" : "pt-3"}`;
         const number = numbered ? (
-          <span className={`${TIME_COLUMN} ${TONE_TEXT[turnTone(index)]}`}>
+          <span className={`${TIME_COLUMN} ${TONE_TEXT.accent}`}>
             {String(index + 1).padStart(2, "0")}
           </span>
         ) : null;
@@ -98,7 +96,7 @@ export function StayList({
                   ARROW
                 ) : (
                   <span
-                    className={`${CARD_DISC} transition-colors ${DISC[turnTone(index)]}`}
+                    className={`${CARD_DISC} transition-colors ${DISC.secondary}`}
                   >
                     <Icon name="arrow-up-right" className="size-4.5" />
                   </span>

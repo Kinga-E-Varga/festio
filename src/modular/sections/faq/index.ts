@@ -56,13 +56,38 @@ export const section: SectionDefinition = {
       ],
     },
     {
+      id: "8",
+      name: { en: "Accent", ro: "Accent", hu: "Kiemelt" },
+      // Bars on the accent band, the bars on the page's surface.
+      ground: "accent",
+      shows: [
+        ...HEADING_SHOWS.filter((id) => id !== "headingItalic"),
+        "linkLabel",
+        "items.question",
+        "items.answer",
+      ],
+    },
+    {
       id: "6",
+      name: { en: "Full card", ro: "Card întreg", hu: "Teljes kártya" },
+      // Accommodation's Full card: no italic second line under the heading.
+      shows: [
+        ...HEADING_SHOWS.filter((id) => id !== "headingItalic"),
+        "linkLabel",
+        "items.question",
+        "items.answer",
+      ],
+    },
+    {
+      id: "7",
       name: {
-        en: "Full card & list",
-        ro: "Card întreg & listă",
-        hu: "Teljes kártya & lista",
+        en: "Full card accent",
+        ro: "Card întreg accent",
+        hu: "Kiemelt teljes kártya",
       },
-      // Accommodation's Full card & list: no italic second line under the heading.
+      // Full card on the accent, no lines; always on the page's surface,
+      // whatever its turn.
+      ground: "surface",
       shows: [
         ...HEADING_SHOWS.filter((id) => id !== "headingItalic"),
         "linkLabel",

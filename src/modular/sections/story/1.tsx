@@ -8,7 +8,7 @@ export function Variant({ values, ground }: VariantProps) {
     <PhotoStory
       values={values}
       ground={ground}
-      heading={(align) => <SectionHeading values={values} align={align} />}
+      heading={<SectionHeading values={values} align="start" />}
     />
   );
 }

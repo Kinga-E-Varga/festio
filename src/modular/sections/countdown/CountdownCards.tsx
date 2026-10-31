@@ -5,6 +5,7 @@ import { pad } from "@/lib/event";
 import { NUMBER_SIZE, UNITS, useCountdown } from "@/modular/countdown";
 import { text, type TimeLeft } from "@/modular/content";
 import { otherGround } from "@/modular/ground";
+import { SectionHeading } from "@/modular/SectionHeading";
 import {
   ACCENT_FILL_CARD,
   CAPS,
@@ -12,6 +13,7 @@ import {
   HAIRLINE_FRAME,
   INNER_EYEBROW,
   MUTED,
+  PAD,
   PAD_BOTTOM,
   PAD_X,
   SECTION_GROUND,
@@ -37,7 +39,8 @@ const NARROW_NUMBER = `${FACE} text-[34px]`;
  * `@xl`. With `narrow` (in a split's second column) the cards share the
  * column's width, the numbers at 34px; otherwise they keep 156px each from `@3xl`. Until the
  * first tick the numbers are dashes. With `accent`, the cards on the
- * accent. Cards (`2`), Cards joined (`7`) and Cards joined accent (`8`).
+ * accent. Cards (`2`), Cards accent (`10`), Cards joined (`7`) and Cards
+ * joined accent (`8`).
  */
 export function CountdownCards({
   left,
@@ -75,6 +78,37 @@ export function CountdownCards({
           </span>
         </div>
       ))}
+    </div>
+  );
+}
+
+/**
+ * Days, hours, minutes and seconds to the start of the day, live, each in
+ * a card. A section of its own: it takes its turn of the grounds and its
+ * full padding. On the day, and after it, a fixed eyebrow and one line say
+ * so in their place. Cards (`2`), and with `accent` the cards on the
+ * accent: Cards accent (`10`).
+ */
+export function SectionCards({
+  values,
+  basics,
+  ground,
+  accent = false,
+}: VariantProps & { accent?: boolean }) {
+  const { left, done } = useCountdown(basics);
+
+  return (
+    <div
+      className={`flex flex-col items-center gap-7 ${SECTION_GROUND[ground]} ${PAD}`}
+    >
+      {done ? (
+        <Done done={done} className={CARD_NUMBER} />
+      ) : (
+        <>
+          <SectionHeading values={values} />
+          <CountdownCards left={left} ground={ground} accent={accent} />
+        </>
+      )}
     </div>
   );
 }

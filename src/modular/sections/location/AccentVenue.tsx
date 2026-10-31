@@ -28,7 +28,7 @@ export const ROW = [
 ];
 
 /**
- * A location card's text on `fill` — the accent for Accent cards, a
+ * A location card's text on `fill` — the accent for Cards accent, a
  * surface for Cards: label, venue, address, detail and the way there, in
  * the roles that read on it (`GROUND`; on the accent all are its ink). The
  * venue's icon, when it has one, on its soft disc in the palette's `tone`,

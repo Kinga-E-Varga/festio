@@ -1,5 +1,5 @@
 import { Icon, isIconName, type IconName } from "@/modular/icons";
-import { CARD_DISC, TONES, turnTone } from "@/modular/styles";
+import { CARD_DISC, PAGE_SECONDARY, TONES } from "@/modular/styles";
 
 /** A card's icon: the glyph on its soft disc, in either accent. A 22px glyph on a 38px disc (`CARD_DISC`). */
 export function CardIcon({
@@ -18,17 +18,25 @@ export function CardIcon({
   );
 }
 
-/** A list item's own icon on its disc, the items taking turns accent / secondary (`turnTone`); nothing without one. */
-export function TurnIcon({
+/**
+ * A list item's own icon on its disc, every item in the secondary; nothing
+ * without one. `accent`: on the accent, the palette's own secondary disc
+ * (`PAGE_SECONDARY`), not the accent's ink.
+ */
+export function ItemIcon({
   name,
-  index,
+  accent = false,
   className = "",
 }: {
   name: string | undefined;
-  index: number;
+  accent?: boolean;
   className?: string;
 }) {
   return isIconName(name) ? (
-    <CardIcon name={name} tone={turnTone(index)} className={className} />
+    <CardIcon
+      name={name}
+      tone="secondary"
+      className={`${accent ? PAGE_SECONDARY : ""} ${className}`}
+    />
   ) : null;
 }

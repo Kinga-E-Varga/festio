@@ -9,6 +9,7 @@ import {
   CORNER,
   GROUND,
   MUTED,
+  ACCENT_BUTTON,
   OUTLINE_BUTTON,
   OUTLINE_SECONDARY,
   type TONES,
@@ -133,10 +134,14 @@ function Row({ label, children }: { label: string; children: ReactNode }) {
 export function GiftActions({
   values,
   stacked = false,
+  accent = false,
 }: {
   values: SectionValues;
   stacked?: boolean;
+  /** On the accent: the buttons as the icons there (`ACCENT_BUTTON`). */
+  accent?: boolean;
 }) {
+  const look = accent ? ACCENT_BUTTON : OUTLINE_BUTTON;
   const t = useTranslations("Sections");
   const [open, setOpen] = useState(false);
   const detailsId = useId();
@@ -181,7 +186,7 @@ export function GiftActions({
           href={link}
           target="_blank"
           rel="noopener noreferrer"
-          className={`${OUTLINE_BUTTON} ${stacked ? "" : SIDE_BY_SIDE}`}
+          className={`${look} ${stacked ? "" : SIDE_BY_SIDE}`}
         >
           <Labels
             shown={t("seeRegistry")}
@@ -196,7 +201,7 @@ export function GiftActions({
             type="button"
             popoverTarget={detailsId}
             aria-expanded={open}
-            className={`${OUTLINE_BUTTON} ${stacked ? "" : SIDE_BY_SIDE} cursor-pointer`}
+            className={`${look} ${stacked ? "" : SIDE_BY_SIDE} cursor-pointer`}
           >
             {/* Opening never changes its width: Hide account is in it too, hidden. */}
             <Labels

@@ -1,7 +1,7 @@
 import { useTranslations } from "next-intl";
 import { GiftsCard } from "@/modular/cards/GiftsCard";
 import { SectionHeading } from "@/modular/SectionHeading";
-import { COLUMN, PAD, STACK, SECTION_GROUND } from "@/modular/styles";
+import { PAD, STACK, SECTION_GROUND, COLUMN } from "@/modular/styles";
 import type { VariantProps } from "@/types/modular";
 import { otherGround } from "@/modular/ground";
 

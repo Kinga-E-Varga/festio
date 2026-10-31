@@ -21,7 +21,7 @@ export const section: SectionDefinition = {
     {
       id: "1",
       name: {
-        en: "Accent cards",
+        en: "Cards accent",
         ro: "Carduri accent",
         hu: "Kiemelt kártyák",
       },
@@ -41,7 +41,7 @@ export const section: SectionDefinition = {
     {
       id: "6",
       name: { en: "Cards", ro: "Carduri", hu: "Kártyák" },
-      // Accent cards on a surface: every heading field but the italic heading.
+      // Cards accent on a surface: every heading field but the italic heading.
       shows: [
         "photos",
         ...HEADING_SHOWS.filter((id) => id !== "headingItalic"),
@@ -129,9 +129,48 @@ export const section: SectionDefinition = {
       ],
     },
     {
+      id: "9",
+      name: { en: "Accent", ro: "Accent", hu: "Kiemelt" },
+      // List & grid on the accent, no lines, each venue's icon over its label.
+      ground: "accent",
+      shows: [
+        "photos",
+        ...HEADING_SHOWS.filter((id) => id !== "headingItalic"),
+        "venues.icon",
+        "venues.label",
+        "venues.venue",
+        "venues.address",
+        "venues.mapsLink",
+        "venues.detail",
+        "venues.photo",
+      ],
+    },
+    {
       id: "8",
       name: { en: "Full card", ro: "Card întreg", hu: "Teljes kártya" },
       // List & grid in one card: every heading field but the italic heading.
+      shows: [
+        "photos",
+        ...HEADING_SHOWS.filter((id) => id !== "headingItalic"),
+        "venues.icon",
+        "venues.label",
+        "venues.venue",
+        "venues.address",
+        "venues.mapsLink",
+        "venues.detail",
+        "venues.photo",
+      ],
+    },
+    {
+      id: "10",
+      name: {
+        en: "Full card accent",
+        ro: "Card întreg accent",
+        hu: "Kiemelt teljes kártya",
+      },
+      // Full card on the accent, the icons in the secondary; always on the
+      // page's surface, whatever its turn.
+      ground: "surface",
       shows: [
         "photos",
         ...HEADING_SHOWS.filter((id) => id !== "headingItalic"),

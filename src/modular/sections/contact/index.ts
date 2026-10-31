@@ -30,9 +30,26 @@ export const section: SectionDefinition = {
       shows: [...PLAIN_HEADING, "people.icon", ...PERSON_SHOWS],
     },
     {
+      id: "8",
+      name: {
+        en: "Cards accent",
+        ro: "Carduri accent",
+        hu: "Kiemelt kártyák",
+      },
+      // Cards, the cards on the accent, every disc in the secondary.
+      shows: [...PLAIN_HEADING, "people.icon", ...PERSON_SHOWS],
+    },
+    {
       id: "2",
       name: { en: "Grid", ro: "Grilă", hu: "Rács" },
       shows: [...PLAIN_HEADING, ...PERSON_SHOWS],
+    },
+    {
+      id: "9",
+      name: { en: "Accent", ro: "Accent", hu: "Kiemelt" },
+      // Grid on the accent, no hairlines, each person's icon over their role.
+      ground: "accent",
+      shows: [...PLAIN_HEADING, "people.icon", ...PERSON_SHOWS],
     },
     {
       id: "3",
@@ -75,12 +92,20 @@ export const section: SectionDefinition = {
     },
     {
       id: "7",
-      name: {
-        en: "Full card & grid",
-        ro: "Card întreg & grilă",
-        hu: "Teljes kártya & rács",
-      },
+      name: { en: "Full card", ro: "Card întreg", hu: "Teljes kártya" },
       // Cards' (`1`) content, the people side by side in a full card.
+      shows: [...PLAIN_HEADING, "people.icon", ...PERSON_SHOWS],
+    },
+    {
+      id: "10",
+      name: {
+        en: "Full card accent",
+        ro: "Card întreg accent",
+        hu: "Kiemelt teljes kártya",
+      },
+      // Full card on the accent, no lines, every disc in the
+      // secondary; always on the page's surface, whatever its turn.
+      ground: "surface",
       shows: [...PLAIN_HEADING, "people.icon", ...PERSON_SHOWS],
     },
   ],

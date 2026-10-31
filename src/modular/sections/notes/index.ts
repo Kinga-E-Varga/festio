@@ -99,6 +99,22 @@ export const section: SectionDefinition = {
       ],
     },
     {
+      id: "10",
+      name: {
+        en: "Cards accent",
+        ro: "Carduri accent",
+        hu: "Kiemelt kártyák",
+      },
+      // Cards, the cards on the accent, every disc in the secondary.
+      shows: [
+        ...HEADING_SHOWS.filter((id) => id !== "headingItalic"),
+        "items.label",
+        "items.title",
+        "items.text",
+        "items.icon",
+      ],
+    },
+    {
       id: "7",
       name: { en: "Grid", ro: "Grilă", hu: "Rács" },
       // No italic second line under the heading, no icons.
@@ -110,13 +126,40 @@ export const section: SectionDefinition = {
       ],
     },
     {
+      id: "11",
+      name: { en: "Accent", ro: "Accent", hu: "Kiemelt" },
+      // Grid on the accent, no hairlines, each note's icon over its label.
+      ground: "accent",
+      shows: [
+        ...HEADING_SHOWS.filter((id) => id !== "headingItalic"),
+        "items.label",
+        "items.title",
+        "items.text",
+        "items.icon",
+      ],
+    },
+    {
       id: "9",
-      name: {
-        en: "Full card & list",
-        ro: "Card întreg & listă",
-        hu: "Teljes kártya & lista",
-      },
+      name: { en: "Full card", ro: "Card întreg", hu: "Teljes kártya" },
       // Cards' content, one note under another in a full card.
+      shows: [
+        ...HEADING_SHOWS.filter((id) => id !== "headingItalic"),
+        "items.label",
+        "items.title",
+        "items.text",
+        "items.icon",
+      ],
+    },
+    {
+      id: "12",
+      name: {
+        en: "Full card accent",
+        ro: "Card întreg accent",
+        hu: "Kiemelt teljes kártya",
+      },
+      // Full card on the accent, no lines, every disc in the
+      // secondary; always on the page's surface, whatever its turn.
+      ground: "surface",
       shows: [
         ...HEADING_SHOWS.filter((id) => id !== "headingItalic"),
         "items.label",

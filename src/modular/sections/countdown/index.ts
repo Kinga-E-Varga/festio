@@ -39,6 +39,16 @@ export const section: SectionDefinition = {
       shows: ["eyebrow"],
     },
     {
+      id: "10",
+      name: {
+        en: "Cards accent",
+        ro: "Carduri accent",
+        hu: "Kiemelt kártyák",
+      },
+      // Cards, the cards on the accent.
+      shows: ["eyebrow"],
+    },
+    {
       id: "3",
       name: {
         en: "Simple joined",

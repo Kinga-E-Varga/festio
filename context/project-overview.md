@@ -30,7 +30,7 @@ Each event has one package. It only ever goes up (Free → Standard → Custom);
 
 - Base sections, always present: header, hero/cover, title, date & time, location, RSVP, footer.
 - **Poster covers** (e.g. Champagne) show the Title's content on the cover; the Title then steps aside, its values kept, and is back with any other cover. Date, which the cover shows too, becomes optional there (on by default; required again with any other cover). **Mood covers** (the photo ones) set the scene and the Title follows.
-- Optional sections: countdown, helpful notes, dress code, gift preferences, playlist, FAQ, schedule, menu, accommodation, transportation, text box, special people, our story, contact.
+- Optional sections: countdown, helpful notes, dress code, gift preferences, playlist, FAQ, schedule, menu, accommodation, transportation, text box, special people, story, contact.
 - **Sections, palettes and font pairs are shared libraries** in `src/modular/`. Each section has one or more variants; a palette is 14 colour roles, the rest mixed from them; more may be added; a font pair is body + headings. Hosts pick a whole palette or pair, never single colours or fonts.
 - **A modular template is a preset over them:** a palette, a font pair and the sections with a variant each, in the fixed order. It is a starting point the host can change later.
 - Events store template, section, variant, palette and font-pair ids, so those ids are permanent. A simple event is drawn from its template; a modular one only started from it (its own choices are on the event), so a later change to a modular template doesn't reach it.

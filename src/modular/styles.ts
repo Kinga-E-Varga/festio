@@ -155,6 +155,13 @@ const OUTLINE_SHAPE =
 /** A small outlined button in the accent. Never shrinks, so its label never wraps. */
 export const OUTLINE_BUTTON = `${OUTLINE_SHAPE} border-[var(--m-accent)] text-[color:var(--m-accent)] hover:bg-[var(--m-accent)] hover:text-[color:var(--m-accent-ink)]`;
 
+/**
+ * The same button on the accent, coloured as the icons there (`ItemIcon`'s `accent`):
+ * the palette's soft secondary, its own secondary for the words; filled
+ * with that secondary on hover.
+ */
+export const ACCENT_BUTTON = `${OUTLINE_SHAPE} border-[var(--m-secondary-soft)] bg-[var(--m-secondary-soft)] text-[color:var(--m-page-secondary)] hover:border-[var(--m-page-secondary)] hover:bg-[var(--m-page-secondary)] hover:text-[color:var(--m-secondary-ink)]`;
+
 /** The same button in the secondary: the account's Copy in a gift card's side column. */
 export const OUTLINE_SECONDARY = `${OUTLINE_SHAPE} border-[var(--m-secondary)] text-[color:var(--m-secondary)] hover:bg-[var(--m-secondary)] hover:text-[color:var(--m-secondary-ink)]`;
 
@@ -217,11 +224,12 @@ export const PAD = `${PAD_X} ${PAD_TOP} ${PAD_BOTTOM}`;
 export const STACK = "flex flex-col gap-8 @3xl:gap-11";
 
 /**
- * Round a heading over a timeline: 16px more under it (24px from `@3xl`)
- * than `STACK`'s gap, gone with the heading, so a timeline with none starts
- * where it did. Schedule's Timeline and Our story's Moments.
+ * Round a heading over a timeline: 16px more under it (20px from `@3xl`)
+ * than `STACK`'s gap, as the unlined grids (`UNLINED_PULL`), gone with the
+ * heading, so a timeline with none starts where it did. Schedule's
+ * Timeline and Story's Moments.
  */
-export const TIMELINE_HEADING = "mb-4 empty:hidden @3xl:mb-6";
+export const TIMELINE_HEADING = "mb-4 empty:hidden @3xl:mb-5";
 
 /** A timeline: 350px at most and centred on a phone, 960px from `@3xl`, its line down the middle. */
 export const TIMELINE = "mx-auto w-full max-w-[350px] @3xl:max-w-240";
@@ -311,13 +319,16 @@ export const TONES = {
   secondary: "bg-[var(--m-secondary-soft)] text-[color:var(--m-secondary)]",
 } as const;
 
+/** On the accent, the secondary back to the palette's own: `ON_ACCENT` points it at the accent's ink. */
+export const PAGE_SECONDARY = "[--m-secondary:var(--m-page-secondary)]";
+
 /** Text in either accent, matching its `TONES` icon. */
 export const TONE_TEXT = {
   accent: "text-[color:var(--m-accent)]",
   secondary: "text-[color:var(--m-secondary)]",
 } as const;
 
-/** The tone a list's items take in turn: the first in the accent, the next in the secondary, and so on. */
+/** The tone Schedule's and Story's days or moments take in turn: the first in the accent, the next in the secondary, and so on. Every other list's icons are all in the secondary (`ItemIcon`). */
 export function turnTone(index: number): "accent" | "secondary" {
   return index % 2 === 0 ? "accent" : "secondary";
 }
@@ -355,6 +366,14 @@ export function centredWhenStacked(count: number): string {
     ? "items-center text-center @3xl:items-start @3xl:text-left"
     : "items-center text-center";
 }
+
+/**
+ * A grid or list without its lines (the Accent and Full card accent
+ * styles): pulled out by its cells' padding (`py-8 @3xl:py-10`), so the
+ * last sits as close to the band's or card's edge as any content; up by only half of it, a little
+ * more room under the heading. The space between them stays.
+ */
+export const UNLINED_PULL = "-mt-4 -mb-8 @3xl:-mt-5 @3xl:-mb-10";
 
 /**
  * A grid with hairlines between its cells (Menu's courses, Location's

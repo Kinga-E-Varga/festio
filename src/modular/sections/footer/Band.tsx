@@ -1,7 +1,7 @@
 import { useTranslations } from "next-intl";
 import { longDate } from "@/modular/content";
 import { Icon } from "@/modular/icons";
-import { Mark, markParts } from "@/modular/Mark";
+import { headerMark, Mark } from "@/modular/Mark";
 import { H4, HEADING, MUTED_LINK, SECTION_GROUND } from "@/modular/styles";
 import type { VariantProps } from "@/types/modular";
 import { FOOTER } from "./styles";
@@ -24,7 +24,7 @@ export function BandFooter({
   ground,
 }: Pick<VariantProps, "basics" | "language" | "related" | "ground">) {
   const t = useTranslations("Sections");
-  const mark = markParts(related.header ?? {}, "mark", MIDDLE);
+  const mark = headerMark(related.header ?? {}, MIDDLE);
 
   return (
     <div className={`${SECTION_GROUND[ground]} ${FOOTER}`}>

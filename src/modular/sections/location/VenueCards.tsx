@@ -5,7 +5,6 @@ import {
   HAIRLINE_FRAME,
   GROUND,
   SPLIT_COLUMNS,
-  turnTone,
 } from "@/modular/styles";
 import { otherGround } from "@/modular/ground";
 import { INVITE_COLUMN } from "@/modular/vars";
@@ -56,15 +55,14 @@ type CardLayout = keyof typeof CARD_LAYOUT;
 const LAYOUT_FOR: CardLayout[] = ["beside", "beside", "under", "turns"];
 
 /**
- * The locations as cards, for Accent cards and Cards: the venue on `fill`
+ * The locations as cards, for Cards accent and Cards: the venue on `fill`
  * beside a photo of it. Several stand in
  * one row on a wide page, each photo under its venue, as on a phone; three
  * stacked one to a row keep the photo beside. No map is embedded, so
  * nothing reaches a map provider before the guest taps "Open in Maps". The
  * photo is required; while it is missing the alternate surface stands in.
  * A venue's icon, when it has one, stands on a soft disc over its label,
- * the discs taking turns: the 1st and 3rd in the accent, the 2nd in the
- * secondary — on the accent fill all in the accent. With photos switched off, each card is the venue alone, its
+ * every disc in the secondary. With photos switched off, each card is the venue alone, its
  * icon still over its label.
  */
 export function VenueCards({
@@ -83,7 +81,7 @@ export function VenueCards({
   return (
     <ul className={`grid gap-4 @3xl:gap-6 ${ROW[venues.length]}`}>
       {venues.map((venue, index) => {
-        const tone = fill === "accent" ? "accent" : turnTone(index);
+        const tone = "secondary";
         return photos ? (
           <VenueCard
             key={index}

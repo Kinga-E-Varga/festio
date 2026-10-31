@@ -26,6 +26,22 @@ export const section: SectionDefinition = {
       ],
     },
     {
+      id: "9",
+      name: {
+        en: "Cards accent",
+        ro: "Carduri accent",
+        hu: "Kiemelt kártyák",
+      },
+      // Cards, the cards on the accent, every disc in the secondary.
+      shows: [
+        ...HEADING_SHOWS.filter((id) => id !== "headingItalic"),
+        "ways.icon",
+        "ways.label",
+        "ways.title",
+        "ways.text",
+      ],
+    },
+    {
       id: "3",
       name: {
         en: "Two-line & list",
@@ -103,13 +119,40 @@ export const section: SectionDefinition = {
       ],
     },
     {
+      id: "11",
+      name: { en: "Accent", ro: "Accent", hu: "Kiemelt" },
+      // Grid on the accent, no hairlines, each way's icon over its eyebrow.
+      ground: "accent",
+      shows: [
+        ...HEADING_SHOWS.filter((id) => id !== "headingItalic"),
+        "ways.icon",
+        "ways.label",
+        "ways.title",
+        "ways.text",
+      ],
+    },
+    {
       id: "8",
+      name: { en: "Full card", ro: "Card întreg", hu: "Teljes kártya" },
+      // Cards' (`1`) content, the ways side by side in a full card.
+      shows: [
+        ...HEADING_SHOWS.filter((id) => id !== "headingItalic"),
+        "ways.icon",
+        "ways.label",
+        "ways.title",
+        "ways.text",
+      ],
+    },
+    {
+      id: "10",
       name: {
-        en: "Full card & list",
-        ro: "Card întreg & listă",
-        hu: "Teljes kártya & lista",
+        en: "Full card accent",
+        ro: "Card întreg accent",
+        hu: "Kiemelt teljes kártya",
       },
-      // Cards' (`1`) content, one way under another in a full card.
+      // Full card on the accent, no lines, every disc in the
+      // secondary; always on the page's surface, whatever its turn.
+      ground: "surface",
       shows: [
         ...HEADING_SHOWS.filter((id) => id !== "headingItalic"),
         "ways.icon",
