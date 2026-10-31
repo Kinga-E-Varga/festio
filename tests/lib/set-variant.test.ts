@@ -1,7 +1,9 @@
 import { expect, test } from "vitest";
-import { setVariant } from "@/modular/state";
+import { initialState, setVariant } from "@/modular/state";
 import type {
+  ModularLibrary,
   ModularState,
+  ModularTemplate,
   SectionDefinition,
   SectionValues,
 } from "@/types/modular";
@@ -9,7 +11,8 @@ import type {
 /*
  * A made-up section: "plain" shows the heading and each place's name;
  * "full" adds the photos switch, the eyebrow, each place's photo, the days' labels and their
- * items' times, and the tags list.
+ * items' times, and the tags list; "bare" adds only the eyebrow, never
+ * filled with its sample (`unsampled`).
  */
 const LABEL = { en: "x", ro: "x", hu: "x" };
 const SECTION: SectionDefinition = {
@@ -36,6 +39,12 @@ const SECTION: SectionDefinition = {
         "days.items.time",
         "tags.word",
       ],
+    },
+    {
+      id: "bare",
+      name: LABEL,
+      shows: ["eyebrow", "heading", "places.name"],
+      unsampled: ["eyebrow"],
     },
   ],
   fields: [
@@ -227,4 +236,40 @@ test("back to a variant showing less fills nothing", () => {
     SAMPLES,
   );
   expect(next.values.s).toEqual({ eyebrow: "", heading: "" });
+});
+
+test("a newly shown field the variant leaves unsampled is not filled", () => {
+  const next = setVariant(stateWith("plain", {}), SECTION, "bare", SAMPLES);
+  expect(next.values.s.eyebrow).toBeUndefined();
+});
+
+/* A template starting the made-up section on `variant`, its eyebrow sample "Sample". */
+function startOn(variant: string): ModularState {
+  const template: ModularTemplate = {
+    kind: "modular",
+    id: "t",
+    name: "t",
+    package: "custom",
+    eventTypes: [],
+    palette: "p",
+    fontPair: "f",
+    sections: [{ section: "s", variant }],
+    values: { s: { eyebrow: "Sample" } },
+  };
+  const library: ModularLibrary = {
+    palettes: [],
+    fontPairs: [],
+    patterns: [],
+    sections: [SECTION],
+    templates: [template],
+  };
+  return initialState(template, library, "en");
+}
+
+test("a template starting on a variant that leaves a field unsampled leaves it empty", () => {
+  expect(startOn("bare").values.s.eyebrow).toBe("");
+});
+
+test("a template starting on any other variant fills that field from its sample", () => {
+  expect(startOn("full").values.s.eyebrow).toBe("Sample");
 });

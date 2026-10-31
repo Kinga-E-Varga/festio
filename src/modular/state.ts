@@ -29,7 +29,8 @@ export const TITLE_ID = "title";
  * A template as a fresh state: its palette, pattern, corners and pair,
  * every library section in order — on when the template lists it or it is
  * required — with the template's variant or the section's first, and every
- * section's sample values. A variant the section does not list falls back to its first.
+ * section's sample values but those its variant leaves `unsampled`. A
+ * variant the section does not list falls back to its first.
  */
 export function initialState(
   template: ModularTemplate,
@@ -39,26 +40,33 @@ export function initialState(
   const picked = new Map(
     template.sections.map((choice) => [choice.section, choice.variant]),
   );
+  const variantOf = (definition: SectionDefinition) => {
+    const wanted = picked.get(definition.id);
+    const known = definition.variants.some(({ id }) => id === wanted);
+    return known && wanted ? wanted : definition.variants[0].id;
+  };
   return {
     palette: template.palette,
     fontPair: template.fontPair,
     pattern: template.pattern ?? null,
     corners: template.corners ?? DEFAULT_CORNERS,
     envelope: true,
-    sections: library.sections.map((definition) => {
-      const wanted = picked.get(definition.id);
-      const known = definition.variants.some(({ id }) => id === wanted);
-      return {
-        section: definition.id,
-        variant: known && wanted ? wanted : definition.variants[0].id,
-        on: definition.required || picked.has(definition.id),
-      };
-    }),
+    sections: library.sections.map((definition) => ({
+      section: definition.id,
+      variant: variantOf(definition),
+      on: definition.required || picked.has(definition.id),
+    })),
     values: Object.fromEntries(
-      library.sections.map((definition) => [
-        definition.id,
-        sectionValues(definition, language, template.values?.[definition.id]),
-      ]),
+      library.sections.map((definition) => {
+        const values = sectionValues(
+          definition,
+          language,
+          template.values?.[definition.id],
+        );
+        for (const id of unsampled(definition, variantOf(definition)))
+          values[id] = "";
+        return [definition.id, values];
+      }),
     ),
   };
 }
@@ -104,7 +112,8 @@ export function setSectionOn(
  * lost. What the new variant shows and the old one did not, left empty,
  * gets its sample from `samples` (the section's, in the invitation's
  * language), so the host sees the whole variant and removes what they
- * don't want. What both show stays as the host left it; switches too.
+ * don't want, unless the variant leaves it `unsampled`. What both show
+ * stays as the host left it; switches too.
  */
 export function setVariant(
   state: ModularState,
@@ -115,8 +124,9 @@ export function setVariant(
   const id = definition.id;
   const from = state.sections.find(({ section }) => section === id)?.variant;
   const before = new Set(shownPaths(definition, from));
+  const skip = new Set(unsampled(definition, variant));
   const added = shownPaths(definition, variant).filter(
-    (path) => !before.has(path),
+    (path) => !before.has(path) && !skip.has(path),
   );
   let values = state.values[id] ?? {};
   for (const path of added)
@@ -128,6 +138,11 @@ export function setVariant(
     ),
     values: { ...state.values, [id]: values },
   };
+}
+
+/** The fields a variant never fills with a sample (`unsampled`). */
+function unsampled(definition: SectionDefinition, variant?: string) {
+  return definition.variants.find(({ id }) => id === variant)?.unsampled ?? [];
 }
 
 /** What a variant shows, `.first` dropped; an id the section does not list reads as its first. */

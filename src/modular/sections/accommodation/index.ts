@@ -182,7 +182,7 @@ export const section: SectionDefinition = {
         // Once a side note, now drawn as the stay's eyebrow; the id stays.
         {
           id: "distance",
-          label: LABELS.eyebrow,
+          label: LABELS.label,
           type: "text",
           maxLength: 40,
         },

@@ -722,10 +722,15 @@ export const DEFAULTS: Record<string, SectionSamples> = {
   },
   "dress-code": {
     icon: "sparkle",
-    eyebrow: {
+    label: {
       en: "What to wear",
       ro: "Ce să porți",
       hu: "Mit vegyél fel",
+    },
+    eyebrow: {
+      en: "Dress code",
+      ro: "Ținută",
+      hu: "Öltözet",
     },
     heading: {
       en: "Come as you feel.",
@@ -768,10 +773,15 @@ export const DEFAULTS: Record<string, SectionSamples> = {
   },
   gifts: {
     icon: "gift",
-    eyebrow: {
+    label: {
       en: "With gratitude",
       ro: "Cu recunoștință",
       hu: "Hálával",
+    },
+    eyebrow: {
+      en: "Gifts",
+      ro: "Cadouri",
+      hu: "Ajándékok",
     },
     heading: {
       en: "A note on gifts.",

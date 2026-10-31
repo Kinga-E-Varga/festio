@@ -1,4 +1,4 @@
-# Current Feature: Header menu links
+# Current Feature: Birthday cake cover
 
 ## Status
 
@@ -6,13 +6,18 @@ Completed
 
 ## Goals
 
-- The modular header's menu shows at most 7 links (`MENU_MAX`), listed in page order.
-- Always there while their sections are on: Date, Location, Schedule, Getting there, Accommodation, Good to know (Helpful notes, Dress code and Gifts share it, one link to the first on the page) and Contact.
-- Free spots filled in this order: FAQ, Family (Special people), Menu, Story (`MENU_RANK` in `src/modular/nav.ts`).
-- New links: Location (ro Locația, hu Helyszín), Contact (Contact, Kapcsolat), Family (Familia, Család), Story (Poveste, Történet).
-- Date & time's link renamed The day → **Date** (ro Data, hu Dátum).
+- A new drawn poster cover, **Birthday cake** (cover variant `4`; ro Tort aniversar, hu Születésnapi torta), after a Freepik birthday card: no photo.
+- The cover sits on the page's surface, so the chosen pattern shows through it; the floor at the bottom is the accent, edge to edge.
+- Bunting across the top, edge to edge: two nearly straight strings forming a flat X that crosses at about 45% across, the right string behind; each string starts at its own height and sags its own amount. Flags in accent, tertiary, secondary and accent-soft; where a front flag lies over a back one it takes the other tone (light over dark, dark over light). No outlines.
+- The Title's lines (names, or the two plain lines, and the second line) on a plain full-width band in the secondary colour. No eyebrow on this cover.
+- A three-tier cake with drippy icing, sprinkles and three striped candles, a surface-coloured sticker outline, standing on the floor with a darker oval shadow under it.
+- The date and the cover's details line on a tertiary ribbon with a V-cut end, hanging from under the band at the cake's right; as long as its words, never reaching the floor at any size.
+- Every colour from the palette; works on every palette.
 
 ## Notes
 
-- `menuLinks` in `src/components/modular/ModularInvitation.tsx`: a ranked section's link is its `menuLabel`, else its name; no stored data changes.
-- Simplify: ran 2026-10-31
+- Poster fields: `names`, `namesStart`, `namesMiddle`, `namesEnd`, `firstLine`, `nextLine`, `secondLine` (no `eyebrow`); `shows: ["details"]`; `wide: true`, no `band` (the page's surface).
+- Files: `src/modular/sections/cover/4.tsx` (layout), `Cake.tsx` (the drawing), `Bunting.tsx` (the strings, laid out for the cover's width).
+- Phone: cake left of centre, ribbon at the right. From `@3xl`: cake centred, ribbon beside it.
+- No motion in the first version.
+- Simplify: ran 2026-11-01

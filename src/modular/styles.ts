@@ -223,14 +223,6 @@ export const PAD = `${PAD_X} ${PAD_TOP} ${PAD_BOTTOM}`;
 /** A heading over its content. */
 export const STACK = "flex flex-col gap-8 @3xl:gap-11";
 
-/**
- * Round a heading over a timeline: 16px more under it (20px from `@3xl`)
- * than `STACK`'s gap, as the unlined grids (`UNLINED_PULL`), gone with the
- * heading, so a timeline with none starts where it did. Schedule's
- * Timeline and Story's Moments.
- */
-export const TIMELINE_HEADING = "mb-4 empty:hidden @3xl:mb-5";
-
 /** A timeline: 350px at most and centred on a phone, 960px from `@3xl`, its line down the middle. */
 export const TIMELINE = "mx-auto w-full max-w-[350px] @3xl:max-w-240";
 
@@ -369,11 +361,11 @@ export function centredWhenStacked(count: number): string {
 
 /**
  * A grid or list without its lines (the Accent and Full card accent
- * styles): pulled out by its cells' padding (`py-8 @3xl:py-10`), so the
- * last sits as close to the band's or card's edge as any content; up by only half of it, a little
- * more room under the heading. The space between them stays.
+ * styles): pulled out by its cells' padding (`py-8 @3xl:py-10`), so it sits
+ * `STACK`'s gap under the heading, as in any section, and the last as close
+ * to the band's or card's edge as any content. The space between them stays.
  */
-export const UNLINED_PULL = "-mt-4 -mb-8 @3xl:-mt-5 @3xl:-mb-10";
+export const UNLINED_PULL = "-my-8 @3xl:-my-10";
 
 /**
  * A grid with hairlines between its cells (Menu's courses, Location's

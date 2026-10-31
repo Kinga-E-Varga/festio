@@ -8,8 +8,8 @@ import { TextBoxWords } from "./TextBoxWords";
  * The words in one card down the middle, inside a double hairline frame,
  * as Menu's Framed card: a hairline, a gap of the card's own surface, a
  * second hairline. The card on `card`, the other surface from `ground`
- * unless given. Framed
- * (`3`) and Framed joined (`4`).
+ * unless given. Framed, Framed accent
+ * (`3`, `11`) and Framed joined (`4`).
  */
 export function FramedText({
   values,

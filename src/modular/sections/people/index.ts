@@ -150,7 +150,7 @@ export const section: SectionDefinition = {
       maxItems: 4,
       item: [
         { id: "icon", label: LABELS.icon, type: "icon", maxLength: 20 },
-        { id: "label", label: LABELS.eyebrow, type: "text", maxLength: 40 },
+        { id: "label", label: LABELS.label, type: "text", maxLength: 40 },
         {
           id: "names",
           label: { en: "names", ro: "nume", hu: "nevek" },

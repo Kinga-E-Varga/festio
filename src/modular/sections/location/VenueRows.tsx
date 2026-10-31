@@ -51,7 +51,7 @@ export function labelLead(venue: ListItem) {
 }
 
 /**
- * The locations of Simple, Icon and Two-line, which differ only in what
+ * The locations of Simple, Accent, Icon and Two-line, which differ only in what
  * stands over each venue's name (`lead`), whether the detail leads the name
  * (`twoLine`, `Venue`) and, without photos, the venues' alignment. Each location a row split as the
  * other sections are: the venue where their heading goes, its lead over
@@ -151,7 +151,7 @@ function PhotoRow({
         className="[direction:ltr] @3xl:items-start @3xl:text-left"
       />
       <div
-        className={`relative min-h-80 overflow-hidden border-1 border-[var(--m-line)] ${CORNER} [direction:ltr] ${GROUND[otherGround(ground)]} @3xl:min-h-108`}
+        className={`relative min-h-80 overflow-hidden ${CORNER} [direction:ltr] ${GROUND[otherGround(ground)]} @3xl:min-h-108`}
       >
         {photo ? (
           <WashedPhoto src={photo} sizes={PHOTO_SIZES} ground={ground} />

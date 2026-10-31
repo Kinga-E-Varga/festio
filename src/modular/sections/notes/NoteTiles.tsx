@@ -1,13 +1,11 @@
-import { useTranslations } from "next-intl";
 import type { ReactNode } from "react";
 import { DressCodeSwatches, hasSwatches } from "@/modular/cards/DressCodeCard";
 import { GiftActions, hasGiftActions } from "@/modular/cards/GiftsCard";
-import { text } from "@/modular/content";
+import { list, text } from "@/modular/content";
 import { otherGround } from "@/modular/ground";
 import { Icon, isIconName, type IconName } from "@/modular/icons";
 import { noteItems, twinIcon } from "@/modular/notes";
 import { SectionHeading } from "@/modular/SectionHeading";
-import { list } from "@/modular/content";
 import { FullCard } from "@/modular/FullCard";
 import {
   BODY,
@@ -119,7 +117,6 @@ export function NoteTiles({
   look: "grid" | "cards" | "list";
   accent?: boolean;
 }) {
-  const t = useTranslations("Sections");
   if (items.length === 0) return null;
   const dress = related["dress-code"] ?? {};
   const gifts = related.gifts ?? {};
@@ -162,7 +159,7 @@ export function NoteTiles({
               key={index}
               {...tile}
               icon={twinIcon(dress)}
-              label={t("dressCode")}
+              label={text(dress, "eyebrow")}
               title={text(dress, "title")}
               body={text(dress, "body")}
             >
@@ -176,7 +173,7 @@ export function NoteTiles({
               key={index}
               {...tile}
               icon={twinIcon(gifts)}
-              label={t("gifts")}
+              label={text(gifts, "eyebrow")}
               title={text(gifts, "title")}
               body={text(gifts, "body")}
             >

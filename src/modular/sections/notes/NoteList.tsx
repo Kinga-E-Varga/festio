@@ -1,4 +1,3 @@
-import { useTranslations } from "next-intl";
 import type { ReactNode } from "react";
 import { DressCodeSwatches, hasSwatches } from "@/modular/cards/DressCodeCard";
 import { GiftActions, hasGiftActions } from "@/modular/cards/GiftsCard";
@@ -35,7 +34,6 @@ export function NoteList({
   related: VariantProps["related"];
   cards?: SectionGround;
 }) {
-  const t = useTranslations("Sections");
   if (items.length === 0) return null;
   const dress = related["dress-code"] ?? {};
   const gifts = related.gifts ?? {};
@@ -48,7 +46,7 @@ export function NoteList({
             <Row
               key={index}
               cards={cards}
-              label={t("dressCode")}
+              label={text(dress, "eyebrow")}
               title={text(dress, "title")}
               body={text(dress, "body")}
             >
@@ -61,7 +59,7 @@ export function NoteList({
             <Row
               key={index}
               cards={cards}
-              label={t("gifts")}
+              label={text(gifts, "eyebrow")}
               title={text(gifts, "title")}
               body={text(gifts, "body")}
             >

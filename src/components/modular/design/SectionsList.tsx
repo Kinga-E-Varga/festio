@@ -219,13 +219,7 @@ function SectionRow({
         <VariantBands
           id={stylesId}
           open={stylesOpen}
-          // A to Z in the host's language, so a new style needs no place.
-          options={definition.variants
-            .map((variant) => ({
-              value: variant.id,
-              label: localized(variant.name, host),
-            }))
-            .sort((a, b) => a.label.localeCompare(b.label, host))}
+          options={styleOptions(definition, host)}
           value={section.variant}
           hint={
             definition.stylesHint
@@ -248,4 +242,25 @@ function SectionRow({
       ) : null}
     </div>
   );
+}
+
+/**
+ * A section's styles for its bands: by group, in the section's order of
+ * groups, ungrouped ones last; A to Z in the host's language within each,
+ * so a new style needs no place.
+ */
+function styleOptions(definition: SectionDefinition, host: Language) {
+  const groups = definition.variantGroups ?? [];
+  return definition.variants
+    .map((variant) => {
+      const at = groups.findIndex(({ id }) => id === variant.group);
+      return {
+        value: variant.id,
+        label: localized(variant.name, host),
+        group: at === -1 ? undefined : localized(groups[at].name, host),
+        rank: at === -1 ? groups.length : at,
+      };
+    })
+    .sort((a, b) => a.rank - b.rank || a.label.localeCompare(b.label, host))
+    .map(({ value, label, group }) => ({ value, label, group }));
 }

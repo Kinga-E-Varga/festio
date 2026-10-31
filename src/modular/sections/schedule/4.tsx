@@ -1,5 +1,5 @@
 import { SectionHeading } from "@/modular/SectionHeading";
-import { PAD, SECTION_GROUND, STACK, TIMELINE_HEADING } from "@/modular/styles";
+import { PAD, SECTION_GROUND, STACK } from "@/modular/styles";
 import type { VariantProps } from "@/types/modular";
 import { TimelineDays } from "./Timeline";
 
@@ -20,9 +20,7 @@ import { TimelineDays } from "./Timeline";
 export function Variant({ values, language, ground }: VariantProps) {
   return (
     <div className={`${STACK} ${SECTION_GROUND[ground]} ${PAD}`}>
-      <div className={TIMELINE_HEADING}>
-        <SectionHeading values={values} />
-      </div>
+      <SectionHeading values={values} />
       <TimelineDays
         values={values}
         language={language}

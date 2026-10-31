@@ -8,7 +8,8 @@ argument-hint: "[the idea, and a path / link to a reference card]"
 
 A cover variant in `src/modular/sections/cover/` that needs no photo: a flat
 illustration drawn in SVG, decorations scattered round it, the invitation's words
-beside or below. Champagne (`3.tsx`, drawing in `Coupe.tsx`) is the first one.
+beside or below. Champagne (`3.tsx`, drawing in `Coupe.tsx`) is the first one;
+Birthday cake (`4.tsx`, `Cake.tsx`, `Bunting.tsx`) the second.
 
 **Brief:** $ARGUMENTS
 
@@ -25,7 +26,9 @@ in the invitation's fonts, at a phone and a desktop size. Iterate there — shap
 colours, imperfections, decorations, the words' levels — until the user approves.
 Only then add it to `src/modular/sections/cover/` and carry on with the steps
 below, checking the real thing at every size (step 7). The mockup is scratch,
-never kept.
+never kept. Screenshot each mockup yourself (Playwright on the file) before
+pointing the user at it: a drawing covering the words or flags too small to see
+are cheaper to catch there.
 
 ## The layout is the user's call
 
@@ -62,12 +65,21 @@ it. Note, in a few words to the user:
 - One component per drawing, in its own file next to the cover (`Coupe.tsx`).
   An inline `<svg>` with a `viewBox` in round numbers (e.g. 200 wide), the
   shapes as `<path>`s and `<circle>`s, `aria-hidden`.
-- **Every colour mixed from the palette**, never a hex: the ground is the accent
-  (`--m-accent`), and the drawing's parts are `color-mix(in oklab, var(--m-accent),
+- **Every colour mixed from the palette**, never a hex: on an accent ground
+  (`--m-accent`) the drawing's parts are `color-mix(in oklab, var(--m-accent),
 white N%)` for the light parts and `black N%` for the dark accent, set once as
   custom properties on the drawing (`COLORS` in `Coupe.tsx`). One drawing then
   works on every palette. Text on it uses `--m-accent-ink` (and its muted mix).
-  Try it on two or three palettes with `npm run look -- --palette <name>`.
+  A cover on the page's surface (no `band`) shows the chosen pattern; its parts
+  mix from the other roles the same way. Try it on two or three palettes with
+  `npm run look -- --palette <name>`.
+- **The box holds everything the drawing draws**, its shadow included, so the
+  layout can trust it. **The drawing exports its proportions** as custom
+  properties (`CAKE_SHAPE` in `Cake.tsx`: the object's own width, base to top,
+  base to the box's bottom, each a share of its height), and the layout reads
+  them — no hand-typed ratios in the cover's file. Change the drawing, change
+  only those. Place an object that stands on something **by its base**, not the
+  box's bottom, so a bigger shadow can't lift it.
 - Big and simple first. Shapes the user will want to change one by one (a wing, a
   foot) stay separate paths.
 - The cover's own small decorations that belong to the object (bubbles over a
@@ -124,6 +136,11 @@ Placed by hand, but by a method:
   When some are removed, look again for the gaps left behind.
 - Tall layouts (a tablet held upright, side by side) have bigger empty bands; a
   few extra shown only there: `@3xl:[@container(aspect-ratio<=1)]:block`.
+- **A decoration laid out by script** (one that has to know the width, like a
+  string of flags): the size rule stays in CSS, as a custom property on the
+  cover's box, and the script reads the measured box back. One place for the
+  rule, the box has its size before the script runs (nothing jumps), and the
+  rest of the cover can read the same variable.
 
 ## 5. The words: levels and spacing
 
@@ -149,14 +166,43 @@ and what belongs together.
 - **Sizes grow with the width** like the names (`clamp(min, Ncqw, max)`), never
   in steps, and a taller block costs the drawing height on a phone — check the
   short phone.
+- **Words in a narrow shape** (a ribbon, a tag): measure the widest word or pair
+  in the real font, in en, ro and hu (Hungarian months run long), never guess an
+  em ratio. Size the shape so they fit, and let a line wrap when it must rather
+  than spill past the edge.
+
+## Layout across screens
+
+- **An adjustment changes the rule, not one number.** "A little lower", "smaller
+  on a phone": find what the value is measured against and what depends on it,
+  change that, and measure every size again.
+- **Side by side only when the cover is wider than tall**
+  (`@3xl:[@container(aspect-ratio>1)]:`), not by width alone: an upright tablet
+  side by side gets a small drawing in a big empty band. Set the two
+  arrangements as custom properties on one element and let the parts read them.
+- **Something placed off centre** may be only twice as wide as the smaller room
+  on either side, less the margins and whatever stands beside it — one formula,
+  so it can't run off an edge.
+- **A part pinned to a share of the height** (a band at N%): its gap above is
+  N% of the height less what's above it, never under a minimum gap; the part
+  above publishes its height as a variable for that.
+- **Proportions that depend on each other:** size what the others follow first
+  (the stage by the width when the drawing sizes the stage), or two values end
+  up chasing each other.
 
 ## 6. Motion
 
 Gentle, looping a few times then resting on a still frame; nothing under
 `prefers-reduced-motion` (`motion-safe:`). Paused while inert, under the envelope,
-or out of view — reuse `PAUSE`, `TWINKLE` and the `--animate-*` keyframes in
-`globals.css` (Champagne: bubbles rise and fade, stars twinkle, fizz shimmers),
-and give each item its own delay so nothing pulses in step.
+or out of view — reuse `PAUSE` and `OWN_BOX` (`cover/motion.ts`), `useOutOfView`
+on the cover's root, and the `--animate-*` keyframes in `globals.css` (Champagne:
+bubbles rise and fade, stars twinkle, fizz shimmers; Birthday cake: flames
+flicker, flags sway), and give each item its own delay so nothing pulses in step.
+
+- **A delay or length goes under `motion-safe:` too**
+  (`motion-safe:[animation-delay:0.4s]`). The `motion-safe:animate-*` shorthand
+  sits in a media rule later in the CSS and resets a plain one: every item then
+  moves in step. Check in the browser that the computed delays differ.
 
 ## 7. Check every size, every time
 
@@ -173,7 +219,7 @@ rm scripts/.l.mjs
 | -------------- | ----------- | ------------------------------------------ |
 | Phone          | 390 × 844   | stacked                                    |
 | Short phone    | 360 × 640   | words start higher, less room              |
-| Upright tablet | 872 × 1180  | side by side but tall: big empty bands     |
+| Upright tablet | 872 × 1180  | tall: the arrangement, big empty bands     |
 | Laptop         | 1438 × 768  | the most common; short                     |
 | Wide           | 2472 × 1000 | past every cap: margins, nothing stretched |
 
@@ -197,5 +243,14 @@ strip makes the invitation ~72px narrower than the screen.
   Title (`NAMES_SIZE`) wrap to four lines there; size them by the width they have
   (`min(80px, 4.5cqw)`), smooth, not in steps.
 - **Sizes with breakpoints: list the steps and ask** before changing them.
+- **A `size` container is a stacking context.** A drawing in one can't rise
+  over a sibling with a `z-index`; for it to overlap the part above, that part
+  gets no `z-index` and the drawing's container comes after it.
+- **A length measured against an outer container** (a floor by the cover's
+  height, set on an inner size container): register it with `@property` in
+  `globals.css` (as `--cover-floor`, `--cover-top`) so it resolves where it is
+  set, not again inside.
+- **`npm run look -- --pattern`** reaches only the picker's first page (Polka is
+  past it); pick one there, like Big polka.
 - New variant = a new id in the section's `index.ts`, never reused; no change to
   stored ids or saved data's shape. Names in en, ro and hu.

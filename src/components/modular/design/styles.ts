@@ -31,14 +31,20 @@ export const BOX_MARK = "h-[22px] shrink-0 text-neutral-500";
 export const BOX_MARK_STROKE = 1.75;
 
 /**
- * A section's styles, each a band glued under its row: the row's neutral
- * fill; hovered, a darker neutral. The current one is ticked where the bars draw their
- * icons, so every name starts in line with the bars' names. No top edge:
+ * A section's styles, each a band glued under its row, on the row's neutral
+ * fill: a style's (`DESIGN_BAND_BUTTON`) or a group's heading. No top edge:
  * the band above draws that line. Two edges overlapped by a pixel land a
- * pixel apart on a scaled screen and read as a thick line. The focus ring
- * is the keyboard's only: a click leaves none.
+ * pixel apart on a scaled screen and read as a thick line.
  */
-export const DESIGN_BAND = `${FIELD} flex cursor-pointer items-center ${BOX_GAP} rounded-none! border-t-0 border-neutral-400 pl-3 text-left outline-neutral-400 bg-neutral-50 hover:bg-neutral-300 focus:not-focus-visible:outline-none`;
+export const DESIGN_BAND = `${FIELD} flex items-center ${BOX_GAP} rounded-none! border-t-0 border-neutral-400 pl-3 text-left bg-neutral-50`;
+
+/**
+ * A style's band: a button, a darker neutral hovered. The current one is
+ * ticked where the bars draw their icons, so every name starts in line
+ * with the bars' names. The focus ring is the keyboard's only: a click
+ * leaves none.
+ */
+export const DESIGN_BAND_BUTTON = `${DESIGN_BAND} cursor-pointer outline-neutral-400 hover:bg-neutral-300 focus:not-focus-visible:outline-none`;
 
 /**
  * The box as one button that opens what is under it (template, palette,

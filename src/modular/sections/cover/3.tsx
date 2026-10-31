@@ -1,11 +1,11 @@
 "use client";
 
-import { useEffect, useRef } from "react";
 import { isOn, longDate, text } from "@/modular/content";
 import { Mark, markParts } from "@/modular/Mark";
 import { AMPERSAND_SIZE, EYEBROW, HEADING } from "@/modular/styles";
 import type { VariantProps } from "@/types/modular";
 import { Coupe, CoverStars } from "./Coupe";
+import { useOutOfView } from "./useOutOfView";
 
 /*
  * The names grow smoothly with the width, never past the Title's 80px:
@@ -42,18 +42,8 @@ export function Variant({ values, related, basics, language }: VariantProps) {
   const details = text(values, "details");
   /* The event's own date, in the invitation's language. */
   const date = longDate(basics.date, language);
-  /* Out of view, the motion waits (`Coupe`'s `PAUSE`). */
-  const cover = useRef<HTMLDivElement>(null);
-  useEffect(() => {
-    const element = cover.current;
-    if (!element) return;
-    /* On the element itself: no re-render each time it scrolls in or out. */
-    const watch = new IntersectionObserver(([entry]) =>
-      element.toggleAttribute("data-paused", !entry.isIntersecting),
-    );
-    watch.observe(element);
-    return () => watch.disconnect();
-  }, []);
+  /* Out of view, the motion waits (`PAUSE`). */
+  const cover = useOutOfView<HTMLDivElement>();
 
   return (
     /*
@@ -101,7 +91,11 @@ export function Variant({ values, related, basics, language }: VariantProps) {
           ) : null}
           <p className={POSTER_DATE}>{date}</p>
           {details ? (
-            <p className={`${EYEBROW} ${MUTED_ON_ACCENT} mt-3`}>{details}</p>
+            <p
+              className={`${EYEBROW} ${MUTED_ON_ACCENT} mt-3 whitespace-pre-line`}
+            >
+              {details}
+            </p>
           ) : null}
         </div>
       </div>

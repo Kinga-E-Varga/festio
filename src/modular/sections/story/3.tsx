@@ -13,7 +13,6 @@ import {
   TONES,
   TONE_TEXT,
   turnTone,
-  TIMELINE_HEADING,
   TIMELINE,
   TIMELINE_STOP,
 } from "@/modular/styles";
@@ -36,9 +35,7 @@ export function Variant({ values, ground }: VariantProps) {
 
   return (
     <div className={`${STACK} ${SECTION_GROUND[ground]} ${PAD}`}>
-      <div className={TIMELINE_HEADING}>
-        <SectionHeading values={values} />
-      </div>
+      <SectionHeading values={values} />
       {moments.length > 0 ? (
         <ol className={TIMELINE}>
           {moments.map((moment, index) => {

@@ -72,6 +72,21 @@ export const section: SectionDefinition = {
       ],
     },
     {
+      id: "11",
+      name: { en: "Accent", ro: "Accent", hu: "Kiemelt" },
+      // Simple on the accent.
+      ground: "accent",
+      shows: [
+        "photos",
+        "venues.label",
+        "venues.venue",
+        "venues.address",
+        "venues.mapsLink",
+        "venues.detail",
+        "venues.photo",
+      ],
+    },
+    {
       id: "7",
       name: {
         en: "Two-line",
@@ -130,7 +145,11 @@ export const section: SectionDefinition = {
     },
     {
       id: "9",
-      name: { en: "Accent", ro: "Accent", hu: "Kiemelt" },
+      name: {
+        en: "Accent & header",
+        ro: "Accent & antet",
+        hu: "Kiemelt & fejléc",
+      },
       // List & grid on the accent, no lines, each venue's icon over its label.
       ground: "accent",
       shows: [
@@ -234,6 +253,12 @@ export const section: SectionDefinition = {
           maxLength: 160,
         },
         {
+          id: "detail",
+          label: LABELS.note,
+          type: "longText",
+          maxLength: 80,
+        },
+        {
           id: "mapsLink",
           label: {
             en: "maps link",
@@ -242,12 +267,6 @@ export const section: SectionDefinition = {
           },
           type: "text",
           maxLength: 300,
-        },
-        {
-          id: "detail",
-          label: LABELS.note,
-          type: "longText",
-          maxLength: 80,
         },
         { id: "photo", label: LABELS.photo, type: "image", maxLength: 300 },
       ],

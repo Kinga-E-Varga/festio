@@ -99,6 +99,17 @@ export const section: SectionDefinition = {
       ground: "joined",
       shows: ["largeText", "italic", "smallText"],
     },
+    {
+      id: "11",
+      name: {
+        en: "Framed accent",
+        ro: "Încadrat accent",
+        hu: "Kiemelt keretes",
+      },
+      // Framed on the accent band, the card on the surface.
+      ground: "accent",
+      shows: ["largeText", "italic", "smallText"],
+    },
   ],
   fields: [
     {

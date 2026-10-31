@@ -45,6 +45,13 @@ export const section: SectionDefinition = {
       // No italic second line under the heading.
       shows: ICON_HEADING_SHOWS,
     },
+    {
+      id: "4",
+      name: { en: "Colour band", ro: "Bandă colorată", hu: "Színes sáv" },
+      // Bold band on the secondary.
+      band: "secondary",
+      shows: ICON_HEADING_SHOWS,
+    },
   ],
   fields: [
     ...HEADING_FIELDS,

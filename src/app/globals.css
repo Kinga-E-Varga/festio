@@ -245,6 +245,49 @@
       opacity: 0.45;
     }
   }
+
+  /*
+   * The Birthday cake cover's motion, about 20 seconds, then still: the
+   * candle flames flicker, uneven, round their base; the flags' tips sway,
+   * their top edge kept on the string. Each ends as it rests. The flicker in
+   * `scale` and `rotate`, not `transform`; the sway a skew, which only
+   * `transform` has.
+   */
+  --animate-flicker: flicker 1.5s ease-in-out 13;
+  --animate-sway: sway 3.2s ease-in-out 6;
+
+  @keyframes flicker {
+    0%,
+    100% {
+      scale: 1;
+      rotate: 0deg;
+    }
+    20% {
+      scale: 0.9 1.08;
+      rotate: -4deg;
+    }
+    45% {
+      scale: 1.06 0.92;
+      rotate: 3deg;
+    }
+    70% {
+      scale: 0.95 1.05;
+      rotate: -2deg;
+    }
+  }
+
+  @keyframes sway {
+    0%,
+    100% {
+      transform: skewX(0deg);
+    }
+    25% {
+      transform: skewX(8deg);
+    }
+    75% {
+      transform: skewX(-8deg);
+    }
+  }
 }
 
 /*
@@ -256,6 +299,17 @@
   syntax: "<length>";
   inherits: true;
   initial-value: 0px;
+}
+
+/*
+ * The Birthday cake cover's floor height (`cover/4.tsx`), set on its stage
+ * from the cover's height. Registered as a length so it is worked out there,
+ * against the cover, not again inside the stage, whose `cqh` is its own.
+ */
+@property --cover-floor {
+  syntax: "<length>";
+  inherits: true;
+  initial-value: 72px;
 }
 
 /*

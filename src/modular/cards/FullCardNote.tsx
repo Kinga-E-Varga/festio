@@ -1,62 +1,66 @@
 import type { ReactNode } from "react";
-import { FullCardFrame } from "@/modular/FullCard";
+import { FullCard } from "@/modular/FullCard";
 import type { IconName } from "@/modular/icons";
+import { SectionHeading } from "@/modular/SectionHeading";
 import {
   BODY,
   COLUMN,
-  EYEBROW,
   H3_ITEM,
+  INNER_EYEBROW,
   MUTED,
   PAD,
   SECTION_GROUND,
   STACK,
+  UNLINED_PULL,
 } from "@/modular/styles";
-import type { SectionGround } from "@/types/modular";
+import type { SectionGround, SectionValues } from "@/types/modular";
 import { CardIcon, ItemIcon } from "./CardIcon";
 
 /**
- * Dress code's and Gifts' Full card: the full card alone (`FullCardFrame`),
- * no section heading but its intro line (`eyebrow`, as the heading's),
- * no lines, and in it the note, centred: its icon, when it has one, on a
- * soft disc in the accent (as the full cards' items), the intro line, 16px
- * over the title, the text and, 16px under them, what the section adds (the colours,
- * the gift buttons). With `accent`, the card on the accent and the icon on
- * the palette's secondary disc (`ItemIcon`'s `accent`): Full card accent (`5`).
- * With a `heading` (Accent, `6`, on the accent band): no card, no icon (`accent` doesn't apply), the heading
- * over the note, 16px (20px from `@3xl`) further under it than `STACK`'s
- * gap, as the other Accent styles, as wide as the card's content.
+ * Dress code's and Gifts' note under the section's heading (`values`),
+ * centred: its icon, when it has one, on a soft disc in the accent (as the
+ * full cards' items), its label, 16px over the title, the text and, 16px
+ * under them, what the section adds (the colours, the gift buttons). In one
+ * card, the note between its lines (`FullCard`): Full card (`4`); with
+ * `accent`, the card on the accent and the icon on the palette's secondary
+ * disc (`ItemIcon`'s `accent`), Full card accent (`5`). With `band` (Accent,
+ * `6`, on the accent band): no card, the heading straight over the note,
+ * `STACK`'s gap under it, as in any section, as wide as the card's content.
  */
 export function FullCardNote({
+  values,
   ground,
   icon,
-  eyebrow,
+  label = "",
   title,
   body,
   children,
   accent = false,
-  heading,
+  band = false,
 }: {
+  values: SectionValues;
   ground: SectionGround;
   icon?: IconName;
-  eyebrow: string;
+  /** The card's own label, smaller than the heading's intro line. */
+  label?: string;
   title: string;
   body: string;
   children?: ReactNode;
   accent?: boolean;
-  heading?: ReactNode;
+  band?: boolean;
 }) {
   const note = (
     <div
-      className={`flex flex-col items-center text-center ${heading ? `${COLUMN} mt-4 @3xl:mt-5 @3xl:px-12` : ""}`}
+      className={`flex flex-col items-center text-center ${band ? `${COLUMN} @3xl:px-12` : `${accent ? UNLINED_PULL : ""} py-8 @3xl:py-10`}`}
     >
       {accent ? (
         <ItemIcon name={icon} accent className="mb-5" />
       ) : icon ? (
         <CardIcon name={icon} tone="accent" className="mb-5" />
       ) : null}
-      {eyebrow ? (
-        <p className={`${EYEBROW} mb-4 text-[color:var(--m-secondary)]`}>
-          {eyebrow}
+      {label ? (
+        <p className={`${INNER_EYEBROW} mb-4 text-[color:var(--m-secondary)]`}>
+          {label}
         </p>
       ) : null}
       {title ? <h3 className={`${H3_ITEM} mb-1`}>{title}</h3> : null}
@@ -73,12 +77,14 @@ export function FullCardNote({
     </div>
   );
 
-  return heading ? (
+  return band ? (
     <div className={`${STACK} ${SECTION_GROUND[ground]} ${PAD}`}>
-      {heading}
+      <SectionHeading values={values} />
       {note}
     </div>
   ) : (
-    <FullCardFrame ground={accent ? "accent" : ground}>{note}</FullCardFrame>
+    <FullCard values={values} ground={ground} accent={accent}>
+      {note}
+    </FullCard>
   );
 }

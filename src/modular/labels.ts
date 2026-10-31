@@ -19,6 +19,8 @@ export const LABELS = {
     ro: "rând de început",
     hu: "bevezető sor",
   },
+  /** A list item's or card's own small line over its title, smaller than the heading's intro line. */
+  label: { en: "label", ro: "etichetă", hu: "címke" },
   text: { en: "text", ro: "text", hu: "szöveg" },
   time: { en: "time", ro: "ora", hu: "időpont" },
   title: { en: "title", ro: "titlu", hu: "cím" },

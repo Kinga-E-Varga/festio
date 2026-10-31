@@ -26,16 +26,14 @@ export const section: SectionDefinition = {
   required: false,
   order: 110,
   menuLabel: GOOD_TO_KNOW,
-  noteCard: ["icon", ...CARD],
+  noteCard: ["eyebrow", "icon", ...CARD],
   variants: [
     {
       id: "1",
       name: { en: "Card", ro: "Card", hu: "Kártya" },
-      // The heading's intro line and heading only: no italic line, no note.
+      // Every heading field but the italic heading.
       shows: [
-        ...HEADING_SHOWS.filter(
-          (id) => id !== "headingItalic" && id !== "note",
-        ),
+        ...HEADING_SHOWS.filter((id) => id !== "headingItalic"),
         "icon",
         ...CARD,
       ],
@@ -61,8 +59,12 @@ export const section: SectionDefinition = {
     {
       id: "4",
       name: { en: "Full card", ro: "Card întreg", hu: "Teljes kártya" },
-      // The icon, the heading's intro line and the card's own fields only.
-      shows: ["icon", "eyebrow", ...CARD],
+      // The heading but its italic line, then the card's own fields.
+      shows: [
+        ...HEADING_SHOWS.filter((id) => id !== "headingItalic"),
+        "icon",
+        ...CARD,
+      ],
     },
     {
       id: "5",
@@ -73,20 +75,31 @@ export const section: SectionDefinition = {
       },
       // Full card on the accent; always on the page's surface, whatever its turn.
       ground: "surface",
-      shows: ["icon", "eyebrow", ...CARD],
+      shows: [
+        ...HEADING_SHOWS.filter((id) => id !== "headingItalic"),
+        "icon",
+        ...CARD,
+      ],
     },
     {
       id: "6",
       name: { en: "Accent", ro: "Accent", hu: "Kiemelt" },
-      // On the accent band: the card's title and text as the heading and
-      // its note, under the eyebrow, no icon; the gift buttons under them.
+      // On the accent band: the heading but its italic line, then the
+      // card's icon, its label, title and text; the gift buttons under them.
       ground: "accent",
-      shows: ["eyebrow", ...CARD],
+      shows: [
+        ...HEADING_SHOWS.filter((id) => id !== "headingItalic"),
+        "icon",
+        "label",
+        ...CARD,
+      ],
     },
   ],
   fields: [
     ...HEADING_FIELDS,
     { id: "icon", label: LABELS.icon, type: "icon", maxLength: 20 },
+    // The card's own small line over its title, apart from the heading's intro line.
+    { id: "label", label: LABELS.label, type: "text", maxLength: 30 },
     {
       id: "title",
       label: LABELS.title,

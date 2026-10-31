@@ -131,11 +131,10 @@ export const section: SectionDefinition = {
         ro: "Cronologie",
         hu: "Idővonal",
       },
-      // Every heading field but the italic heading and the note.
+      // Every heading field but the italic heading; the note empty to start.
+      unsampled: ["note"],
       shows: [
-        ...HEADING_SHOWS.filter(
-          (id) => id !== "headingItalic" && id !== "note",
-        ),
+        ...HEADING_SHOWS.filter((id) => id !== "headingItalic"),
         "days.date",
         "days.items.time",
         "days.items.title",
@@ -148,10 +147,9 @@ export const section: SectionDefinition = {
       name: { en: "Accent", ro: "Accent", hu: "Kiemelt" },
       // Timeline on the accent, every disc in the secondary.
       ground: "accent",
+      unsampled: ["note"],
       shows: [
-        ...HEADING_SHOWS.filter(
-          (id) => id !== "headingItalic" && id !== "note",
-        ),
+        ...HEADING_SHOWS.filter((id) => id !== "headingItalic"),
         "days.date",
         "days.items.time",
         "days.items.title",
@@ -169,10 +167,9 @@ export const section: SectionDefinition = {
       // Timeline in a full card on the accent, every disc in the secondary;
       // always on the page's surface, whatever its turn.
       ground: "surface",
+      unsampled: ["note"],
       shows: [
-        ...HEADING_SHOWS.filter(
-          (id) => id !== "headingItalic" && id !== "note",
-        ),
+        ...HEADING_SHOWS.filter((id) => id !== "headingItalic"),
         "days.date",
         "days.items.time",
         "days.items.title",

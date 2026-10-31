@@ -27,6 +27,8 @@ const MIXES: Record<MixedColor, string> = {
   "inverse-ink": "var(--m-surface)",
   "accent-ink-muted":
     "color-mix(in oklab, var(--m-accent-ink), var(--m-accent) 20%)",
+  "secondary-ink-muted":
+    "color-mix(in oklab, var(--m-secondary-ink), var(--m-secondary) 20%)",
   "tertiary-ink-muted":
     "color-mix(in oklab, var(--m-tertiary-ink), var(--m-tertiary) 20%)",
   "page-ink": "var(--m-ink)",

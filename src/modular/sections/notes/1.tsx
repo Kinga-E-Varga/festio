@@ -1,8 +1,7 @@
-import { useTranslations } from "next-intl";
 import { DressCodeCard } from "@/modular/cards/DressCodeCard";
 import { GiftsCard } from "@/modular/cards/GiftsCard";
 import { NoteCard } from "@/modular/cards/NoteCard";
-import { list } from "@/modular/content";
+import { list, text } from "@/modular/content";
 import { isIconName } from "@/modular/icons";
 import { noteItems } from "@/modular/notes";
 import { SectionHeading } from "@/modular/SectionHeading";
@@ -12,7 +11,6 @@ import { otherGround } from "@/modular/ground";
 
 /** The subsections as cards, one under another. */
 export function Variant({ values, related, ground }: VariantProps) {
-  const t = useTranslations("Sections");
   const cardGround = otherGround(ground);
   const items = noteItems(list(values, "items"), values);
 
@@ -28,7 +26,7 @@ export function Variant({ values, related, ground }: VariantProps) {
                 <DressCodeCard
                   key={index}
                   values={related["dress-code"] ?? {}}
-                  label={t("dressCode")}
+                  label={text(related["dress-code"] ?? {}, "eyebrow")}
                   ground={cardGround}
                   tone="secondary"
                 />
@@ -39,7 +37,7 @@ export function Variant({ values, related, ground }: VariantProps) {
                 <GiftsCard
                   key={index}
                   values={related.gifts ?? {}}
-                  label={t("gifts")}
+                  label={text(related.gifts ?? {}, "eyebrow")}
                   ground={cardGround}
                   tone="secondary"
                 />

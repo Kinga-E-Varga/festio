@@ -41,6 +41,7 @@ export type MixedColor =
   | "inverse"
   | "inverse-ink"
   | "accent-ink-muted"
+  | "secondary-ink-muted"
   | "tertiary-ink-muted"
   | "page-ink"
   | "page-ink-muted"
@@ -230,6 +231,8 @@ export interface VariantInfo {
   id: string;
   /** What the host's variant picker calls it. */
   name: LocalizedText;
+  /** Its group in the picker: one of the section's `variantGroups` ids. */
+  group?: string;
   /** This variant's own ground rule, over the section's. */
   ground?: GroundRule;
   /**
@@ -257,6 +260,12 @@ export interface VariantInfo {
    * values stay the Title's, so another cover brings it back as it was.
    */
   poster?: string[];
+  /**
+   * Fields it shows but never fills with a sample, by id: empty when a
+   * template starts with it or the host switches to it, for the host to
+   * fill or not. A value already there stays.
+   */
+  unsampled?: string[];
 }
 
 export type SectionField =
@@ -296,6 +305,11 @@ export interface SectionDefinition {
   menuLabel?: LocalizedText;
   /** A hint under its styles in the Design tab. */
   stylesHint?: LocalizedText;
+  /**
+   * Headings the Design tab sorts its styles under, in this order; each
+   * variant names its own (`group`). Left out, one list.
+   */
+  variantGroups?: { id: string; name: LocalizedText }[];
   /**
    * Other sections whose values this one shows, by id — so content entered
    * once is read in both places (the footer's mark is the header's).

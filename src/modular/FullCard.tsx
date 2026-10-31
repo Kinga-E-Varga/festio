@@ -19,7 +19,7 @@ export const FULL_CARD_PAD = "px-6 py-12 @3xl:px-12 @3xl:py-16";
 /* The card: as wide as the section's content, 960px at most (`COLUMN`), the section's own fill, so it hides the page's pattern, with the host's corners. */
 const CARD = `${COLUMN} ${CORNER} ${FULL_CARD_PAD}`;
 
-/** The full card alone, on the section's padding: Dress code's and Gifts' Full card. */
+/** The full card alone, on the section's padding: `FullCard`'s frame, and Schedule's Full card accent (`11`). */
 export function FullCardFrame({
   ground,
   children,
