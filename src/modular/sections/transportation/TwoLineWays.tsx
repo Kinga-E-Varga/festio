@@ -1,4 +1,5 @@
 import { ItemIcon } from "@/modular/cards/CardIcon";
+import { iconMode, itemMark } from "@/modular/item-marks";
 import { Rows } from "@/modular/cards/Rows";
 import { list } from "@/modular/content";
 import { SectionHeading } from "@/modular/SectionHeading";
@@ -33,6 +34,7 @@ export function TwoLineWays({
   cards?: boolean;
 }) {
   const ways = list(values, "ways").slice(0, 6);
+  const mode = iconMode(values);
 
   return (
     <div className={`${SPLIT} ${SECTION_GROUND[ground]} ${PAD}`}>
@@ -40,7 +42,7 @@ export function TwoLineWays({
         <SectionHeading values={values} align="start" />
       </div>
       <Rows items={ways} cards={cards ? ground : undefined}>
-        {(way) => (
+        {(way, index) => (
           <>
             {way.label ? (
               <p
@@ -58,7 +60,10 @@ export function TwoLineWays({
                   </p>
                 ) : null}
               </div>
-              <ItemIcon name={way.icon} className="self-center" />
+              <ItemIcon
+                mark={itemMark(mode, way.icon, index)}
+                className="self-center"
+              />
             </div>
           </>
         )}

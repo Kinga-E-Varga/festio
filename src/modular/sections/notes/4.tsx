@@ -1,4 +1,5 @@
 import { list } from "@/modular/content";
+import { iconMode } from "@/modular/item-marks";
 import { noteItems } from "@/modular/notes";
 import { SectionHeading } from "@/modular/SectionHeading";
 import { PAD, SPLIT, SECTION_GROUND } from "@/modular/styles";
@@ -7,7 +8,7 @@ import { NoteList } from "./NoteList";
 
 /**
  * The two-line heading beside the notes as rows between hairlines
- * (`NoteList`), with no icons.
+ * (`NoteList`), each note's mark on a soft disc at the row's end.
  */
 export function Variant({ values, related, ground }: VariantProps) {
   return (
@@ -17,6 +18,8 @@ export function Variant({ values, related, ground }: VariantProps) {
       </div>
       <NoteList
         items={noteItems(list(values, "items"), values)}
+        mode={iconMode(values)}
+        marks="end"
         related={related}
       />
     </div>

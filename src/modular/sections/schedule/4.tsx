@@ -11,11 +11,11 @@ import { TimelineDays } from "./Timeline";
  * none — and the events taking turns left and right, on across the days.
  * Each event its time as an eyebrow over its title and note; those on the
  * left lean on the line. The discs, the times and the line (at 50%) take turns by
- * day: the 1st, 3rd… in the accent, the 2nd, 4th… in the secondary. A day's
+ * day: the 1st, 3rd… in the secondary, the 2nd, 4th… in the accent. A day's
  * date in the muted ink stands above its events, only when there is more
  * than one day. On a phone the line runs down the left, every event and
  * date right of it, the whole no wider than 350px and centred. On the
- * accent (Accent, `10`) every disc in the palette's secondary.
+ * accent (Timeline accent, `10`) every disc in the palette's secondary.
  */
 export function Variant({ values, language, ground }: VariantProps) {
   return (

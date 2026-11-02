@@ -3,7 +3,13 @@ import { DressCodeSwatches, hasSwatches } from "@/modular/cards/DressCodeCard";
 import { GiftActions, hasGiftActions } from "@/modular/cards/GiftsCard";
 import { list, text } from "@/modular/content";
 import { otherGround } from "@/modular/ground";
-import { Icon, isIconName, type IconName } from "@/modular/icons";
+import { MarkGlyph } from "@/modular/cards/CardIcon";
+import {
+  iconMode,
+  itemMark,
+  type IconMode,
+  type ItemMark,
+} from "@/modular/item-marks";
 import { noteItems, twinIcon } from "@/modular/notes";
 import { SectionHeading } from "@/modular/SectionHeading";
 import { FullCard } from "@/modular/FullCard";
@@ -15,8 +21,6 @@ import {
   GROUND,
   H3_ITEM,
   INNER_EYEBROW,
-  LINED_CELL,
-  LINED_GRID,
   UNLINED_PULL,
   MUTED,
   PAD,
@@ -34,10 +38,9 @@ type Note = ReturnType<typeof noteItems>[number];
 
 /**
  * Transportation's Full card for the notes: the heading centred,
- * the notes under it between the card's lines (`FullCard`), one under
- * another, a line across between each, each centred as a Cards (`8`)
- * card's content. Full card (`9`); with `accent`, the card on the
- * accent, no lines, every disc in the palette's secondary: Full card
+ * the notes under it (`FullCard`), one under another, no lines, each
+ * centred as a Cards (`8`) card's content. Full card (`9`); with `accent`,
+ * the card on the accent, every disc in the palette's secondary: Full card
  * accent (`12`).
  */
 export function NoteFullCard({
@@ -54,6 +57,7 @@ export function NoteFullCard({
     <FullCard values={values} ground={ground} accent={accent}>
       <NoteTiles
         items={items}
+        mode={iconMode(values)}
         related={related}
         ground={card}
         look="list"
@@ -80,6 +84,7 @@ export function NoteTilesSection({
       <SectionHeading values={values} />
       <NoteTiles
         items={noteItems(list(values, "items"), values)}
+        mode={iconMode(values)}
         related={related}
         ground={ground}
         look={look}
@@ -91,27 +96,30 @@ export function NoteTilesSection({
 
 /**
  * The notes side by side under a centred heading, for Grid and Cards, as
- * Transportation's: `grid`, cells between hairlines (`LINED_GRID`), each
- * note centred down its cell, no icons; `cards`, a card on the other
+ * Transportation's: `grid`, cells side by side, no lines, each note
+ * centred down its cell, its icon as on the cards; `cards`, a card on the other
  * surface each (`cardColumns`), centred while they stack, its icon on a
  * soft disc over its label — Dress code's and Gifts' their own (`twinIcon`) — every disc in the secondary; `list`, Full card (`9`): one under another, a line
  * across between each, each centred, its icon as on the cards, the gift
  * buttons side by side while they fit. Each its
  * label, title and text, and for Dress code and Gifts their colours or
  * account under them. With `accent`, on the accent: `cards`, the cards
- * filled with it (Cards accent, `10`); `grid` (on the accent band, Accent,
- * `11`), no hairlines and the icons back; `list` (in the accent full card,
- * Full card accent, `12`), no lines between. Either way every disc in the
- * palette's own secondary.
+ * filled with it (Cards accent, `10`); `grid` on the accent band (Grid
+ * accent, `11`); `list` in the accent full card (Full card accent,
+ * `12`).
+ * Either way every disc in the palette's own secondary.
  */
 export function NoteTiles({
   items,
+  mode,
   related,
   ground,
   look,
   accent = false,
 }: {
   items: Note[];
+  /** The section's `iconMode`: each note's mark, Dress code's and Gifts' too. */
+  mode: IconMode;
   related: VariantProps["related"];
   ground: SectionGround;
   look: "grid" | "cards" | "list";
@@ -120,9 +128,6 @@ export function NoteTiles({
   if (items.length === 0) return null;
   const dress = related["dress-code"] ?? {};
   const gifts = related.gifts ?? {};
-  const grid = look === "grid";
-  // The grid's hairlines, off on the accent.
-  const lined = grid && !accent;
   const place =
     look === "cards"
       ? centredWhenStacked(items.length)
@@ -132,9 +137,9 @@ export function NoteTiles({
     <ul
       className={
         {
-          grid: `${lined ? LINED_GRID : `grid ${UNLINED_PULL}`} ${columnsFor(items.length)}`,
+          grid: `grid ${UNLINED_PULL} ${columnsFor(items.length)}`,
           cards: `grid gap-3 @3xl:gap-4 ${cardColumns(items.length)}`,
-          list: accent ? UNLINED_PULL : "divide-y-1 divide-[var(--m-line)]",
+          list: UNLINED_PULL,
         }[look]
       }
     >
@@ -142,7 +147,7 @@ export function NoteTiles({
         const tile = {
           className: `flex flex-col ${place} ${
             {
-              grid: `${lined ? LINED_CELL : ""} ${SECTION_GROUND[ground]} px-6 py-8 @3xl:px-8 @3xl:py-10`,
+              grid: `${SECTION_GROUND[ground]} px-6 py-8 @3xl:px-8 @3xl:py-10`,
               cards: `${CARD} ${COLUMN} ${GROUND[accent ? "accent" : otherGround(ground)]}`,
               list: "py-8 @3xl:py-10",
             }[look]
@@ -150,7 +155,6 @@ export function NoteTiles({
           tone: accent
             ? `${TONES.secondary} ${PAGE_SECONDARY}`
             : TONES.secondary,
-          icons: !lined,
           place,
         };
         if (item.kind === "dress-code") {
@@ -158,7 +162,7 @@ export function NoteTiles({
             <Tile
               key={index}
               {...tile}
-              icon={twinIcon(dress)}
+              mark={itemMark(mode, twinIcon(dress), index)}
               label={text(dress, "eyebrow")}
               title={text(dress, "title")}
               body={text(dress, "body")}
@@ -172,7 +176,7 @@ export function NoteTiles({
             <Tile
               key={index}
               {...tile}
-              icon={twinIcon(gifts)}
+              mark={itemMark(mode, twinIcon(gifts), index)}
               label={text(gifts, "eyebrow")}
               title={text(gifts, "title")}
               body={text(gifts, "body")}
@@ -191,7 +195,7 @@ export function NoteTiles({
           <Tile
             key={index}
             {...tile}
-            icon={isIconName(item.icon) ? item.icon : undefined}
+            mark={itemMark(mode, item.icon, index)}
             label={item.label ?? ""}
             title={item.title ?? ""}
             body={item.text ?? ""}
@@ -202,13 +206,12 @@ export function NoteTiles({
   );
 }
 
-/** One note: its icon, label, title, text and anything under them. */
+/** One note: its mark (icon or number), label, title, text and anything under them. */
 function Tile({
   className,
   tone,
-  icons,
   place,
-  icon,
+  mark,
   label,
   title,
   body,
@@ -216,9 +219,8 @@ function Tile({
 }: {
   className: string;
   tone: string;
-  icons: boolean;
   place: string;
-  icon?: IconName;
+  mark: ItemMark;
   label: string;
   title: string;
   body: string;
@@ -226,9 +228,9 @@ function Tile({
 }) {
   return (
     <li className={className}>
-      {icons && icon ? (
+      {mark ? (
         <span className={`${CARD_DISC} mb-5 ${tone}`}>
-          <Icon name={icon} className="size-5.5" />
+          <MarkGlyph mark={mark} iconClass="size-5.5" />
         </span>
       ) : null}
       {label ? (

@@ -7,8 +7,8 @@ export function dishesOf(title: string): string[] {
 }
 
 /**
- * A course's dishes, one per line with room between them; shared by Simple
- * grid, Printed card and Framed card. `dotted`: a small dot in the ink
+ * A course's dishes, one per line with room between them; shared by Grid,
+ * Printed card and Simple. `dotted`: a small dot in the ink
  * between them.
  */
 export function Dishes({

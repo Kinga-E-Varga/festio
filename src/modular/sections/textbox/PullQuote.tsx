@@ -1,9 +1,9 @@
-import { COLUMN, HEADING, MUTED } from "@/modular/styles";
+import { COLUMN, HEADING } from "@/modular/styles";
 import type { SectionValues } from "@/types/modular";
 import { LargeText, SmallText, WORDS_GAP } from "./TextBoxWords";
 
-/** A large quote mark: the heading face, in the muted ink, its box cut to the glyph's top half, where the mark is. */
-const QUOTE_MARK = `${HEADING} ${MUTED} h-7 text-[56px] leading-none @3xl:h-12 @3xl:text-[96px]`;
+/** A large quote mark: the heading face, in the large text's ink, its box cut to the glyph's top half, where the mark is. */
+const QUOTE_MARK = `${HEADING} text-[color:var(--m-ink)] h-7 text-[56px] leading-none @3xl:h-12 @3xl:text-[96px]`;
 
 /**
  * The words as a pull quote: two large marks in the heading face beside the

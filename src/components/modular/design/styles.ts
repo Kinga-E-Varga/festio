@@ -32,7 +32,7 @@ export const BOX_MARK_STROKE = 1.75;
 
 /**
  * A section's styles, each a band glued under its row, on the row's neutral
- * fill: a style's (`DESIGN_BAND_BUTTON`) or a group's heading. No top edge:
+ * fill, each a button (`DESIGN_BAND_BUTTON`): a style, or a group's heading that rolls its styles out. No top edge:
  * the band above draws that line. Two edges overlapped by a pixel land a
  * pixel apart on a scaled screen and read as a thick line.
  */

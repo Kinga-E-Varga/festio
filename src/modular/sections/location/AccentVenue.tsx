@@ -1,4 +1,6 @@
-import { Icon, isIconName } from "@/modular/icons";
+import { MarkGlyph } from "@/modular/cards/CardIcon";
+import { Icon } from "@/modular/icons";
+import type { ItemMark } from "@/modular/item-marks";
 import { MapsLink } from "@/modular/MapsLink";
 import {
   ARROW_NUDGE,
@@ -31,7 +33,7 @@ export const ROW = [
  * A location card's text on `fill` — the accent for Cards accent, a
  * surface for Cards: label, venue, address, detail and the way there, in
  * the roles that read on it (`GROUND`; on the accent all are its ink). The
- * venue's icon, when it has one, on its soft disc in the palette's `tone`,
+ * venue's mark (`itemMark`), when it has one, on its soft disc in the palette's `tone`,
  * over the label.
  * Centred; padding past the phone's and where it turns left-aligned and
  * top-aligned (cards side by side, so their icons line up) are the
@@ -39,11 +41,14 @@ export const ROW = [
  */
 export function AccentVenue({
   venue,
+  mark,
   fill,
   tone,
   className = "",
 }: {
   venue: ListItem;
+  /** Its icon or number (`itemMark`). */
+  mark: ItemMark;
   fill: SectionGround;
   tone: "accent" | "secondary";
   className?: string;
@@ -52,12 +57,12 @@ export function AccentVenue({
     <div
       className={`flex flex-col items-center justify-center p-8 text-center ${GROUND[fill]} ${className}`}
     >
-      {isIconName(venue.icon) ? (
+      {mark ? (
         // The palette's colours even on the accent fill, which turns them into its ink.
         <span
           className={`${CARD_DISC} mb-5 [--m-accent:var(--m-page-accent)] [--m-secondary:var(--m-page-secondary)] ${TONES[tone]}`}
         >
-          <Icon name={venue.icon} className="size-5.5" />
+          <MarkGlyph mark={mark} iconClass="size-5.5" />
         </span>
       ) : null}
       {venue.label ? (

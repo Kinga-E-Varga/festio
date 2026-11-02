@@ -1,6 +1,11 @@
 import { addDays, formatDay, isRealDate } from "@/lib/event";
 import { LANGUAGE_LOCALE, type Language } from "@/lib/language";
-import type { Group, ListItem, SectionValues } from "@/types/modular";
+import type {
+  Group,
+  ListItem,
+  SectionValues,
+  ToggleField,
+} from "@/types/modular";
 
 const SECOND_MS = 1000;
 const MINUTE_MS = 60 * SECOND_MS;
@@ -19,6 +24,11 @@ export function text(values: SectionValues, id: string): string {
 /** One `toggle` field: on unless it is set off. */
 export function isOn(values: SectionValues, id: string): boolean {
   return values[id] !== false;
+}
+
+/** A switch as it stands: an `off` one only once switched on, any other as `isOn`. */
+export function switchOn(values: SectionValues, field: ToggleField): boolean {
+  return field.off ? values[field.id] === true : isOn(values, field.id);
 }
 
 function isGroup(item: ListItem | Group): item is Group {

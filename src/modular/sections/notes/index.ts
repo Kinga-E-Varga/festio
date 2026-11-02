@@ -3,6 +3,7 @@ import {
   HEADING_SHOWS,
   ICON_HEADING_SHOWS,
 } from "@/modular/heading";
+import { ITEM_ICON, iconShows, iconSwitches } from "@/modular/item-marks";
 import { LABELS } from "@/modular/labels";
 import { GOOD_TO_KNOW, MAX_NOTES, NOTE_SWITCH } from "@/modular/notes";
 import type { SectionDefinition } from "@/types/modular";
@@ -36,7 +37,7 @@ export const section: SectionDefinition = {
         "items.label",
         "items.title",
         "items.text",
-        "items.icon",
+        ...iconShows("items"),
       ],
     },
     {
@@ -46,7 +47,13 @@ export const section: SectionDefinition = {
         ro: "Două rânduri & listă",
         hu: "Kétsoros & lista",
       },
-      shows: [...HEADING_SHOWS, "items.label", "items.title", "items.text"],
+      shows: [
+        ...HEADING_SHOWS,
+        ...iconShows("items"),
+        "items.label",
+        "items.title",
+        "items.text",
+      ],
     },
     {
       id: "5",
@@ -55,7 +62,13 @@ export const section: SectionDefinition = {
         ro: "Două rânduri & carduri",
         hu: "Kétsoros & kártyák",
       },
-      shows: [...HEADING_SHOWS, "items.label", "items.title", "items.text"],
+      shows: [
+        ...HEADING_SHOWS,
+        ...iconShows("items"),
+        "items.label",
+        "items.title",
+        "items.text",
+      ],
     },
     // "2" is retired (Simple, removed): never reuse it.
     {
@@ -67,6 +80,7 @@ export const section: SectionDefinition = {
       },
       shows: [
         ...ICON_HEADING_SHOWS,
+        ...iconShows("items"),
         "items.label",
         "items.title",
         "items.text",
@@ -81,6 +95,7 @@ export const section: SectionDefinition = {
       },
       shows: [
         ...ICON_HEADING_SHOWS,
+        ...iconShows("items"),
         "items.label",
         "items.title",
         "items.text",
@@ -95,7 +110,7 @@ export const section: SectionDefinition = {
         "items.label",
         "items.title",
         "items.text",
-        "items.icon",
+        ...iconShows("items"),
       ],
     },
     {
@@ -111,15 +126,16 @@ export const section: SectionDefinition = {
         "items.label",
         "items.title",
         "items.text",
-        "items.icon",
+        ...iconShows("items"),
       ],
     },
     {
       id: "7",
       name: { en: "Grid", ro: "Grilă", hu: "Rács" },
-      // No italic second line under the heading, no icons.
+      // No italic second line under the heading; each icon over its label.
       shows: [
         ...HEADING_SHOWS.filter((id) => id !== "headingItalic"),
+        ...iconShows("items"),
         "items.label",
         "items.title",
         "items.text",
@@ -127,15 +143,15 @@ export const section: SectionDefinition = {
     },
     {
       id: "11",
-      name: { en: "Accent", ro: "Accent", hu: "Kiemelt" },
-      // Grid on the accent, no hairlines, each note's icon over its label.
+      name: { en: "Grid accent", ro: "Grilă accent", hu: "Rács kiemelt" },
+      // Grid on the accent, each note's icon over its label.
       ground: "accent",
       shows: [
         ...HEADING_SHOWS.filter((id) => id !== "headingItalic"),
         "items.label",
         "items.title",
         "items.text",
-        "items.icon",
+        ...iconShows("items"),
       ],
     },
     {
@@ -147,7 +163,7 @@ export const section: SectionDefinition = {
         "items.label",
         "items.title",
         "items.text",
-        "items.icon",
+        ...iconShows("items"),
       ],
     },
     {
@@ -165,12 +181,13 @@ export const section: SectionDefinition = {
         "items.label",
         "items.title",
         "items.text",
-        "items.icon",
+        ...iconShows("items"),
       ],
     },
   ],
   fields: [
     ...HEADING_FIELDS,
+    ...iconSwitches("items"),
     {
       id: NOTE_SWITCH["dress-code"],
       label: { en: "dress code", ro: "ținută", hu: "dresszkód" },
@@ -205,7 +222,7 @@ export const section: SectionDefinition = {
         { id: "label", label: LABELS.label, type: "text", maxLength: 30 },
         { id: "title", label: LABELS.title, type: "text", maxLength: 40 },
         { id: "text", label: LABELS.text, type: "longText", maxLength: 300 },
-        { id: "icon", label: LABELS.icon, type: "icon", maxLength: 20 },
+        ITEM_ICON,
       ],
     },
   ],

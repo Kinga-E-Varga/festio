@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import type { IconName } from "@/modular/icons";
+import type { ItemMark } from "@/modular/item-marks";
 import type { Ground } from "@/types/modular";
 import {
   BODY,
@@ -11,7 +11,7 @@ import {
   TONE_TEXT,
   type TONES,
 } from "@/modular/styles";
-import { CardIcon } from "./CardIcon";
+import { ItemIcon } from "./CardIcon";
 
 /*
  * The side column's rule drawn by the column but placed by the card: as
@@ -24,8 +24,8 @@ const FULL_RULE =
   "@5xl:before:absolute @5xl:before:inset-y-7 @5xl:before:-ml-6 @5xl:before:w-px @5xl:before:self-stretch @5xl:before:bg-[var(--m-line)]";
 
 interface NoteCardProps {
-  /** None: the label stands alone. */
-  icon?: IconName;
+  /** Its icon or number (`itemMark`); none: the label stands alone. */
+  mark: ItemMark;
   tone: keyof typeof TONES;
   /** "Dress code", or a custom note's title; empty draws no label. */
   label: string;
@@ -44,7 +44,7 @@ interface NoteCardProps {
  * label, 16px to the title.
  */
 export function NoteCard({
-  icon,
+  mark,
   tone,
   label,
   title,
@@ -57,7 +57,7 @@ export function NoteCard({
       className={`${CARD} relative grid gap-4 ${GROUND[ground]} @3xl:grid-cols-[7rem_minmax(0,1fr)] @3xl:items-center @3xl:gap-x-9 @3xl:gap-y-7 ${aside ? "@5xl:grid-cols-[7rem_minmax(0,1fr)_15rem]" : ""}`}
     >
       <div className="flex flex-col items-center gap-5 text-center @3xl:gap-3.5">
-        {icon ? <CardIcon name={icon} tone={tone} /> : null}
+        <ItemIcon mark={mark} tone={tone} />
         {label ? (
           <span className={`${INNER_EYEBROW} ${TONE_TEXT.secondary}`}>
             {label}

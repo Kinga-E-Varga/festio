@@ -75,6 +75,7 @@ export const palette: ModularPalette = {
   id: "<id>",
   name: "<Name>",
   mood: "<subtle|balanced|vivid>",
+  scheme: "<light|dark>",
   colors: {/* all 14 roles */},
   envelope: {
     paper: "<hex>",

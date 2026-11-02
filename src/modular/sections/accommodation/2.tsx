@@ -1,4 +1,5 @@
 import { list } from "@/modular/content";
+import { iconMode } from "@/modular/item-marks";
 import { IconHeading } from "@/modular/IconHeading";
 import { ITEM_TITLE, PAD, SPLIT, SECTION_GROUND } from "@/modular/styles";
 import type { VariantProps } from "@/types/modular";
@@ -13,7 +14,12 @@ export function Variant({ values, ground }: VariantProps) {
       className={`${SPLIT} items-start ${SECTION_GROUND[ground]} text-[color:var(--m-ink)] ${PAD}`}
     >
       <IconHeading icon="bed" values={values} />
-      <StayList places={places} nameClass={ITEM_TITLE} numbered />
+      <StayList
+        places={places}
+        nameClass={ITEM_TITLE}
+        mode={iconMode(values)}
+        numbered
+      />
     </div>
   );
 }

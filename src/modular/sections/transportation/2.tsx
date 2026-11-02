@@ -1,4 +1,5 @@
 import { list } from "@/modular/content";
+import { iconMode, itemMark } from "@/modular/item-marks";
 import { IconHeading } from "@/modular/IconHeading";
 import {
   PAD,
@@ -17,6 +18,7 @@ import { WayRow } from "./WaysList";
  */
 export function Variant({ values, ground }: VariantProps) {
   const ways = list(values, "ways").slice(0, 6);
+  const mode = iconMode(values);
 
   return (
     <div className={`${SPLIT} ${SECTION_GROUND[ground]} ${PAD}`}>
@@ -25,7 +27,7 @@ export function Variant({ values, ground }: VariantProps) {
         <ul className={CARD_STACK}>
           {ways.map((way, index) => (
             <li key={index} className={otherCard(ground)}>
-              <WayRow way={way} index={index} />
+              <WayRow way={way} mark={itemMark(mode, way.icon, index)} />
             </li>
           ))}
         </ul>

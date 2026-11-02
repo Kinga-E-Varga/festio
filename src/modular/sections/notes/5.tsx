@@ -1,4 +1,5 @@
 import { list } from "@/modular/content";
+import { iconMode } from "@/modular/item-marks";
 import { otherGround } from "@/modular/ground";
 import { noteItems } from "@/modular/notes";
 import { SectionHeading } from "@/modular/SectionHeading";
@@ -18,6 +19,8 @@ export function Variant({ values, related, ground }: VariantProps) {
       </div>
       <NoteList
         items={noteItems(list(values, "items"), values)}
+        mode={iconMode(values)}
+        marks="end"
         related={related}
         cards={otherGround(ground)}
       />

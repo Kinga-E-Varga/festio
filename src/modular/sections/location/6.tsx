@@ -1,4 +1,5 @@
 import { isOn, list } from "@/modular/content";
+import { iconMode } from "@/modular/item-marks";
 import { SectionHeading } from "@/modular/SectionHeading";
 import { otherGround } from "@/modular/ground";
 import { PAD, STACK, SECTION_GROUND } from "@/modular/styles";
@@ -16,6 +17,7 @@ export function Variant({ values, ground }: VariantProps) {
       <SectionHeading values={values} />
       <VenueCards
         venues={list(values, "venues")}
+        mode={iconMode(values)}
         ground={ground}
         photos={isOn(values, "photos")}
         fill={otherGround(ground)}

@@ -16,8 +16,8 @@ const STATE = {
   values: { notes: { showCustom: false } },
 } as unknown as ModularState;
 
-function twinIcons(variant: string): boolean[] {
-  return contentParts(STATE, LIBRARY, notes, variant)
+function twinIcons(variant: string, state = STATE): boolean[] {
+  return contentParts(state, LIBRARY, notes, variant)
     .filter(({ section }) => section !== notes.id)
     .map(
       ({ shows, fields }) =>
@@ -25,14 +25,28 @@ function twinIcons(variant: string): boolean[] {
     );
 }
 
-test("styles that draw the notes' icons offer Dress code's and Gifts' icon", () => {
-  for (const variant of ["1", "8", "9"]) {
+/** Helpful notes with its switches set as `switches` (Use icons, Use numbers). */
+function withSwitches(switches: Record<string, boolean>): ModularState {
+  return {
+    values: { notes: { showCustom: false, ...switches } },
+  } as unknown as ModularState;
+}
+
+test("every style offers Dress code's and Gifts' icon", () => {
+  for (const variant of ["1", "3", "4", "5", "6", "7", "8", "9"]) {
     expect(twinIcons(variant)).toEqual([true, true]);
   }
 });
 
-test("styles without icons don't offer Dress code's and Gifts' icon", () => {
-  for (const variant of ["3", "4", "5", "6", "7"]) {
-    expect(twinIcons(variant)).toEqual([false, false]);
+test("Use icons off or Use numbers on: no Dress code or Gifts icon", () => {
+  for (const variant of ["1", "3", "7"]) {
+    expect(twinIcons(variant, withSwitches({ icons: false }))).toEqual([
+      false,
+      false,
+    ]);
+    expect(twinIcons(variant, withSwitches({ numbers: true }))).toEqual([
+      false,
+      false,
+    ]);
   }
 });

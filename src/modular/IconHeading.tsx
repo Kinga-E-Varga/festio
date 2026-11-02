@@ -70,6 +70,9 @@ export function IconHeading({
   );
 }
 
+/** The large disc an icon heading's icon stands on. */
+export const BIG_DISC = `${ICON_DISC} size-14`;
+
 /** The large icon on its soft disc an icon heading stands under. */
 export function BigIcon({
   icon,
@@ -81,7 +84,7 @@ export function BigIcon({
   className?: string;
 }) {
   return (
-    <span className={`${ICON_DISC} size-14 ${TONES[tone]} ${className}`}>
+    <span className={`${BIG_DISC} ${TONES[tone]} ${className}`}>
       <Icon name={icon} className="size-8" />
     </span>
   );

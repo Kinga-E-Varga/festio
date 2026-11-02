@@ -2,8 +2,8 @@ import { DressCodeCard } from "@/modular/cards/DressCodeCard";
 import { GiftsCard } from "@/modular/cards/GiftsCard";
 import { NoteCard } from "@/modular/cards/NoteCard";
 import { list, text } from "@/modular/content";
-import { isIconName } from "@/modular/icons";
-import { noteItems } from "@/modular/notes";
+import { iconMode, itemMark } from "@/modular/item-marks";
+import { noteItems, twinIcon } from "@/modular/notes";
 import { SectionHeading } from "@/modular/SectionHeading";
 import { PAD, STACK, SECTION_GROUND, COLUMN } from "@/modular/styles";
 import type { VariantProps } from "@/types/modular";
@@ -13,6 +13,9 @@ import { otherGround } from "@/modular/ground";
 export function Variant({ values, related, ground }: VariantProps) {
   const cardGround = otherGround(ground);
   const items = noteItems(list(values, "items"), values);
+  const mode = iconMode(values);
+  const dress = related["dress-code"] ?? {};
+  const gifts = related.gifts ?? {};
 
   return (
     <div className={`${STACK} ${SECTION_GROUND[ground]} ${PAD}`}>
@@ -25,8 +28,9 @@ export function Variant({ values, related, ground }: VariantProps) {
               return (
                 <DressCodeCard
                   key={index}
-                  values={related["dress-code"] ?? {}}
-                  label={text(related["dress-code"] ?? {}, "eyebrow")}
+                  values={dress}
+                  label={text(dress, "eyebrow")}
+                  mark={itemMark(mode, twinIcon(dress), index)}
                   ground={cardGround}
                   tone="secondary"
                 />
@@ -36,8 +40,9 @@ export function Variant({ values, related, ground }: VariantProps) {
               return (
                 <GiftsCard
                   key={index}
-                  values={related.gifts ?? {}}
-                  label={text(related.gifts ?? {}, "eyebrow")}
+                  values={gifts}
+                  label={text(gifts, "eyebrow")}
+                  mark={itemMark(mode, twinIcon(gifts), index)}
                   ground={cardGround}
                   tone="secondary"
                 />
@@ -46,7 +51,7 @@ export function Variant({ values, related, ground }: VariantProps) {
             return (
               <NoteCard
                 key={index}
-                icon={isIconName(item.icon) ? item.icon : undefined}
+                mark={itemMark(mode, item.icon, index)}
                 tone="secondary"
                 label={item.label ?? ""}
                 title={item.title}

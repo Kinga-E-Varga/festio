@@ -1,7 +1,8 @@
 import { isOn, list, text } from "@/modular/content";
 import { INNER_EYEBROW, MUTED, type TONES } from "@/modular/styles";
 import type { ColorRole, Ground, SectionValues } from "@/types/modular";
-import { twinIcon } from "@/modular/notes";
+import { twinMark } from "@/modular/notes";
+import type { ItemMark } from "@/modular/item-marks";
 import { NoteCard } from "./NoteCard";
 
 const HEX = /^#[0-9a-f]{6}$/i;
@@ -50,6 +51,8 @@ interface DressCodeCardProps {
   ground: Ground;
   /** The icon's colour: the secondary unless the list it sits in takes turns. */
   tone?: keyof typeof TONES;
+  /** In Helpful notes, its place's mark by the notes' switches (`itemMark`); otherwise its own icon. */
+  mark?: ItemMark;
 }
 
 /** What to wear, with the host's colour swatches beside it. */
@@ -58,10 +61,11 @@ export function DressCodeCard({
   label,
   ground,
   tone = "secondary",
+  mark,
 }: DressCodeCardProps) {
   return (
     <NoteCard
-      icon={twinIcon(values)}
+      mark={mark === undefined ? twinMark(values) : mark}
       tone={tone}
       label={label}
       title={text(values, "title")}

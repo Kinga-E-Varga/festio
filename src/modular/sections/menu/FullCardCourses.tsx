@@ -6,19 +6,18 @@ import { Dishes } from "./Dishes";
 
 /*
  * The short line under the heading, centred, 112px wide: drawn over the
- * list's top, the courses 32px under it (40px from `@3xl`). Framed card's
+ * list's top, the courses 32px under it (40px from `@3xl`). Simple's
  * and Full card accent's.
  */
 export const SHORT_RULE =
   "bg-[linear-gradient(var(--m-line),var(--m-line))] bg-[length:7rem_1px] bg-top bg-no-repeat";
 
 /**
- * Framed card's (`3`) courses as a full card (`FullCard`): the heading
- * centred, the courses under it between the card's lines, centred: each
+ * Simple's (`3`) courses as a full card (`FullCard`): the heading
+ * centred, Simple's short line under it, then the courses, centred: each
  * course's label (an eyebrow in the accent) over its dishes, one per
  * line, as a card's item heading (`H3_ITEM`). No course notes. Full card
- * (`8`); with `accent`, the card on the accent, Framed card's short line under
- * the heading in place of the card's lines: Full card accent (`10`).
+ * (`8`); with `accent`, the card on the accent: Full card accent (`10`).
  */
 export function FullCardCourses({
   values,
@@ -33,7 +32,7 @@ export function FullCardCourses({
   return (
     <FullCard values={values} ground={ground} accent={accent}>
       <ul
-        className={`flex flex-col gap-8 text-center ${accent ? (heading ? `${SHORT_RULE} pt-8 @3xl:pt-10` : "") : "py-8 @3xl:py-10"}`}
+        className={`flex flex-col gap-8 text-center ${heading ? `${SHORT_RULE} pt-8 @3xl:pt-10` : ""}`}
       >
         {courses.map((course, index) => (
           <li key={index} className="flex flex-col items-center gap-3">

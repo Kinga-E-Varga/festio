@@ -38,8 +38,8 @@ const IN_A_ROW = [
   },
 ];
 
-/** What stands over a venue's name: its label, or its icon. */
-export type Lead = (venue: ListItem) => ReactNode;
+/** What stands over a venue's name: its label, or its mark; `index` its place, from 0. */
+export type Lead = (venue: ListItem, index: number) => ReactNode;
 
 /** The label as the lead, in the secondary: Simple's and Two-line's. */
 export function labelLead(venue: ListItem) {
@@ -51,7 +51,7 @@ export function labelLead(venue: ListItem) {
 }
 
 /**
- * The locations of Simple, Accent, Icon and Two-line, which differ only in what
+ * The locations of Simple, Simple accent, Icon and Two-line, which differ only in what
  * stands over each venue's name (`lead`), whether the detail leads the name
  * (`twoLine`, `Venue`) and, without photos, the venues' alignment. Each location a row split as the
  * other sections are: the venue where their heading goes, its lead over
@@ -93,7 +93,7 @@ export function VenueRows({
           <VenueText
             key={index}
             venue={venue}
-            lead={lead}
+            lead={lead(venue, index)}
             twoLine={twoLine}
             className={`py-7 first:pt-0 last:pb-0 ${rowWithoutPhotos ? `items-start text-left ${IN_A_ROW[venues.length].cell}` : STACKED_WIDE}`}
           />
@@ -110,7 +110,7 @@ export function VenueRows({
           key={index}
           venue={venue}
           ground={ground}
-          lead={lead}
+          lead={lead(venue, index)}
           twoLine={twoLine}
           flipped={index % 2 === 1}
         />
@@ -128,7 +128,8 @@ function PhotoRow({
 }: {
   venue: ListItem;
   ground: SectionGround;
-  lead: Lead;
+  /** What stands over the name (`Lead`). */
+  lead: ReactNode;
   twoLine: boolean;
   flipped: boolean;
 }) {
@@ -169,13 +170,14 @@ function VenueText({
   className = "",
 }: {
   venue: ListItem;
-  lead: Lead;
+  /** What stands over the name (`Lead`). */
+  lead: ReactNode;
   twoLine: boolean;
   className?: string;
 }) {
   return (
     <div className={`flex flex-col items-center text-center ${className}`}>
-      {lead(venue)}
+      {lead}
       <Venue venue={venue} twoLine={twoLine} />
     </div>
   );

@@ -22,24 +22,28 @@ const CHOICE = `grid size-10 cursor-pointer place-items-center rounded-full bord
 const MORE = `${LINK_TEXT} h-10 cursor-pointer px-2`;
 
 /**
- * The icon library as a grid of buttons, "No icon" first; the picked one
- * pressed, each named in a tip on hover. Two rows at first, More at the end of the second opening the
- * rest; a picked icon past them takes the last place shown.
+ * The icon library as a grid of buttons, "No icon" first (unless `none` is
+ * off); the picked one pressed, each named in a tip on hover. Two rows at
+ * first, More at the end of the second opening the rest; a picked icon past
+ * them takes the last place shown.
  */
 export function IconPicker({
   labelId,
   value,
+  none = true,
   onPick,
 }: {
   /** The field label's id, which names the group. */
   labelId: string;
   value: string;
+  /** Offer "No icon". */
+  none?: boolean;
   onPick: (name: string) => void;
 }) {
   const t = useTranslations("ContentTab");
   const [ref, columns] = useColumns();
   const [open, setOpen] = useState(false);
-  const icons = shownIcons(columns, open, value);
+  const icons = shownIcons(columns, open, value, none);
   const more = open || icons.length < ICON_NAMES.length;
 
   return (
@@ -49,15 +53,17 @@ export function IconPicker({
       aria-labelledby={labelId}
       className="flex flex-wrap gap-1.5"
     >
-      <button
-        type="button"
-        aria-pressed={value === ""}
-        aria-label={t("noIcon")}
-        onClick={() => onPick("")}
-        className={`${CHOICE} text-[16px]`}
-      >
-        –
-      </button>
+      {none ? (
+        <button
+          type="button"
+          aria-pressed={value === ""}
+          aria-label={t("noIcon")}
+          onClick={() => onPick("")}
+          className={`${CHOICE} text-[16px]`}
+        >
+          –
+        </button>
+      ) : null}
       {icons.map((name) => (
         /* Its name in a tip under it, on hover or keyboard focus. */
         <span
@@ -112,12 +118,18 @@ function useColumns() {
 
 /**
  * The icons drawn: every one when open or when all fit; otherwise the
- * rows' worth less "No icon" and More's two places, the picked icon in the
- * last one if it would be left out.
+ * rows' worth less "No icon" (when offered) and More's two places, the
+ * picked icon in the last one if it would be left out.
  */
-function shownIcons(columns: number, open: boolean, value: string): IconName[] {
-  if (open || ICON_NAMES.length + 1 <= columns * ROWS) return ICON_NAMES;
-  const shown = ICON_NAMES.slice(0, columns * ROWS - 3);
+function shownIcons(
+  columns: number,
+  open: boolean,
+  value: string,
+  none: boolean,
+): IconName[] {
+  const room = columns * ROWS - (none ? 1 : 0);
+  if (open || ICON_NAMES.length <= room) return ICON_NAMES;
+  const shown = ICON_NAMES.slice(0, room - 2);
   const picked = ICON_NAMES.find((name) => name === value);
   return picked && !shown.includes(picked)
     ? [...shown.slice(0, -1), picked]

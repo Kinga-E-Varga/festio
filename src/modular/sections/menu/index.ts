@@ -3,6 +3,7 @@ import {
   HEADING_SHOWS,
   ICON_HEADING_SHOWS,
 } from "@/modular/heading";
+import { ITEM_ICON, iconShows, iconSwitches } from "@/modular/item-marks";
 import { LABELS } from "@/modular/labels";
 import type { SectionDefinition } from "@/types/modular";
 
@@ -15,9 +16,10 @@ export const section: SectionDefinition = {
   variants: [
     {
       id: "1",
-      name: { en: "Simple grid", ro: "Grilă simplă", hu: "Egyszerű rács" },
+      name: { en: "Grid", ro: "Grilă", hu: "Rács" },
       shows: [
         ...HEADING_SHOWS.filter((id) => id !== "headingItalic"),
+        ...iconShows("courses"),
         "courses.label",
         "courses.title",
         "courses.note",
@@ -32,7 +34,7 @@ export const section: SectionDefinition = {
       },
       shows: [
         ...HEADING_SHOWS,
-        "courses.icon",
+        ...iconShows("courses"),
         "courses.label",
         "courses.title",
         "courses.note",
@@ -56,6 +58,7 @@ export const section: SectionDefinition = {
       },
       shows: [
         ...ICON_HEADING_SHOWS,
+        ...iconShows("courses"),
         "courses.label",
         "courses.title",
         "courses.note",
@@ -76,7 +79,7 @@ export const section: SectionDefinition = {
       // No italic second line under the heading.
       shows: [
         ...HEADING_SHOWS.filter((id) => id !== "headingItalic"),
-        "courses.icon",
+        ...iconShows("courses"),
         "courses.label",
         "courses.title",
         "courses.note",
@@ -92,7 +95,7 @@ export const section: SectionDefinition = {
       // Cards, the cards on the accent, every disc in the secondary.
       shows: [
         ...HEADING_SHOWS.filter((id) => id !== "headingItalic"),
-        "courses.icon",
+        ...iconShows("courses"),
         "courses.label",
         "courses.title",
         "courses.note",
@@ -100,11 +103,7 @@ export const section: SectionDefinition = {
     },
     {
       id: "3",
-      name: {
-        en: "Framed card",
-        ro: "Card cu ramă",
-        hu: "Keretes kártya",
-      },
+      name: { en: "Simple", ro: "Simplu", hu: "Egyszerű" },
       // No italic second line under the heading.
       shows: [
         ...HEADING_SHOWS.filter((id) => id !== "headingItalic"),
@@ -114,8 +113,12 @@ export const section: SectionDefinition = {
     },
     {
       id: "11",
-      name: { en: "Accent", ro: "Accent", hu: "Kiemelt" },
-      // On the accent band, the heading over Icon & card's menu card.
+      name: {
+        en: "Simple accent",
+        ro: "Simplu accent",
+        hu: "Egyszerű kiemelt",
+      },
+      // Simple on the accent band.
       ground: "accent",
       shows: [
         ...HEADING_SHOWS.filter((id) => id !== "headingItalic"),
@@ -126,7 +129,7 @@ export const section: SectionDefinition = {
     {
       id: "8",
       name: { en: "Full card", ro: "Card întreg", hu: "Teljes kártya" },
-      // Framed card's fields: every heading field but the italic heading.
+      // Simple's fields: every heading field but the italic heading.
       shows: [
         ...HEADING_SHOWS.filter((id) => id !== "headingItalic"),
         "courses.label",
@@ -140,7 +143,7 @@ export const section: SectionDefinition = {
         ro: "Card întreg accent",
         hu: "Kiemelt teljes kártya",
       },
-      // Full card on the accent, Framed card's short line under the heading;
+      // Full card on the accent, Simple's short line under the heading;
       // always on the page's surface, whatever its turn.
       ground: "surface",
       shows: [
@@ -152,6 +155,7 @@ export const section: SectionDefinition = {
   ],
   fields: [
     ...HEADING_FIELDS,
+    ...iconSwitches("courses"),
     {
       id: "courses",
       label: { en: "courses", ro: "feluri", hu: "fogások" },
@@ -164,7 +168,7 @@ export const section: SectionDefinition = {
       type: "list",
       maxItems: 6,
       item: [
-        { id: "icon", label: LABELS.icon, type: "icon", maxLength: 20 },
+        ITEM_ICON,
         {
           id: "label",
           label: { en: "course", ro: "fel", hu: "fogás" },

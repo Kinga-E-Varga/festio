@@ -16,7 +16,8 @@ import {
 } from "@/modular/styles";
 import type { Ground, SectionValues } from "@/types/modular";
 import { CopyButton } from "./CopyButton";
-import { twinIcon } from "@/modular/notes";
+import { twinMark } from "@/modular/notes";
+import type { ItemMark } from "@/modular/item-marks";
 import { NoteCard } from "./NoteCard";
 
 interface GiftsCardProps {
@@ -26,6 +27,8 @@ interface GiftsCardProps {
   ground: Ground;
   /** The icon's colour: the secondary unless the list it sits in takes turns. */
   tone?: keyof typeof TONES;
+  /** In Helpful notes, its place's mark by the notes' switches (`itemMark`); otherwise its own icon. */
+  mark?: ItemMark;
 }
 
 /**
@@ -38,10 +41,11 @@ export function GiftsCard({
   label,
   ground,
   tone = "secondary",
+  mark,
 }: GiftsCardProps) {
   return (
     <NoteCard
-      icon={twinIcon(values)}
+      mark={mark === undefined ? twinMark(values) : mark}
       tone={tone}
       label={label}
       title={text(values, "title")}

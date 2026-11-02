@@ -1,5 +1,5 @@
 import { localized, type Language } from "@/lib/language";
-import { groups, isOn, list, text } from "./content";
+import { groups, list, switchOn, text } from "./content";
 import { DEFAULT_ICON } from "./icons";
 import { NOTE_KINDS } from "./notes";
 import {
@@ -140,7 +140,7 @@ export function removeAt<T>(list: T[], index: number): T[] {
  */
 function switchedOff(field: SectionField, values: SectionValues): string[] {
   if (field.type !== "toggle") return [];
-  return isOn(values, field.id)
+  return switchOn(values, field)
     ? (field.controlsOff ?? [])
     : (field.controls ?? []);
 }
@@ -243,10 +243,12 @@ export function contentParts(
     ];
   }
   const own = definition.fields.filter((field) => field.type !== "list");
+  /* The notes' icons as the Use icons / Use numbers switches leave them. */
+  const marked = visibleShows(definition.fields, shows, values);
   const parts: FieldPart[] = [
     {
       section: NOTES_ID,
-      shows,
+      shows: marked,
       fields: visibleFields(own, shows, values),
     },
   ];
@@ -258,7 +260,7 @@ export function contentParts(
       );
       parts.push({
         section: NOTES_ID,
-        shows,
+        shows: marked,
         fields: items,
         keep: (item) => item.kind === "custom",
       });
@@ -266,14 +268,36 @@ export function contentParts(
     }
     const twin = library.sections.find(({ id }) => id === kind);
     if (!twin) continue;
-    const twinOnly = twinShows(twin, shows);
+    const twinOnly = twinShows(twin, marked);
     parts.push({
       section: kind,
       shows: twinOnly,
-      fields: visibleFields(twin.fields, twinOnly, state.values[kind] ?? {}),
+      fields: visibleFields(
+        notesIcon(twin),
+        twinOnly,
+        state.values[kind] ?? {},
+      ),
     });
   }
   return parts;
+}
+
+const NOTES_ICON = new WeakMap<SectionDefinition, SectionField[]>();
+
+/**
+ * Dress code's or Gifts' fields as Helpful notes edits them: the icon
+ * without "No icon" (`always`), the notes' Use icons switch standing in
+ * for it. The same list each time for the same section, like `showsOf`.
+ */
+function notesIcon(twin: SectionDefinition): SectionField[] {
+  let fields = NOTES_ICON.get(twin);
+  if (!fields) {
+    fields = twin.fields.map((field) =>
+      field.type === "icon" ? { ...field, always: true } : field,
+    );
+    NOTES_ICON.set(twin, fields);
+  }
+  return fields;
 }
 
 /** A poster cover's Title fields, edited as the Title's: none for any other variant. */

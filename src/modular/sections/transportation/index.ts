@@ -3,6 +3,7 @@ import {
   HEADING_SHOWS,
   ICON_HEADING_SHOWS,
 } from "@/modular/heading";
+import { ITEM_ICON, iconShows, iconSwitches } from "@/modular/item-marks";
 import { LABELS } from "@/modular/labels";
 import type { SectionDefinition } from "@/types/modular";
 
@@ -19,7 +20,7 @@ export const section: SectionDefinition = {
       // No italic second line under the heading.
       shows: [
         ...HEADING_SHOWS.filter((id) => id !== "headingItalic"),
-        "ways.icon",
+        ...iconShows("ways"),
         "ways.label",
         "ways.title",
         "ways.text",
@@ -35,7 +36,7 @@ export const section: SectionDefinition = {
       // Cards, the cards on the accent, every disc in the secondary.
       shows: [
         ...HEADING_SHOWS.filter((id) => id !== "headingItalic"),
-        "ways.icon",
+        ...iconShows("ways"),
         "ways.label",
         "ways.title",
         "ways.text",
@@ -50,7 +51,7 @@ export const section: SectionDefinition = {
       },
       shows: [
         ...HEADING_SHOWS,
-        "ways.icon",
+        ...iconShows("ways"),
         "ways.label",
         "ways.title",
         "ways.text",
@@ -65,7 +66,7 @@ export const section: SectionDefinition = {
       },
       shows: [
         ...HEADING_SHOWS,
-        "ways.icon",
+        ...iconShows("ways"),
         "ways.label",
         "ways.title",
         "ways.text",
@@ -79,7 +80,13 @@ export const section: SectionDefinition = {
         hu: "Ikon & lista",
       },
       // No eyebrow or italic line over the heading.
-      shows: [...ICON_HEADING_SHOWS, "ways.label", "ways.title", "ways.text"],
+      shows: [
+        ...ICON_HEADING_SHOWS,
+        ...iconShows("ways"),
+        "ways.label",
+        "ways.title",
+        "ways.text",
+      ],
     },
     {
       id: "2",
@@ -89,7 +96,13 @@ export const section: SectionDefinition = {
         hu: "Ikon & kártyák",
       },
       // No italic second line under the heading.
-      shows: [...ICON_HEADING_SHOWS, "ways.label", "ways.title", "ways.text"],
+      shows: [
+        ...ICON_HEADING_SHOWS,
+        ...iconShows("ways"),
+        "ways.label",
+        "ways.title",
+        "ways.text",
+      ],
     },
     {
       id: "7",
@@ -101,7 +114,7 @@ export const section: SectionDefinition = {
       // No italic second line under the heading.
       shows: [
         ...HEADING_SHOWS.filter((id) => id !== "headingItalic"),
-        "ways.icon",
+        ...iconShows("ways"),
         "ways.label",
         "ways.title",
         "ways.text",
@@ -110,9 +123,10 @@ export const section: SectionDefinition = {
     {
       id: "6",
       name: { en: "Grid", ro: "Grilă", hu: "Rács" },
-      // Cards without icons, as a grid; no italic second line under the heading.
+      // Cards as a grid, no lines; no italic second line under the heading.
       shows: [
         ...HEADING_SHOWS.filter((id) => id !== "headingItalic"),
+        ...iconShows("ways"),
         "ways.label",
         "ways.title",
         "ways.text",
@@ -120,12 +134,12 @@ export const section: SectionDefinition = {
     },
     {
       id: "11",
-      name: { en: "Accent", ro: "Accent", hu: "Kiemelt" },
-      // Grid on the accent, no hairlines, each way's icon over its eyebrow.
+      name: { en: "Grid accent", ro: "Grilă accent", hu: "Rács kiemelt" },
+      // Grid on the accent, each way's icon over its eyebrow.
       ground: "accent",
       shows: [
         ...HEADING_SHOWS.filter((id) => id !== "headingItalic"),
-        "ways.icon",
+        ...iconShows("ways"),
         "ways.label",
         "ways.title",
         "ways.text",
@@ -137,7 +151,7 @@ export const section: SectionDefinition = {
       // Cards' (`1`) content, the ways side by side in a full card.
       shows: [
         ...HEADING_SHOWS.filter((id) => id !== "headingItalic"),
-        "ways.icon",
+        ...iconShows("ways"),
         "ways.label",
         "ways.title",
         "ways.text",
@@ -155,7 +169,7 @@ export const section: SectionDefinition = {
       ground: "surface",
       shows: [
         ...HEADING_SHOWS.filter((id) => id !== "headingItalic"),
-        "ways.icon",
+        ...iconShows("ways"),
         "ways.label",
         "ways.title",
         "ways.text",
@@ -164,6 +178,7 @@ export const section: SectionDefinition = {
   ],
   fields: [
     ...HEADING_FIELDS,
+    ...iconSwitches("ways"),
     {
       id: "ways",
       label: {
@@ -180,7 +195,7 @@ export const section: SectionDefinition = {
       type: "list",
       maxItems: 6,
       item: [
-        { id: "icon", label: LABELS.icon, type: "icon", maxLength: 20 },
+        ITEM_ICON,
         { id: "label", label: LABELS.label, type: "text", maxLength: 30 },
         { id: "title", label: LABELS.title, type: "text", maxLength: 40 },
         { id: "text", label: LABELS.note, type: "longText", maxLength: 240 },

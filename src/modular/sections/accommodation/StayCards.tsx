@@ -14,6 +14,7 @@ import {
 import type { VariantProps } from "@/types/modular";
 import { StayCell } from "./StayList";
 import { ItemIcon } from "@/modular/cards/CardIcon";
+import { iconMode, itemMark } from "@/modular/item-marks";
 
 /* A card's contents, down its left side. */
 const CELL = "flex h-full flex-col";
@@ -33,6 +34,7 @@ export function StayCards({
   accent = false,
 }: VariantProps & { accent?: boolean }) {
   const places = list(values, "places").slice(0, 6);
+  const mode = iconMode(values);
 
   return (
     <div className={`${STACK} ${SECTION_GROUND[ground]} ${PAD}`}>
@@ -48,7 +50,11 @@ export function StayCards({
                 place={place}
                 className={`${CELL} ${centredWhenStacked(places.length)}`}
               >
-                <ItemIcon name={place.icon} accent={accent} className="mb-5" />
+                <ItemIcon
+                  mark={itemMark(mode, place.icon, index)}
+                  accent={accent}
+                  className="mb-5"
+                />
               </StayCell>
             </li>
           ))}

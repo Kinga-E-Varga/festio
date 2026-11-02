@@ -1,4 +1,5 @@
 import { ItemIcon } from "@/modular/cards/CardIcon";
+import { iconMode, itemMark, type ItemMark } from "@/modular/item-marks";
 import { imageSrc, isOn, list } from "@/modular/content";
 import { Icon } from "@/modular/icons";
 import { MapsLink } from "@/modular/MapsLink";
@@ -11,8 +12,6 @@ import {
   BODY_SM,
   INNER_EYEBROW,
   GROUND,
-  LINED_CELL,
-  LINED_GRID,
   UNLINED_PULL,
   INK_LINK,
   MUTED,
@@ -24,9 +23,6 @@ import {
   columnsFor,
 } from "@/modular/styles";
 import type { ListItem, SectionGround, VariantProps } from "@/types/modular";
-
-/* The rows' lines, in the palette's line colour. */
-const RULE = "border-[var(--m-line)]";
 
 /*
  * A row: the photo, then the venue with the way there under it. On a
@@ -47,14 +43,14 @@ const PHOTO_SIZES = "(min-width: 1100px) 512px, (min-width: 768px) 50vw, 320px";
 
 /**
  * The section's heading centred, the eyebrow over it and the note under
- * it, and the locations under them as a list: one row each between lines —
- * the photo (left, then right, in turn), the label, venue, address and
- * detail, and the way there. The photo is required while photos are on;
- * while it is missing the other surface stands in. With photos off, the
- * venues side by side with hairlines between (`LINED_GRID`), as
- * Menu's courses. List & grid (`3`); with `accent` (on the accent band),
- * no lines and each venue's icon, when it has one, on the palette's
- * secondary disc over its label: Accent (`9`).
+ * it, and the locations under them, no lines, as a list: one row each —
+ * the photo (left, then right, in turn), the icon, label, venue, address
+ * and detail, and the way there. The photo is required while photos are
+ * on; while it is missing the other surface stands in. With photos off,
+ * the venues side by side. Each venue's icon, when it has one, on the
+ * secondary disc over its label. Grid (`3`); with `accent` (on
+ * the accent band), the discs in the palette's own secondary: Grid accent
+ * (`9`).
  */
 export function ListGridVenues({
   values,
@@ -64,35 +60,37 @@ export function ListGridVenues({
   const venues = list(values, "venues");
   if (venues.length === 0) return null;
   const photos = isOn(values, "photos");
+  const mode = iconMode(values);
 
   return (
     <div className={`${STACK} ${SECTION_GROUND[ground]} ${PAD}`}>
       <SectionHeading values={values} />
       {photos ? (
-        <ol
-          className={`${accent ? UNLINED_PULL : `border-t-1 ${RULE}`} text-center`}
-        >
+        <ol className={`${UNLINED_PULL} text-center`}>
           {venues.map((venue, index) => (
             <VenueRow
               key={index}
               venue={venue}
               ground={ground}
-              flipped={index % 2 === 1}
+              index={index}
+              mark={itemMark(mode, venue.icon, index)}
               accent={accent}
             />
           ))}
         </ol>
       ) : (
-        /* Side by side with hairlines between, as Menu's courses (none on the accent). */
-        <ol
-          className={`${accent ? `grid ${UNLINED_PULL}` : LINED_GRID} ${columnsFor(venues.length)}`}
-        >
+        /* Side by side, no lines. */
+        <ol className={`grid ${UNLINED_PULL} ${columnsFor(venues.length)}`}>
           {venues.map((venue, index) => (
             <li
               key={index}
-              className={`${accent ? "" : LINED_CELL} ${SECTION_GROUND[ground]} px-5 py-8 text-center @3xl:py-10`}
+              className={`${SECTION_GROUND[ground]} px-5 py-8 text-center @3xl:py-10`}
             >
-              <VenueText venue={venue} accent={accent} />
+              <VenueText
+                venue={venue}
+                mark={itemMark(mode, venue.icon, index)}
+                accent={accent}
+              />
             </li>
           ))}
         </ol>
@@ -101,27 +99,29 @@ export function ListGridVenues({
   );
 }
 
-function VenueRow({
+/** One venue as a row, with its photo; every second one flipped. Also Location's Full card (`FullCardVenues`). */
+export function VenueRow({
   venue,
   ground,
-  flipped,
+  index,
+  mark,
   accent,
 }: {
   venue: ListItem;
   ground: SectionGround;
-  flipped: boolean;
+  index: number;
+  mark: ItemMark;
   accent: boolean;
 }) {
   const photo = imageSrc(venue.photo ?? "");
+  const flipped = index % 2 === 1;
 
   return (
     /*
      * With photos, every second row reads its columns right to left, so the
      * photo keeps its width on the right; each cell reads left to right again.
      */
-    <li
-      className={`${accent ? "" : `border-b-1 ${RULE}`} ${ROW} ${flipped ? "@3xl:[direction:rtl]" : ""}`}
-    >
+    <li className={`${ROW} ${flipped ? "@3xl:[direction:rtl]" : ""}`}>
       <div
         className={`relative order-last aspect-[4/3] w-full max-w-80 justify-self-center [direction:ltr] ${GROUND[otherGround(ground)]} @3xl:order-none @3xl:aspect-auto @3xl:h-66 @3xl:max-w-none`}
       >
@@ -131,6 +131,7 @@ function VenueRow({
       </div>
       <VenueText
         venue={venue}
+        mark={mark}
         accent={accent}
         className="[direction:ltr] @3xl:self-center"
       />
@@ -138,21 +139,26 @@ function VenueRow({
   );
 }
 
-/** The venue and the way there: the card's sizes and spacing (`AccentVenue`), in the section's inks; with `accent`, its icon over the label. */
-function VenueText({
+/**
+ * The venue and the way there: the card's sizes and spacing (`AccentVenue`),
+ * in the section's inks, its mark (`itemMark`), when it has one, on the
+ * secondary disc over its label; with `accent` the palette's own secondary, as the
+ * accent's roles point it at the accent's ink. Also Location's Full card.
+ */
+export function VenueText({
   venue,
+  mark,
   accent,
   className = "",
 }: {
   venue: ListItem;
+  mark: ItemMark;
   accent: boolean;
   className?: string;
 }) {
   return (
     <div className={`flex min-w-0 flex-col ${className}`}>
-      {accent ? (
-        <ItemIcon name={venue.icon} accent className="mb-5 self-center" />
-      ) : null}
+      <ItemIcon mark={mark} accent={accent} className="mb-5 self-center" />
       {venue.label ? (
         <p className={`${INNER_EYEBROW} ${TONE_TEXT.secondary} mb-4`}>
           {venue.label}

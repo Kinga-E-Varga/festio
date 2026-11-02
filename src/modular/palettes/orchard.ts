@@ -5,6 +5,7 @@ export const palette: ModularPalette = {
   id: "orchard",
   name: "Orchard",
   mood: "subtle",
+  scheme: "dark",
   colors: {
     surface: "#22251f",
     "surface-alt": "#2c3028",

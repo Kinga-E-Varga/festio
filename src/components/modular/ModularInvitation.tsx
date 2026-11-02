@@ -286,6 +286,7 @@ export const ModularInvitation = memo(function ModularInvitation({
   const copyOf = (node: ReactNode, className: string) => (
     <div
       style={vars}
+      data-scheme={design.palette.scheme}
       className={`${face} @container/page h-full w-full bg-[var(--m-surface)] ${className}`}
     >
       {node}
@@ -324,6 +325,7 @@ export const ModularInvitation = memo(function ModularInvitation({
   const column = (
     <div
       style={{ ...vars, "--reveal": `${fade ?? 0}ms` } as CSSProperties}
+      data-scheme={design.palette.scheme}
       className={`${face} relative flex h-full flex-col overflow-clip bg-[var(--m-surface)] ${hidden ? "opacity-0" : "transition-opacity duration-(--reveal)"}`}
     >
       {/* While the drawer or the envelope covers the page, everything under it is out of the tab order. */}

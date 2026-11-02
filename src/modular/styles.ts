@@ -1,5 +1,6 @@
 import { otherGround } from "./ground";
 import type { SectionGround } from "@/types/modular";
+import type { ItemMark } from "./item-marks";
 
 /*
  * The modular library's one scale. Variants build from these and from plain
@@ -20,6 +21,13 @@ export const SERIF = "font-[family-name:var(--font-secondary)] font-normal";
  * Size and colour are the variant's.
  */
 export const HEADING = `${SERIF} text-balance [overflow-wrap:anywhere]`;
+
+/**
+ * A poster cover's date, in the names' voice, the second thing read: italic
+ * in the heading face, growing with the width, 20px to 26px on a phone, to
+ * 34px from `@3xl`. Champagne's and Wildflower's.
+ */
+export const POSTER_DATE = `${HEADING} text-[clamp(20px,6.5cqw,26px)] @3xl:text-[clamp(22px,2.3cqw,34px)] leading-[1.3] italic`;
 
 const H2_FACE = `${HEADING} leading-[1.15] tracking-[-0.03em]`;
 
@@ -93,6 +101,13 @@ export const TEXT_CUT_THICK = "[--m-text-cut-scale:1.6]";
  * stickers' names, the Text box's Sticker joined.
  */
 export const STICKER_TEXT = `${TEXT_CUT} font-medium!`;
+
+/**
+ * Small caps text as a sticker: bold, a step over the eyebrow's semibold,
+ * its outline thicker still, so it shows at its size. The Text box's
+ * stickers' small text, the countdown's Sticker joined's units.
+ */
+export const SMALL_STICKER = `${TEXT_CUT} [--m-text-cut-scale:2.5] font-bold!`;
 
 /** The title's names, in the accent, a touch looser than `DISPLAY`: also Date's big day. */
 export const NAMES = `${DISPLAY} ${NAMES_SIZE} tracking-[-0.03em]!`;
@@ -265,7 +280,7 @@ export const FIELD_CORNER = "rounded-(--m-corner-field)";
 /** A card's padding. */
 const CARD_PAD = "p-6 @3xl:px-8 @3xl:py-7";
 
-/** A hairline frame with the corners step: each of a double frame's two (Menu's Framed card, Text box's Framed). */
+/** A hairline frame with the corners step: a card's edge. */
 export const HAIRLINE_FRAME = `${CORNER} border-1 border-[var(--m-line)]`;
 
 /** A card: a hairline edge, the corners and its padding. Its ground is the variant's. */
@@ -296,6 +311,11 @@ export const DISC_ROW = "grid grid-cols-[minmax(0,1fr)_2.375rem] gap-x-6";
 export const LEAD_ROW =
   "grid grid-cols-[auto_minmax(0,1fr)] items-center gap-x-3";
 
+/** `LEAD_ROW` while the row has a mark (`LeadMark`); without one, its text alone. */
+export function leadRow(mark: ItemMark): string {
+  return mark ? LEAD_ROW : "";
+}
+
 /** Frosted glass: the page's surface, a touch see-through, blurring what passes under it. */
 export const FROSTED = "bg-[var(--m-surface)]/94 backdrop-blur-sm";
 
@@ -320,9 +340,13 @@ export const TONE_TEXT = {
   secondary: "text-[color:var(--m-secondary)]",
 } as const;
 
-/** The tone Schedule's and Story's days or moments take in turn: the first in the accent, the next in the secondary, and so on. Every other list's icons are all in the secondary (`ItemIcon`). */
-export function turnTone(index: number): "accent" | "secondary" {
-  return index % 2 === 0 ? "accent" : "secondary";
+/** The tone Schedule's and Story's days or moments take in turn: the first in `first` (the accent unless said), the next in the other, and so on. Every other list's icons are all in the secondary (`ItemIcon`). */
+export function turnTone(
+  index: number,
+  first: "accent" | "secondary" = "accent",
+): "accent" | "secondary" {
+  const other = first === "accent" ? "secondary" : "accent";
+  return index % 2 === 0 ? first : other;
 }
 
 /*

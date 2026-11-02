@@ -21,7 +21,7 @@ import { CardIcon, ItemIcon } from "./CardIcon";
  * centred: its icon, when it has one, on a soft disc in the accent (as the
  * full cards' items), its label, 16px over the title, the text and, 16px
  * under them, what the section adds (the colours, the gift buttons). In one
- * card, the note between its lines (`FullCard`): Full card (`4`); with
+ * card, no lines (`FullCard`): Full card (`4`); with
  * `accent`, the card on the accent and the icon on the palette's secondary
  * disc (`ItemIcon`'s `accent`), Full card accent (`5`). With `band` (Accent,
  * `6`, on the accent band): no card, the heading straight over the note,
@@ -51,10 +51,10 @@ export function FullCardNote({
 }) {
   const note = (
     <div
-      className={`flex flex-col items-center text-center ${band ? `${COLUMN} @3xl:px-12` : `${accent ? UNLINED_PULL : ""} py-8 @3xl:py-10`}`}
+      className={`flex flex-col items-center text-center ${band ? `${COLUMN} @3xl:px-12` : `${UNLINED_PULL} py-8 @3xl:py-10`}`}
     >
       {accent ? (
-        <ItemIcon name={icon} accent className="mb-5" />
+        <ItemIcon mark={icon ? { icon } : null} accent className="mb-5" />
       ) : icon ? (
         <CardIcon name={icon} tone="accent" className="mb-5" />
       ) : null}

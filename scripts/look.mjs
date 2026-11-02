@@ -68,9 +68,15 @@ async function setUp(page) {
     ) {
       await on.click();
     }
-    const reveal = card.locator("button[aria-expanded]");
+    const reveal = card.locator("button[aria-expanded]").first();
     if ((await reveal.getAttribute("aria-expanded")) === "false") {
       await reveal.click();
+    }
+    /* Grouped styles (Cover's Photo, Illustration): every group rolled out. */
+    for (const group of await card
+      .locator("button[aria-expanded=false]")
+      .all()) {
+      await group.click();
     }
     await card
       .locator("button[aria-pressed]")

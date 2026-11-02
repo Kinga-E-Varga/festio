@@ -1,4 +1,5 @@
 import { list } from "@/modular/content";
+import { iconMode } from "@/modular/item-marks";
 import { SectionHeading } from "@/modular/SectionHeading";
 import { PAD, SPLIT, SECTION_GROUND } from "@/modular/styles";
 import type { VariantProps } from "@/types/modular";
@@ -14,7 +15,7 @@ export function Variant({ values, ground }: VariantProps) {
       <div>
         <SectionHeading values={values} align="start" />
       </div>
-      <CourseList courses={list(values, "courses")} />
+      <CourseList courses={list(values, "courses")} mode={iconMode(values)} />
     </div>
   );
 }

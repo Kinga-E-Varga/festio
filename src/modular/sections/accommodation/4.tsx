@@ -1,4 +1,5 @@
 import { list } from "@/modular/content";
+import { iconMode } from "@/modular/item-marks";
 import { otherGround } from "@/modular/ground";
 import { IconHeading } from "@/modular/IconHeading";
 import { ITEM_TITLE, PAD, SPLIT, SECTION_GROUND } from "@/modular/styles";
@@ -17,6 +18,7 @@ export function Variant({ values, ground }: VariantProps) {
       <StayList
         places={places}
         nameClass={ITEM_TITLE}
+        mode={iconMode(values)}
         cards={otherGround(ground)}
         numbered
       />

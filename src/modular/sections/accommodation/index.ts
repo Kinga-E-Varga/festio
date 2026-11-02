@@ -3,6 +3,7 @@ import {
   HEADING_SHOWS,
   ICON_HEADING_SHOWS,
 } from "@/modular/heading";
+import { ITEM_ICON, iconShows, iconSwitches } from "@/modular/item-marks";
 import { LABELS } from "@/modular/labels";
 import type { SectionDefinition } from "@/types/modular";
 
@@ -53,6 +54,7 @@ export const section: SectionDefinition = {
       // No italic second line under the heading.
       shows: [
         ...ICON_HEADING_SHOWS,
+        ...iconShows("places"),
         "places.distance",
         "places.name",
         "places.note",
@@ -69,6 +71,7 @@ export const section: SectionDefinition = {
       // No italic second line under the heading.
       shows: [
         ...ICON_HEADING_SHOWS,
+        ...iconShows("places"),
         "places.distance",
         "places.name",
         "places.note",
@@ -81,7 +84,7 @@ export const section: SectionDefinition = {
       // Transportation's Cards; no italic second line under the heading.
       shows: [
         ...HEADING_SHOWS.filter((id) => id !== "headingItalic"),
-        "places.icon",
+        ...iconShows("places"),
         "places.distance",
         "places.name",
         "places.note",
@@ -98,7 +101,7 @@ export const section: SectionDefinition = {
       // Cards, the cards on the accent, every disc in the secondary.
       shows: [
         ...HEADING_SHOWS.filter((id) => id !== "headingItalic"),
-        "places.icon",
+        ...iconShows("places"),
         "places.distance",
         "places.name",
         "places.note",
@@ -108,9 +111,10 @@ export const section: SectionDefinition = {
     {
       id: "5",
       name: { en: "Grid", ro: "Grilă", hu: "Rács" },
-      // Transportation's Cards as a grid; no italic second line under the heading.
+      // Transportation's Cards as a grid, no lines; no italic second line under the heading.
       shows: [
         ...HEADING_SHOWS.filter((id) => id !== "headingItalic"),
+        ...iconShows("places"),
         "places.distance",
         "places.name",
         "places.note",
@@ -119,12 +123,12 @@ export const section: SectionDefinition = {
     },
     {
       id: "9",
-      name: { en: "Accent", ro: "Accent", hu: "Kiemelt" },
-      // Grid on the accent, no hairlines, each stay's icon over its eyebrow.
+      name: { en: "Grid accent", ro: "Grilă accent", hu: "Rács kiemelt" },
+      // Grid on the accent, each stay's icon over its eyebrow.
       ground: "accent",
       shows: [
         ...HEADING_SHOWS.filter((id) => id !== "headingItalic"),
-        "places.icon",
+        ...iconShows("places"),
         "places.distance",
         "places.name",
         "places.note",
@@ -137,7 +141,7 @@ export const section: SectionDefinition = {
       // Cards' content, the stays side by side in a full card.
       shows: [
         ...HEADING_SHOWS.filter((id) => id !== "headingItalic"),
-        "places.icon",
+        ...iconShows("places"),
         "places.distance",
         "places.name",
         "places.note",
@@ -156,7 +160,7 @@ export const section: SectionDefinition = {
       ground: "surface",
       shows: [
         ...HEADING_SHOWS.filter((id) => id !== "headingItalic"),
-        "places.icon",
+        ...iconShows("places"),
         "places.distance",
         "places.name",
         "places.note",
@@ -166,6 +170,7 @@ export const section: SectionDefinition = {
   ],
   fields: [
     ...HEADING_FIELDS,
+    ...iconSwitches("places"),
     {
       id: "places",
       label: { en: "places to stay", ro: "locuri de cazare", hu: "szállások" },
@@ -178,7 +183,7 @@ export const section: SectionDefinition = {
       type: "list",
       maxItems: 6,
       item: [
-        { id: "icon", label: LABELS.icon, type: "icon", maxLength: 20 },
+        ITEM_ICON,
         // Once a side note, now drawn as the stay's eyebrow; the id stays.
         {
           id: "distance",

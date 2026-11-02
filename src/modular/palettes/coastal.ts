@@ -5,6 +5,7 @@ export const palette: ModularPalette = {
   id: "coastal",
   name: "Coastal",
   mood: "subtle",
+  scheme: "light",
   colors: {
     surface: "#f5f1ea",
     "surface-alt": "#e8e0d4",

@@ -5,11 +5,11 @@ import { FaqList } from "./FaqList";
 
 /**
  * Accommodation's Full card (`7`) for the questions: the heading
- * centred, the questions under it between the card's lines as plain rows,
- * a line between each, no icons (`FaqList`, `divided`); the link to the
+ * centred, the questions under it as plain rows, a line between each, no
+ * icons (`FaqList`, `divided`); the link to the
  * reply form the last row, in the secondary. Every answer starts closed.
- * Full card (`6`); with `accent`, the card on the accent and no lines at
- * all: Full card accent (`7`).
+ * Full card (`6`); with `accent`, the card on the accent: Full card accent
+ * (`7`).
  */
 export function FullCardFaq({
   values,
@@ -21,12 +21,7 @@ export function FullCardFaq({
 
   return (
     <FullCard values={values} ground={ground} accent={accent}>
-      <FaqList
-        items={items}
-        divided
-        lines={!accent}
-        ask={text(values, "linkLabel")}
-      />
+      <FaqList items={items} divided ask={text(values, "linkLabel")} />
     </FullCard>
   );
 }

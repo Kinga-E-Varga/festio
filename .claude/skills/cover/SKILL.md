@@ -9,7 +9,8 @@ argument-hint: "[the idea, and a path / link to a reference card]"
 A cover variant in `src/modular/sections/cover/` that needs no photo: a flat
 illustration drawn in SVG, decorations scattered round it, the invitation's words
 beside or below. Champagne (`3.tsx`, drawing in `Coupe.tsx`) is the first one;
-Birthday cake (`4.tsx`, `Cake.tsx`, `Bunting.tsx`) the second.
+Birthday cake (`4.tsx`, `Cake.tsx`, `Bunting.tsx`) the second; Wildflower (`5.tsx`)
+the first from a drawing the user made in Inkscape (see "A drawing from Inkscape").
 
 **Brief:** $ARGUMENTS
 
@@ -85,6 +86,36 @@ white N%)` for the light parts and `black N%` for the dark accent, set once as
 - The cover's own small decorations that belong to the object (bubbles over a
   glass, a few stars right beside it) go inside the drawing, so they move and
   scale with it.
+
+## A drawing from Inkscape
+
+When the user brings their own drawing (too detailed to hand-write as paths, like
+Wildflower's engraved corner), it stays a static file painted through CSS masks, not
+an inline component.
+
+- **The source**, the user's to edit: `public/modular/svg-elements/<name>.svg`, with
+  one path labelled `lines` (the drawing) and, if the cover needs one, one labelled
+  `fill` (the drawing's filled-in shape, so what's under it doesn't show through;
+  a stroke on it widens it past the lines). Labels are set in Inkscape's Layers and
+  Objects panel. Never edit the source without asking; back it up first.
+- **Build** after every change to it, from the repo root:
+  `python3 -I .claude/skills/cover/svg.py build <name>` (or `build all`). It writes
+  `public/modular/cover/<name>.svg`, `<name>-fill.svg` (its stroke the source's,
+  or the `SETTINGS` row's `stroke`) and, when the row gives a `dark_stroke`,
+  `<name>-fill-dark.svg` (the dark palettes' thinner outline). Coordinates rounded, Inkscape's extras dropped, 5 units of room
+  (`MARGIN`) round the drawing so a stroke is never cut. A cover's own settings
+  go in `SETTINGS`, only what differs from the defaults.
+- **In the cover:** each file is a pseudo-element's mask (`mask-contain`,
+  `mask-center`), the fill (`before:`) under the lines (`after:`), both reaching
+  `MARGIN` past the box: `-inset-x-[MARGIN / width %]`, `-inset-y-[MARGIN / height %]`,
+  and the box's `aspect-[width/height]` the source's viewBox. **Both layers on the
+  same box**, or the browser can round them a pixel apart. See `FLOWERS` in `5.tsx`.
+- **Light and dark:** palettes carry a `scheme`; `dark-palette:` (in
+  `globals.css`) styles anything inside a dark one. Wildflower: lines in the
+  secondary over the surface on light, the secondary's ink over the secondary on
+  dark.
+- **Check the build** before using it: the outline's edges match the source's
+  viewBox, and the drawing looks the same (render both, compare pixels).
 
 ## 3. Imperfections — only when asked
 

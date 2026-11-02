@@ -1,8 +1,6 @@
 "use client";
 
-import { useTranslations } from "next-intl";
-import { pad } from "@/lib/event";
-import { NUMBER_SIZE, UNITS, useCountdown } from "@/modular/countdown";
+import { NUMBER_SIZE, useCountdown } from "@/modular/countdown";
 import { text } from "@/modular/content";
 import {
   CAPS,
@@ -17,6 +15,7 @@ import {
 import type { VariantProps } from "@/types/modular";
 import { Done } from "./Done";
 import { JoinedColumn } from "./JoinedColumn";
+import { NumberRow } from "./NumberRow";
 
 /** The numbers' face, size and colour; the big-day line wears it too. */
 const NUMBER = `${SERIF} ${NUMBER_SIZE} leading-none text-[color:var(--m-accent)]`;
@@ -31,7 +30,6 @@ const NUMBER = `${SERIF} ${NUMBER_SIZE} leading-none text-[color:var(--m-accent)
  * numbers spread across it.
  */
 export function Variant({ values, basics, ground, afterSplit }: VariantProps) {
-  const t = useTranslations("Sections");
   const { left, done } = useCountdown(basics);
 
   return (
@@ -49,28 +47,12 @@ export function Variant({ values, basics, ground, afterSplit }: VariantProps) {
               {text(values, "eyebrow")}
             </p>
           ) : null}
-          <div
-            role="timer"
-            aria-label={
-              left ? t("countdownLabel", { count: left.days }) : undefined
-            }
-            className={`flex w-full justify-around gap-2.5 ${afterSplit ? "" : "@3xl:w-auto @3xl:justify-center @3xl:gap-16 @5xl:gap-24"}`}
-          >
-            {UNITS.map((unit) => (
-              <div
-                key={unit}
-                aria-hidden="true"
-                className="flex min-w-12 flex-col items-center gap-1.5"
-              >
-                <span className={`${NUMBER} tabular-nums`}>
-                  {left ? pad(left[unit]) : "––"}
-                </span>
-                <span className={`${CAPS} ${MUTED} font-medium`}>
-                  {t(unit, { count: left?.[unit] ?? 0 })}
-                </span>
-              </div>
-            ))}
-          </div>
+          <NumberRow
+            left={left}
+            number={NUMBER}
+            unit={`${CAPS} ${MUTED} font-medium`}
+            afterSplit={afterSplit}
+          />
         </>
       )}
     </JoinedColumn>

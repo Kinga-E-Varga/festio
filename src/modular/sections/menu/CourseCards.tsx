@@ -18,6 +18,7 @@ import {
 import type { VariantProps } from "@/types/modular";
 import { Dishes, dishesOf } from "./Dishes";
 import { ItemIcon } from "@/modular/cards/CardIcon";
+import { iconMode, itemMark } from "@/modular/item-marks";
 
 /**
  * Transportation's Cards (`1`) for the courses: one card per course on the
@@ -33,6 +34,7 @@ export function CourseCards({
   accent = false,
 }: VariantProps & { accent?: boolean }) {
   const courses = list(values, "courses").slice(0, 6);
+  const mode = iconMode(values);
 
   return (
     <div className={`${STACK} ${SECTION_GROUND[ground]} ${PAD}`}>
@@ -44,7 +46,11 @@ export function CourseCards({
               key={index}
               className={`${CARD} flex flex-col ${centredWhenStacked(courses.length)} ${COLUMN} ${GROUND[accent ? "accent" : otherGround(ground)]}`}
             >
-              <ItemIcon name={course.icon} accent={accent} className="mb-5" />
+              <ItemIcon
+                mark={itemMark(mode, course.icon, index)}
+                accent={accent}
+                className="mb-5"
+              />
               {course.label ? (
                 <span
                   className={`${INNER_EYEBROW} text-[color:var(--m-secondary)]`}

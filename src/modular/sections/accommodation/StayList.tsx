@@ -1,5 +1,7 @@
 import { safeLink } from "@/modular/content";
+import { LeadMark } from "@/modular/cards/CardIcon";
 import { Icon } from "@/modular/icons";
+import { itemMark, type IconMode } from "@/modular/item-marks";
 import {
   ARROW_NUDGE,
   BODY_SM,
@@ -10,8 +12,6 @@ import {
   CARD_DISC,
   INNER_EYEBROW,
   MUTED,
-  TIME_COLUMN,
-  TONE_TEXT,
   TONES,
   CARD_STACK,
   DISC_ROW,
@@ -22,11 +22,14 @@ import type { ListItem, SectionGround } from "@/types/modular";
 const RULE = "border-[var(--m-line)]";
 
 /*
- * A numbered row: the number's column first, as wide as a list's times;
- * 8px clear of the right edge, so the arrow sits a little in from it.
+ * A row led by its mark: the mark's column first (`LeadMark`), as wide as
+ * a list's times, none without a mark; 8px clear of the right edge, so the
+ * arrow sits a little in from it.
  */
-const NUMBERED_ROW =
-  "grid grid-cols-[auto_1fr_1.125rem] items-center gap-3 pr-2";
+const LEAD_ROW = {
+  marked: "grid grid-cols-[auto_1fr_1.125rem] items-center gap-3 pr-2",
+  bare: "grid grid-cols-[1fr_1.125rem] items-center gap-3 pr-2",
+};
 
 /* Larger than a text link's arrow: it stands alone at the row's end. */
 const ARROW = (
@@ -41,8 +44,8 @@ const DISC = {
 
 /**
  * The stays, one row each between lines — or, with `cards`, each row a card
- * on that surface, the cards stacked. With `numbered`, each stay's number
- * (01, 02…) first, large, in the accent, as
+ * on that surface, the cards stacked. With `numbered`, each stay's mark
+ * (`LeadMark`: its icon, or its number 01, 02…) first, in the accent, as
  * Transportation's Icon & list (`TIME_COLUMN`); without, the arrow on a
  * soft disc as Transportation's Two-line & list's icons, in the secondary, its colours swapping on hover. Spaced as
  * Transportation's lists and cards: 16px from the eyebrow to the name,
@@ -52,9 +55,12 @@ export function StayList({
   places,
   nameClass = H4,
   cards,
+  mode = "icons",
   numbered = false,
 }: {
   places: ListItem[];
+  /** With `numbered`, the section's `iconMode`: each stay's mark first. */
+  mode?: IconMode;
   /** The stay's name; Stays' small serif unless a variant says otherwise. */
   nameClass?: string;
   /** The cards' surface; without it, the rows between lines. */
@@ -68,12 +74,9 @@ export function StayList({
         const link = safeLink(place.link);
         // Padded as a schedule's event: 12px under, and over the name when
         // there is no eyebrow (an eyebrow takes the place of a date).
-        const row = `${numbered ? NUMBERED_ROW : `${DISC_ROW} items-center`} pb-3 ${place.distance ? "" : "pt-3"}`;
-        const number = numbered ? (
-          <span className={`${TIME_COLUMN} ${TONE_TEXT.accent}`}>
-            {String(index + 1).padStart(2, "0")}
-          </span>
-        ) : null;
+        const mark = itemMark(mode, place.icon, index);
+        const row = `${numbered ? LEAD_ROW[mark ? "marked" : "bare"] : `${DISC_ROW} items-center`} pb-3 ${place.distance ? "" : "pt-3"}`;
+        const number = numbered ? <LeadMark mark={mark} /> : null;
         return (
           <li
             key={index}

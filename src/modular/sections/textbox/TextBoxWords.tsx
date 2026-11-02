@@ -4,17 +4,11 @@ import {
   EYEBROW,
   H2_SMALL,
   MUTED,
+  SMALL_STICKER,
   STICKER_TEXT,
-  TEXT_CUT,
   TEXT_CUT_THICK,
 } from "@/modular/styles";
 import type { SectionValues } from "@/types/modular";
-
-/**
- * The small text as a sticker: bold, a step over the eyebrow's semibold,
- * its outline thicker still, so it shows at its size.
- */
-const SMALL_STICKER = `${TEXT_CUT} [--m-text-cut-scale:2.5] font-bold!`;
 
 /** Whether there is anything to draw: the variants draw nothing without it. */
 export function hasText(values: SectionValues): boolean {

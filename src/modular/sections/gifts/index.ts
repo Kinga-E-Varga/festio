@@ -30,7 +30,7 @@ export const section: SectionDefinition = {
   variants: [
     {
       id: "1",
-      name: { en: "Card", ro: "Card", hu: "Kártya" },
+      name: { en: "Wide card", ro: "Card lat", hu: "Széles kártya" },
       // Every heading field but the italic heading.
       shows: [
         ...HEADING_SHOWS.filter((id) => id !== "headingItalic"),

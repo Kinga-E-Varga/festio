@@ -3,6 +3,7 @@ import {
   HEADING_SHOWS,
   ICON_HEADING_SHOWS,
 } from "@/modular/heading";
+import { ITEM_ICON, iconShows, iconSwitches } from "@/modular/item-marks";
 import { LABELS } from "@/modular/labels";
 import type { SectionDefinition } from "@/types/modular";
 
@@ -104,7 +105,7 @@ export const section: SectionDefinition = {
         ...HEADING_SHOWS.filter(
           (id) => id !== "headingItalic" && id !== "note",
         ),
-        "moments.icon",
+        ...iconShows("moments"),
         "moments.year",
         "moments.title",
         "moments.text",
@@ -123,6 +124,7 @@ export const section: SectionDefinition = {
       controls: ["photo", "photoAlt"],
     },
     ...HEADING_FIELDS,
+    ...iconSwitches("moments"),
     {
       id: "story",
       label: { en: "story", ro: "povestea", hu: "történet" },
@@ -158,7 +160,7 @@ export const section: SectionDefinition = {
       type: "list",
       maxItems: 6,
       item: [
-        { id: "icon", label: LABELS.icon, type: "icon", maxLength: 20 },
+        ITEM_ICON,
         {
           id: "year",
           label: { en: "year", ro: "anul", hu: "év" },

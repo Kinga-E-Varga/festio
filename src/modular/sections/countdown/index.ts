@@ -60,6 +60,17 @@ export const section: SectionDefinition = {
       shows: ["eyebrow"],
     },
     {
+      id: "11",
+      name: {
+        en: "Sticker joined",
+        ro: "Autocolant alăturat",
+        hu: "Csatolt matrica",
+      },
+      // Simple joined as the Text box's stickers, no eyebrow.
+      ground: "joined",
+      shows: [],
+    },
+    {
       id: "7",
       name: {
         en: "Cards joined",

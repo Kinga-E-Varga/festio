@@ -1,4 +1,5 @@
 import { HEADING_FIELDS, HEADING_SHOWS } from "@/modular/heading";
+import { ITEM_ICON, iconShows, iconSwitches } from "@/modular/item-marks";
 import { LABELS } from "@/modular/labels";
 import type { SectionDefinition } from "@/types/modular";
 
@@ -35,7 +36,7 @@ export const section: SectionDefinition = {
         "venues.mapsLink",
         "venues.detail",
         "venues.photo",
-        "venues.icon",
+        ...iconShows("venues"),
       ],
     },
     {
@@ -51,16 +52,12 @@ export const section: SectionDefinition = {
         "venues.mapsLink",
         "venues.detail",
         "venues.photo",
-        "venues.icon",
+        ...iconShows("venues"),
       ],
     },
     {
       id: "2",
-      name: {
-        en: "Simple",
-        ro: "Simplu",
-        hu: "Egyszerű",
-      },
+      name: { en: "Simple", ro: "Simplu", hu: "Egyszerű" },
       shows: [
         "photos",
         "venues.label",
@@ -73,7 +70,11 @@ export const section: SectionDefinition = {
     },
     {
       id: "11",
-      name: { en: "Accent", ro: "Accent", hu: "Kiemelt" },
+      name: {
+        en: "Simple accent",
+        ro: "Simplu accent",
+        hu: "Egyszerű kiemelt",
+      },
       // Simple on the accent.
       ground: "accent",
       shows: [
@@ -116,7 +117,7 @@ export const section: SectionDefinition = {
       // Simple with the icon where the label goes.
       shows: [
         "photos",
-        "venues.icon",
+        ...iconShows("venues"),
         "venues.venue",
         "venues.address",
         "venues.mapsLink",
@@ -126,15 +127,12 @@ export const section: SectionDefinition = {
     },
     {
       id: "3",
-      name: {
-        en: "List & grid",
-        ro: "Listă & grilă",
-        hu: "Lista & rács",
-      },
-      // Every heading field but the italic heading.
+      name: { en: "Grid", ro: "Grilă", hu: "Rács" },
+      // Every heading field but the italic heading; each venue's icon over its label.
       shows: [
         "photos",
         ...HEADING_SHOWS.filter((id) => id !== "headingItalic"),
+        ...iconShows("venues"),
         "venues.label",
         "venues.venue",
         "venues.address",
@@ -145,17 +143,13 @@ export const section: SectionDefinition = {
     },
     {
       id: "9",
-      name: {
-        en: "Accent & header",
-        ro: "Accent & antet",
-        hu: "Kiemelt & fejléc",
-      },
-      // List & grid on the accent, no lines, each venue's icon over its label.
+      name: { en: "Grid accent", ro: "Grilă accent", hu: "Rács kiemelt" },
+      // Grid on the accent.
       ground: "accent",
       shows: [
         "photos",
         ...HEADING_SHOWS.filter((id) => id !== "headingItalic"),
-        "venues.icon",
+        ...iconShows("venues"),
         "venues.label",
         "venues.venue",
         "venues.address",
@@ -167,11 +161,11 @@ export const section: SectionDefinition = {
     {
       id: "8",
       name: { en: "Full card", ro: "Card întreg", hu: "Teljes kártya" },
-      // List & grid in one card: every heading field but the italic heading.
+      // Grid in one card: every heading field but the italic heading.
       shows: [
         "photos",
         ...HEADING_SHOWS.filter((id) => id !== "headingItalic"),
-        "venues.icon",
+        ...iconShows("venues"),
         "venues.label",
         "venues.venue",
         "venues.address",
@@ -193,7 +187,7 @@ export const section: SectionDefinition = {
       shows: [
         "photos",
         ...HEADING_SHOWS.filter((id) => id !== "headingItalic"),
-        "venues.icon",
+        ...iconShows("venues"),
         "venues.label",
         "venues.venue",
         "venues.address",
@@ -215,6 +209,7 @@ export const section: SectionDefinition = {
       controls: ["venues.photo"],
     },
     ...HEADING_FIELDS,
+    ...iconSwitches("venues"),
     {
       id: "venues",
       label: { en: "locations", ro: "locații", hu: "helyszínek" },
@@ -228,7 +223,7 @@ export const section: SectionDefinition = {
       maxItems: 3,
       minItems: 1,
       item: [
-        { id: "icon", label: LABELS.icon, type: "icon", maxLength: 20 },
+        ITEM_ICON,
         {
           id: "label",
           label: {

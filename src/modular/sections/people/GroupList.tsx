@@ -1,14 +1,7 @@
-import { ItemIcon } from "@/modular/cards/CardIcon";
+import { ItemIcon, LeadMark } from "@/modular/cards/CardIcon";
 import { Rows } from "@/modular/cards/Rows";
-import { Icon, isIconName } from "@/modular/icons";
-import {
-  DISC_ROW,
-  INNER_EYEBROW,
-  ITEM_TITLE,
-  LEAD_ROW,
-  TIME_COLUMN,
-  TONE_TEXT,
-} from "@/modular/styles";
+import { itemMark, type IconMode, type ItemMark } from "@/modular/item-marks";
+import { DISC_ROW, INNER_EYEBROW, ITEM_TITLE, leadRow } from "@/modular/styles";
 import type { ListItem, SectionGround } from "@/types/modular";
 import { Names } from "./Names";
 
@@ -26,19 +19,27 @@ import { Names } from "./Names";
  */
 export function GroupList({
   groups,
+  mode,
   icons,
   cards,
 }: {
   groups: ListItem[];
+  /** The section's `iconMode`: each group's mark, by the switches. */
+  mode: IconMode;
   icons: "start" | "end";
   /** The section's ground: each group a card on the other surface. */
   cards?: SectionGround;
 }) {
   return (
     <Rows items={groups} cards={cards} narrow={icons === "start"}>
-      {(group) =>
-        icons === "start" ? <LeadRow group={group} /> : <EndRow group={group} />
-      }
+      {(group, index) => {
+        const mark = itemMark(mode, group.icon, index);
+        return icons === "start" ? (
+          <LeadRow group={group} mark={mark} />
+        ) : (
+          <EndRow group={group} mark={mark} />
+        );
+      }}
     </Rows>
   );
 }
@@ -55,7 +56,7 @@ function Label({ group, className }: { group: ListItem; className: string }) {
 }
 
 /** Two-line & list's row: the label, then the names and the icon on its disc. */
-function EndRow({ group }: { group: ListItem }) {
+function EndRow({ group, mark }: { group: ListItem; mark: ItemMark }) {
   return (
     <>
       <Label group={group} className="mb-1" />
@@ -63,21 +64,17 @@ function EndRow({ group }: { group: ListItem }) {
         <div className="min-w-0">
           <Names names={group.names} className={ITEM_TITLE} />
         </div>
-        <ItemIcon name={group.icon} className="self-center" />
+        <ItemIcon mark={mark} className="self-center" />
       </div>
     </>
   );
 }
 
 /** Icon & list's row, spaced as Transportation's `WayRow`: the icon, then the label over the names. */
-function LeadRow({ group }: { group: ListItem }) {
+function LeadRow({ group, mark }: { group: ListItem; mark: ItemMark }) {
   return (
-    <div className={`${LEAD_ROW} pb-3 ${group.label ? "" : "pt-3"}`}>
-      <span className={`${TIME_COLUMN} ${TONE_TEXT.accent}`}>
-        {isIconName(group.icon) ? (
-          <Icon name={group.icon} className="block size-6.5" />
-        ) : null}
-      </span>
+    <div className={`${leadRow(mark)} pb-3 ${group.label ? "" : "pt-3"}`}>
+      <LeadMark mark={mark} />
       <div className="min-w-0">
         <Label group={group} className="mb-4" />
         <Names names={group.names} className={ITEM_TITLE} />

@@ -12,9 +12,12 @@ import {
 import type { Language } from "@/lib/language";
 import type { Group } from "@/types/modular";
 
-/** A day's colour, by its place: the 1st, 3rd… the accent, the 2nd, 4th… the secondary, as Two-line & list's. */
-export function clockTone(index: number) {
-  return TONE_TEXT[turnTone(index)];
+/** A day's colour, by its place: the 1st, 3rd… in `first` (the accent unless said), the 2nd, 4th… the other (`turnTone`). */
+export function clockTone(
+  index: number,
+  first: "accent" | "secondary" = "accent",
+) {
+  return TONE_TEXT[turnTone(index, first)];
 }
 
 /**

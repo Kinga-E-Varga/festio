@@ -1,4 +1,5 @@
 import { ItemIcon } from "@/modular/cards/CardIcon";
+import { iconMode, itemMark } from "@/modular/item-marks";
 import { list } from "@/modular/content";
 import { otherGround } from "@/modular/ground";
 import { SectionHeading } from "@/modular/SectionHeading";
@@ -30,6 +31,7 @@ export function PeopleCards({
   accent = false,
 }: VariantProps & { accent?: boolean }) {
   const people = list(values, "people").slice(0, 4);
+  const mode = iconMode(values);
 
   return (
     <div className={`${STACK} ${SECTION_GROUND[ground]} ${PAD}`}>
@@ -41,7 +43,11 @@ export function PeopleCards({
               key={index}
               className={`${CARD} flex flex-col ${centredWhenStacked(people.length)} ${COLUMN} ${GROUND[accent ? "accent" : otherGround(ground)]}`}
             >
-              <ItemIcon name={person.icon} accent={accent} className="mb-5" />
+              <ItemIcon
+                mark={itemMark(mode, person.icon, index)}
+                accent={accent}
+                className="mb-5"
+              />
               {person.role ? (
                 <span
                   className={`${INNER_EYEBROW} text-[color:var(--m-secondary)]`}

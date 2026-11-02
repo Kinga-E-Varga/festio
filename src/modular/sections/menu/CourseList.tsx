@@ -1,18 +1,16 @@
-import { pad } from "@/lib/event";
 import {
   BODY_SM,
   H3_ITEM,
   INNER_EYEBROW,
   MUTED,
-  TIME_COLUMN,
-  TONE_TEXT,
   DISC_ROW,
-  LEAD_ROW,
+  leadRow,
   NARROW_LIST,
 } from "@/modular/styles";
 import type { ListItem } from "@/types/modular";
 import { Dishes, dishesOf } from "./Dishes";
-import { ItemIcon } from "@/modular/cards/CardIcon";
+import { ItemIcon, LeadMark } from "@/modular/cards/CardIcon";
+import { itemMark, type IconMode } from "@/modular/item-marks";
 
 /**
  * The courses as a list for Two-line & list and Icon & list: a hairline
@@ -20,20 +18,26 @@ import { ItemIcon } from "@/modular/cards/CardIcon";
  * under another and its note, with more room over the note under several
  * dishes; spaced as Transportation's lists: 16px over the label, or 28px
  * over the dishes without one, 16px from the label to the dishes and 24px
- * under. Its icon, when it has one, on a soft disc at the row's end,
+ * under. Its mark (`itemMark`), when it has one, on a soft disc at the row's end,
  * centred on the course, every disc in the secondary — as Transportation's Two-line &
- * list. `numbered`: no icons; each course's number (01, 02…) beside it, in the accent, in a column as wide as the schedule's times
+ * list. `numbered`: each course's mark (`LeadMark`: its icon, or its number 01, 02…) bare before it, in the accent, in a column as wide as the schedule's times
  * (`TIME_COLUMN`), centred on the course, as Transportation's Icon & list,
  * and on a phone the list 350px at most, centred.
  */
 export function CourseList({
   courses,
+  mode,
   numbered = false,
 }: {
   courses: ListItem[];
+  /** The section's `iconMode`: each course's mark at the row's end, by the switches. */
+  mode: IconMode;
   numbered?: boolean;
 }) {
   if (courses.length === 0) return null;
+  const marks = courses.map((course, index) =>
+    itemMark(mode, course.icon, index),
+  );
   return (
     <ul
       className={`border-y-1 border-[var(--m-line)] ${numbered ? NARROW_LIST : ""}`}
@@ -41,13 +45,9 @@ export function CourseList({
       {courses.map((course, index) => (
         <li
           key={index}
-          className={`border-[var(--m-line)] pt-4 pb-6 not-last:border-b-1 ${numbered ? LEAD_ROW : `${DISC_ROW} items-center`}`}
+          className={`border-[var(--m-line)] pt-4 pb-6 not-last:border-b-1 ${numbered ? leadRow(marks[index]) : `${DISC_ROW} items-center`}`}
         >
-          {numbered ? (
-            <span className={`${TIME_COLUMN} ${TONE_TEXT.accent}`}>
-              {pad(index + 1)}
-            </span>
-          ) : null}
+          {numbered ? <LeadMark mark={marks[index]} /> : null}
           <div className={`min-w-0 ${course.label ? "" : "pt-3"}`}>
             {course.label ? (
               <p
@@ -67,7 +67,7 @@ export function CourseList({
               </p>
             ) : null}
           </div>
-          {!numbered && <ItemIcon name={course.icon} />}
+          {!numbered && <ItemIcon mark={marks[index]} />}
         </li>
       ))}
     </ul>

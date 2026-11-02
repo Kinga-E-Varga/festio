@@ -1,13 +1,12 @@
 import { formatTime, scheduleDay } from "@/modular/content";
-import { Icon, isIconName } from "@/modular/icons";
+import { ItemIcon } from "@/modular/cards/CardIcon";
+import { itemMark, type IconMode } from "@/modular/item-marks";
 import {
   BODY_SM,
   INNER_EYEBROW,
   ITEM_TITLE,
-  CARD_DISC,
   MUTED,
   TIME_COLUMN,
-  TONES,
   turnTone,
 } from "@/modular/styles";
 import type { Language } from "@/lib/language";
@@ -19,21 +18,25 @@ import type { Group } from "@/types/modular";
  * time, the title and note, the icon on a soft disc, centred on the row,
  * 24px from the text (the gap and the text's own 12px), as in
  * Transportation's Two-line & list; its column exactly the disc's width.
- * The icons take turns by day (`index`) — the 1st, 3rd… in the accent, the
- * 2nd, 4th… in the secondary. An event with no known icon simply has none.
+ * The discs take turns by day (`index`) — the 1st, 3rd… in the secondary,
+ * as the other Two-line lists' (`ItemIcon`), the 2nd, 4th… in the accent.
+ * The icons can be numbers, or off, by the section's switches (`mode`); an
+ * event with no known icon simply has none.
  */
 export function DayEvents({
   day,
   index,
+  mode,
   showDate,
   language,
 }: {
   day: Group;
   index: number;
+  /** The section's `iconMode`: each event's mark, numbered from 01 each day. */
+  mode: IconMode;
   showDate: boolean;
   language: Language;
 }) {
-  const tone = TONES[turnTone(index)];
   const date = showDate ? scheduleDay(day.values.date ?? "", language) : "";
 
   return (
@@ -67,11 +70,11 @@ export function DayEvents({
                   <p className={`${BODY_SM} ${MUTED} mt-1`}>{event.note}</p>
                 ) : null}
               </div>
-              {isIconName(event.icon) ? (
-                <span className={`${CARD_DISC} self-center ${tone}`}>
-                  <Icon name={event.icon} className="size-5.5" />
-                </span>
-              ) : null}
+              <ItemIcon
+                mark={itemMark(mode, event.icon, eventIndex)}
+                tone={turnTone(index, "secondary")}
+                className="self-center"
+              />
             </li>
           ))}
         </ul>

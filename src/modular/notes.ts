@@ -1,3 +1,4 @@
+import type { ItemMark } from "./item-marks";
 import type { LocalizedText } from "@/lib/language";
 import { isOn, text } from "@/modular/content";
 import { isIconName, type IconName } from "@/modular/icons";
@@ -17,6 +18,12 @@ export const GOOD_TO_KNOW: LocalizedText = {
 export function twinIcon(values: SectionValues): IconName | undefined {
   const icon = text(values, "icon");
   return isIconName(icon) ? icon : undefined;
+}
+
+/** Its picked icon as a card's mark (`ItemMark`): nothing without one. */
+export function twinMark(values: SectionValues): ItemMark {
+  const icon = twinIcon(values);
+  return icon ? { icon } : null;
 }
 
 /** What a Helpful notes subsection can be. Dress code and Gifts read their own sections. */

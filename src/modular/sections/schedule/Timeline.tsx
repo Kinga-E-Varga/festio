@@ -1,5 +1,6 @@
 import { formatTime, groups, scheduleDay } from "@/modular/content";
-import { Icon, isIconName } from "@/modular/icons";
+import { MarkGlyph } from "@/modular/cards/CardIcon";
+import { iconMode, itemMark } from "@/modular/item-marks";
 import {
   BODY_SM,
   EYEBROW,
@@ -25,7 +26,7 @@ const DOT_SECONDARY = "text-[color:var(--m-secondary-soft)]";
 /**
  * Timeline's (`4`) days: one line down the middle from the first stop to
  * the last (see `Variant` in `4.tsx`). On the accent (`accent`: Timeline
- * accent, `10`, and Full card accent, `11`) the discs in the palette's
+ * accent, `10`, and Full card timeline accent, `11`) the discs in the palette's
  * own secondary, every day, a dot the discs' soft fill.
  */
 export function TimelineDays({
@@ -47,6 +48,7 @@ export function TimelineDays({
     sum(days.slice(0, index).map((day) => day.items.length)),
   );
   const lastStop = sum(stops) - 1;
+  const mode = iconMode(values);
 
   if (days.length === 0) return null;
   // The discs' colour: their day's, on the accent all the palette's own secondary.
@@ -56,7 +58,7 @@ export function TimelineDays({
   return (
     <ol className={TIMELINE}>
       {days.map((day, index) => {
-        const tone = turnTone(index);
+        const tone = turnTone(index, "secondary");
         const dateStop = dated && day.date ? firstStop[index] : null;
         return (
           <li key={index}>
@@ -96,6 +98,8 @@ export function TimelineDays({
                     day.items.length +
                     eventIndex;
                   const left = (firstEvent[index] + eventIndex) % 2 === 0;
+                  // Numbered from 01 again each day.
+                  const mark = itemMark(mode, event.icon, eventIndex);
                   return (
                     <li key={eventIndex} className={TIMELINE_STOP}>
                       <span className="relative col-start-1 row-start-1 flex justify-center @3xl:col-start-2">
@@ -106,11 +110,11 @@ export function TimelineDays({
                           end="bottom-auto h-4.75"
                           tone={tone}
                         />
-                        {isIconName(event.icon) ? (
+                        {mark ? (
                           <span
                             className={`${CARD_DISC} relative ${disc(tone)}`}
                           >
-                            <Icon name={event.icon} className="size-5.5" />
+                            <MarkGlyph mark={mark} iconClass="size-5.5" />
                           </span>
                         ) : (
                           <span

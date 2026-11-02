@@ -1,5 +1,8 @@
 @import "tailwindcss";
 
+/* Inside an invitation on a dark palette: its root carries the palette's `scheme` (`data-scheme`). */
+@custom-variant dark-palette (&:where([data-scheme="dark"] *));
+
 @theme {
   --font-sans: var(--font-work-sans), ui-sans-serif, system-ui, sans-serif;
   --font-serif: var(--font-libre-baskerville), ui-serif, Georgia, serif;

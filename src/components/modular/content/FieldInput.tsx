@@ -120,7 +120,12 @@ export function FieldInput({
       ) : field.type === "image" ? (
         <ImageField id={id} value={current} />
       ) : field.type === "icon" ? (
-        <IconPicker labelId={`${id}-label`} value={current} onPick={onChange} />
+        <IconPicker
+          labelId={`${id}-label`}
+          value={current}
+          none={!field.always}
+          onPick={onChange}
+        />
       ) : field.type === "color" ? (
         <ColorWell id={id} value={current} withHex onChange={onChange} />
       ) : (

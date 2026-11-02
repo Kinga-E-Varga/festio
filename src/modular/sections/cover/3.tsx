@@ -2,7 +2,12 @@
 
 import { isOn, longDate, text } from "@/modular/content";
 import { Mark, markParts } from "@/modular/Mark";
-import { AMPERSAND_SIZE, EYEBROW, HEADING } from "@/modular/styles";
+import {
+  AMPERSAND_SIZE,
+  EYEBROW,
+  HEADING,
+  POSTER_DATE,
+} from "@/modular/styles";
 import type { VariantProps } from "@/types/modular";
 import { Coupe, CoverStars } from "./Coupe";
 import { useOutOfView } from "./useOutOfView";
@@ -12,13 +17,6 @@ import { useOutOfView } from "./useOutOfView";
  * the whole width on a phone, half of it beside the glass from `@3xl`.
  */
 const POSTER_NAMES = `${HEADING} text-[min(56px,12cqw)] @3xl:text-[min(80px,4.5cqw)] leading-[1.1] tracking-[-0.03em] italic`;
-
-/*
- * The date in the names' voice, the second thing read: italic in the heading
- * face, growing with the width like them, 20px to 26px stacked, to 34px
- * beside the glass. The details line sits close under it, its footnote.
- */
-const POSTER_DATE = `${HEADING} text-[clamp(20px,6.5cqw,26px)] @3xl:text-[clamp(22px,2.3cqw,34px)] leading-[1.3] italic`;
 
 const MUTED_ON_ACCENT = "text-[color:var(--m-accent-ink-muted)]";
 

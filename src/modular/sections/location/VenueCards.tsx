@@ -9,6 +9,7 @@ import {
 import { otherGround } from "@/modular/ground";
 import { INVITE_COLUMN } from "@/modular/vars";
 import type { ListItem, SectionGround } from "@/types/modular";
+import { itemMark, type IconMode, type ItemMark } from "@/modular/item-marks";
 import { AccentVenue, ROW } from "./AccentVenue";
 
 type Tone = "accent" | "secondary";
@@ -61,17 +62,20 @@ const LAYOUT_FOR: CardLayout[] = ["beside", "beside", "under", "turns"];
  * stacked one to a row keep the photo beside. No map is embedded, so
  * nothing reaches a map provider before the guest taps "Open in Maps". The
  * photo is required; while it is missing the alternate surface stands in.
- * A venue's icon, when it has one, stands on a soft disc over its label,
- * every disc in the secondary. With photos switched off, each card is the venue alone, its
- * icon still over its label.
+ * A venue's mark (`itemMark`), when it has one, stands on a soft disc over
+ * its label, every disc in the secondary. With photos switched off, each
+ * card is the venue alone, its mark still over its label.
  */
 export function VenueCards({
   venues,
+  mode,
   ground,
   photos,
   fill,
 }: {
   venues: ListItem[];
+  /** The section's `iconMode`: each venue's mark over its label, by the switches. */
+  mode: IconMode;
   ground: SectionGround;
   photos: boolean;
   /** What the venues stand on: the accent, or a surface. */
@@ -82,12 +86,14 @@ export function VenueCards({
     <ul className={`grid gap-4 @3xl:gap-6 ${ROW[venues.length]}`}>
       {venues.map((venue, index) => {
         const tone = "secondary";
+        const mark = itemMark(mode, venue.icon, index);
         return photos ? (
           <VenueCard
             key={index}
             venue={venue}
             ground={ground}
             layout={LAYOUT_FOR[venues.length]}
+            mark={mark}
             fill={fill}
             tone={tone}
           />
@@ -96,6 +102,7 @@ export function VenueCards({
             key={index}
             venue={venue}
             count={venues.length}
+            mark={mark}
             fill={fill}
             tone={tone}
           />
@@ -109,12 +116,14 @@ function VenueCard({
   venue,
   ground,
   layout,
+  mark,
   fill,
   tone,
 }: {
   venue: ListItem;
   ground: SectionGround;
   layout: CardLayout;
+  mark: ItemMark;
   fill: SectionGround;
   tone: Tone;
 }) {
@@ -125,6 +134,7 @@ function VenueCard({
     <li className={`${HAIRLINE_FRAME} ${COLUMN} overflow-hidden ${look.card}`}>
       <AccentVenue
         venue={venue}
+        mark={mark}
         fill={fill}
         tone={tone}
         className={`@3xl:items-start @3xl:text-left ${look.text}`}
@@ -158,11 +168,13 @@ const TEXT_ONLY = [
 function TextCard({
   venue,
   count,
+  mark,
   fill,
   tone,
 }: {
   venue: ListItem;
   count: number;
+  mark: ItemMark;
   fill: SectionGround;
   tone: Tone;
 }) {
@@ -170,6 +182,7 @@ function TextCard({
     <li className={`${HAIRLINE_FRAME} flex flex-col overflow-hidden ${COLUMN}`}>
       <AccentVenue
         venue={venue}
+        mark={mark}
         fill={fill}
         tone={tone}
         className={`flex-1 ${TEXT_ONLY[count]}`}

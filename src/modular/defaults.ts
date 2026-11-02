@@ -101,6 +101,7 @@ export const DEFAULTS: Record<string, SectionSamples> = {
     },
   },
   people: {
+    icons: true,
     eyebrow: {
       en: "With the blessing of",
       ro: "Cu binecuvântarea",
@@ -139,6 +140,7 @@ export const DEFAULTS: Record<string, SectionSamples> = {
     ],
   },
   story: {
+    icons: true,
     photos: true,
     photo: "/modular/samples/our-story.jpg",
     photoAlt: {
@@ -200,6 +202,7 @@ export const DEFAULTS: Record<string, SectionSamples> = {
     ],
   },
   location: {
+    icons: true,
     photos: true,
     eyebrow: {
       en: "A place we love",
@@ -289,6 +292,7 @@ export const DEFAULTS: Record<string, SectionSamples> = {
     ],
   },
   schedule: {
+    icons: true,
     eyebrow: {
       en: "The whole lovely weekend",
       ro: "Tot weekendul",
@@ -418,6 +422,7 @@ export const DEFAULTS: Record<string, SectionSamples> = {
     ],
   },
   transportation: {
+    icons: true,
     eyebrow: {
       en: "Finding your way",
       ro: "Cum ne găsești",
@@ -496,6 +501,7 @@ export const DEFAULTS: Record<string, SectionSamples> = {
     ],
   },
   accommodation: {
+    icons: true,
     eyebrow: {
       en: "Make a weekend of it",
       ro: "Fă din asta un weekend",
@@ -565,6 +571,7 @@ export const DEFAULTS: Record<string, SectionSamples> = {
     ],
   },
   menu: {
+    icons: true,
     eyebrow: {
       en: "At the table",
       ro: "La masă",
@@ -661,6 +668,7 @@ export const DEFAULTS: Record<string, SectionSamples> = {
     ],
   },
   notes: {
+    icons: true,
     eyebrow: {
       en: "The little things",
       ro: "Lucrurile mărunte",
@@ -951,6 +959,7 @@ export const DEFAULTS: Record<string, SectionSamples> = {
     },
   },
   contact: {
+    icons: true,
     eyebrow: {
       en: "Need a hand?",
       ro: "Ai nevoie de ajutor?",

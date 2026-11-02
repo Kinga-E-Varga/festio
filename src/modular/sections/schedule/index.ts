@@ -3,6 +3,7 @@ import {
   HEADING_SHOWS,
   ICON_HEADING_SHOWS,
 } from "@/modular/heading";
+import { ITEM_ICON, iconShows, iconSwitches } from "@/modular/item-marks";
 import { LABELS } from "@/modular/labels";
 import type { SectionDefinition } from "@/types/modular";
 
@@ -26,7 +27,7 @@ export const section: SectionDefinition = {
         "days.items.time",
         "days.items.title",
         "days.items.note",
-        "days.items.icon",
+        ...iconShows("days.items"),
       ],
     },
     {
@@ -42,7 +43,7 @@ export const section: SectionDefinition = {
         "days.items.time",
         "days.items.title",
         "days.items.note",
-        "days.items.icon",
+        ...iconShows("days.items"),
       ],
     },
     {
@@ -110,12 +111,8 @@ export const section: SectionDefinition = {
     },
     {
       id: "3",
-      name: {
-        en: "Grid",
-        ro: "Grilă",
-        hu: "Rács",
-      },
-      // Every heading field but the italic heading.
+      name: { en: "Grid", ro: "Grilă", hu: "Rács" },
+      // Every heading field but the italic heading; the days side by side, no lines.
       shows: [
         ...HEADING_SHOWS.filter((id) => id !== "headingItalic"),
         "days.date",
@@ -139,12 +136,16 @@ export const section: SectionDefinition = {
         "days.items.time",
         "days.items.title",
         "days.items.note",
-        "days.items.icon",
+        ...iconShows("days.items"),
       ],
     },
     {
       id: "10",
-      name: { en: "Accent", ro: "Accent", hu: "Kiemelt" },
+      name: {
+        en: "Timeline accent",
+        ro: "Cronologie accent",
+        hu: "Idővonal kiemelt",
+      },
       // Timeline on the accent, every disc in the secondary.
       ground: "accent",
       unsampled: ["note"],
@@ -154,15 +155,15 @@ export const section: SectionDefinition = {
         "days.items.time",
         "days.items.title",
         "days.items.note",
-        "days.items.icon",
+        ...iconShows("days.items"),
       ],
     },
     {
       id: "11",
       name: {
-        en: "Full card accent",
-        ro: "Card întreg accent",
-        hu: "Kiemelt teljes kártya",
+        en: "Full card timeline accent",
+        ro: "Card întreg cronologie accent",
+        hu: "Kiemelt teljes kártya, idővonal",
       },
       // Timeline in a full card on the accent, every disc in the secondary;
       // always on the page's surface, whatever its turn.
@@ -174,13 +175,17 @@ export const section: SectionDefinition = {
         "days.items.time",
         "days.items.title",
         "days.items.note",
-        "days.items.icon",
+        ...iconShows("days.items"),
       ],
     },
     {
       id: "8",
-      name: { en: "Full card", ro: "Card întreg", hu: "Teljes kártya" },
-      // Icon & list's (`2`) days under every heading field but the italic heading.
+      name: {
+        en: "Full card alternate",
+        ro: "Card întreg alternant",
+        hu: "Teljes kártya, váltakozó",
+      },
+      // Alternate in a full card: every heading field but the italic heading.
       shows: [
         ...HEADING_SHOWS.filter((id) => id !== "headingItalic"),
         "days.date",
@@ -189,10 +194,42 @@ export const section: SectionDefinition = {
         "days.items.note",
       ],
     },
+    {
+      id: "13",
+      name: { en: "Alternate", ro: "Alternant", hu: "Váltakozó" },
+      // Icon & list's (`2`) days, each event split at the middle, the times
+      // taking turns left and right; every heading field but the italic heading.
+      shows: [
+        ...HEADING_SHOWS.filter((id) => id !== "headingItalic"),
+        "days.date",
+        "days.items.time",
+        "days.items.title",
+        "days.items.note",
+      ],
+    },
+    {
+      id: "12",
+      name: {
+        en: "Full card timeline",
+        ro: "Card întreg cronologie",
+        hu: "Teljes kártya, idővonal",
+      },
+      // Timeline in a full card on its own ground; the note empty to start.
+      unsampled: ["note"],
+      shows: [
+        ...HEADING_SHOWS.filter((id) => id !== "headingItalic"),
+        "days.date",
+        "days.items.time",
+        "days.items.title",
+        "days.items.note",
+        ...iconShows("days.items"),
+      ],
+    },
     // "9" is retired (Full card & timeline): never reuse it.
   ],
   fields: [
     ...HEADING_FIELDS,
+    ...iconSwitches("days.items"),
     {
       id: "days",
       label: { en: "days", ro: "zile", hu: "napok" },
@@ -225,7 +262,7 @@ export const section: SectionDefinition = {
           { id: "time", label: LABELS.time, type: "time", maxLength: 5 },
           { id: "title", label: LABELS.title, type: "text", maxLength: 60 },
           { id: "note", label: LABELS.note, type: "text", maxLength: 100 },
-          { id: "icon", label: LABELS.icon, type: "icon", maxLength: 20 },
+          ITEM_ICON,
         ],
       },
     },

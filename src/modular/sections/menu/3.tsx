@@ -1,66 +1,13 @@
-import { list, text } from "@/modular/content";
-import { FULL_CARD_PAD } from "@/modular/FullCard";
-import { otherGround } from "@/modular/ground";
-import { SectionHeading } from "@/modular/SectionHeading";
-import {
-  INNER_EYEBROW,
-  GROUND,
-  H3_ITEM,
-  HAIRLINE_FRAME,
-  PAD,
-  STACK,
-  TONE_TEXT,
-  SECTION_GROUND,
-  COLUMN,
-} from "@/modular/styles";
+import { PAD, SECTION_GROUND, STACK, COLUMN } from "@/modular/styles";
 import type { VariantProps } from "@/types/modular";
-import { Dishes } from "./Dishes";
-import { SHORT_RULE } from "./FullCardCourses";
+import { CenteredCourses } from "./CenteredCourses";
 
-/**
- * One card down the middle, as wide as a full card (`COLUMN`),
- * like the menu on the table, and nothing outside it: on the other
- * surface, with a double frame — a hairline, a gap of the card's own
- * surface, a second hairline — and no shadow. Inside, centred: the heading
- * on top, its eyebrow over it and the section's note under it, a short
- * line (only under a heading), then each course's label (an eyebrow in
- * the accent) over its dishes, one per line, as a
- * card's item heading (`H3_ITEM`). No course notes. Padded and spaced as
- * the full cards (`FULL_CARD_PAD`, Menu's Full card `8`).
- */
+/** The menu centred (`CenteredCourses`) on its own band, no card: Simple accent (`11`) on the surface. */
 export function Variant({ values, ground }: VariantProps) {
-  const courses = list(values, "courses");
-  const heading =
-    text(values, "eyebrow") || text(values, "heading") || text(values, "note");
-
   return (
     <div className={`${SECTION_GROUND[ground]} ${PAD}`}>
-      <div
-        className={`${COLUMN} p-2.5 ${HAIRLINE_FRAME} ${GROUND[otherGround(ground)]}`}
-      >
-        <div
-          className={`${STACK} text-center ${HAIRLINE_FRAME} ${FULL_CARD_PAD}`}
-        >
-          <SectionHeading values={values} />
-          {courses.length > 0 ? (
-            <ul
-              className={`flex flex-col gap-8 ${heading ? `${SHORT_RULE} pt-8 @3xl:pt-10` : ""}`}
-            >
-              {courses.map((course, index) => (
-                <li key={index} className="flex flex-col items-center gap-3">
-                  {course.label ? (
-                    <span className={`${INNER_EYEBROW} ${TONE_TEXT.accent}`}>
-                      {course.label}
-                    </span>
-                  ) : null}
-                  {course.title ? (
-                    <Dishes title={course.title} className={H3_ITEM} />
-                  ) : null}
-                </li>
-              ))}
-            </ul>
-          ) : null}
-        </div>
+      <div className={`${COLUMN} ${STACK} text-center`}>
+        <CenteredCourses values={values} />
       </div>
     </div>
   );

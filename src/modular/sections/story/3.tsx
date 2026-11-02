@@ -1,5 +1,6 @@
 import { list } from "@/modular/content";
-import { Icon, isIconName } from "@/modular/icons";
+import { MarkGlyph } from "@/modular/cards/CardIcon";
+import { iconMode, itemMark } from "@/modular/item-marks";
 import { SectionHeading } from "@/modular/SectionHeading";
 import {
   BODY_SM,
@@ -21,17 +22,19 @@ import type { VariantProps } from "@/types/modular";
 /**
  * The full cards' heading, eyebrow and heading only, centred over the
  * moments, laid out as Schedule's Timeline (`4`): one line down the middle from the first moment to the last, a small dot
- * on it for each (its icon on a disc, when it has one), the moments taking
+ * on it for each (its mark on a disc, `itemMark`: its icon or its number,
+ * by the section's switches), the moments taking
  * turns left and right, those on the left leaning on the line. Each its year
  * as an eyebrow over its title and its line. The discs, dots, years and the
  * line's pieces take turns:
- * the 1st, 3rd… in the accent, the 2nd, 4th… in the secondary. On a phone
+ * the 1st, 3rd… in the secondary, the 2nd, 4th… in the accent. On a phone
  * the line runs down the left, every moment right of it, the whole no wider
  * than 350px and centred.
  */
 export function Variant({ values, ground }: VariantProps) {
   const moments = list(values, "moments").slice(0, 6);
   const last = moments.length - 1;
+  const mode = iconMode(values);
 
   return (
     <div className={`${STACK} ${SECTION_GROUND[ground]} ${PAD}`}>
@@ -39,9 +42,10 @@ export function Variant({ values, ground }: VariantProps) {
       {moments.length > 0 ? (
         <ol className={TIMELINE}>
           {moments.map((moment, index) => {
-            const turn = turnTone(index);
+            const turn = turnTone(index, "secondary");
             const tone = TONE_TEXT[turn];
             const left = index % 2 === 0;
+            const mark = itemMark(mode, moment.icon, index);
             return (
               <li key={index} className={TIMELINE_STOP}>
                 {/*
@@ -59,9 +63,9 @@ export function Variant({ values, ground }: VariantProps) {
                       className={`absolute inset-y-0 left-4.75 w-px bg-current/50 @3xl:left-1/2 ${index === 0 ? "top-4.75" : ""} ${index === last ? "bottom-auto h-4.75" : ""}`}
                     />
                   ) : null}
-                  {isIconName(moment.icon) ? (
+                  {mark ? (
                     <span className={`${CARD_DISC} relative ${TONES[turn]}`}>
-                      <Icon name={moment.icon} className="size-5.5" />
+                      <MarkGlyph mark={mark} iconClass="size-5.5" />
                     </span>
                   ) : (
                     <span className={`${CARD_DISC} relative`}>

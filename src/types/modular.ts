@@ -55,11 +55,15 @@ export type MixedColor =
  */
 export type PaletteMood = "subtle" | "balanced" | "vivid";
 
+/** Whether a palette's surfaces are light or dark: drawings whose look depends on it (Wildflower's corners) read it. */
+export type PaletteScheme = "light" | "dark";
+
 /** A premade palette. Hosts pick a whole one, never a single colour. */
 export interface ModularPalette {
   id: string;
   name: string;
   mood: PaletteMood;
+  scheme: PaletteScheme;
   colors: Record<ColorRole, string>;
   /**
    * The envelope guests open first: which colour plays each of its parts,
@@ -128,6 +132,8 @@ export interface ItemField {
   maxLines?: number;
   /** `lines` only: Add's own words ("add title"). */
   addLabel?: LocalizedText;
+  /** `icon` only: no "–" (no icon) choice; the section's Use icons switch stands in for it. */
+  always?: boolean;
 }
 
 /** A single host-editable value. Its sample lives in `DEFAULTS`. */
@@ -190,6 +196,8 @@ export interface ToggleField {
   controls?: string[];
   /** The fields in their place while it is off, drawn after it as `controls`. */
   controlsOff?: string[];
+  /** Off until the host switches it on; otherwise on until switched off. */
+  off?: boolean;
 }
 
 /** One option picked from a short list (a dropdown); the value is the option's id. */

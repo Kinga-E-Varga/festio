@@ -75,6 +75,27 @@ export const section: SectionDefinition = {
         "secondLine",
       ],
     },
+    {
+      id: "5",
+      name: { en: "Wildflower", ro: "Flori sălbatice", hu: "Vadvirág" },
+      group: "illustration",
+      // The corners and the border run the whole width; on the page's
+      // surface, so a pattern shows round them.
+      wide: true,
+      // Drawn, no photo, a poster: the Title's lines but the caption, then
+      // the date and a free line.
+      shows: ["details"],
+      poster: [
+        "eyebrow",
+        "names",
+        "namesStart",
+        "namesMiddle",
+        "namesEnd",
+        "firstLine",
+        "nextLine",
+        "secondLine",
+      ],
+    },
   ],
   fields: [
     {

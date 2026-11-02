@@ -5,6 +5,7 @@ export const palette: ModularPalette = {
   id: "noir",
   name: "Noir",
   mood: "subtle",
+  scheme: "dark",
   colors: {
     surface: "#14161a",
     "surface-alt": "#22252b",

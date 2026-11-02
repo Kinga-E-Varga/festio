@@ -57,7 +57,7 @@ export const section: SectionDefinition = {
     },
     {
       id: "8",
-      name: { en: "Accent", ro: "Accent", hu: "Kiemelt" },
+      name: { en: "Bars accent", ro: "Bare accent", hu: "Sávok kiemelt" },
       // Bars on the accent band, the bars on the page's surface.
       ground: "accent",
       shows: [

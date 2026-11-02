@@ -3,6 +3,7 @@ import {
   HEADING_SHOWS,
   ICON_HEADING_SHOWS,
 } from "@/modular/heading";
+import { ITEM_ICON, iconShows, iconSwitches } from "@/modular/item-marks";
 import { LABELS } from "@/modular/labels";
 import type { SectionDefinition } from "@/types/modular";
 
@@ -31,17 +32,18 @@ export const section: SectionDefinition = {
       // No italic second line under the heading, as the other grids.
       shows: [
         ...HEADING_SHOWS.filter((id) => id !== "headingItalic"),
+        ...iconShows("groups"),
         ...GROUP_SHOWS,
       ],
     },
     {
       id: "9",
-      name: { en: "Accent", ro: "Accent", hu: "Kiemelt" },
-      // Grid on the accent, no hairlines, each group's icon over its label.
+      name: { en: "Grid accent", ro: "Grilă accent", hu: "Rács kiemelt" },
+      // Grid on the accent, each group's icon over its label.
       ground: "accent",
       shows: [
         ...HEADING_SHOWS.filter((id) => id !== "headingItalic"),
-        "groups.icon",
+        ...iconShows("groups"),
         ...GROUP_SHOWS,
       ],
     },
@@ -51,7 +53,7 @@ export const section: SectionDefinition = {
       // No italic second line under the heading.
       shows: [
         ...HEADING_SHOWS.filter((id) => id !== "headingItalic"),
-        "groups.icon",
+        ...iconShows("groups"),
         ...GROUP_SHOWS,
       ],
     },
@@ -65,7 +67,7 @@ export const section: SectionDefinition = {
       // Cards, the cards on the accent, every disc in the secondary.
       shows: [
         ...HEADING_SHOWS.filter((id) => id !== "headingItalic"),
-        "groups.icon",
+        ...iconShows("groups"),
         ...GROUP_SHOWS,
       ],
     },
@@ -76,7 +78,7 @@ export const section: SectionDefinition = {
         ro: "Două rânduri & listă",
         hu: "Kétsoros & lista",
       },
-      shows: [...HEADING_SHOWS, "groups.icon", ...GROUP_SHOWS],
+      shows: [...HEADING_SHOWS, ...iconShows("groups"), ...GROUP_SHOWS],
     },
     {
       id: "4",
@@ -86,7 +88,7 @@ export const section: SectionDefinition = {
         hu: "Ikon & lista",
       },
       // No eyebrow or italic line over the heading.
-      shows: [...ICON_HEADING_SHOWS, "groups.icon", ...GROUP_SHOWS],
+      shows: [...ICON_HEADING_SHOWS, ...iconShows("groups"), ...GROUP_SHOWS],
     },
     {
       id: "5",
@@ -96,7 +98,7 @@ export const section: SectionDefinition = {
         hu: "Kétsoros & kártyák",
       },
       // Two-line & list, each group a card.
-      shows: [...HEADING_SHOWS, "groups.icon", ...GROUP_SHOWS],
+      shows: [...HEADING_SHOWS, ...iconShows("groups"), ...GROUP_SHOWS],
     },
     {
       id: "6",
@@ -106,7 +108,7 @@ export const section: SectionDefinition = {
         hu: "Ikon & kártyák",
       },
       // Icon & list, each group a card.
-      shows: [...ICON_HEADING_SHOWS, "groups.icon", ...GROUP_SHOWS],
+      shows: [...ICON_HEADING_SHOWS, ...iconShows("groups"), ...GROUP_SHOWS],
     },
     {
       id: "7",
@@ -114,7 +116,7 @@ export const section: SectionDefinition = {
       // Cards' (`2`) content, the groups side by side in a full card.
       shows: [
         ...HEADING_SHOWS.filter((id) => id !== "headingItalic"),
-        "groups.icon",
+        ...iconShows("groups"),
         ...GROUP_SHOWS,
       ],
     },
@@ -130,13 +132,14 @@ export const section: SectionDefinition = {
       ground: "surface",
       shows: [
         ...HEADING_SHOWS.filter((id) => id !== "headingItalic"),
-        "groups.icon",
+        ...iconShows("groups"),
         ...GROUP_SHOWS,
       ],
     },
   ],
   fields: [
     ...HEADING_FIELDS,
+    ...iconSwitches("groups"),
     {
       id: "groups",
       label: { en: "groups", ro: "grupuri", hu: "csoportok" },
@@ -149,7 +152,7 @@ export const section: SectionDefinition = {
       type: "list",
       maxItems: 4,
       item: [
-        { id: "icon", label: LABELS.icon, type: "icon", maxLength: 20 },
+        ITEM_ICON,
         { id: "label", label: LABELS.label, type: "text", maxLength: 40 },
         {
           id: "names",

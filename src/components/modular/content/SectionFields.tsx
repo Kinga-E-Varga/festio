@@ -4,7 +4,7 @@ import { useLocale, useTranslations } from "next-intl";
 import { Fragment } from "react";
 import { DateFormatSelect } from "@/components/invitation/DateFormatSelect";
 import { localized, type Language } from "@/lib/language";
-import { groups, isOn, list, longDate, text } from "@/modular/content";
+import { groups, list, longDate, switchOn, text } from "@/modular/content";
 import { contentParts, fieldId, setValue, shownItems } from "@/modular/fields";
 import { NOTES_ID } from "@/modular/state";
 import type {
@@ -132,7 +132,7 @@ export function FieldList({
           <FieldInput
             id={fieldId(section, field.id)}
             field={field}
-            value={isOn(values, field.id)}
+            value={switchOn(values, field)}
             showErrors={showErrors}
             onChange={(value) => onSet(field.id, value)}
           />
@@ -216,7 +216,7 @@ export function FieldList({
         field={field}
         value={
           field.type === "toggle"
-            ? isOn(values, field.id)
+            ? switchOn(values, field)
             : text(values, field.id)
         }
         showErrors={showErrors}

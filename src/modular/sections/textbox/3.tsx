@@ -1,15 +1,15 @@
 import { PAD, SECTION_GROUND } from "@/modular/styles";
 import type { VariantProps } from "@/types/modular";
-import { FramedText } from "./FramedText";
+import { CardText } from "./CardText";
 import { hasText } from "./TextBoxWords";
 
-/** The words in a double-framed card down the middle (`FramedText`), on its own band. */
+/** The words in a framed card down the middle (`CardText`), on its own band. */
 export function Variant({ values, ground }: VariantProps) {
   if (!hasText(values)) return null;
 
   return (
     <div className={`${SECTION_GROUND[ground]} ${PAD}`}>
-      <FramedText values={values} ground={ground} />
+      <CardText values={values} ground={ground} framed />
     </div>
   );
 }

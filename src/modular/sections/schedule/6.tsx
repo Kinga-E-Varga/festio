@@ -8,6 +8,7 @@ import {
   CARD_STACK,
 } from "@/modular/styles";
 import type { VariantProps } from "@/types/modular";
+import { iconMode } from "@/modular/item-marks";
 import { DayEvents } from "./DayEvents";
 
 /**
@@ -30,6 +31,7 @@ export function Variant({ values, language, ground }: VariantProps) {
               <DayEvents
                 day={day}
                 index={index}
+                mode={iconMode(values)}
                 showDate={days.length > 1}
                 language={language}
               />

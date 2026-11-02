@@ -1,4 +1,5 @@
 import { ItemIcon } from "@/modular/cards/CardIcon";
+import { iconMode, itemMark } from "@/modular/item-marks";
 import { list } from "@/modular/content";
 import { otherGround } from "@/modular/ground";
 import { SectionHeading } from "@/modular/SectionHeading";
@@ -29,6 +30,7 @@ export function GroupCards({
   accent = false,
 }: VariantProps & { accent?: boolean }) {
   const groups = list(values, "groups").slice(0, 4);
+  const mode = iconMode(values);
 
   return (
     <div className={`${STACK} ${SECTION_GROUND[ground]} ${PAD}`}>
@@ -40,7 +42,11 @@ export function GroupCards({
               key={index}
               className={`${CARD} flex flex-col ${centredWhenStacked(groups.length)} ${COLUMN} ${GROUND[accent ? "accent" : otherGround(ground)]}`}
             >
-              <ItemIcon name={group.icon} accent={accent} className="mb-5" />
+              <ItemIcon
+                mark={itemMark(mode, group.icon, index)}
+                accent={accent}
+                className="mb-5"
+              />
               {group.label ? (
                 <span
                   className={`${INNER_EYEBROW} mb-4 text-[color:var(--m-secondary)]`}

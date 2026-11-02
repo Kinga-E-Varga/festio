@@ -17,6 +17,7 @@ import {
 import type { VariantProps } from "@/types/modular";
 import { otherGround } from "@/modular/ground";
 import { ItemIcon } from "@/modular/cards/CardIcon";
+import { iconMode, itemMark } from "@/modular/item-marks";
 
 /**
  * One card per way of arriving: its icon, when it has one, on a soft disc
@@ -30,6 +31,7 @@ export function WayCards({
   accent = false,
 }: VariantProps & { accent?: boolean }) {
   const ways = list(values, "ways").slice(0, 6);
+  const mode = iconMode(values);
 
   return (
     <div className={`${STACK} ${SECTION_GROUND[ground]} ${PAD}`}>
@@ -41,7 +43,11 @@ export function WayCards({
               key={index}
               className={`${CARD} flex flex-col ${centredWhenStacked(ways.length)} ${COLUMN} ${GROUND[accent ? "accent" : otherGround(ground)]}`}
             >
-              <ItemIcon name={way.icon} accent={accent} className="mb-5" />
+              <ItemIcon
+                mark={itemMark(mode, way.icon, index)}
+                accent={accent}
+                className="mb-5"
+              />
               {way.label ? (
                 <span
                   className={`${INNER_EYEBROW} text-[color:var(--m-secondary)]`}

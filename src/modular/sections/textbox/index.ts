@@ -85,15 +85,15 @@ export const section: SectionDefinition = {
     },
     {
       id: "3",
-      name: { en: "Framed", ro: "Încadrat", hu: "Keretes" },
+      name: { en: "Card", ro: "Card", hu: "Kártya" },
       shows: ["largeText", "italic", "smallText"],
     },
     {
       id: "4",
       name: {
-        en: "Framed joined",
-        ro: "Încadrat alăturat",
-        hu: "Csatolt keretes",
+        en: "Card joined",
+        ro: "Card alăturat",
+        hu: "Csatolt kártya",
       },
       // In the band of the section right before, whatever its colour.
       ground: "joined",
@@ -102,12 +102,32 @@ export const section: SectionDefinition = {
     {
       id: "11",
       name: {
-        en: "Framed accent",
-        ro: "Încadrat accent",
-        hu: "Kiemelt keretes",
+        en: "Accent & card",
+        ro: "Accent & card",
+        hu: "Kiemelt & kártya",
       },
-      // Framed on the accent band, the card on the surface.
+      // Card on the accent band, the card on the surface.
       ground: "accent",
+      shows: ["largeText", "italic", "smallText"],
+    },
+    {
+      id: "12",
+      name: {
+        en: "Full card",
+        ro: "Card întreg",
+        hu: "Teljes kártya",
+      },
+      // Card, the card in the band's own colour.
+      shows: ["largeText", "italic", "smallText"],
+    },
+    {
+      id: "13",
+      name: {
+        en: "Full card accent",
+        ro: "Card întreg accent",
+        hu: "Kiemelt teljes kártya",
+      },
+      // Card, the card on the accent.
       shows: ["largeText", "italic", "smallText"],
     },
   ],
