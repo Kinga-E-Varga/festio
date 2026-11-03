@@ -10,6 +10,7 @@ import { localized, type Language } from "@/lib/language";
 import { imageSrc } from "@/modular/content";
 import type { ChoiceField, ItemField, ToggleField } from "@/types/modular";
 import { ColorWell } from "./ColorWell";
+import { DrawingPicker } from "./DrawingPicker";
 import { IconPicker } from "./IconPicker";
 
 export interface FieldInputProps {
@@ -124,6 +125,12 @@ export function FieldInput({
           labelId={`${id}-label`}
           value={current}
           none={!field.always}
+          onPick={onChange}
+        />
+      ) : field.type === "drawing" ? (
+        <DrawingPicker
+          labelId={`${id}-label`}
+          value={current}
           onPick={onChange}
         />
       ) : field.type === "color" ? (

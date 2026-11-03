@@ -1,4 +1,5 @@
 import type { InvitationBasics, SectionSamples } from "@/types/modular";
+import { DEFAULT_DRAWING } from "./drawing";
 
 /*
  * Every modular invitation's sample content, in one place: the date, then
@@ -21,6 +22,7 @@ export const DEFAULTS: Record<string, SectionSamples> = {
     markText: "Maddie & Claude",
   },
   cover: {
+    drawing: DEFAULT_DRAWING,
     photo: "/modular/samples/olive-garden.jpg",
     kicker: {
       en: "A weekend in Cassis",

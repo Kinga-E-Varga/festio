@@ -1,5 +1,13 @@
 @import "tailwindcss";
 
+/*
+ * Not app code, so never scanned for classes: the skills and their scripts
+ * (full of example classes, and a script's printed lines read as broken
+ * ones) and the Inkscape sources of the drawn art.
+ */
+@source not "../../.claude";
+@source not "../../art";
+
 /* Inside an invitation on a dark palette: its root carries the palette's `scheme` (`data-scheme`). */
 @custom-variant dark-palette (&:where([data-scheme="dark"] *));
 
@@ -313,6 +321,56 @@
   syntax: "<length>";
   inherits: true;
   initial-value: 72px;
+}
+
+/*
+ * The Card covers' cuts and lines (`cover/card.ts`): the stamp's and the
+ * ticket's bites, the ticket's notches, the playbill's scoops, how far
+ * in each drawn line runs and how far apart a dotted one's dots are. Set on the card from the cover's shorter side,
+ * so they grow with the screen. Registered as lengths so they are worked out
+ * there, against the cover, not again inside the card, whose `cqmin` is its
+ * own, and so `CardFrame` reads them back in px.
+ */
+@property --bite {
+  syntax: "<length>";
+  inherits: true;
+  initial-value: 0px;
+}
+
+@property --bite-step {
+  syntax: "<length>";
+  inherits: true;
+  initial-value: 0px;
+}
+
+@property --notch {
+  syntax: "<length>";
+  inherits: true;
+  initial-value: 0px;
+}
+
+@property --scoop {
+  syntax: "<length>";
+  inherits: true;
+  initial-value: 0px;
+}
+
+@property --line-in {
+  syntax: "<length>";
+  inherits: true;
+  initial-value: 0px;
+}
+
+@property --dots-in {
+  syntax: "<length>";
+  inherits: true;
+  initial-value: 0px;
+}
+
+@property --dot-step {
+  syntax: "<length>";
+  inherits: true;
+  initial-value: 0px;
 }
 
 /*

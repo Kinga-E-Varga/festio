@@ -18,7 +18,7 @@ import { useOutOfView } from "./useOutOfView";
  * The Title's lines on the band, growing smoothly with the width: on a phone
  * they wrap to two lines, from `@3xl` they fit on one.
  */
-const BAND_NAMES = `${HEADING} text-[clamp(28px,9.5cqw,44px)] @3xl:text-[clamp(40px,4.3cqw,84px)] leading-[1.1] tracking-[-0.02em] italic`;
+const BAND_NAMES = `${HEADING} text-[clamp(28px,9.5cqw,44px)] @3xl:text-[clamp(40px,4.3cqw,84px)] leading-[1.1] tracking-[-0.02em]`;
 
 /* The middle part of the names, a little quieter on the band. */
 const BAND_AMPERSAND = `${AMPERSAND_SIZE} text-[color:color-mix(in_oklab,var(--m-secondary-ink),var(--m-secondary)_25%)]`;
@@ -28,7 +28,7 @@ const BAND_AMPERSAND = `${AMPERSAND_SIZE} text-[color:color-mix(in_oklab,var(--m
  * `--date-size`: the weekday, the day and month, and the year, each on its
  * own row; the day and month split over two only when they don't fit.
  */
-const RIBBON_DATE = `${SERIF} text-(length:--date-size) leading-[1.2] italic`;
+const RIBBON_DATE = `${SERIF} text-(length:--date-size) leading-[1.2]`;
 
 /*
  * The stage under the band, laid out by the cake's own shape (`CAKE_SHAPE`).

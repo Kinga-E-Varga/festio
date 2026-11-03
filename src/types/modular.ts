@@ -104,7 +104,8 @@ export interface FontPair {
  * own input in the Content tab; `color` holds a hex colour or a palette
  * role's id ("accent"), picked with a colour picker; `phone` holds a phone
  * number as the host typed it, drawn as plain text; `email` an email
- * address, drawn as plain text.
+ * address, drawn as plain text; `drawing` holds an id from the drawings
+ * library (`src/modular/drawings/`), picked from their pictures.
  */
 export type ScalarFieldType =
   | "text"
@@ -116,7 +117,30 @@ export type ScalarFieldType =
   | "lines"
   | "color"
   | "phone"
-  | "email";
+  | "email"
+  | "drawing";
+
+/**
+ * A drawing hosts pick for a cover (the Card covers' illustration): one
+ * file in `src/modular/drawings/`, built from its Inkscape source in
+ * `art/drawings/` by `.claude/skills/cover/svg.py`.
+ */
+export interface Drawing {
+  /** Permanent — events store it — and the file's name. */
+  id: string;
+  /** Its name in the Content tab's picker. Host chrome: the host's locale. */
+  name: LocalizedText;
+  /** Its frame, one of the three every drawing is drawn in (`DRAWING_SHAPES`). */
+  shape: DrawingShape;
+  /**
+   * Its built file, as the custom property `DRAWING` (`src/modular/drawing.ts`)
+   * reads; the build prints this line.
+   */
+  file: string;
+}
+
+/** The frames drawings are drawn in: tall 100 × 120, square 100 × 100, wide 120 × 100. */
+export type DrawingShape = "tall" | "square" | "wide";
 
 /** One field inside a list item — what a repeated group is made of. */
 export interface ItemField {

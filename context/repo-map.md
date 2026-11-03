@@ -141,5 +141,6 @@ Vitest on its own emulator: `lib/` (plain functions), `writes/` (the saves), `ap
 - `src/mock/dashboard.ts` — the nav, account and footer keys only; `src/mock/inv-img/` — the print preview's placeholder front
 - `src/components/icons.tsx` — app-wide icons
 - `src/components/MissingPage.tsx` — a page that isn't there, in Festio's look: an invitation link that opens nothing, one no longer available, any other address
+- `art/` — Inkscape sources of the drawn art, outside `public/` so they're never served and outside Tailwind's scan: `covers/` (a cover's own, Wildflower's corners) and `drawings/` (the drawings hosts pick, `src/modular/drawings/`). Built into `public/modular/cover/` and `public/modular/drawings/` by `.claude/skills/cover/svg.py`
 - `scripts/look.mjs` — `npm run look`: measure or screenshot a page of the dev server (Playwright), `context/dev-tools/look.md`
 - Config: `next.config.ts` (no invite rewrite: the proxy routes invitations; one `afterFiles` rewrite sends a missing file name to the 404 page), `tsconfig.json`, `eslint.config.mjs`, `postcss.config.mjs`

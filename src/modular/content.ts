@@ -107,6 +107,24 @@ export function yearOf(iso: string): number {
   return day(iso).getFullYear();
 }
 
+/** IX — the month in Roman numerals, the same in every language, as on a postmark. */
+export function romanMonth(iso: string): string {
+  return [
+    "I",
+    "II",
+    "III",
+    "IV",
+    "V",
+    "VI",
+    "VII",
+    "VIII",
+    "IX",
+    "X",
+    "XI",
+    "XII",
+  ][day(iso).getMonth()];
+}
+
 /**
  * A schedule day's date, always written the same way: EN "Friday · 17 Sept",
  * RO "Vineri · 17 sept.", HU "Péntek · szept. 17.". Empty when it is not a

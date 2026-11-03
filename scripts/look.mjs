@@ -9,6 +9,7 @@
  * --style "Full card"    pick this style for --section (modular preview)
  * --pattern Polka        pick a background pattern (modular preview)
  * --palette Peony        pick a colour palette (modular preview)
+ * --fonts "Bodoni Moda & Courier Prime"  pick a font pair (modular preview)
  * --measure "svg,h2"     selectors inside the part: size, place, padding
  * --shot                 save a screenshot of the part (default: no)
  * --out <dir>            where screenshots go (default: <tmp>/festio-look)
@@ -30,6 +31,7 @@ const { values: opts, positionals } = parseArgs({
     style: { type: "string" },
     pattern: { type: "string" },
     palette: { type: "string" },
+    fonts: { type: "string" },
     measure: { type: "string" },
     shot: { type: "boolean", default: false },
     out: { type: "string", default: join(tmpdir(), "festio-look") },
@@ -58,6 +60,7 @@ async function setUp(page) {
   }
   if (opts.palette) await pickLook(page, "palette", opts.palette);
   if (opts.pattern) await pickLook(page, "pattern", opts.pattern);
+  if (opts.fonts) await pickLook(page, "fontPair", opts.fonts);
   if (opts.section && opts.style) {
     const card = page.locator(`#design-card-${opts.section}`);
     await card.scrollIntoViewIfNeeded();
@@ -72,12 +75,12 @@ async function setUp(page) {
     if ((await reveal.getAttribute("aria-expanded")) === "false") {
       await reveal.click();
     }
-    /* Grouped styles (Cover's Photo, Illustration): every group rolled out. */
-    for (const group of await card
-      .locator("button[aria-expanded=false]")
-      .all()) {
-      await group.click();
-    }
+    /*
+     * Grouped styles (Cover's Photo, Illustration, Card): every group rolled
+     * out, the first still shut each time, as each click changes which are.
+     */
+    const shut = card.locator("button[aria-expanded=false]");
+    while (await shut.count()) await shut.first().click();
     await card
       .locator("button[aria-pressed]")
       .filter({ hasText: new RegExp(`^${opts.style}$`) })

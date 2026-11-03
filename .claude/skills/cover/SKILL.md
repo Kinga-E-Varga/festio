@@ -93,18 +93,34 @@ When the user brings their own drawing (too detailed to hand-write as paths, lik
 Wildflower's engraved corner), it stays a static file painted through CSS masks, not
 an inline component.
 
-- **The source**, the user's to edit: `public/modular/svg-elements/<name>.svg`, with
-  one path labelled `lines` (the drawing) and, if the cover needs one, one labelled
+- **The source**, the user's to edit, outside `public/` so it's never served:
+  `art/covers/<name>.svg` for a cover's own art (Wildflower's corners), or
+  `art/drawings/<name>.svg` for a drawing hosts pick in the Content tab (the Card
+  covers'). It has one path labelled `lines` (the drawing; a file with a single path
+  needs no label) and, if the cover needs one, one labelled
   `fill` (the drawing's filled-in shape, so what's under it doesn't show through;
   a stroke on it widens it past the lines). Labels are set in Inkscape's Layers and
   Objects panel. Never edit the source without asking; back it up first.
 - **Build** after every change to it, from the repo root:
   `python3 -I .claude/skills/cover/svg.py build <name>` (or `build all`). It writes
-  `public/modular/cover/<name>.svg`, `<name>-fill.svg` (its stroke the source's,
+  into `public/modular/cover/` (from `art/covers/`) or `public/modular/drawings/`
+  (from `art/drawings/`): `<name>.svg`, `<name>-fill.svg` (its stroke the source's,
   or the `SETTINGS` row's `stroke`) and, when the row gives a `dark_stroke`,
   `<name>-fill-dark.svg` (the dark palettes' thinner outline). Coordinates rounded, Inkscape's extras dropped, 5 units of room
   (`MARGIN`) round the drawing so a stroke is never cut. A cover's own settings
-  go in `SETTINGS`, only what differs from the defaults.
+  go in `SETTINGS`, only what differs from the defaults. A path may keep the move
+  or the even scale Inkscape leaves on it (`translate`, `scale`, an unturned `matrix`);
+  the build applies it. A stretch, skew or turn it refuses. `build all` builds what it
+  can and lists what it couldn't, and why.
+- **A drawing to pick** (`art/drawings/`): its page is one of three frames, the
+  only ones the covers lay out — **tall 100 × 120, square 100 × 100, wide 120 × 100**
+  (or the same proportions); the artist pads the drawing to one in Inkscape, and the
+  build refuses any other. It also gets a file `src/modular/drawings/<name>.ts`
+  (its permanent id, its name in en, ro and hu, and the `shape` and `file` the build
+  prints), and it's in the Content tab's picker for every cover that shows the
+  `drawing` field, painted by `DRAWING` (`src/modular/drawing.ts`, `DRAWING_SHAPES`).
+  A cover may lay a shape out its own way: Playbill keeps a wide one under its
+  heading rather than in its one-row layout.
 - **In the cover:** each file is a pseudo-element's mask (`mask-contain`,
   `mask-center`), the fill (`before:`) under the lines (`after:`), both reaching
   `MARGIN` past the box: `-inset-x-[MARGIN / width %]`, `-inset-y-[MARGIN / height %]`,

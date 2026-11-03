@@ -15,6 +15,7 @@ export const section: SectionDefinition = {
       id: "illustration",
       name: { en: "Illustration", ro: "Ilustrație", hu: "Illusztráció" },
     },
+    { id: "card", name: { en: "Card", ro: "Card", hu: "Kártya" } },
   ],
   variants: [
     {
@@ -78,7 +79,8 @@ export const section: SectionDefinition = {
     {
       id: "5",
       name: { en: "Wildflower", ro: "Flori sălbatice", hu: "Vadvirág" },
-      group: "illustration",
+      // A card on the page's ground, its corners drawn: with the Card covers.
+      group: "card",
       // The corners and the border run the whole width; on the page's
       // surface, so a pattern shows round them.
       wide: true,
@@ -96,8 +98,73 @@ export const section: SectionDefinition = {
         "secondLine",
       ],
     },
+    {
+      id: "6",
+      name: { en: "Stamp", ro: "Timbru", hu: "Bélyeg" },
+      group: "card",
+      // Not `wide`: the cover stops at the column, like the page's other
+      // sections; the pattern under the page still shows round the card.
+      // Drawn, no photo, a poster: the Title's lines but the caption, then
+      // the date and a free line.
+      shows: ["details", "drawing"],
+      poster: [
+        "eyebrow",
+        "names",
+        "namesStart",
+        "namesMiddle",
+        "namesEnd",
+        "firstLine",
+        "nextLine",
+        "secondLine",
+      ],
+    },
+    {
+      id: "7",
+      name: { en: "Playbill", ro: "Afiș", hu: "Plakát" },
+      group: "card",
+      // The highlight (`kicker`) as its big heading over the drawing; the
+      // Title's second line isn't drawn here, so it stays the Title's.
+      shows: ["kicker", "details", "drawing"],
+      poster: [
+        "eyebrow",
+        "names",
+        "namesStart",
+        "namesMiddle",
+        "namesEnd",
+        "firstLine",
+      ],
+    },
+    {
+      id: "8",
+      name: { en: "Ticket", ro: "Bilet", hu: "Jegy" },
+      // A whole drawn scene, not a card: with the illustrations.
+      group: "illustration",
+      // The pile of tickets and the change run the whole width, past the
+      // column on a wide screen.
+      wide: true,
+      // Drawn, no photo, a poster: the Title's lines but the caption, the
+      // details line along the main part's foot.
+      shows: ["details"],
+      poster: [
+        "eyebrow",
+        "names",
+        "namesStart",
+        "namesMiddle",
+        "namesEnd",
+        "firstLine",
+        "nextLine",
+        "secondLine",
+      ],
+    },
   ],
   fields: [
+    {
+      // The Card covers' picture: a drawing from `src/modular/drawings/`.
+      id: "drawing",
+      label: { en: "illustration", ro: "ilustrație", hu: "illusztráció" },
+      type: "drawing",
+      maxLength: 60,
+    },
     {
       id: "photo",
       label: LABELS.photo,
