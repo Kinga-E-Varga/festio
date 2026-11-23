@@ -9,4 +9,5 @@ export const drawing: Drawing = {
   },
   shape: "wide",
   file: "[--drawing:url(/modular/drawings/children-tea-party.svg)]",
+  fill: "[--drawing-fill:url(/modular/drawings/children-tea-party-fill.svg)]",
 };

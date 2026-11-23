@@ -16,10 +16,9 @@ const CHOICE = `grid h-20 w-20 cursor-pointer place-items-center rounded-ui bord
 const THUMB = "h-[min(100cqh,calc(100cqw*var(--drawing-h)/var(--drawing-w)))]";
 
 /**
- * The drawings library as a row of buttons, each drawing painted as the
- * cover paints it, in the text's colour; the picked one pressed (an
- * unknown or empty value, the default, as the cover shows), each named in
- * a tip on hover.
+ * The drawings library as a row of buttons, each drawing's lines painted in
+ * the text's colour; the picked one pressed (an unknown or empty value, the
+ * default, as the cover shows), each named in a tip on hover.
  */
 export function DrawingPicker({
   labelId,
@@ -50,7 +49,7 @@ export function DrawingPicker({
               aria-pressed={picked === drawing.id}
               aria-label={name}
               onClick={() => onPick(drawing.id)}
-              className={`${CHOICE} ${drawingLook(drawing)}`}
+              className={`${CHOICE} ${drawingLook(drawing, true)}`}
             >
               <span className={`${DRAWING} ${THUMB}`} />
             </button>

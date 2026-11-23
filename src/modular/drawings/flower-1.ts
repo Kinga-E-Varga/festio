@@ -5,4 +5,5 @@ export const drawing: Drawing = {
   name: { en: "Flower", ro: "Floare", hu: "Virág" },
   shape: "tall",
   file: "[--drawing:url(/modular/drawings/flower-1.svg)]",
+  fill: "[--drawing-fill:url(/modular/drawings/flower-1-fill.svg)]",
 };

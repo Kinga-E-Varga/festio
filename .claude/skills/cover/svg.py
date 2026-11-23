@@ -53,8 +53,8 @@ SETTINGS = {
     "wildflower": {"stroke": 2, "dark_stroke": 0.75},
 }
 
-ARGS = {"m": 2, "l": 2, "c": 6, "s": 4, "h": 1, "v": 1, "z": 0}
-TOKEN = re.compile(r"[MLCSHVZmlcshvz]|[-+]?(?:\d+\.?\d*|\.\d+)(?:[eE][-+]?\d+)?")
+ARGS = {"m": 2, "l": 2, "c": 6, "s": 4, "h": 1, "v": 1, "a": 7, "z": 0}
+TOKEN = re.compile(r"[MLCSHVZAmlcshvza]|[-+]?(?:\d+\.?\d*|\.\d+)(?:[eE][-+]?\d+)?")
 
 
 class BuildError(Exception):
@@ -118,6 +118,17 @@ def compact(d: str, scale: float = 1.0, tx: float = 0.0, ty: float = 0.0) -> str
         count = ARGS[kind]
         values = [float(v) for v in tokens[i : i + count]]
         i += count
+        if kind == "a":
+            # An arc: its radii scale with the path, its rotation and its two
+            # flags stay as they are, its end point is placed like any other.
+            x = values[5] + (cx if relative else 0)
+            y = values[6] + (cy if relative else 0)
+            ex, ey = placed(x, y)
+            parts = [fmt(round(scale * values[0] * 100)), fmt(round(scale * values[1] * 100))]
+            parts += [f"{values[2]:g}", f"{int(values[3])}", f"{int(values[4])}"]
+            out.append("a" + ",".join(parts + [fmt(ex - px), fmt(ey - py)]))
+            cx, cy, px, py = x, y, ex, ey
+            continue
         if kind == "h":
             # A level line, written as a line: only x moves.
             points, kind = [(values[0] + (cx if relative else 0), cy)], "l"
@@ -205,10 +216,14 @@ def build(name: str) -> None:
             raise BuildError(f"{source_path}: its page is {w:g} x {h:g}; a drawing's page is one of {sizes} (or the same proportions): pad it in Inkscape")
     print(f"{name} (viewBox {view_box}, margin {MARGIN})")
     write(out / f"{name}.svg", view_box, lines, None)
-    if shape:
-        prop = "--drawing"
-        print(f'  src/modular/drawings/{name}.ts  shape: "{shape}",  file: "[{prop}:url(/{out.relative_to("public")}/{name}.svg)]"')
     fill = path_tag(source, "fill")
+    if shape:
+        # The lines the drawing's own file names, and the filled shape under
+        # them when the source has one.
+        line = f'  src/modular/drawings/{name}.ts  shape: "{shape}",  file: "[--drawing:url(/{out.relative_to("public")}/{name}.svg)]",'
+        if fill is not None:
+            line += f'  fill: "[--drawing-fill:url(/{out.relative_to("public")}/{name}-fill.svg)]",'
+        print(line)
     if fill is None:
         return
     has_stroke = re.search(r"stroke:#[0-9a-fA-F]{6}", fill)

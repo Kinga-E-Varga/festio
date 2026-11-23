@@ -5,4 +5,5 @@ export const drawing: Drawing = {
   name: { en: "Wolf dance", ro: "Dansul lupului", hu: "Farkastánc" },
   shape: "square",
   file: "[--drawing:url(/modular/drawings/wolf-dance.svg)]",
+  fill: "[--drawing-fill:url(/modular/drawings/wolf-dance-fill.svg)]",
 };

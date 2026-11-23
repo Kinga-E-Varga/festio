@@ -5,4 +5,5 @@ export const drawing: Drawing = {
   name: { en: "Wild party", ro: "Petrecere nebună", hu: "Vad buli" },
   shape: "square",
   file: "[--drawing:url(/modular/drawings/wild-party.svg)]",
+  fill: "[--drawing-fill:url(/modular/drawings/wild-party-fill.svg)]",
 };

@@ -16,11 +16,13 @@ import type { ReactNode } from "react";
  * turns to (`dark-palette:`): the ink for its paper, the second surface
  * for its ink, that softened toward the paper for its muted ink, and the
  * secondary and the accent each half mixed with its soft colour, deep
- * enough for the light paper. Kept here, a step above the card, because the
+ * enough for the light paper. The drawing's filled shape (`--card-drawing`)
+ * is the palette's ink and muted ink half and half: its paper, a shade
+ * darker. Kept here, a step above the card, because the
  * card's own swap reads them and a colour can't be worked out from itself.
  */
 export const CARD_STAGE =
-  "absolute inset-0 [container-type:size] dark-palette:[--card-paper:var(--m-ink)] dark-palette:[--card-ink:var(--m-surface-alt)] dark-palette:[--card-ink-muted:color-mix(in_oklab,var(--m-surface-alt)_70%,var(--m-ink))] dark-palette:[--card-secondary:color-mix(in_oklab,var(--m-secondary)_50%,var(--m-secondary-soft))] dark-palette:[--card-accent:color-mix(in_oklab,var(--m-accent)_50%,var(--m-accent-soft))]";
+  "absolute inset-0 [container-type:size] dark-palette:[--card-paper:var(--m-ink)] dark-palette:[--card-ink:var(--m-surface-alt)] dark-palette:[--card-ink-muted:color-mix(in_oklab,var(--m-surface-alt)_70%,var(--m-ink))] dark-palette:[--card-drawing:color-mix(in_oklab,var(--m-ink),var(--m-ink-muted)_50%)] dark-palette:[--card-secondary:color-mix(in_oklab,var(--m-secondary)_50%,var(--m-secondary-soft))] dark-palette:[--card-accent:color-mix(in_oklab,var(--m-accent)_50%,var(--m-accent-soft))]";
 
 /*
  * On a dark palette, a card's paper, inks, secondary and accent swapped for
@@ -76,8 +78,15 @@ export function drawingRoom(
   return `${DRAWING_ROOM} ${DRAWING_CAPS[caps]} ${drawingLook(drawingOf(text(values, "drawing")))}`;
 }
 
-/* The drawing, in the ink, as big as its room (`drawingRoom`) allows, never cropped. */
-export const DRAWING_FIT = `${DRAWING} text-(--m-ink) h-[min(100cqh,calc(100cqw*var(--drawing-h)/var(--drawing-w)))]`;
+/*
+ * The drawing, in the ink, as big as its room (`drawingRoom`) allows, never
+ * cropped. Its filled shape under the lines (`--drawing-ground`) is the
+ * surface, a shade lighter than the card's own paper. A dark palette's paper
+ * is the palette's ink, with no lighter surface above it, so there the step
+ * goes the other way: `CARD_STAGE`'s `--card-drawing`, the palette's ink and
+ * muted ink half and half.
+ */
+export const DRAWING_FIT = `${DRAWING} text-(--m-ink) [--drawing-ground:var(--m-surface)] dark-palette:[--drawing-ground:var(--card-drawing)] h-[min(100cqh,calc(100cqw*var(--drawing-h)/var(--drawing-w)))]`;
 
 /*
  * Small round bites along two opposite edges: `BITES_Y` the top and bottom,

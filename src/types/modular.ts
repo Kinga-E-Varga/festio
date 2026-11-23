@@ -133,10 +133,15 @@ export interface Drawing {
   /** Its frame, one of the three every drawing is drawn in (`DRAWING_SHAPES`). */
   shape: DrawingShape;
   /**
-   * Its built file, as the custom property `DRAWING` (`src/modular/drawing.ts`)
-   * reads; the build prints this line.
+   * Its lines' built file, as the custom property `DRAWING`
+   * (`src/modular/drawing.ts`) reads; the build prints this line.
    */
   file: string;
+  /**
+   * Its filled shape's built file, painted under the lines, when its source
+   * has one; the build prints it beside `file`.
+   */
+  fill?: string;
 }
 
 /** The frames drawings are drawn in: tall 100 × 120, square 100 × 100, wide 120 × 100. */

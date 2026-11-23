@@ -54,12 +54,13 @@ const DATE = `${EYEBROW} ${TONE_TEXT.accent} text-[14px]! [@container(aspect-rat
 /*
  * The postmark, in the secondary, faded: a double ring with the date, tilted.
  * As on a real letter, hanging past the stamp's left edge onto the page,
- * its middle a quarter of the way down; under the words and the drawing. Its
+ * its middle a quarter of the way down, stamped over the words and the
+ * drawing (`z-10`, above both; faded, so they read through it). Its
  * size (`--pm`) is 40% of the card's shorter side, 120px to 340px; it hangs
  * out by a fifth of that, never more than 36px, so the card's 40px margin
  * on wide screens still holds it.
  */
-const POSTMARK = `absolute [--pm:clamp(120px,40cqmin,340px)] top-[calc(25%-var(--pm)/2)] -left-[min(calc(var(--pm)/5),36px)] grid size-(--pm) -rotate-12 place-items-center rounded-full border-[length:calc(var(--pm)*0.011)] border-current text-(--m-secondary) opacity-75 before:absolute before:inset-[calc(var(--pm)*0.05)] before:rounded-full before:border-[length:calc(var(--pm)*0.006)] before:border-current`;
+const POSTMARK = `absolute z-10 [--pm:clamp(120px,40cqmin,340px)] top-[calc(25%-var(--pm)/2)] -left-[min(calc(var(--pm)/5),36px)] grid size-(--pm) -rotate-12 place-items-center rounded-full border-[length:calc(var(--pm)*0.011)] border-current text-(--m-secondary) opacity-75 before:absolute before:inset-[calc(var(--pm)*0.05)] before:rounded-full before:border-[length:calc(var(--pm)*0.006)] before:border-current`;
 
 /* The postmark's date, sized with it. */
 const POSTMARK_DATE = `${HEADING} text-center text-[calc(var(--pm)*0.14)] leading-[1.25] tracking-[0.12em]`;

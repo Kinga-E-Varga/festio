@@ -34,9 +34,14 @@ export const DRAWING_SHAPES: Record<DrawingShape, string> = {
   wide: "[--drawing-w:120] [--drawing-h:100]",
 };
 
-/** What a drawing's box needs: its frame's proportions and its file. */
-export function drawingLook(drawing: Drawing): string {
-  return `${DRAWING_SHAPES[drawing.shape]} ${drawing.file}`;
+/**
+ * What a drawing's box needs: its frame's proportions and its files. Its
+ * filled shape comes along unless `lines` asks for the lines alone (see
+ * `DRAWING` on the ground).
+ */
+export function drawingLook(drawing: Drawing, lines = false): string {
+  const fill = lines ? "" : ` ${drawing.fill ?? ""}`;
+  return `${DRAWING_SHAPES[drawing.shape]} ${drawing.file}${fill}`.trim();
 }
 
 /** The drawing with this id; an unknown or empty one, the default. */
@@ -49,12 +54,19 @@ export function drawingOf(id: string): Drawing {
 }
 
 /*
- * A drawing, the whole of it, never cropped, in the current text colour,
- * painted through its file as a mask. Read from `drawingLook` on it or
- * above: its frame's proportions (`--drawing-w`, `--drawing-h`), the box's
- * shape, and its file (`--drawing`). The file has 5 units of room round the
- * drawing (`MARGIN` in `svg.py`), so the mask reaches as far past the box.
- * Give it a height or a width; the other follows.
+ * A drawing, the whole of it, never cropped: its filled shape (`before:`,
+ * in `--drawing-ground`) under its lines (`after:`, in the current text
+ * colour), each painted through one of its files as a mask. Both layers sit
+ * on the same box, or the browser can round them a pixel apart. Read from
+ * `drawingLook` on it or above: its frame's proportions (`--drawing-w`,
+ * `--drawing-h`), the box's shape, and its files (`--drawing`,
+ * `--drawing-fill`). The files have 5 units of room round the drawing
+ * (`MARGIN` in `svg.py`), so the masks reach as far past the box. Give it a
+ * height or a width; the other follows.
+ *
+ * The ground is the caller's: unset, the filled shape is invisible and the
+ * lines alone show, which is what the Content tab's picker wants (no
+ * palette there). The Card covers set it in `card.ts`.
  */
 export const DRAWING =
-  "relative aspect-[var(--drawing-w)/var(--drawing-h)] shrink-0 after:absolute after:-inset-x-[calc(5/var(--drawing-w)*100%)] after:-inset-y-[calc(5/var(--drawing-h)*100%)] after:bg-current after:[mask-image:var(--drawing)] after:mask-contain after:mask-center after:mask-no-repeat";
+  "relative aspect-[var(--drawing-w)/var(--drawing-h)] shrink-0 before:absolute before:-inset-x-[calc(5/var(--drawing-w)*100%)] before:-inset-y-[calc(5/var(--drawing-h)*100%)] before:bg-[color:var(--drawing-ground,transparent)] before:[mask-image:var(--drawing-fill)] before:mask-contain before:mask-center before:mask-no-repeat after:absolute after:-inset-x-[calc(5/var(--drawing-w)*100%)] after:-inset-y-[calc(5/var(--drawing-h)*100%)] after:bg-current after:[mask-image:var(--drawing)] after:mask-contain after:mask-center after:mask-no-repeat";
