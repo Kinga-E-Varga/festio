@@ -52,6 +52,7 @@ export const section: SectionDefinition = {
       id: "6",
       name: { en: "Full card", ro: "Card întreg", hu: "Teljes kártya" },
       // The eyebrow and heading only, over the photo and the story.
+      bare: true,
       shows: [
         "photos",
         ...HEADING_SHOWS.filter(
@@ -72,6 +73,7 @@ export const section: SectionDefinition = {
       // Full card on the accent, no lines; always on the page's surface,
       // whatever its turn.
       ground: "surface",
+      bare: true,
       shows: [
         "photos",
         ...HEADING_SHOWS.filter(

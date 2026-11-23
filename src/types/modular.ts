@@ -277,6 +277,20 @@ export interface VariantInfo {
    * behind the variant's column. Left out, the page's surface.
    */
   band?: ColorRole;
+  /**
+   * The page paints no ground behind it: the variant draws whatever ground
+   * it needs itself, so the page's pattern is seen around what it draws.
+   * The Full card styles (the card filled with the ground, so it reads as a
+   * card) and the sticker ones (their text cut out of the pattern,
+   * `STICKER_TEXT`).
+   */
+  bare?: boolean;
+  /**
+   * A cover drawn right up to the page's top, under the header's bar, which
+   * is frosted, so the drawing is seen through it. Left out, the cover
+   * starts below the bar, where the page's flow puts it.
+   */
+  underHeader?: boolean;
   /** Drawn the page's whole width, not stopping at the column (`INVITE_COLUMN`). */
   wide?: boolean;
   /**

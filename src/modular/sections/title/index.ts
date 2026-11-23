@@ -33,6 +33,7 @@ export const section: SectionDefinition = {
         ro: "Autocolant colorat",
         hu: "Matrica színes",
       },
+      bare: true,
       shows: [
         "names",
         "namesStart",
@@ -65,6 +66,7 @@ export const section: SectionDefinition = {
         ro: "Autocolant accent",
         hu: "Matrica kiemelt",
       },
+      bare: true,
       shows: [
         "names",
         "namesStart",
@@ -82,6 +84,7 @@ export const section: SectionDefinition = {
         ro: "Autocolant simplu",
         hu: "Matrica egyszerű",
       },
+      bare: true,
       shows: [
         "names",
         "namesStart",

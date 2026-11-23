@@ -101,10 +101,10 @@ export function HeaderBar({ values, nav, look }: HeaderBarProps) {
 
   return (
     <header
-      className={`${BAR_FILL} group/edit sticky top-0 z-20 border-b-1 border-[var(--m-line)] text-[color:var(--m-ink)]`}
+      className={`${BAR_FILL} group/edit sticky top-0 z-20 text-[color:var(--m-ink)]`}
     >
       {/* The bar spans the page; its content stays in the column. */}
-      <div className="relative mx-auto flex h-14 max-w-(--invite-column) items-center gap-3 px-3 @5xl:h-16 @5xl:gap-8 @5xl:px-10">
+      <div className="relative mx-auto flex h-bar max-w-(--invite-column) items-center gap-3 px-3 @5xl:h-bar-lg @5xl:gap-8 @5xl:px-10">
         {links.length > 0 ? (
           // The icon sits on the bar's edge; the button keeps its 44px for a thumb.
           <button

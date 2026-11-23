@@ -168,6 +168,7 @@ export const section: SectionDefinition = {
       // Timeline in a full card on the accent, every disc in the secondary;
       // always on the page's surface, whatever its turn.
       ground: "surface",
+      bare: true,
       unsampled: ["note"],
       shows: [
         ...HEADING_SHOWS.filter((id) => id !== "headingItalic"),
@@ -186,6 +187,7 @@ export const section: SectionDefinition = {
         hu: "Teljes kártya, váltakozó",
       },
       // Alternate in a full card: every heading field but the italic heading.
+      bare: true,
       shows: [
         ...HEADING_SHOWS.filter((id) => id !== "headingItalic"),
         "days.date",
@@ -216,6 +218,7 @@ export const section: SectionDefinition = {
       },
       // Timeline in a full card on its own ground; the note empty to start.
       unsampled: ["note"],
+      bare: true,
       shows: [
         ...HEADING_SHOWS.filter((id) => id !== "headingItalic"),
         "days.date",

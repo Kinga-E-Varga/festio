@@ -1,6 +1,12 @@
 import { text } from "@/modular/content";
 import { Mark } from "@/modular/Mark";
-import { AMPERSAND_INK, EYEBROW, HEADING, MUTED } from "@/modular/styles";
+import {
+  AMPERSAND_INK,
+  BELOW_BAR,
+  EYEBROW,
+  HEADING,
+  MUTED,
+} from "@/modular/styles";
 import type { VariantProps } from "@/types/modular";
 import type { ReactNode } from "react";
 import { CARD_INKS, CARD_STAGE, posterWords } from "./card";
@@ -212,6 +218,18 @@ const NUMBER = "leading-none font-medium tracking-[0.02em] tabular-nums";
 const MAIN = `absolute inset-x-[10cqw] inset-y-[6cqh] ${HOLDS} rotate-[2.5deg] [filter:drop-shadow(0_2px_2px_color-mix(in_oklab,var(--m-shadow)_45%,transparent))_drop-shadow(0_14px_18px_color-mix(in_oklab,var(--m-shadow)_35%,transparent))] [@container(aspect-ratio>1)]:inset-x-[15cqw] [@container(aspect-ratio>1)]:inset-y-[24cqh] [@container(aspect-ratio>1)]:-rotate-[3.5deg] ${SIZES} ${CARD_INKS}`;
 
 /*
+ * The host's ticket's own stage: the cover runs up to the page's top under
+ * the header's frosted bar (`underHeader`), which covers its top, so the
+ * ticket is placed in what is left below the bar — a size container of its
+ * own, so its place (`MAIN`) reads that and not the whole cover, and the
+ * ticket stands and sizes exactly as it would with no bar over it. The
+ * pile stays on the whole cover (`SCENE`), so the tickets cut at the top
+ * run on into the band behind the bar instead of a bare strip showing
+ * there.
+ */
+const MAIN_STAGE = `absolute inset-0 ${BELOW_BAR} [container-type:size]`;
+
+/*
  * The pile's tickets under it, each a ticket's place (`HOLDS`) in a
  * landscape ticket's proportions, under each two shadows from the palette's
  * `shadow`: a close one along the paper's edge, so where two tickets
@@ -226,7 +244,7 @@ const MAIN = `absolute inset-x-[10cqw] inset-y-[6cqh] ${HOLDS} rotate-[2.5deg] [
 const LYING = `absolute aspect-[2.3] ${HOLDS} [filter:drop-shadow(0_1px_1.5px_color-mix(in_oklab,var(--m-shadow)_45%,transparent))_drop-shadow(0_6px_10px_color-mix(in_oklab,var(--m-shadow)_28%,transparent))] ${SIZES} ${CARD_INKS}`;
 
 /*
- * Where the pile and the change lie: the whole cover upright; landscape
+ * Where the pile lies: the whole cover upright; landscape
  * never wider than 1.9 times its height, centred, so on a wide screen
  * they stay round the host's ticket instead of drifting apart.
  */
@@ -237,26 +255,20 @@ const SCENE =
  * The pile, one set per layout, each ticket about the host's size, all
  * turned over, apart from each other. Upright, two lying across, one
  * behind the host's ticket's top, one behind its foot. Landscape, two on
- * the diagonal; on a big screen (the cover 1600px wide or more), two
- * more, top and bottom: by the width, not the shape, as a short laptop
- * window is as wide for its height as a big monitor, but has less room.
+ * the diagonal, the right one lower while it is one of only two — it sits
+ * back up once the other two are there to fill the foot; on a big screen
+ * (the cover 1600px wide or more), two
+ * more, top and bottom — four at most, however wide the screen: by the
+ * width, not the shape, as a short laptop window is as wide for its height
+ * as a big monitor, but has less room.
  */
 const PILE = [
   `${LYING} -left-[18%] -top-[4%] w-[120cqw] -rotate-[14deg] [@container(aspect-ratio>1)]:hidden`,
   `${LYING} -left-[6%] bottom-[17cqw] w-[120cqw] rotate-[11deg] [@container(aspect-ratio>1)]:hidden`,
   `${LYING} -left-[14%] top-[2%] w-[86cqh] rotate-[12deg] hidden [@container(aspect-ratio>1)]:block`,
-  `${LYING} -right-[12%] top-[40%] w-[86cqh] -rotate-[16deg] hidden [@container(aspect-ratio>1)]:block`,
+  `${LYING} -right-[12%] top-[46%] w-[86cqh] -rotate-[16deg] hidden [@container(aspect-ratio>1)]:block [@container(aspect-ratio>1)_and_(min-width:1600px)]:top-[40%]`,
   `${LYING} left-[40%] -top-[6%] w-[86cqh] -rotate-[6deg] hidden [@container(aspect-ratio>1)_and_(min-width:1600px)]:block`,
   `${LYING} left-[4%] bottom-[9%] w-[86cqh] rotate-[8deg] hidden [@container(aspect-ratio>1)_and_(min-width:1600px)]:block`,
-];
-
-/*
- * The margins `SCENE` leaves on a big screen's cover more than twice as
- * wide as tall: one more ticket turned over in each, placed by the cover.
- */
-const MARGIN_PILE = [
-  `${LYING} -left-[4%] bottom-[12%] w-[86cqh] -rotate-[12deg] hidden [@container(aspect-ratio>2)_and_(min-width:1600px)]:block`,
-  `${LYING} -right-[3%] top-[6%] w-[86cqh] rotate-[16deg] hidden [@container(aspect-ratio>2)_and_(min-width:1600px)]:block`,
 ];
 
 /* A turned-over ticket's fine dashed lines, where the front's boxes would be. */
@@ -274,129 +286,16 @@ function PileTicket({ place }: { place: string }) {
   );
 }
 
-/*
- * The change: real gold and silver whatever the palette, the one part of
- * the cover not drawn from it (its shadow is). A domed face lit from the
- * top left with a fine line round it, a raised rim with a sheen running
- * round it (`before:`), a ring of beads inside the rim (`after:`), the
- * value struck in relief, a thin edge under it. Sized by the cover's
- * shorter side.
- */
-const COIN =
-  "absolute grid aspect-square place-items-center rounded-full [container-type:inline-size] bg-[radial-gradient(circle_closest-side,#0000_0_77%,color-mix(in_oklab,var(--coin-lo)_80%,transparent)_78%_80%,#0000_81%),radial-gradient(circle_at_34%_28%,var(--coin-hi),var(--coin-mid)_42%,var(--coin-lo)_110%)] shadow-[0_1px_0_var(--coin-edge),0_2px_3px_color-mix(in_oklab,var(--m-shadow)_25%,transparent),0_6px_10px_color-mix(in_oklab,var(--m-shadow)_15%,transparent)] before:absolute before:inset-0 before:rounded-full before:bg-[conic-gradient(from_300deg,var(--coin-hi),var(--coin-mid)_12%,var(--coin-lo)_30%,var(--coin-mid)_45%,var(--coin-hi)_55%,var(--coin-mid)_68%,var(--coin-lo)_82%,var(--coin-mid)_92%,var(--coin-hi))] before:[mask:radial-gradient(circle_closest-side,#0000_81%,#000_82%)] after:absolute after:inset-0 after:rounded-full after:bg-[repeating-conic-gradient(color-mix(in_oklab,var(--coin-lo)_75%,transparent)_0_3.5deg,#0000_3.5deg_10deg)] after:[mask:radial-gradient(circle_closest-side,#0000_70%,#000_71%_74%,#0000_75%)]";
-
-const METAL = {
-  gold: "[--coin-hi:#fff6cf] [--coin-mid:#e0b445] [--coin-lo:#8f6512] [--coin-edge:#6b4a0c]",
-  silver:
-    "[--coin-hi:#ffffff] [--coin-mid:#c7cbd1] [--coin-lo:#767c85] [--coin-edge:#565b63]",
-};
-
-/* The value, in the heading face, raised: lit on its top left edge, shaded on its bottom right. */
-const COIN_VALUE = `${HEADING} relative z-1 text-[40cqw] leading-none font-bold text-(--coin-mid) [text-shadow:-1px_-1px_0_var(--coin-hi),1px_1px_0_var(--coin-lo)]`;
-
-/*
- * The coins, one set per layout, over the pile and round the host's
- * ticket, all clear of the cover's foot (`LYING`): the lowest placed from
- * it, never nearer than 24px, past their shadow, on a short cover too.
- */
-type CoinSpot = { place: string; metal: keyof typeof METAL; value: string };
-
-const COINS: CoinSpot[] = (
-  [
-    {
-      place: "left-[2%] top-[3%] w-[19.8cqmin] -rotate-10",
-      metal: "gold",
-      value: "5",
-    },
-    {
-      place: "left-[21%] top-[1%] w-[15.5cqmin] rotate-12",
-      metal: "silver",
-      value: "1",
-    },
-    {
-      place: "-right-[3%] top-[28%] w-[17.6cqmin] -rotate-[18deg]",
-      metal: "gold",
-      value: "10",
-    },
-    {
-      place: "-right-[2%] top-[72%] w-[18.4cqmin] rotate-[14deg]",
-      metal: "gold",
-      value: "50",
-    },
-    {
-      place: "left-[3%] bottom-[max(24px,4%)] w-[14.9cqmin] -rotate-6",
-      metal: "silver",
-      value: "2",
-    },
-    {
-      place: "right-[20%] bottom-[max(24px,4%)] w-[16.2cqmin] rotate-[8deg]",
-      metal: "gold",
-      value: "1",
-    },
-  ] satisfies CoinSpot[]
-).map((coin) => ({
-  ...coin,
-  place: `${coin.place} [@container(aspect-ratio>1)]:hidden`,
-}));
-
-const WIDE_COINS: CoinSpot[] = (
-  [
-    {
-      place: "left-[9%] top-[74%] w-[13.8cqmin] -rotate-12",
-      metal: "gold",
-      value: "5",
-    },
-    {
-      place: "left-[15%] bottom-[max(24px,4%)] w-[11.5cqmin] rotate-[8deg]",
-      metal: "silver",
-      value: "1",
-    },
-    {
-      place: "left-[86%] top-[12%] w-[9.7cqmin] -rotate-[20deg]",
-      metal: "gold",
-      value: "1",
-    },
-    {
-      place: "left-[87%] top-[52%] w-[13.3cqmin] rotate-[14deg]",
-      metal: "gold",
-      value: "10",
-    },
-    {
-      place: "left-[90%] top-[65%] w-[10.2cqmin] -rotate-6",
-      metal: "gold",
-      value: "5",
-    },
-    {
-      place: "left-[68.9%] top-[77.8%] w-[12cqmin] rotate-[22deg]",
-      metal: "silver",
-      value: "2",
-    },
-    {
-      place: "left-[7.1%] top-[37%] w-[11.5cqmin] rotate-[10deg]",
-      metal: "gold",
-      value: "10",
-    },
-    {
-      place: "left-[91.1%] bottom-[max(24px,4%)] w-[10.2cqmin] rotate-[16deg]",
-      metal: "silver",
-      value: "1",
-    },
-  ] satisfies CoinSpot[]
-).map((coin) => ({
-  ...coin,
-  place: `${coin.place} hidden [@container(aspect-ratio>1)]:grid`,
-}));
-
 /**
  * A poster cover, no photo: the host's admission ticket just bought, lying
- * on a pile of others with the change, on the page's own ground across the
+ * on a pile of others, on the page's own ground across the
  * whole cover. The ticket in the secondary — scalloped ends, two round
  * notches and a row of holes at the tear line. On its main part a box in
  * the surface, a fine frame inside it: the Title's eyebrow on a band in the
  * ink, the names large, the Title's second line under them, the host's
  * free line along the foot, its lines joined by dots. On the stub, in a framed box, the date in numbers filling
  * it. Upright the stub at the bottom; landscape on the right. Under it,
- * tickets turned over, and gold and silver coins.
+ * tickets turned over.
  */
 export function Variant({ values, related, basics, language }: VariantProps) {
   const { eyebrow, names, first, second } = posterWords(
@@ -418,56 +317,43 @@ export function Variant({ values, related, basics, language }: VariantProps) {
     /* The hero's whole spare height, never shorter than a phone's 440px. `data-cover` for the envelope's strip. */
     <div data-cover className="relative flex min-h-110 grow overflow-hidden">
       <div className={CARD_STAGE}>
-        {MARGIN_PILE.map((place) => (
-          <PileTicket key={place} place={place} />
-        ))}
         <div className={SCENE}>
           {PILE.map((place) => (
             <PileTicket key={place} place={place} />
           ))}
-          {[...COINS, ...WIDE_COINS].map(({ place, metal, value }) => (
-            <Coin
-              key={place}
-              place={`${place} ${METAL[metal]}`}
-              value={value}
-            />
-          ))}
         </div>
-        <div className={MAIN}>
-          <Ticket paper="bg-(--m-secondary)">
-            <div className={BOX}>
-              {eyebrow ? <p className={BAND}>{eyebrow}</p> : null}
-              <div className="flex min-h-0 flex-1 flex-col items-center justify-center py-(--box-pad) [@container(aspect-ratio>1)]:px-[calc(var(--box-pad)*2)]">
-                {names.length > 0 || first ? (
-                  <h1 className={NAMES}>
-                    {names.length > 0 ? <Mark parts={names} /> : first}
-                  </h1>
+        <div className={MAIN_STAGE}>
+          <div className={MAIN}>
+            <Ticket paper="bg-(--m-secondary)">
+              <div className={BOX}>
+                {eyebrow ? <p className={BAND}>{eyebrow}</p> : null}
+                <div className="flex min-h-0 flex-1 flex-col items-center justify-center py-(--box-pad) [@container(aspect-ratio>1)]:px-[calc(var(--box-pad)*2)]">
+                  {names.length > 0 || first ? (
+                    <h1 className={NAMES}>
+                      {names.length > 0 ? <Mark parts={names} /> : first}
+                    </h1>
+                  ) : null}
+                  {second ? <p className={SECOND}>{second}</p> : null}
+                </div>
+                {details ? (
+                  <p
+                    className={`${LINE} border-t border-(--m-ink) pt-[0.8em] text-center`}
+                  >
+                    {details}
+                  </p>
                 ) : null}
-                {second ? <p className={SECOND}>{second}</p> : null}
               </div>
-              {details ? (
-                <p
-                  className={`${LINE} border-t border-(--m-ink) pt-[0.8em] text-center`}
-                >
-                  {details}
-                </p>
-              ) : null}
-            </div>
-            <div className={STUB}>
-              <DateStub year={year} dayMonth={dayMonth} yearFirst={yearFirst} />
-            </div>
-          </Ticket>
+              <div className={STUB}>
+                <DateStub
+                  year={year}
+                  dayMonth={dayMonth}
+                  yearFirst={yearFirst}
+                />
+              </div>
+            </Ticket>
+          </div>
         </div>
       </div>
-    </div>
-  );
-}
-
-/* A coin of the change, its value on its face. */
-function Coin({ place, value }: { place: string; value: string }) {
-  return (
-    <div aria-hidden className={`${COIN} ${place}`}>
-      <span className={COIN_VALUE}>{value}</span>
     </div>
   );
 }

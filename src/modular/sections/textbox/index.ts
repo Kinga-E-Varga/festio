@@ -30,6 +30,7 @@ export const section: SectionDefinition = {
       id: "10",
       name: { en: "Sticker", ro: "Autocolant", hu: "Matrica" },
       // Simple, the large text as the title's stickers.
+      bare: true,
       shows: ["largeText", "italic", "smallText"],
     },
     {
@@ -41,6 +42,7 @@ export const section: SectionDefinition = {
       },
       // Simple joined, the large text as the title's stickers.
       ground: "joined",
+      bare: true,
       shows: ["largeText", "italic", "smallText"],
     },
     {
@@ -118,6 +120,7 @@ export const section: SectionDefinition = {
         hu: "Teljes kártya",
       },
       // Card, the card in the band's own colour.
+      bare: true,
       shows: ["largeText", "italic", "smallText"],
     },
     {
@@ -128,6 +131,7 @@ export const section: SectionDefinition = {
         hu: "Kiemelt teljes kártya",
       },
       // Card, the card on the accent.
+      bare: true,
       shows: ["largeText", "italic", "smallText"],
     },
   ],

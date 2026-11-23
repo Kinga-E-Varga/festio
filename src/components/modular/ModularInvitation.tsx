@@ -15,9 +15,14 @@ import { Icon } from "@/components/icons";
 import { localized, type Language, type LocalizedText } from "@/lib/language";
 import { cornerVars } from "@/modular/corners";
 import { hasContent } from "@/modular/fields";
-import { bandOf, groundRule, sectionGrounds } from "@/modular/ground";
+import {
+  bandOf,
+  bareGrounds,
+  groundRule,
+  sectionGrounds,
+} from "@/modular/ground";
 import { HEADER_ID, MENU_MAX, MENU_RANK, RSVP_ID } from "@/modular/nav";
-import { GROUND_FILL } from "@/modular/styles";
+import { GROUND_FILL, UNDER_HEADER } from "@/modular/styles";
 import { fontClasses, modularVars } from "@/modular/vars";
 import type { Question } from "@/db/schemas/event";
 import type { RsvpPayload } from "@/types/invitation";
@@ -140,12 +145,21 @@ export const ModularInvitation = memo(function ModularInvitation({
   );
   const body = design.sections.filter((choice) => choice !== bar);
   const grounds = sectionGrounds(body);
+  /* Where the page paints nothing, so its pattern shows (`bareGrounds`). */
+  const bare = bareGrounds(body);
   const columnRef = useRef<HTMLDivElement>(null);
   const vars = {
     ...modularVars(design.palette, design.fontPair),
     ...cornerVars(design.corners),
     /* The header's fill: the second surface once a pattern is on, so the bar stands apart from the dots. */
     "--m-bar": design.pattern ? "var(--m-surface-alt)" : "var(--m-surface)",
+    /*
+     * A full card's fill (`CARD_FILL`), the same for every one of them,
+     * whatever its turn: the plain surface once a pattern is on, so the
+     * card is the quiet block the pattern stops at; the second surface
+     * without one, where only its colour tells it from the page.
+     */
+    "--m-card": design.pattern ? "var(--m-surface)" : "var(--m-surface-alt)",
     /* An outline in the surface round large text (`TEXT_CUT`), only with a pattern on, so it reads over it. */
     "--m-text-cut": design.pattern ? "0.1em" : "0",
   } as CSSProperties;
@@ -203,6 +217,16 @@ export const ModularInvitation = memo(function ModularInvitation({
               groundRule(before.definition, before.variant) === "own"
             ? bandOf(before.definition, before.variant)
             : undefined;
+      /*
+       * What the page paints across the section's whole width: an `own`
+       * variant's band, nothing behind a bare one (its own drawing or card
+       * carries it, so the page's pattern shows round it), else its ground.
+       */
+      const fill = band
+        ? "bg-(--band)"
+        : bare[index]
+          ? ""
+          : GROUND_FILL[grounds[index]];
       return (
         <section
           key={definition.id}
@@ -212,7 +236,7 @@ export const ModularInvitation = memo(function ModularInvitation({
               ? ({ "--band": `var(--m-${band})` } as CSSProperties)
               : undefined
           }
-          className={`group/edit relative scroll-mt-14 @5xl:scroll-mt-16 ${band ? "bg-(--band)" : grounds[index] === "surface" ? "" : GROUND_FILL[grounds[index]]} ${grow ? "flex flex-1 flex-col" : ""}`}
+          className={`group/edit relative scroll-mt-bar @5xl:scroll-mt-bar-lg ${fill} ${grow && chosen?.underHeader ? UNDER_HEADER : ""} ${grow ? "flex flex-1 flex-col" : ""}`}
         >
           {/* At the page's edge, not the column's: past 1440px they sit clear of the content. */}
           {edit && !copy ? (
@@ -220,6 +244,7 @@ export const ModularInvitation = memo(function ModularInvitation({
               edit={edit}
               id={definition.id}
               content={hasContent(definition)}
+              underHeader={chosen?.underHeader}
             />
           ) : null}
           {/* The column: the container the section sizes itself by. A `wide` variant's has no cap. */}
@@ -246,7 +271,9 @@ export const ModularInvitation = memo(function ModularInvitation({
     });
     /*
      * The hero: the cover and the title, at least the screen less the
-     * header (56px, 64px from `@5xl`, and its 1px line), more when their
+     * header (`--spacing-bar`); an `underHeader` cover is pulled up
+     * over the bar (`UNDER_HEADER`) and fills that height too, so it still
+     * reaches the screen's foot. More when their
      * content needs it; up to 1440px the cover fills that alone
      * (`CoverPhoto`). The scroller is the screen; the envelope's copy is
      * given the same height as `--strip-hero` (`Envelope.tsx`). Past the
@@ -259,22 +286,18 @@ export const ModularInvitation = memo(function ModularInvitation({
     const split = heroEnd === -1 ? body.length : heroEnd;
     /*
      * The pattern runs once under every section, so it never breaks at a
-     * seam; a surface section paints nothing, the others cover it. Here, not
+     * seam; every section paints its own ground over it, so the pattern is
+     * seen only where one leaves it showing (`bareGrounds`). Here, not
      * on the page, so the envelope's copy (no header) lines up with it. Its
      * own stacking box, for a pattern drawn on a layer behind (Pebbles).
-     * `data-pattern` while one is on, for what a section leaves out then
-     * (`in-data-pattern:`).
      */
     return (
-      <div
-        data-pattern={design.pattern ? "" : undefined}
-        className={`relative isolate ${design.pattern?.className ?? ""}`}
-      >
+      <div className={`relative isolate ${design.pattern?.className ?? ""}`}>
         <div
           style={
             hero && !copy ? ({ "--hero": hero } as CSSProperties) : undefined
           }
-          className={`flex min-h-(--hero) flex-col [--cover-top:clamp(0px,(100cqw-var(--invite-column))/2,80px)] ${copy ? "[--hero:var(--strip-hero)]" : hero ? "" : "[--hero:calc(100cqh-57px)] @5xl:[--hero:calc(100cqh-65px)]"}`}
+          className={`flex min-h-(--hero) flex-col [--cover-top:clamp(0px,(100cqw-var(--invite-column))/2,80px)] ${copy ? "[--hero:var(--strip-hero)]" : hero ? "" : "[--hero:calc(100cqh-var(--spacing-bar))] @5xl:[--hero:calc(100cqh-var(--spacing-bar-lg))]"}`}
         >
           {views.slice(0, split)}
         </div>
@@ -393,14 +416,19 @@ function EditButtons({
   edit,
   id,
   content,
+  underHeader = false,
 }: {
   edit: SectionEdit;
   id: string;
   /** Left out for a section with nothing to edit, like the footer. */
   content: boolean;
+  /** The section is pulled up under the bar (`UNDER_HEADER`), so its buttons start the bar's height further down, clear of it. */
+  underHeader?: boolean;
 }) {
   return (
-    <div className="pointer-events-none absolute top-3 right-3 z-10 flex gap-2">
+    <div
+      className={`pointer-events-none absolute top-3 right-3 z-10 flex gap-2 ${underHeader ? "mt-bar @5xl:mt-bar-lg" : ""}`}
+    >
       <EditButton
         label={edit.design.label}
         icon="brush"
@@ -446,10 +474,7 @@ const HERO_IDS = [COVER_ID, "title"];
 /** Stands in while the bar's variant loads, at the bar's own height. */
 function BarSkeleton() {
   return (
-    <div
-      aria-hidden="true"
-      className="h-14 border-b-1 border-[var(--m-line)] bg-(--m-bar) @5xl:h-16"
-    />
+    <div aria-hidden="true" className="h-bar bg-(--m-bar) @5xl:h-bar-lg" />
   );
 }
 

@@ -37,6 +37,7 @@ export const section: SectionDefinition = {
         hu: "Kártya",
       },
       // Record on the page (`2`), its words centred in a full card, the record lying over its left side.
+      bare: true,
       shows: SHOWS,
     },
     {
@@ -49,6 +50,7 @@ export const section: SectionDefinition = {
       // Card, the card on the accent; always on the page's surface, whatever
       // its turn, as the Full card accents.
       ground: "surface",
+      bare: true,
       shows: SHOWS,
     },
   ],

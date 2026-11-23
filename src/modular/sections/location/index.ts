@@ -162,6 +162,7 @@ export const section: SectionDefinition = {
       id: "8",
       name: { en: "Full card", ro: "Card întreg", hu: "Teljes kártya" },
       // Grid in one card: every heading field but the italic heading.
+      bare: true,
       shows: [
         "photos",
         ...HEADING_SHOWS.filter((id) => id !== "headingItalic"),
@@ -184,6 +185,7 @@ export const section: SectionDefinition = {
       // Full card on the accent, the icons in the secondary; always on the
       // page's surface, whatever its turn.
       ground: "surface",
+      bare: true,
       shows: [
         "photos",
         ...HEADING_SHOWS.filter((id) => id !== "headingItalic"),

@@ -71,6 +71,7 @@ export const section: SectionDefinition = {
       id: "6",
       name: { en: "Full card", ro: "Card întreg", hu: "Teljes kártya" },
       // Accommodation's Full card: no italic second line under the heading.
+      bare: true,
       shows: [
         ...HEADING_SHOWS.filter((id) => id !== "headingItalic"),
         "linkLabel",
@@ -88,6 +89,7 @@ export const section: SectionDefinition = {
       // Full card on the accent, no lines; always on the page's surface,
       // whatever its turn.
       ground: "surface",
+      bare: true,
       shows: [
         ...HEADING_SHOWS.filter((id) => id !== "headingItalic"),
         "linkLabel",

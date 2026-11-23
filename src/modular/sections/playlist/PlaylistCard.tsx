@@ -1,8 +1,8 @@
 import { SectionHeading } from "@/modular/SectionHeading";
 import {
   ACCENT_FILL_CARD,
+  CARD_FILL,
   CORNER,
-  GROUND_FILL,
   H2_SMALL,
   PAD,
   SECTION_GROUND,
@@ -52,7 +52,7 @@ export function PlaylistCard({
           <Record on={ground} label={accent ? "secondary" : undefined} />
         </div>
         <div
-          className={`flex w-full flex-col justify-center ${CARD_HEIGHT} ${accent ? ACCENT_FILL_CARD : `${GROUND_FILL[ground]} ${CORNER}`} ${CARD_PAD}`}
+          className={`flex w-full flex-col justify-center ${CARD_HEIGHT} ${accent ? ACCENT_FILL_CARD : `${CARD_FILL} ${CORNER}`} ${CARD_PAD}`}
         >
           <SectionHeading values={values} headingClass={H2_SMALL} />
         </div>

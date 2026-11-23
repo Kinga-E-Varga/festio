@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import { SectionHeading } from "./SectionHeading";
 import {
+  CARD_FILL,
   COLUMN,
   CORNER,
   GROUND_FILL,
@@ -14,10 +15,14 @@ import type { SectionGround, SectionValues } from "@/types/modular";
 /** A full card's padding. */
 export const FULL_CARD_PAD = "px-6 py-12 @3xl:px-12 @3xl:py-16";
 
-/** The card: as wide as the section's content, 960px at most (`COLUMN`), with the host's corners; its fill the caller's (here the section's own, so it hides the page's pattern). Text box's card styles too. */
+/** The card: as wide as the section's content, 960px at most (`COLUMN`), with the host's corners; its fill the caller's. Text box's card styles too. */
 export const FULL_CARD = `${COLUMN} ${CORNER} ${FULL_CARD_PAD}`;
 
-/** The full card alone, on the section's padding: `FullCard`'s frame, and Schedule's Full card accent (`11`). */
+/**
+ * The full card alone, on the section's padding: `FullCard`'s frame, and
+ * Schedule's Full card accent (`11`). The card on the accent with
+ * `accent`, else `CARD_FILL`, the same for every full card.
+ */
 export function FullCardFrame({
   ground,
   children,
@@ -27,7 +32,11 @@ export function FullCardFrame({
 }) {
   return (
     <div className={`${SECTION_GROUND[ground]} ${PAD}`}>
-      <div className={`${GROUND_FILL[ground]} ${FULL_CARD}`}>{children}</div>
+      <div
+        className={`${ground === "accent" ? GROUND_FILL.accent : CARD_FILL} ${FULL_CARD}`}
+      >
+        {children}
+      </div>
     </div>
   );
 }

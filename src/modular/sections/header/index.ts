@@ -6,7 +6,7 @@ import type { SectionDefinition } from "@/types/modular";
  * wrapped like the other sections, so it stays stuck to the top the whole
  * way down. No menu label: it is the menu.
  *
- * Every variant is 56px tall, 64px from `@5xl` (`h-14 @5xl:h-16`): the
+ * Every variant is `--spacing-bar` tall, a step more from `@5xl`: the
  * sections' `scroll-margin` and the page's loading bar assume it. The
  * footer reads its mark (`markStart`, `markMiddle`, `markEnd`, or with
  * `monogram` off `markText`).

@@ -40,6 +40,8 @@ export const section: SectionDefinition = {
       wide: true,
       // Drawn, no photo, a poster: the Title's lines but the caption, then
       // the date and a free line.
+      // Drawn right up to the page's top, under the frosted bar.
+      underHeader: true,
       shows: ["details"],
       poster: [
         "eyebrow",
@@ -65,6 +67,8 @@ export const section: SectionDefinition = {
       wide: true,
       // Drawn, no photo, a poster: the Title's lines on the band, but not its
       // eyebrow or caption, then the date and a free line on the ribbon.
+      // Drawn right up to the page's top, under the frosted bar.
+      underHeader: true,
       shows: ["details"],
       poster: [
         "names",
@@ -142,6 +146,9 @@ export const section: SectionDefinition = {
       // The pile of tickets and the change run the whole width, past the
       // column on a wide screen.
       wide: true,
+      // Drawn right up to the page's top, under the frosted bar: the pile
+      // fills the band behind it, the host's ticket sits below it.
+      underHeader: true,
       // Drawn, no photo, a poster: the Title's lines but the caption, the
       // details line along the main part's foot.
       shows: ["details"],

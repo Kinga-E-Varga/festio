@@ -60,6 +60,7 @@ export const section: SectionDefinition = {
       id: "4",
       name: { en: "Full card", ro: "Card întreg", hu: "Teljes kártya" },
       // The heading but its italic line, then the card's own fields.
+      bare: true,
       shows: [
         ...HEADING_SHOWS.filter((id) => id !== "headingItalic"),
         "icon",
@@ -75,6 +76,7 @@ export const section: SectionDefinition = {
       },
       // Full card on the accent; always on the page's surface, whatever its turn.
       ground: "surface",
+      bare: true,
       shows: [
         ...HEADING_SHOWS.filter((id) => id !== "headingItalic"),
         "icon",

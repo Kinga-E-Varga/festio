@@ -4,6 +4,7 @@ import { isOn, longDate, text } from "@/modular/content";
 import { Mark, markParts } from "@/modular/Mark";
 import {
   AMPERSAND_SIZE,
+  BELOW_BAR,
   EYEBROW,
   HEADING,
   POSTER_DATE,
@@ -48,8 +49,9 @@ export function Variant({ values, related, basics, language }: VariantProps) {
      * The hero's whole spare height at every width, and no gap above past
      * 1440px: there is no Title below to make room for, and no photo to
      * stop at the column. The accent runs edge to edge (the variant's
-     * `band`) and so do the stars (`wide`); the glass and the words stay in
-     * a column of their own. Never shorter than a phone's 440px. `data-cover` for the envelope's strip.
+     * `band`), up to the page's top behind the header's bar, and so do the
+     * stars (`wide`); the glass and the words stay in
+     * a column of their own, clear of the bar. Never shorter than a phone's 440px. `data-cover` for the envelope's strip.
      */
     <div
       ref={cover}
@@ -64,8 +66,16 @@ export function Variant({ values, related, basics, language }: VariantProps) {
        * Sized by the column, so the drawing and the names follow its height and
        * width. Wider than the page's column: up to 1800px, where the names
        * reach the Title's 80px beside the glass (`POSTER_NAMES`).
+       *
+       * The cover runs up to the page's top under the header's frosted bar
+       * (`underHeader`), where its accent band and the stars carry on; the
+       * glass and the words start from the bar's foot (`BELOW_BAR`), so
+       * they stand and size as they would with no bar over them — the band
+       * behind it reads as a spacer in the cover's own colour.
        */}
-      <div className="absolute inset-y-0 left-1/2 flex w-full max-w-[1800px] -translate-x-1/2 flex-col [container-type:size] [--glass-h:min(84cqh,55cqw,900px)] @3xl:grid @3xl:grid-cols-[46%_1fr] @3xl:gap-x-[max(16px,calc(11.85%_-_105px))] @3xl:items-center">
+      <div
+        className={`absolute bottom-0 left-1/2 flex w-full max-w-[1800px] -translate-x-1/2 flex-col [container-type:size] ${BELOW_BAR} [--glass-h:min(84cqh,55cqw,900px)] @3xl:grid @3xl:grid-cols-[46%_1fr] @3xl:gap-x-[max(16px,calc(11.85%_-_105px))] @3xl:items-center`}
+      >
         <CoverStars />
         {/* From `@3xl` the glass at its column's right, by the gap. */}
         <div className="relative min-h-0 flex-1 @3xl:h-full">

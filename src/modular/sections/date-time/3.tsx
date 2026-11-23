@@ -1,18 +1,18 @@
 import { daysAround, monthName, weekday, yearOf } from "@/modular/content";
-import { otherGround } from "@/modular/ground";
 import { SectionHeading } from "@/modular/SectionHeading";
 import {
   BAND_LINE,
   CAPS,
+  CARD_FILL,
   CORNER,
   DISPLAY,
-  GROUND,
+  GROUND_FILL,
   MUTED,
   PAD,
   SECTION_GROUND,
   STACK,
 } from "@/modular/styles";
-import type { SectionGround, VariantProps } from "@/types/modular";
+import type { VariantProps } from "@/types/modular";
 
 /** The weekday on the day's accent strip. */
 const STRIP =
@@ -27,25 +27,29 @@ const DAY_PAGE = "w-75 max-w-full @min-[1300px]:w-85";
 const DAY_NUMBER = "text-[94px] @min-[1300px]:text-[128px]";
 const SIDE_PAGE = "w-27.5 @min-[1300px]:w-42.5";
 
-/** Every page's frame, on the other surface. */
+/**
+ * Every page's frame; filled as the full cards are (`CARD_FILL`): the plain
+ * surface once a pattern is on, the second surface without one. The section
+ * draws no ground of its own (`bare`), so the page's surface is behind it.
+ */
 const PAGE = `${CORNER} flex-none overflow-hidden border-1 border-[var(--m-line)] text-center`;
 
 /*
  * The days beside it, by their distance: the nearest from `@3xl`, the
- * farther from `@5xl`, each fainter than the one nearer the day. None while
- * a pattern is on: faded, they would let it show through.
+ * farther from `@5xl` (`at`), each fainter than the one nearer the day
+ * (`fade`).
  */
 const NEIGHBOUR = {
-  1: "hidden opacity-60 @3xl:block in-data-pattern:hidden!",
-  2: "hidden opacity-35 @5xl:block in-data-pattern:hidden!",
+  1: { at: "hidden @3xl:block", fade: "opacity-60" },
+  2: { at: "hidden @5xl:block", fade: "opacity-35" },
 };
 
 /**
  * The event's day as a tear-off calendar page in the middle — its weekday
  * on an accent strip, the day large, the month and year under it — with
  * the two days before and after as smaller pages fading out beside it.
- * Only the eyebrow over it, no other heading part. A phone, or a pattern,
- * shows the day alone.
+ * Only the eyebrow over it, no other heading part. A phone shows the day
+ * alone.
  */
 export function Variant({ values, basics, language, ground }: VariantProps) {
   const days = daysAround(basics.date, language, 2);
@@ -59,7 +63,7 @@ export function Variant({ values, basics, language, ground }: VariantProps) {
             <time
               key={day.offset}
               dateTime={basics.date}
-              className={`${PAGE} ${DAY_PAGE} ${GROUND[otherGround(ground)]}`}
+              className={`${PAGE} ${DAY_PAGE} ${CARD_FILL}`}
             >
               <span
                 className={`${STRIP} block bg-[var(--m-accent)] py-3 text-[color:var(--m-accent-ink)]`}
@@ -78,8 +82,7 @@ export function Variant({ values, basics, language, ground }: VariantProps) {
               key={day.offset}
               weekday={day.weekday}
               date={day.date}
-              ground={ground}
-              className={NEIGHBOUR[Math.abs(day.offset) as 1 | 2]}
+              {...NEIGHBOUR[Math.abs(day.offset) as 1 | 2]}
             />
           ),
         )}
@@ -88,29 +91,36 @@ export function Variant({ values, basics, language, ground }: VariantProps) {
   );
 }
 
-/** A day beside the event's: its short weekday on a plain strip, its number muted. */
+/**
+ * A day beside the event's: its short weekday on a plain strip, its number
+ * muted. The page is faded (`fade`), which fades its fill too, so the
+ * surface is painted behind it: the section draws no ground of its own
+ * (`bare`), and the page's pattern must not show through the day.
+ */
 function SmallPage({
   weekday,
   date,
-  ground,
-  className,
+  at,
+  fade,
 }: {
   weekday: string;
   date: number;
-  ground: SectionGround;
-  className: string;
+  at: string;
+  fade: string;
 }) {
   return (
     <div
       aria-hidden="true"
-      className={`${PAGE} ${SIDE_PAGE} ${GROUND[otherGround(ground)]} ${className}`}
+      className={`${CORNER} ${SIDE_PAGE} flex-none ${GROUND_FILL.surface} ${at}`}
     >
-      <span
-        className={`${CAPS} ${MUTED} block border-b-1 border-[var(--m-line)] py-2 font-medium`}
-      >
-        {weekday}
-      </span>
-      <span className={`${BAND_LINE} ${MUTED} block py-4`}>{date}</span>
+      <div className={`${PAGE} w-full ${CARD_FILL} ${fade}`}>
+        <span
+          className={`${CAPS} ${MUTED} block border-b-1 border-[var(--m-line)] py-2 font-medium`}
+        >
+          {weekday}
+        </span>
+        <span className={`${BAND_LINE} ${MUTED} block py-4`}>{date}</span>
+      </div>
     </div>
   );
 }

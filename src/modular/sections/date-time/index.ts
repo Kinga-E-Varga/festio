@@ -54,16 +54,18 @@ export const section: SectionDefinition = {
         hu: "Matrica egyszerű",
       },
       // The date alone, as the title's stickers, in the ink.
+      bare: true,
       shows: ["eventDate", "dateFormat"],
     },
     {
       id: "9",
       name: {
-        en: "Colourful sticker",
+        en: "Sticker colourful",
         ro: "Autocolant colorat",
-        hu: "Színes matrica",
+        hu: "Matrica színes",
       },
       // The date alone, as the title's stickers, in the accent.
+      bare: true,
       shows: ["eventDate", "dateFormat"],
     },
     {
@@ -87,6 +89,7 @@ export const section: SectionDefinition = {
         ro: "Calendar",
         hu: "Naptár",
       },
+      bare: true,
       shows: ["eventDate", "eyebrow"],
     },
     {

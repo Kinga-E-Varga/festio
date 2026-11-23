@@ -6,6 +6,10 @@
 - **Be concise — few words, not dense words.** Don't compress to the point where it has to
   be read twice. An extra sentence is fine if it reads easier.
 - Explain non-obvious decisions briefly.
+- **A scope carries forward.** Once the user sets one for a run of changes ("on the dark
+  palette we need to fix the cards"), every short follow-up ("use surface", "make it
+  accent") applies inside that scope alone, even when they don't restate it. If a request
+  reads oddly within it, ask rather than widen it
 - Ask before large refactors or architectural changes
 - Don't add features not in the project spec
 - Never delete files without clarification
@@ -43,9 +47,37 @@ it only when the user asks.
 
 ## Seeing a change
 
-Before saying a layout or visual fix works, look at it with `npm run look` (the `look`
-skill, `context/dev-tools/look.md`) and measure; never guess at a screenshot you can't see.
-Measure first; take a screenshot only to find what is wrong, or when asked to see it.
+**Don't look by default.** Make the change, check it compiles, and say what you changed —
+the user checks it in the browser. Never look to confirm a change you believe is right,
+and never say a visual change "works": say what you changed and leave the verdict to them.
+
+Use `npm run look` (the `look` skill, `context/dev-tools/look.md`) only when it is the
+only way forward:
+
+- The user asks to see it, or asks what something looks like now.
+- A reported visual bug can't be placed from the code — then look **to find it**, before
+  changing anything, not after.
+- A value can only be settled by a number (does it clear the bar, is it cut off at the
+  foot). Then `--measure`, which is text and cheap, not `--shot`.
+
+A screenshot is the last resort: it costs a cold browser start and a large image in
+context. One run takes several widths, so ask for all of them at once, and never take the
+same shot twice in a row to check a tweak.
+
+Never guess at a screenshot you can't see.
+
+**One timeout is the end of it.** When `npm run look` fails with a TimeoutError, stop
+after that first failure: say what is done and what is unverified, and ask whether to try
+again or let the user check in the browser. Never retry with variations.
+
+## Checking a change
+
+**Small tweaks are not checked with the full set.** For a rename, a colour, a style
+option or any other follow-up tweak, check the change itself and nothing more: `tsc` if
+types changed, the browser (the user's, see above) for the look of it. Don't rerun lint,
+`npm test`, `npm run build`, `npm run test:app` or `npm run cost` after each one — the
+full set runs once, at `/feature complete`, before the commit. Say in a line what was
+checked.
 
 ## Reading the Next.js docs
 

@@ -26,6 +26,24 @@ export function bandOf(definition: SectionDefinition, variant: string) {
   return definition.variants.find(({ id }) => id === variant)?.band;
 }
 
+/** A variant's `bare`: the page paints no ground behind it, the variant draws its own. */
+export function bareOf(definition: SectionDefinition, variant: string) {
+  return definition.variants.find(({ id }) => id === variant)?.bare === true;
+}
+
+/**
+ * Whether the page paints nothing behind each section, in page order: a
+ * `bare` variant (a full card or a sticker, which draws whatever ground it
+ * needs itself), an `own` one with no band (a cover, which draws its own),
+ * and a `joined` one after either — it takes the ground of the section
+ * right before, and that is nothing. From `walkGrounds`.
+ */
+export function bareGrounds(
+  sections: { definition: SectionDefinition; variant: string }[],
+): boolean[] {
+  return walkGrounds(sections).map(({ bare }) => bare);
+}
+
 /** An `own` section's ground: its band, when that is one of the grounds; else the page's surface. */
 function ownGround(
   definition: SectionDefinition,
@@ -44,12 +62,28 @@ function ownGround(
  * (an `own` one's band) and the turns carry on from it; a `surface` one is
  * always on the `surface`, and the next one takes the other. An `own` section's
  * value only reaches a `joined` one after it; the page paints its band.
+ * From `walkGrounds`.
  */
 export function sectionGrounds(
   sections: { definition: SectionDefinition; variant: string }[],
 ): SectionGround[] {
+  return walkGrounds(sections).map(({ ground }) => ground);
+}
+
+/**
+ * The walk both read: each section's ground and whether the page paints it,
+ * in page order. One pass, so what a `joined` section takes from the
+ * section right before it — its ground, and whether that one was painted —
+ * is written here once and can't drift apart.
+ */
+function walkGrounds(
+  sections: { definition: SectionDefinition; variant: string }[],
+): { ground: SectionGround; bare: boolean }[] {
   let turn: Ground | null = null;
-  let before: SectionGround = "surface";
+  let before: { ground: SectionGround; bare: boolean } = {
+    ground: "surface",
+    bare: false,
+  };
   return sections.map(({ definition, variant }) => {
     const rule = groundRule(definition, variant);
     let ground: SectionGround;
@@ -57,8 +91,8 @@ export function sectionGrounds(
       turn = null;
       ground = rule === "accent" ? "accent" : ownGround(definition, variant);
     } else if (rule === "joined") {
-      ground = before;
-      turn = before === "accent" ? null : before;
+      ground = before.ground;
+      turn = ground === "accent" ? null : ground;
     } else if (rule === "surface") {
       turn = "surface";
       ground = turn;
@@ -66,7 +100,11 @@ export function sectionGrounds(
       turn = turn ? otherGround(turn) : "surface";
       ground = turn;
     }
-    before = ground;
-    return ground;
+    const bare =
+      bareOf(definition, variant) ||
+      (rule === "own" && !bandOf(definition, variant)) ||
+      (rule === "joined" && before.bare);
+    before = { ground, bare };
+    return before;
   });
 }

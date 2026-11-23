@@ -68,6 +68,7 @@ export const section: SectionDefinition = {
       },
       // Simple joined as the Text box's stickers, no eyebrow.
       ground: "joined",
+      bare: true,
       shows: [],
     },
     {

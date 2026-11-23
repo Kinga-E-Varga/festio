@@ -130,6 +130,7 @@ export const section: SectionDefinition = {
       id: "8",
       name: { en: "Full card", ro: "Card întreg", hu: "Teljes kártya" },
       // Simple's fields: every heading field but the italic heading.
+      bare: true,
       shows: [
         ...HEADING_SHOWS.filter((id) => id !== "headingItalic"),
         "courses.label",
@@ -146,6 +147,7 @@ export const section: SectionDefinition = {
       // Full card on the accent, Simple's short line under the heading;
       // always on the page's surface, whatever its turn.
       ground: "surface",
+      bare: true,
       shows: [
         ...HEADING_SHOWS.filter((id) => id !== "headingItalic"),
         "courses.label",

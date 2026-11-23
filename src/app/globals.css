@@ -39,6 +39,15 @@
   --spacing-side: 220px;
   --spacing-topbar: 56px;
   /*
+   * A modular invitation's header bar (`HeaderBar`), and the step it takes
+   * on a wide screen. Lives here because everything placed against the bar
+   * reads it: the hero's height, a section's scroll offset, the covers that
+   * run up under the bar and keep their own content clear of it
+   * (`UNDER_HEADER`, `BELOW_BAR`), and the bar's own skeleton.
+   */
+  --spacing-bar: 56px;
+  --spacing-bar-lg: 64px;
+  /*
    * The chrome's top padding, so the logo, the strip's account circle, the
    * side panel's title and the event bar stay level. A step more from
    * `wide` (in `@layer base`).

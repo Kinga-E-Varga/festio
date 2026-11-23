@@ -102,8 +102,15 @@ export function Variant({ values, related, basics, language }: VariantProps) {
       data-cover
       className="relative flex min-h-110 grow overflow-hidden"
     >
+      {/*
+       * The cover runs up to the page's top under the header's frosted bar
+       * (`underHeader`), so every part of it starts the bar's own height
+       * down (`--spacing-bar`): the bunting hangs clear of the bar,
+       * and the band, the cake and the ribbon stand where they would with
+       * no bar over them.
+       */}
       <div
-        className={`absolute inset-0 flex flex-col [container-type:size] ${BUNTING_HEIGHT}`}
+        className={`absolute inset-0 flex flex-col pt-bar [container-type:size] @5xl:pt-bar-lg ${BUNTING_HEIGHT}`}
       >
         <Bunting />
         {/* The band's top at 22% of the cover's height, at least 16px under the bunting. */}

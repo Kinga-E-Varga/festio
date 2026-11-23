@@ -3,13 +3,13 @@ import type { VariantProps } from "@/types/modular";
 import { CardText } from "./CardText";
 import { hasText } from "./TextBoxWords";
 
-/** Card (`3`) in the band's own colour: a full card. */
+/** Card (`3`) in the fill every full card shares (`CARD_FILL`): a full card. */
 export function Variant({ values, ground }: VariantProps) {
   if (!hasText(values)) return null;
 
   return (
     <div className={`${SECTION_GROUND[ground]} ${PAD}`}>
-      <CardText values={values} ground={ground} card={ground} />
+      <CardText values={values} ground={ground} full />
     </div>
   );
 }

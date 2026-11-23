@@ -51,6 +51,20 @@
   - **Markup that repeats** (a box's head, a tag): a small shared component
 - Never give a second name to something that already has one: a constant that is only one existing utility (`LABEL = "label-caps"`) hides the real class from search and autocomplete. Use the utility
 - A bundle lives in the `styles.ts` of the folder that uses it. Used outside that folder, it moves up to the shared one (`src/components/dashboard/styles.ts`); never import another feature's local `styles.ts`
+- **An example element means its shared style.** When the user points at one element to
+  restyle it ("make these 12px"), they mean the style it comes from: trace the class to
+  its constant or utility, change that so every use follows, and name the other places it
+  reaches
+- **A size with breakpoint steps is the user's call.** When they ask for a new size
+  ("make this 14px") and the class has steps (`text-[13px] @3xl:text-[16px]`), list the
+  current ones, phone to widest, and ask which to change — all widths or only the largest
+  — before editing
+- **A layout adjustment changes the rule, not one value.** For "a little lower",
+  "smaller on a phone", "bigger shadow", find the rule the value comes from — what it is
+  measured against, what depends on it — and redo that, so the result holds at every
+  size; keep each value in the one place the others read, and say which rule changed.
+  When the user asks for something simple ("we don't need a complicated rule"), plain
+  values beat clever formulas
 - Dashboard text scale: page 28 serif / card 17 serif / row 14 / field 13.5 / line 12.5 / item 12.5 semibold / hint 11.5 / caps 10, no 11px
 - Line height doesn't count when matching text styles and stays with each use. It goes into a class only when many places use it for one reason (like `hint-text`'s 1.45)
 - Invitations are excluded: when looking for matching text styles, skip `src/components/invitation/`, `src/modular/` and `src/templates/` entirely — they have their own fonts and palettes

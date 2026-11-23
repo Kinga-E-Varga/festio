@@ -114,6 +114,7 @@ export const section: SectionDefinition = {
       id: "7",
       name: { en: "Full card", ro: "Card întreg", hu: "Teljes kártya" },
       // Cards' (`2`) content, the groups side by side in a full card.
+      bare: true,
       shows: [
         ...HEADING_SHOWS.filter((id) => id !== "headingItalic"),
         ...iconShows("groups"),
@@ -130,6 +131,7 @@ export const section: SectionDefinition = {
       // Full card on the accent, no lines, every disc in the
       // secondary; always on the page's surface, whatever its turn.
       ground: "surface",
+      bare: true,
       shows: [
         ...HEADING_SHOWS.filter((id) => id !== "headingItalic"),
         ...iconShows("groups"),

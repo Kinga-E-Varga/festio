@@ -205,6 +205,13 @@ export const GROUND_FILL: Record<SectionGround, string> = {
   accent: "bg-[var(--m-page-accent)]",
 };
 
+/**
+ * A full card's fill: `--m-card`, which the page sets by whether a pattern
+ * is on (`ModularInvitation`), so every full card matches and none of them
+ * takes its turn. Not the accent ones: those are on the accent.
+ */
+export const CARD_FILL = "bg-(--m-card)";
+
 /** A card's background, by its ground, with the roles that read on it. */
 export const GROUND: Record<SectionGround, string> = {
   surface: `${GROUND_FILL.surface} ${PAGE_ROLES}`,
@@ -224,6 +231,21 @@ export const SECTION_GROUND: Record<SectionGround, string> = {
 };
 
 /* ── Section layout ─────────────────────────────────────────────────── */
+
+/**
+ * An `underHeader` cover: pulled up the bar's own height (`HeaderBar`,
+ * `--spacing-bar`), so it starts at the page's very top, under the
+ * frosted bar, and still reaches the screen's foot. Every other section
+ * starts below the bar, as the page's flow puts it.
+ */
+export const UNDER_HEADER = "-mt-bar @5xl:-mt-bar-lg";
+
+/**
+ * The other side of it: a part of such a cover placed from the bar's foot
+ * rather than the page's top, so it stands and sizes as it would with no
+ * bar over it. Champagne's column and the Ticket's own stage.
+ */
+export const BELOW_BAR = "top-bar @5xl:top-bar-lg";
 
 /** A section's side padding: 24px on a phone, 64px from `@3xl`, 100px from `@5xl`. */
 export const PAD_X = "px-6 @3xl:px-16 @5xl:px-25";
