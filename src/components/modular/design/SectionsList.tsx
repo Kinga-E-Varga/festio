@@ -6,15 +6,7 @@ import { Icon } from "@/components/icons";
 import { Switch } from "@/components/invitation/PanelSwitch";
 import { localized, type Language } from "@/lib/language";
 import { customNoteSample, sectionValues } from "@/modular/samples";
-import {
-  NOTES_ID,
-  TITLE_ID,
-  isRequired,
-  posterOn,
-  setSectionOn,
-  setVariant,
-  showNotes,
-} from "@/modular/state";
+import { NOTES_ID, setSectionOn, setVariant, showNotes } from "@/modular/state";
 import type {
   ModularLibrary,
   ModularState,
@@ -70,7 +62,6 @@ export function SectionsList({
   onStylePicked,
 }: SectionsListProps) {
   const t = useTranslations("DesignTab");
-  const poster = posterOn(state, library);
 
   return (
     <div
@@ -84,8 +75,6 @@ export function SectionsList({
           const definition = library.sections.find(
             ({ id }) => id === section.section,
           );
-          /* Under a poster cover the Title is the cover's, edited there. */
-          if (poster && section.section === TITLE_ID) return null;
           return definition ? (
             <SectionRow
               key={section.section}
@@ -96,7 +85,6 @@ export function SectionsList({
                 ]
               }
               section={section}
-              poster={poster}
               state={state}
               language={language}
               onChange={onChange}
@@ -115,7 +103,6 @@ function SectionRow({
   definition,
   samples,
   section,
-  poster,
   state,
   language,
   onChange,
@@ -127,8 +114,6 @@ function SectionRow({
   /** The current template's own samples for the section, if any. */
   samples?: SectionSamples;
   section: SectionState;
-  /** A poster cover is on: Date is optional then. */
-  poster: boolean;
   stylesOpen: boolean;
   onStyles: (open: boolean) => void;
 } & Omit<
@@ -140,8 +125,8 @@ function SectionRow({
   const name = localized(definition.name, host);
   const switchId = `design-section-${definition.id}`;
   const stylesId = `design-variants-${definition.id}`;
-  const required = isRequired(definition, poster);
-  /* A required section is on even if it was switched off under a poster. */
+  const required = definition.required;
+  /* A required section is on whatever its switch says. */
   const on = section.on || required;
 
   function turn(on: boolean) {

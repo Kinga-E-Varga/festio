@@ -1,28 +1,12 @@
-import { formatInvitationDate } from "@/lib/invitation";
-import { text } from "@/modular/content";
-import { BAND_LINE, BODY, PAD, SECTION_GROUND } from "@/modular/styles";
+import { PAD, SECTION_GROUND } from "@/modular/styles";
 import type { VariantProps } from "@/types/modular";
+import { BandDate } from "./BandDate";
 
-/**
- * The date large on an accent band, set like the Plain title's names but
- * smaller, in the format the host picked, and the heading's note under
- * it. No heading.
- */
+/** The date and its note (`BandDate`) on an accent band. */
 export function Variant({ values, basics, language, ground }: VariantProps) {
-  const note = text(values, "note");
-
   return (
-    <div
-      className={`flex flex-col items-center ${SECTION_GROUND[ground]} text-center ${PAD}`}
-    >
-      <time dateTime={basics.date} className={`${BAND_LINE} max-w-4xl`}>
-        {formatInvitationDate(
-          basics.date,
-          text(values, "dateFormat"),
-          language,
-        )}
-      </time>
-      {note ? <p className={`${BODY} mt-6 max-w-xl`}>{note}</p> : null}
+    <div className={`${SECTION_GROUND[ground]} ${PAD}`}>
+      <BandDate values={values} basics={basics} language={language} />
     </div>
   );
 }

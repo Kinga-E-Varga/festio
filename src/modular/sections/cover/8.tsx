@@ -9,7 +9,7 @@ import {
 } from "@/modular/styles";
 import type { VariantProps } from "@/types/modular";
 import type { ReactNode } from "react";
-import { CARD_INKS, CARD_STAGE, posterWords } from "./card";
+import { CARD_INKS, CARD_STAGE, coverWords } from "./card";
 
 /*
  * A ticket's sizes, read by its masks and its padding: small bites along
@@ -190,7 +190,7 @@ const BAND = `${LINE} bg-(--m-ink) px-2 py-[0.5em] text-center text-[color:var(-
  */
 const NAMES = `${HEADING} text-center text-[min(130px,17cqw)] leading-[1.05] italic [@container(aspect-ratio>1)]:text-[min(130px,8cqw)]`;
 
-/* The Title's second line under the names, italic, muted, about a third of their size, growing with them. */
+/* The names' second line under the names, italic, muted, about a third of their size, growing with them. */
 const SECOND = `${HEADING} ${MUTED} mt-[0.3em] text-center text-[clamp(16px,5cqw,32px)] leading-[1.3] italic [@container(aspect-ratio>1)]:text-[clamp(16px,2.4cqw,36px)]`;
 
 /*
@@ -287,21 +287,18 @@ function PileTicket({ place }: { place: string }) {
 }
 
 /**
- * A poster cover, no photo: the host's admission ticket just bought, lying
+ * A drawn cover, no photo: the host's admission ticket just bought, lying
  * on a pile of others, on the page's own ground across the
  * whole cover. The ticket in the secondary — scalloped ends, two round
  * notches and a row of holes at the tear line. On its main part a box in
- * the surface, a fine frame inside it: the Title's eyebrow on a band in the
- * ink, the names large, the Title's second line under them, the host's
+ * the surface, a fine frame inside it: the small line (`eyebrow`) on a band in the
+ * ink, the names large, the names' second line under them, the host's
  * free line along the foot, its lines joined by dots. On the stub, in a framed box, the date in numbers filling
  * it. Upright the stub at the bottom; landscape on the right. Under it,
  * tickets turned over.
  */
-export function Variant({ values, related, basics, language }: VariantProps) {
-  const { eyebrow, names, first, second } = posterWords(
-    related.title ?? {},
-    AMPERSAND_INK,
-  );
+export function Variant({ values, basics, language }: VariantProps) {
+  const { eyebrow, names, first, second } = coverWords(values, AMPERSAND_INK);
   /* The free line on one line: the host's line breaks become dots. */
   const details = text(values, "details")
     .split("\n")

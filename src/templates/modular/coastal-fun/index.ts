@@ -16,8 +16,7 @@ export const template: ModularTemplate = {
   corners: "round",
   sections: [
     { section: "header", variant: "3" }, // plain
-    { section: "cover", variant: "2" }, // full-circle
-    { section: "title", variant: "2" }, // plain
+    { section: "cover", variant: "11" }, // centred
     { section: "date-time", variant: "2" }, // plain
     { section: "countdown", variant: "2" }, // cards
     { section: "location", variant: "2" }, // split
@@ -32,23 +31,6 @@ export const template: ModularTemplate = {
   ],
   values: {
     header: { markStart: "Maddie", markEnd: "Claude" },
-    title: {
-      secondLine: {
-        en: "are tying the knot",
-        ro: "își unesc destinele",
-        hu: "összeházasodnak",
-      },
-      eyebrow: {
-        en: "We’re getting married",
-        ro: "Ne căsătorim",
-        hu: "Összeházasodunk",
-      },
-      caption: {
-        en: "Come for the vows, stay for the dancing. A weekend of food, music and terrible dance moves on the cliffs above Cassis.",
-        ro: "Veniți la jurăminte, rămâneți la dans. Un weekend cu mâncare, muzică și dans stângaci pe falezele de deasupra Cassis-ului.",
-        hu: "Gyere a fogadalomra, maradj a táncra. Egy hétvége étellel, zenével és borzasztó tánclépésekkel a Cassis fölötti sziklákon.",
-      },
-    },
     countdown: {
       eyebrow: {
         en: "The big day is in",
@@ -215,8 +197,17 @@ export const template: ModularTemplate = {
       ],
     },
     cover: {
-      photo: "/modular/samples/coastal-fun.jpg",
-      kicker: { en: "You're invited", ro: "Te invităm", hu: "Meghívunk" },
+      photo: "/modular/samples/full-cover-dark.jpg",
+      secondLine: {
+        en: "are tying the knot",
+        ro: "își unesc destinele",
+        hu: "összeházasodnak",
+      },
+      eyebrow: {
+        en: "We’re getting married",
+        ro: "Ne căsătorim",
+        hu: "Összeházasodunk",
+      },
     },
   },
 };

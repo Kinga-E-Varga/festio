@@ -10,7 +10,7 @@ import {
   CARD_STAGE,
   DRAWING_FIT,
   drawingRoom,
-  posterWords,
+  coverWords,
 } from "./card";
 import { CardFrame, type LineInset } from "./CardFrame";
 
@@ -64,18 +64,18 @@ const SMALL =
 const RIBBON = `${HEADING} bg-(--m-accent) px-[1.4em] py-[0.3em] text-[min(24px,6.5cqw)] leading-[1.2] text-[color:var(--m-accent-ink)] dark-palette:text-[color:var(--card-paper)] [clip-path:polygon(0_0,100%_0,calc(100%-0.6em)_50%,100%_100%,0_100%,0.6em_50%)] [@container(aspect-ratio>1)]:text-[min(52px,max(2.9cqw,5.4cqh))]`;
 
 /**
- * A poster cover, no photo: a playbill — a card with scooped corners, a
+ * A drawn cover, no photo: a playbill — a card with scooped corners, a
  * thin line on its edge and a row of dots inside it — on the page's own ground.
- * The Title's eyebrow over the cover's highlight (`kicker`) as a big heading, the host's
- * drawing (`drawing`), the names on a ribbon (`related.title`), then the date
+ * The small line (`eyebrow`) over the cover's highlight (`kicker`) as a big heading, the host's
+ * drawing (`drawing`), the names on a ribbon, then the date
  * and the host's free line between two double rules. Upright one column;
  * landscape the heading across the top, under it drawing | names and date;
  * on a card wide enough, heading | drawing | names and date in one row.
  */
-export function Variant({ values, related, basics, language }: VariantProps) {
+export function Variant({ values, basics, language }: VariantProps) {
   /* One row only for a tall or square drawing: a wide one keeps the heading across the top, and the full width under it. */
   const row = drawingOf(text(values, "drawing")).shape !== "wide";
-  const { eyebrow, names, first } = posterWords(related.title ?? {}, "");
+  const { eyebrow, names, first } = coverWords(values, "");
   const heading = text(values, "kicker");
   const details = text(values, "details");
   /* The event's own date, in the invitation's language. */

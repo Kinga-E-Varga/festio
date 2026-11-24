@@ -7,7 +7,7 @@ import type { ReactNode } from "react";
 /*
  * The Card covers' shared parts: Stamp, Playbill and Ticket. Each is a card
  * in the second surface on the page's own ground, so the host's pattern
- * shows round it, the host's illustration and the Title's words inside.
+ * shows round it, the host's illustration and the names and lines inside.
  */
 
 /*
@@ -102,8 +102,8 @@ export const BITES_Y =
 export const BITES_X =
   "py-(--bite) [mask:radial-gradient(circle_var(--bite)_at_0_50%,#0000_96%,#000)_0_0/51%_var(--bite-step)_no-repeat_round_content-box,radial-gradient(circle_var(--bite)_at_100%_50%,#0000_96%,#000)_100%_0/51%_var(--bite-step)_no-repeat_round_content-box,linear-gradient(#000_0_0)_top/100%_calc(var(--bite)+1px)_no-repeat_border-box,linear-gradient(#000_0_0)_bottom/100%_calc(var(--bite)+1px)_no-repeat_border-box]";
 
-/** The Title's lines a poster card draws: eyebrow, then the names or the first line, then the second line. */
-export function posterWords(
+/** The lines a drawn cover shows: the small line, then the names or the first line, then the second line. */
+export function coverWords(
   title: SectionValues,
   ampersand: string,
 ): { eyebrow: string; names: ReactNode[]; first: string; second: string } {

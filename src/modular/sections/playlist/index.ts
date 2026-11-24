@@ -31,14 +31,19 @@ export const section: SectionDefinition = {
     },
     {
       id: "3",
-      name: {
-        en: "Card",
-        ro: "Card",
-        hu: "Kártya",
-      },
+      name: { en: "Card soft", ro: "Card discret", hu: "Kártya, lágy" },
       // Record on the page (`2`), its words centred in a full card, the record lying over its left side.
       bare: true,
       shows: SHOWS,
+      card: "surface",
+    },
+    {
+      id: "5",
+      name: { en: "Card hard", ro: "Card marcat", hu: "Kártya, erős" },
+      // Record on the page (`2`), its words centred in a full card, the record lying over its left side.
+      bare: true,
+      shows: SHOWS,
+      card: "surface-alt",
     },
     {
       id: "4",

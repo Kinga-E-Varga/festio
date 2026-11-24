@@ -184,12 +184,6 @@ export const DATE_PARTS: Intl.DateTimeFormatOptions = {
   year: "numeric",
 };
 
-/** "5 Sept 2026": the same date with its month cut short, where room is tight. */
-export const SHORT_DATE_PARTS: Intl.DateTimeFormatOptions = {
-  ...DATE_PARTS,
-  month: "short",
-};
-
 /** "5 Sept": the day and short month alone, for the event picker. */
 export const PICKER_DATE_PARTS: Intl.DateTimeFormatOptions = {
   day: "numeric",

@@ -5,7 +5,7 @@ import { BAND_LINE, PAD, SECTION_GROUND, STACK } from "@/modular/styles";
 import type { VariantProps } from "@/types/modular";
 
 /**
- * Heading & date box without the box: the section's heading centred, the
+ * The section's heading centred, the
  * eyebrow over it and the note under it, and the date centred under them,
  * set as the band's date (`BAND_LINE`) in the accent, in the format the host
  * picked.

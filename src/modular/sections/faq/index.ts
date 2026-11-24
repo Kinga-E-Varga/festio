@@ -69,7 +69,11 @@ export const section: SectionDefinition = {
     },
     {
       id: "6",
-      name: { en: "Full card", ro: "Card întreg", hu: "Teljes kártya" },
+      name: {
+        en: "Full card soft",
+        ro: "Card întreg discret",
+        hu: "Teljes kártya, lágy",
+      },
       // Accommodation's Full card: no italic second line under the heading.
       bare: true,
       shows: [
@@ -78,6 +82,24 @@ export const section: SectionDefinition = {
         "items.question",
         "items.answer",
       ],
+      card: "surface",
+    },
+    {
+      id: "9",
+      name: {
+        en: "Full card hard",
+        ro: "Card întreg marcat",
+        hu: "Teljes kártya, erős",
+      },
+      // Accommodation's Full card: no italic second line under the heading.
+      bare: true,
+      shows: [
+        ...HEADING_SHOWS.filter((id) => id !== "headingItalic"),
+        "linkLabel",
+        "items.question",
+        "items.answer",
+      ],
+      card: "surface-alt",
     },
     {
       id: "7",

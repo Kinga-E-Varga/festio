@@ -22,9 +22,6 @@ import type {
 /** Helpful notes' permanent id. */
 export const NOTES_ID = "notes";
 
-/** The Title's permanent id: a poster cover takes its place. */
-export const TITLE_ID = "title";
-
 /**
  * A template as a fresh state: its palette, pattern, corners and pair,
  * every library section in order — on when the template lists it or it is
@@ -286,34 +283,20 @@ export function showNotes(
 
 /**
  * The sections that are on, in page order, each with its definition; an id
- * that names nothing is left out, and so is the Title under a poster cover;
- * a required section is on whatever its switch says (`isRequired`).
+ * that names nothing is left out; a required section is on whatever its
+ * switch says.
  */
 export function sectionsOn(
   state: ModularState,
   library: ModularLibrary,
 ): ModularDesign["sections"] {
   const sections: ModularDesign["sections"] = [];
-  const poster = posterOn(state, library);
   for (const { section, variant, on } of state.sections) {
-    if (poster && section === TITLE_ID) continue;
     const definition = library.sections.find(({ id }) => id === section);
-    if (!definition || !(on || isRequired(definition, poster))) continue;
+    if (!definition || !(on || definition.required)) continue;
     sections.push({ definition, variant });
   }
   return sections;
-}
-
-/**
- * Whether the section is always on: required, unless a poster cover is on
- * and the section is optional there (Date). A required one is drawn even
- * if switched off under a poster, the host's off kept for the next one.
- */
-export function isRequired(
-  definition: SectionDefinition,
-  poster: boolean,
-): boolean {
-  return definition.required && !(poster && definition.posterOptional);
 }
 
 /** `variant`'s entry in the section; an id the section does not list reads as its first. */
@@ -322,20 +305,6 @@ export function variantInfo(definition: SectionDefinition, variant: string) {
     definition.variants.find(({ id }) => id === variant) ??
     definition.variants[0]
   );
-}
-
-/**
- * Whether a poster cover is on, drawing the Title's content in its place:
- * the Title is then left off the page and the editor, its values kept.
- */
-export function posterOn(
-  state: ModularState,
-  library: ModularLibrary,
-): boolean {
-  return state.sections.some(({ section, variant, on }) => {
-    const definition = library.sections.find(({ id }) => id === section);
-    return on && !!definition && !!variantInfo(definition, variant).poster;
-  });
 }
 
 /** The state's ids looked up in the library; null when one names nothing. */

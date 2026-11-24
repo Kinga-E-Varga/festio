@@ -137,7 +137,11 @@ export const section: SectionDefinition = {
     },
     {
       id: "7",
-      name: { en: "Full card", ro: "Card întreg", hu: "Teljes kártya" },
+      name: {
+        en: "Full card soft",
+        ro: "Card întreg discret",
+        hu: "Teljes kártya, lágy",
+      },
       // Cards' content, the stays side by side in a full card.
       bare: true,
       shows: [
@@ -148,6 +152,26 @@ export const section: SectionDefinition = {
         "places.note",
         "places.link",
       ],
+      card: "surface",
+    },
+    {
+      id: "11",
+      name: {
+        en: "Full card hard",
+        ro: "Card întreg marcat",
+        hu: "Teljes kártya, erős",
+      },
+      // Cards' content, the stays side by side in a full card.
+      bare: true,
+      shows: [
+        ...HEADING_SHOWS.filter((id) => id !== "headingItalic"),
+        ...iconShows("places"),
+        "places.distance",
+        "places.name",
+        "places.note",
+        "places.link",
+      ],
+      card: "surface-alt",
     },
     {
       id: "10",

@@ -26,6 +26,11 @@ export function bandOf(definition: SectionDefinition, variant: string) {
   return definition.variants.find(({ id }) => id === variant)?.band;
 }
 
+/** A variant's `nextGround`: where the turns restart after an `own` section. */
+function nextGroundOf(definition: SectionDefinition, variant: string) {
+  return definition.variants.find(({ id }) => id === variant)?.nextGround;
+}
+
 /** A variant's `bare`: the page paints no ground behind it, the variant draws its own. */
 export function bareOf(definition: SectionDefinition, variant: string) {
   return definition.variants.find(({ id }) => id === variant)?.bare === true;
@@ -58,7 +63,7 @@ function ownGround(
  * own (`GroundRule`). The surfaces take turns, starting with `surface`, so
  * whatever the host leaves out no two neighbours match. An `own` or
  * `accent` section breaks the turns, and the next one starts again at
- * `surface`; a `joined` one takes the ground of the section right before
+ * `surface`, or at an `own` one's `nextGround`; a `joined` one takes the ground of the section right before
  * (an `own` one's band) and the turns carry on from it; a `surface` one is
  * always on the `surface`, and the next one takes the other. An `own` section's
  * value only reaches a `joined` one after it; the page paints its band.
@@ -88,7 +93,9 @@ function walkGrounds(
     const rule = groundRule(definition, variant);
     let ground: SectionGround;
     if (rule === "own" || rule === "accent") {
-      turn = null;
+      /* The turn before the one the next section takes: the next takes the other. */
+      const next = rule === "own" ? nextGroundOf(definition, variant) : null;
+      turn = next ? otherGround(next) : null;
       ground = rule === "accent" ? "accent" : ownGround(definition, variant);
     } else if (rule === "joined") {
       ground = before.ground;

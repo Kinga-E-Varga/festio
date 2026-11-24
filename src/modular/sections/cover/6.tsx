@@ -21,7 +21,7 @@ import {
   CARD_STAGE,
   DRAWING_FIT,
   drawingRoom,
-  posterWords,
+  coverWords,
 } from "./card";
 
 /*
@@ -69,18 +69,15 @@ const POSTMARK_DATE = `${HEADING} text-center text-[calc(var(--pm)*0.14)] leadin
 const RULE = `h-px w-[6cqw] max-w-10 shrink-0 bg-(--m-secondary) opacity-60 [@container(aspect-ratio>1)]:w-[4cqw]`;
 
 /**
- * A poster cover, no photo: a postage stamp — round perforations bitten out
+ * A drawn cover, no photo: a postage stamp — round perforations bitten out
  * of all four edges, its margin in the accent round a panel in the card's
  * colour, a fine line inside it — on the page's own ground, the host's
- * drawing (`drawing`) and the Title's lines inside (`related.title`), then the
+ * drawing (`drawing`) and the names and their lines inside, then the
  * date between two fine lines and the host's free line. Upright the
  * drawing over the words; landscape the drawing on the left.
  */
-export function Variant({ values, related, basics, language }: VariantProps) {
-  const { eyebrow, names, first, second } = posterWords(
-    related.title ?? {},
-    AMPERSAND,
-  );
+export function Variant({ values, basics, language }: VariantProps) {
+  const { eyebrow, names, first, second } = coverWords(values, AMPERSAND);
   const details = text(values, "details");
   /* The event's own date, in the invitation's language. */
   const date = longDate(basics.date, language);

@@ -7,37 +7,36 @@ import {
   BELOW_BAR,
   EYEBROW,
   HEADING,
-  POSTER_DATE,
+  COVER_DATE,
 } from "@/modular/styles";
 import type { VariantProps } from "@/types/modular";
 import { Coupe, CoverStars } from "./Coupe";
 import { useOutOfView } from "./useOutOfView";
 
 /*
- * The names grow smoothly with the width, never past the Title's 80px:
+ * The names grow smoothly with the width, never past 80px:
  * the whole width on a phone, half of it beside the glass from `@3xl`.
  */
-const POSTER_NAMES = `${HEADING} text-[min(56px,12cqw)] @3xl:text-[min(80px,4.5cqw)] leading-[1.1] tracking-[-0.03em] italic`;
+const COVER_NAMES = `${HEADING} text-[min(56px,12cqw)] @3xl:text-[min(80px,4.5cqw)] leading-[1.1] tracking-[-0.03em] italic`;
 
 const MUTED_ON_ACCENT = "text-[color:var(--m-accent-ink-muted)]";
 
 /**
- * A poster cover, no photo: a drawn champagne coupe on the accent, stars
- * scattered round it, and the Title's lines on it in the Title's place
- * (`related.title`), then the date and the host's free line. On a phone the
+ * A drawn cover, no photo: a drawn champagne coupe on the accent, stars
+ * scattered round it, and its names and lines on it
+ *, then the date and the host's free line. On a phone the
  * glass on top and the words below, the glass giving way when the words
  * need the room; from `@3xl` the glass on the left and the words on the right.
  */
-export function Variant({ values, related, basics, language }: VariantProps) {
-  const title = related.title ?? {};
-  const eyebrow = text(title, "eyebrow");
+export function Variant({ values, basics, language }: VariantProps) {
+  const eyebrow = text(values, "eyebrow");
   /* Use names off: two plain lines in place of the names and their line. */
-  const named = isOn(title, "names");
+  const named = isOn(values, "names");
   const names = named
-    ? markParts(title, "names", `${AMPERSAND_SIZE} ${MUTED_ON_ACCENT}`)
+    ? markParts(values, "names", `${AMPERSAND_SIZE} ${MUTED_ON_ACCENT}`)
     : [];
-  const first = named ? "" : text(title, "firstLine");
-  const second = text(title, named ? "secondLine" : "nextLine");
+  const first = named ? "" : text(values, "firstLine");
+  const second = text(values, named ? "secondLine" : "nextLine");
   const details = text(values, "details");
   /* The event's own date, in the invitation's language. */
   const date = longDate(basics.date, language);
@@ -46,9 +45,8 @@ export function Variant({ values, related, basics, language }: VariantProps) {
 
   return (
     /*
-     * The hero's whole spare height at every width, and no gap above past
-     * 1440px: there is no Title below to make room for, and no photo to
-     * stop at the column. The accent runs edge to edge (the variant's
+     * The hero's whole spare height at every width, and no photo to stop
+     * at the column. The accent runs edge to edge (the variant's
      * `band`), up to the page's top behind the header's bar, and so do the
      * stars (`wide`); the glass and the words stay in
      * a column of their own, clear of the bar. Never shorter than a phone's 440px. `data-cover` for the envelope's strip.
@@ -65,7 +63,7 @@ export function Variant({ values, related, basics, language }: VariantProps) {
       {/*
        * Sized by the column, so the drawing and the names follow its height and
        * width. Wider than the page's column: up to 1800px, where the names
-       * reach the Title's 80px beside the glass (`POSTER_NAMES`).
+       * reach 80px beside the glass (`COVER_NAMES`).
        *
        * The cover runs up to the page's top under the header's frosted bar
        * (`underHeader`), where its accent band and the stars carry on; the
@@ -86,7 +84,7 @@ export function Variant({ values, related, basics, language }: VariantProps) {
             <p className={`${EYEBROW} ${MUTED_ON_ACCENT} mb-3`}>{eyebrow}</p>
           ) : null}
           {names.length > 0 || first || second ? (
-            <h1 className={`${POSTER_NAMES} mb-6`}>
+            <h1 className={`${COVER_NAMES} mb-6`}>
               {names.length > 0 ? (
                 <span className="block">
                   <Mark parts={names} />
@@ -97,7 +95,7 @@ export function Variant({ values, related, basics, language }: VariantProps) {
               {second ? <span className="block">{second}</span> : null}
             </h1>
           ) : null}
-          <p className={POSTER_DATE}>{date}</p>
+          <p className={COVER_DATE}>{date}</p>
           {details ? (
             <p
               className={`${EYEBROW} ${MUTED_ON_ACCENT} mt-3 whitespace-pre-line`}

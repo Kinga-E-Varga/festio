@@ -16,8 +16,7 @@ export const template: ModularTemplate = {
   fontPair: "gelasio-arimo",
   sections: [
     { section: "header", variant: "1" }, // square
-    { section: "cover", variant: "1" }, // full-box
-    { section: "title", variant: "1" }, // colorful
+    { section: "cover", variant: "10" }, // date block
     { section: "date-time", variant: "1" }, // big-day
     { section: "countdown", variant: "1" }, // plain
     { section: "location", variant: "1" }, // cards

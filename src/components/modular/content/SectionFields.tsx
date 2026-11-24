@@ -37,8 +37,8 @@ export interface SectionFieldsProps {
 
 /**
  * A section's fields, as its variant shows them: values the variant leaves
- * out stay in the state, for a variant that shows them. A poster cover
- * shows the Title's before its own. Helpful notes has its own layout.
+ * out stay in the state, for a variant that shows them. Helpful notes has
+ * its own layout.
  */
 export function SectionFields({
   library,
@@ -64,7 +64,6 @@ export function SectionFields({
       />
     );
   }
-  /* A poster cover's card also edits the Title's fields, as the Title's. */
   return contentParts(state, library, definition, variant).map(
     ({ section, shows, fields }) => (
       <FieldList

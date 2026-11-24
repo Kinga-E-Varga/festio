@@ -2,8 +2,8 @@ import { dayOfMonth, monthName, text, yearOf } from "@/modular/content";
 import { H2, NAMES, PAD, TONE_TEXT, SECTION_GROUND } from "@/modular/styles";
 import type { VariantProps } from "@/types/modular";
 
-/** The month and the year either side of the day: italic at the heading's size, in the accent. */
-const SIDE = `${H2} ${TONE_TEXT.accent} italic capitalize`;
+/** The month and the year either side of the day: at the heading's size, in the accent. */
+const SIDE = `${H2} ${TONE_TEXT.accent} capitalize`;
 
 /**
  * The date alone, centred, no heading and no box, in one row: the month,

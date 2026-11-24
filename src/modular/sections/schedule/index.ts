@@ -182,9 +182,9 @@ export const section: SectionDefinition = {
     {
       id: "8",
       name: {
-        en: "Full card alternate",
-        ro: "Card întreg alternant",
-        hu: "Teljes kártya, váltakozó",
+        en: "Full card alternate soft",
+        ro: "Card întreg alternant discret",
+        hu: "Teljes kártya, váltakozó, lágy",
       },
       // Alternate in a full card: every heading field but the italic heading.
       bare: true,
@@ -195,6 +195,25 @@ export const section: SectionDefinition = {
         "days.items.title",
         "days.items.note",
       ],
+      card: "surface",
+    },
+    {
+      id: "14",
+      name: {
+        en: "Full card alternate hard",
+        ro: "Card întreg alternant marcat",
+        hu: "Teljes kártya, váltakozó, erős",
+      },
+      // Alternate in a full card: every heading field but the italic heading.
+      bare: true,
+      shows: [
+        ...HEADING_SHOWS.filter((id) => id !== "headingItalic"),
+        "days.date",
+        "days.items.time",
+        "days.items.title",
+        "days.items.note",
+      ],
+      card: "surface-alt",
     },
     {
       id: "13",
@@ -212,9 +231,9 @@ export const section: SectionDefinition = {
     {
       id: "12",
       name: {
-        en: "Full card timeline",
-        ro: "Card întreg cronologie",
-        hu: "Teljes kártya, idővonal",
+        en: "Full card timeline soft",
+        ro: "Card întreg cronologie discret",
+        hu: "Teljes kártya, idővonal, lágy",
       },
       // Timeline in a full card on its own ground; the note empty to start.
       unsampled: ["note"],
@@ -227,6 +246,27 @@ export const section: SectionDefinition = {
         "days.items.note",
         ...iconShows("days.items"),
       ],
+      card: "surface",
+    },
+    {
+      id: "15",
+      name: {
+        en: "Full card timeline hard",
+        ro: "Card întreg cronologie marcat",
+        hu: "Teljes kártya, idővonal, erős",
+      },
+      // Timeline in a full card on its own ground; the note empty to start.
+      unsampled: ["note"],
+      bare: true,
+      shows: [
+        ...HEADING_SHOWS.filter((id) => id !== "headingItalic"),
+        "days.date",
+        "days.items.time",
+        "days.items.title",
+        "days.items.note",
+        ...iconShows("days.items"),
+      ],
+      card: "surface-alt",
     },
     // "9" is retired (Full card & timeline): never reuse it.
   ],

@@ -7,8 +7,6 @@ export const section: SectionDefinition = {
   required: true,
   order: 10,
   ground: "own",
-  // A poster cover draws the Title's lines.
-  reads: ["title"],
   variantGroups: [
     { id: "photo", name: { en: "Photo", ro: "Fotografie", hu: "Fotó" } },
     {
@@ -19,16 +17,51 @@ export const section: SectionDefinition = {
   ],
   variants: [
     {
-      id: "1",
-      name: { en: "Box", ro: "Casetă", hu: "Doboz" },
+      id: "10",
+      name: { en: "Date block", ro: "Bloc cu data", hu: "Dátumblokk" },
       group: "photo",
-      shows: ["photo", "kicker"],
+      // The whole screen: the page's width, past the column, and from under
+      // the frosted bar.
+      wide: true,
+      underHeader: true,
+      // The date as big digits on a block in the secondary, the photo over
+      // it, then the names and their second line, and a free line.
+      shows: [
+        "names",
+        "namesStart",
+        "namesMiddle",
+        "namesEnd",
+        "firstLine",
+        "nextLine",
+        "secondLine",
+        "photo",
+        "details",
+      ],
+      // The section after it starts on the second surface.
+      nextGround: "surface-alt",
     },
     {
-      id: "2",
-      name: { en: "Badge", ro: "Insignă", hu: "Jelvény" },
+      id: "11",
+      name: { en: "Centred", ro: "Centrat", hu: "Középen" },
       group: "photo",
-      shows: ["photo", "kicker"],
+      // The whole screen: the page's width, past the column, and from under
+      // the frosted bar.
+      wide: true,
+      underHeader: true,
+      // The photo fills the cover, and centred in its top 65% the names and
+      // their second line, the date, a divider and a free line, all in one
+      // dark colour, for a photo light there.
+      shows: [
+        "names",
+        "namesStart",
+        "namesMiddle",
+        "namesEnd",
+        "firstLine",
+        "nextLine",
+        "secondLine",
+        "photo",
+        "details",
+      ],
     },
     {
       id: "3",
@@ -38,12 +71,11 @@ export const section: SectionDefinition = {
       band: "accent",
       // The stars fill the whole width too; the glass and words stay in the column.
       wide: true,
-      // Drawn, no photo, a poster: the Title's lines but the caption, then
+      // Drawn, no photo: the small line, the names and their line, then
       // the date and a free line.
       // Drawn right up to the page's top, under the frosted bar.
       underHeader: true,
-      shows: ["details"],
-      poster: [
+      shows: [
         "eyebrow",
         "names",
         "namesStart",
@@ -52,6 +84,7 @@ export const section: SectionDefinition = {
         "firstLine",
         "nextLine",
         "secondLine",
+        "details",
       ],
     },
     {
@@ -65,12 +98,11 @@ export const section: SectionDefinition = {
       // The bunting and the floor run the whole width; on the page's surface,
       // so a pattern shows round the drawing.
       wide: true,
-      // Drawn, no photo, a poster: the Title's lines on the band, but not its
-      // eyebrow or caption, then the date and a free line on the ribbon.
+      // Drawn, no photo: the names and their line on the band, then the
+      // date and a free line on the ribbon.
       // Drawn right up to the page's top, under the frosted bar.
       underHeader: true,
-      shows: ["details"],
-      poster: [
+      shows: [
         "names",
         "namesStart",
         "namesMiddle",
@@ -78,6 +110,7 @@ export const section: SectionDefinition = {
         "firstLine",
         "nextLine",
         "secondLine",
+        "details",
       ],
     },
     {
@@ -88,10 +121,9 @@ export const section: SectionDefinition = {
       // The corners and the border run the whole width; on the page's
       // surface, so a pattern shows round them.
       wide: true,
-      // Drawn, no photo, a poster: the Title's lines but the caption, then
+      // Drawn, no photo: the small line, the names and their line, then
       // the date and a free line.
-      shows: ["details"],
-      poster: [
+      shows: [
         "eyebrow",
         "names",
         "namesStart",
@@ -100,6 +132,7 @@ export const section: SectionDefinition = {
         "firstLine",
         "nextLine",
         "secondLine",
+        "details",
       ],
     },
     {
@@ -108,10 +141,9 @@ export const section: SectionDefinition = {
       group: "card",
       // Not `wide`: the cover stops at the column, like the page's other
       // sections; the pattern under the page still shows round the card.
-      // Drawn, no photo, a poster: the Title's lines but the caption, then
+      // Drawn, no photo: the small line, the names and their line, then
       // the date and a free line.
-      shows: ["details", "drawing"],
-      poster: [
+      shows: [
         "eyebrow",
         "names",
         "namesStart",
@@ -120,22 +152,26 @@ export const section: SectionDefinition = {
         "firstLine",
         "nextLine",
         "secondLine",
+        "details",
+        "drawing",
       ],
     },
     {
       id: "7",
       name: { en: "Playbill", ro: "Afiș", hu: "Plakát" },
       group: "card",
-      // The highlight (`kicker`) as its big heading over the drawing; the
-      // Title's second line isn't drawn here, so it stays the Title's.
-      shows: ["kicker", "details", "drawing"],
-      poster: [
+      // The highlight (`kicker`) as its big heading over the drawing; no
+      // second line under the names.
+      shows: [
         "eyebrow",
         "names",
         "namesStart",
         "namesMiddle",
         "namesEnd",
         "firstLine",
+        "kicker",
+        "details",
+        "drawing",
       ],
     },
     {
@@ -149,10 +185,9 @@ export const section: SectionDefinition = {
       // Drawn right up to the page's top, under the frosted bar: the pile
       // fills the band behind it, the host's ticket sits below it.
       underHeader: true,
-      // Drawn, no photo, a poster: the Title's lines but the caption, the
+      // Drawn, no photo: the small line, the names and their line, the
       // details line along the main part's foot.
-      shows: ["details"],
-      poster: [
+      shows: [
         "eyebrow",
         "names",
         "namesStart",
@@ -161,10 +196,90 @@ export const section: SectionDefinition = {
         "firstLine",
         "nextLine",
         "secondLine",
+        "details",
       ],
     },
   ],
   fields: [
+    {
+      id: "eyebrow",
+      label: LABELS.eyebrow,
+      type: "text",
+      maxLength: 60,
+    },
+    {
+      id: "kicker",
+      label: { en: "highlight", ro: "evidențiere", hu: "kiemelés" },
+      type: "text",
+      maxLength: 60,
+    },
+    {
+      // Names (name, mark, name) and a line under them for a couple; off,
+      // two plain lines in their place, for any other event.
+      id: "names",
+      label: { en: "Use names", ro: "Folosește nume", hu: "Nevek használata" },
+      type: "toggle",
+      controls: ["namesStart", "namesMiddle", "namesEnd", "secondLine"],
+      controlsOff: ["firstLine", "nextLine"],
+    },
+    {
+      id: "namesStart",
+      label: {
+        en: "name",
+        ro: "nume",
+        hu: "név",
+      },
+      type: "text",
+      maxLength: 40,
+    },
+    {
+      id: "namesMiddle",
+      label: {
+        en: "mark",
+        ro: "semn",
+        hu: "jel",
+      },
+      type: "text",
+      maxLength: 40,
+    },
+    {
+      id: "namesEnd",
+      label: {
+        en: "name",
+        ro: "nume",
+        hu: "név",
+      },
+      type: "text",
+      maxLength: 40,
+    },
+    {
+      id: "firstLine",
+      label: { en: "first line", ro: "primul rând", hu: "első sor" },
+      type: "text",
+      maxLength: 40,
+    },
+    {
+      id: "nextLine",
+      label: { en: "second line", ro: "al doilea rând", hu: "második sor" },
+      type: "text",
+      maxLength: 40,
+    },
+    {
+      id: "secondLine",
+      label: { en: "second line", ro: "al doilea rând", hu: "második sor" },
+      type: "text",
+      maxLength: 40,
+    },
+    {
+      id: "details",
+      label: {
+        en: "details line",
+        ro: "rând cu detalii",
+        hu: "részletek sora",
+      },
+      type: "longText",
+      maxLength: 80,
+    },
     {
       // The Card covers' picture: a drawing from `src/modular/drawings/`.
       id: "drawing",
@@ -177,22 +292,6 @@ export const section: SectionDefinition = {
       label: LABELS.photo,
       type: "image",
       maxLength: 300,
-    },
-    {
-      id: "kicker",
-      label: { en: "highlight", ro: "evidențiere", hu: "kiemelés" },
-      type: "text",
-      maxLength: 60,
-    },
-    {
-      id: "details",
-      label: {
-        en: "details line",
-        ro: "rând cu detalii",
-        hu: "részletek sora",
-      },
-      type: "longText",
-      maxLength: 80,
     },
   ],
 };

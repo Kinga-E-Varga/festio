@@ -10,6 +10,19 @@
 
 /* Inside an invitation on a dark palette: its root carries the palette's `scheme` (`data-scheme`). */
 @custom-variant dark-palette (&:where([data-scheme="dark"] *));
+/*
+ * A photo cover's side-by-side layout: the page at least 768px wide
+ * (`@3xl/page`) and the screen wider than tall, so an upright tablet keeps
+ * the stacked one. The screen by name (the page's scroller, the envelope's
+ * stage), as a cover's own size containers sit nearer.
+ */
+@custom-variant cover-side {
+  @container page (width >= 48rem) {
+    @container screen (aspect-ratio > 1) {
+      @slot;
+    }
+  }
+}
 
 @theme {
   --font-sans: var(--font-work-sans), ui-sans-serif, system-ui, sans-serif;
@@ -310,16 +323,6 @@
   }
 }
 
-/*
- * The modular cover's gap above its photo (`CoverPhoto`), set on the hero
- * from the page's width. Registered as a length so it is worked out there,
- * against the page, not again inside the column, whose `cqw` is its own.
- */
-@property --cover-top {
-  syntax: "<length>";
-  inherits: true;
-  initial-value: 0px;
-}
 
 /*
  * The Birthday cake cover's floor height (`cover/4.tsx`), set on its stage
@@ -1381,7 +1384,8 @@
     justify-content: center;
     overflow: hidden;
     isolation: isolate;
-    container-type: size;
+    /* Named as the page's scroller is, so a cover's copy asks the same screen (`cover-side`). */
+    container: screen / size;
     /* The padding beside the simple editor's panel slides with the panel. */
     transition:
       opacity var(--env-fade, 600ms) ease,

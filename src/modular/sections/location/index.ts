@@ -160,7 +160,11 @@ export const section: SectionDefinition = {
     },
     {
       id: "8",
-      name: { en: "Full card", ro: "Card întreg", hu: "Teljes kártya" },
+      name: {
+        en: "Full card soft",
+        ro: "Card întreg discret",
+        hu: "Teljes kártya, lágy",
+      },
       // Grid in one card: every heading field but the italic heading.
       bare: true,
       shows: [
@@ -174,6 +178,29 @@ export const section: SectionDefinition = {
         "venues.detail",
         "venues.photo",
       ],
+      card: "surface",
+    },
+    {
+      id: "12",
+      name: {
+        en: "Full card hard",
+        ro: "Card întreg marcat",
+        hu: "Teljes kártya, erős",
+      },
+      // Grid in one card: every heading field but the italic heading.
+      bare: true,
+      shows: [
+        "photos",
+        ...HEADING_SHOWS.filter((id) => id !== "headingItalic"),
+        ...iconShows("venues"),
+        "venues.label",
+        "venues.venue",
+        "venues.address",
+        "venues.mapsLink",
+        "venues.detail",
+        "venues.photo",
+      ],
+      card: "surface-alt",
     },
     {
       id: "10",

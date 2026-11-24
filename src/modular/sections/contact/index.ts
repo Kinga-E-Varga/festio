@@ -93,10 +93,27 @@ export const section: SectionDefinition = {
     },
     {
       id: "7",
-      name: { en: "Full card", ro: "Card întreg", hu: "Teljes kártya" },
+      name: {
+        en: "Full card soft",
+        ro: "Card întreg discret",
+        hu: "Teljes kártya, lágy",
+      },
       // Cards' (`1`) content, the people side by side in a full card.
       bare: true,
       shows: [...PLAIN_HEADING, ...iconShows("people"), ...PERSON_SHOWS],
+      card: "surface",
+    },
+    {
+      id: "11",
+      name: {
+        en: "Full card hard",
+        ro: "Card întreg marcat",
+        hu: "Teljes kártya, erős",
+      },
+      // Cards' (`1`) content, the people side by side in a full card.
+      bare: true,
+      shows: [...PLAIN_HEADING, ...iconShows("people"), ...PERSON_SHOWS],
+      card: "surface-alt",
     },
     {
       id: "10",

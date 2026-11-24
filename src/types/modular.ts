@@ -294,6 +294,17 @@ export interface VariantInfo {
   /** Drawn the page's whole width, not stopping at the column (`INVITE_COLUMN`). */
   wide?: boolean;
   /**
+   * A full card style's fill (`CARD_FILL`): `surface` for the soft one,
+   * `surface-alt` for the hard one. Left out, the page's: the surface with a
+   * pattern on, the second surface without.
+   */
+  card?: Ground;
+  /**
+   * An `own` variant's pick of the ground the section after it starts on;
+   * the turns carry on from there. Left out, they restart at `surface`.
+   */
+  nextGround?: Ground;
+  /**
    * Drawn in two columns (`SPLIT`): the section right after it is told so
    * (`afterSplit`) and may line up with its second column.
    */
@@ -304,13 +315,6 @@ export interface VariantInfo {
    * field. The Content tab shows only these; values it leaves out are kept.
    */
   shows: string[];
-  /**
-   * A poster cover: the Title's fields it draws in the Title's place, as
-   * paths. While it is on, the Title is left off the page and the editor,
-   * and the Cover's Content card offers these fields as the Title's; its
-   * values stay the Title's, so another cover brings it back as it was.
-   */
-  poster?: string[];
   /**
    * Fields it shows but never fills with a sample, by id: empty when a
    * template starts with it or the host switches to it, for the host to
@@ -338,14 +342,9 @@ export interface SectionDefinition {
   id: string;
   /** What the host's editor calls the section. */
   name: LocalizedText;
-  /** Header, cover, title, date, location and RSVP are always on. */
+  /** Header, cover, location and RSVP are always on. */
   required: boolean;
-  /**
-   * Required, but optional while a poster cover is on, as the cover shows
-   * its content too (Date): the host may switch it off there.
-   */
-  posterOptional?: boolean;
-  /** The section's place in the fixed order: header 0, cover 10, title 20… */
+  /** The section's place in the fixed order: header 0, cover 10, date 30… */
   order: number;
   /**
    * Its link's text in the header and the mobile drawer, when its name

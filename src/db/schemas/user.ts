@@ -16,5 +16,3 @@ export const userSchema = z.object({
   /** Proof of the DPA; a new version can be asked for again. */
   terms: z.object({ version: z.string().min(1), acceptedAt: momentSchema }),
 });
-
-export type UserDoc = z.infer<typeof userSchema>;

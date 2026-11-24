@@ -23,11 +23,11 @@ export const SERIF = "font-[family-name:var(--font-secondary)] font-normal";
 export const HEADING = `${SERIF} text-balance [overflow-wrap:anywhere]`;
 
 /**
- * A poster cover's date, in the names' voice, the second thing read: italic
+ * A cover's date, in the names' voice, the second thing read: italic
  * in the heading face, growing with the width, 20px to 26px on a phone, to
- * 34px from `@3xl`. Champagne's and Wildflower's.
+ * 34px from `@3xl`. Champagne's, Wildflower's and Centred's.
  */
-export const POSTER_DATE = `${HEADING} text-[clamp(20px,6.5cqw,26px)] @3xl:text-[clamp(22px,2.3cqw,34px)] leading-[1.3] italic`;
+export const COVER_DATE = `${HEADING} text-[clamp(20px,6.5cqw,26px)] @3xl:text-[clamp(22px,2.3cqw,34px)] leading-[1.3] italic`;
 
 const H2_FACE = `${HEADING} leading-[1.15] tracking-[-0.03em]`;
 
@@ -51,8 +51,16 @@ export const H4 = `${HEADING} text-[17px] leading-[1.4] @3xl:text-[18px]`;
 /** A serif line in italic: the title's caption, the reply note. Colour is the variant's. */
 export const ITALIC_LINE = `${HEADING} text-[20px] leading-[1.4] italic`;
 
-/** A short serif line on the cover photo: the kicker's circle, the date's box. Colour is the variant's. */
-export const COVER_LINE = `${HEADING} text-[14px] leading-[1.25] @3xl:text-[18px]`;
+/**
+ * Words over a photo light where they sit, always dark: the ink on a light
+ * palette, the surface on a dark one (`dark-palette`), through one var.
+ * Important, so it beats the colour of a shared style it is added to (the
+ * names' accent); written out here, as Tailwind only builds a class it can
+ * read whole in the source, never a `!` added in a template.
+ * The Centred cover's.
+ */
+export const PHOTO_DARK =
+  "[--photo-dark:var(--m-ink)] dark-palette:[--photo-dark:var(--m-surface)] text-[color:var(--photo-dark)]!";
 
 /** An item's title in the newer variants — an event, a way, a stay, a dish: `H4` in ink. */
 export const ITEM_TITLE = `${H4} text-[color:var(--m-ink)]`;
@@ -412,17 +420,3 @@ export function centredWhenStacked(count: number): string {
  * to the band's or card's edge as any content. The space between them stays.
  */
 export const UNLINED_PULL = "-my-8 @3xl:-my-10";
-
-/**
- * A grid with hairlines between its cells (Menu's courses, Location's
- * venues without photos): a line above and below the whole, and each cell
- * its own top line and a shorter left one that stops short of the lines
- * above and below, pulled 1px up and left, so the lines follow whatever
- * way the cells wrap; the grid clips the ones along its outer edge. Real
- * lines, not 1px gaps: a gap at a fractional position can round away to
- * nothing. Columns are the variant's (`columnsFor`).
- */
-export const LINED_GRID =
-  "grid overflow-hidden border-y-1 border-[var(--m-line)]";
-export const LINED_CELL =
-  "relative -mt-px -ml-px border-t-1 border-[var(--m-line)] before:absolute before:inset-y-6 before:left-0 before:w-px before:bg-[var(--m-line)]";

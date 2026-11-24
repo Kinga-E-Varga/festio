@@ -13,9 +13,8 @@ import type { SectionDefinition } from "@/types/modular";
 export const section: SectionDefinition = {
   id: "date-time",
   name: { en: "Date", ro: "Data", hu: "Dátum" },
-  required: true,
-  // A poster cover shows the date: there the host may switch it off.
-  posterOptional: true,
+  // Every cover shows the date, so the host may switch this off.
+  required: false,
   order: 30,
   menuLabel: { en: "Date", ro: "Data", hu: "Dátum" },
   variants: [
@@ -69,18 +68,41 @@ export const section: SectionDefinition = {
       shows: ["eventDate", "dateFormat"],
     },
     {
+      id: "10",
+      name: {
+        en: "Full card soft",
+        ro: "Card întreg discret",
+        hu: "Teljes kártya, lágy",
+      },
+      // Full card accent's date and note, the card in the surface.
+      bare: true,
+      shows: ["eventDate", "dateFormat", "note"],
+      card: "surface",
+    },
+    {
+      id: "11",
+      name: {
+        en: "Full card hard",
+        ro: "Card întreg marcat",
+        hu: "Teljes kártya, erős",
+      },
+      // Full card accent's date and note, the card in the second surface.
+      bare: true,
+      shows: ["eventDate", "dateFormat", "note"],
+      card: "surface-alt",
+    },
+    {
       id: "4",
       name: {
-        en: "Heading & date box",
-        ro: "Titlu & casetă cu data",
-        hu: "Cím & dátumdoboz",
+        en: "Full card accent",
+        ro: "Card întreg accent",
+        hu: "Kiemelt teljes kártya",
       },
-      // Every heading field but the italic heading.
-      shows: [
-        "eventDate",
-        "dateFormat",
-        ...HEADING_SHOWS.filter((id) => id !== "headingItalic"),
-      ],
+      // Simple accent's date and note in one card on the accent; always on
+      // the page's surface, whatever its turn.
+      ground: "surface",
+      bare: true,
+      shows: ["eventDate", "dateFormat", "note"],
     },
     {
       id: "3",
@@ -99,7 +121,7 @@ export const section: SectionDefinition = {
         ro: "Titlu & dată",
         hu: "Cím & dátum",
       },
-      // Heading & date box without the box: every heading field but the italic heading.
+      // Every heading field but the italic heading.
       shows: [
         "eventDate",
         "dateFormat",

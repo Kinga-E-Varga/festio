@@ -5,7 +5,7 @@ import {
   CORNER,
   EYEBROW,
   HEADING,
-  POSTER_DATE,
+  COVER_DATE,
   TONE_TEXT,
 } from "@/modular/styles";
 import type { VariantProps } from "@/types/modular";
@@ -54,8 +54,8 @@ const CARD = `absolute inset-x-[calc(min(5cqw,4.5cqh)+5cqw)] inset-y-[calc(min(5
 /* The card's hairline: the accent mixed into the card's colour. */
 const FRAME = `h-full ${CORNER} border-1 border-[color:color-mix(in_oklab,var(--m-accent)_45%,var(--m-surface-alt))]`;
 
-/* The names, growing with the width, never past the Title's 80px. */
-const POSTER_NAMES = `${HEADING} text-[min(48px,11.5cqw)] @3xl:text-[min(80px,6cqw)] leading-[1.1] tracking-[-0.03em] italic`;
+/* The names, growing with the width, never past 80px. */
+const COVER_NAMES = `${HEADING} text-[min(48px,11.5cqw)] @3xl:text-[min(80px,6cqw)] leading-[1.1] tracking-[-0.03em] italic`;
 
 /* The divider's fine lines either side of the diamonds. */
 const RULE = "h-px w-14 bg-current opacity-50";
@@ -81,20 +81,19 @@ function Divider() {
 }
 
 /**
- * A poster cover, no photo, for a wedding, an engagement or a baptism: the
+ * A drawn cover, no photo, for a wedding, an engagement or a baptism: the
  * host's flower corner at the bottom left and, turned, at the top right, over
- * a thick-and-thin border, and the Title's lines centred between them
- * (`related.title`), then the date and the host's free line. On the page's
+ * a thick-and-thin border, and the names and their lines centred between them
+ *, then the date and the host's free line. On the page's
  * surface, so a pattern shows round it.
  */
-export function Variant({ values, related, basics, language }: VariantProps) {
-  const title = related.title ?? {};
-  const eyebrow = text(title, "eyebrow");
+export function Variant({ values, basics, language }: VariantProps) {
+  const eyebrow = text(values, "eyebrow");
   /* Use names off: two plain lines in place of the names and their line. */
-  const named = isOn(title, "names");
-  const names = named ? markParts(title, "names", AMPERSAND) : [];
-  const first = named ? "" : text(title, "firstLine");
-  const second = text(title, named ? "secondLine" : "nextLine");
+  const named = isOn(values, "names");
+  const names = named ? markParts(values, "names", AMPERSAND) : [];
+  const first = named ? "" : text(values, "firstLine");
+  const second = text(values, named ? "secondLine" : "nextLine");
   const details = text(values, "details");
   /* The event's own date, in the invitation's language. */
   const date = longDate(basics.date, language);
@@ -120,7 +119,7 @@ export function Variant({ values, related, basics, language }: VariantProps) {
             </p>
           ) : null}
           {names.length > 0 || first || second ? (
-            <h1 className={`${POSTER_NAMES} mb-6`}>
+            <h1 className={`${COVER_NAMES} mb-6`}>
               {names.length > 0 ? (
                 <span className="block">
                   <Mark parts={names} />
@@ -132,7 +131,7 @@ export function Variant({ values, related, basics, language }: VariantProps) {
             </h1>
           ) : null}
           <Divider />
-          <p className={POSTER_DATE}>{date}</p>
+          <p className={COVER_DATE}>{date}</p>
           {details ? (
             <p
               className={`${EYEBROW} ${TONE_TEXT.accent} mt-3 whitespace-pre-line`}

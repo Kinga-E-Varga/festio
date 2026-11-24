@@ -115,13 +115,26 @@ export const section: SectionDefinition = {
     {
       id: "12",
       name: {
-        en: "Full card",
-        ro: "Card întreg",
-        hu: "Teljes kártya",
+        en: "Full card soft",
+        ro: "Card întreg discret",
+        hu: "Teljes kártya, lágy",
       },
       // Card, the card in the band's own colour.
       bare: true,
       shows: ["largeText", "italic", "smallText"],
+      card: "surface",
+    },
+    {
+      id: "14",
+      name: {
+        en: "Full card hard",
+        ro: "Card întreg marcat",
+        hu: "Teljes kártya, erős",
+      },
+      // Card, the card in the band's own colour.
+      bare: true,
+      shows: ["largeText", "italic", "smallText"],
+      card: "surface-alt",
     },
     {
       id: "13",

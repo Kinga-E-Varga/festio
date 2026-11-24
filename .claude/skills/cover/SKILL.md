@@ -38,9 +38,10 @@ one (and which) or gets its own. If it repeats one and the code for it lives in 
 single cover's file, say that this is its second use and propose moving it to a
 shared piece first (the project's "extract on second use" rule).
 
-Either way, settle with the user: **poster cover** (shows the Title's lines, the
-Title steps aside — see `project-overview.md`) or **mood cover** (sets the scene,
-the Title follows).
+Every cover draws the names and their lines itself (the Cover's own fields;
+there is no Title section): settle with the user which of them this one shows —
+the small line (`eyebrow`), the names or two plain lines, their second line, the
+highlight (`kicker`), the details line.
 
 ## 1. Read the reference
 
@@ -286,8 +287,8 @@ strip makes the invitation ~72px narrower than the screen.
   (`@3xl:@max-[1441px]/page:`) instead.
 - **A gap in `%` on a grid measures the grid** — use it, not `cqw`, when the grid
   can be wider than its container.
-- **Words beside a drawing get half the width.** Sizes made for a full-width
-  Title (`NAMES_SIZE`) wrap to four lines there; size them by the width they have
+- **Words beside a drawing get half the width.** Sizes made for full-width
+  names (`NAMES_SIZE`) wrap to four lines there; size them by the width they have
   (`min(80px, 4.5cqw)`), smooth, not in steps.
 - **Sizes with breakpoints: list the steps and ask** before changing them.
 - **A `size` container is a stacking context.** A drawing in one can't rise

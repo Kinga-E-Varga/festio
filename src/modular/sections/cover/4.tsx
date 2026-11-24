@@ -15,7 +15,7 @@ import { CAKE_SHAPE, Cake } from "./Cake";
 import { useOutOfView } from "./useOutOfView";
 
 /*
- * The Title's lines on the band, growing smoothly with the width: on a phone
+ * The names and their lines on the band, growing smoothly with the width: on a phone
  * they wrap to two lines, from `@3xl` they fit on one.
  */
 const BAND_NAMES = `${HEADING} text-[clamp(28px,9.5cqw,44px)] @3xl:text-[clamp(40px,4.3cqw,84px)] leading-[1.1] tracking-[-0.02em]`;
@@ -67,20 +67,19 @@ const RIBBON =
   "absolute top-0 left-(--ribbon-x) flex min-h-[calc((100cqh-var(--cover-floor))*0.72)] w-(--ribbon-w) flex-col items-center gap-3 bg-(--m-tertiary) px-3 pt-[clamp(12px,5cqh,56px)] pb-[calc(22px+clamp(8px,3cqh,36px))] text-center text-[color:var(--m-tertiary-ink)] [clip-path:polygon(0_0,100%_0,100%_100%,50%_calc(100%-22px),0_100%)] @3xl:gap-4";
 
 /**
- * A poster cover, no photo, after a birthday card: bunting across the top,
- * the Title's lines on a band in the secondary colour, a three-tier cake
+ * A drawn cover, no photo, after a birthday card: bunting across the top,
+ * the names and their lines on a band in the secondary colour, a three-tier cake
  * standing on the accent floor, and the date and the host's free line on a
  * ribbon beside it. The cover is on the page's surface, so a pattern shows
  * round the drawing. Every part runs the whole width but the cake and the
  * ribbon, sized by the room the cover has.
  */
-export function Variant({ values, related, basics, language }: VariantProps) {
-  const title = related.title ?? {};
+export function Variant({ values, basics, language }: VariantProps) {
   /* Use names off: two plain lines in place of the names and their line. */
-  const named = isOn(title, "names");
-  const names = named ? markParts(title, "names", BAND_AMPERSAND) : [];
-  const first = named ? "" : text(title, "firstLine");
-  const second = text(title, named ? "secondLine" : "nextLine");
+  const named = isOn(values, "names");
+  const names = named ? markParts(values, "names", BAND_AMPERSAND) : [];
+  const first = named ? "" : text(values, "firstLine");
+  const second = text(values, named ? "secondLine" : "nextLine");
   const details = text(values, "details");
   /* The event's own date in the invitation's language, in three rows: the weekday, the day and month, the year. */
   const weekday = formatDay(basics.date, language, { weekday: "long" });

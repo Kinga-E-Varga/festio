@@ -50,7 +50,11 @@ export const section: SectionDefinition = {
     },
     {
       id: "6",
-      name: { en: "Full card", ro: "Card întreg", hu: "Teljes kártya" },
+      name: {
+        en: "Full card soft",
+        ro: "Card întreg discret",
+        hu: "Teljes kártya, lágy",
+      },
       // The eyebrow and heading only, over the photo and the story.
       bare: true,
       shows: [
@@ -62,6 +66,27 @@ export const section: SectionDefinition = {
         "photo",
         "photoAlt",
       ],
+      card: "surface",
+    },
+    {
+      id: "9",
+      name: {
+        en: "Full card hard",
+        ro: "Card întreg marcat",
+        hu: "Teljes kártya, erős",
+      },
+      // The eyebrow and heading only, over the photo and the story.
+      bare: true,
+      shows: [
+        "photos",
+        ...HEADING_SHOWS.filter(
+          (id) => id !== "headingItalic" && id !== "note",
+        ),
+        "story",
+        "photo",
+        "photoAlt",
+      ],
+      card: "surface-alt",
     },
     {
       id: "7",

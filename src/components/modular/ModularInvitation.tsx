@@ -232,8 +232,14 @@ export const ModularInvitation = memo(function ModularInvitation({
           key={definition.id}
           id={copy ? undefined : definition.id}
           style={
-            band
-              ? ({ "--band": `var(--m-${band})` } as CSSProperties)
+            band || chosen?.card
+              ? ({
+                  ...(band ? { "--band": `var(--m-${band})` } : {}),
+                  /* A full card style's own fill, over the page's (`--m-card`). */
+                  ...(chosen?.card
+                    ? { "--m-card": `var(--m-${chosen.card})` }
+                    : {}),
+                } as CSSProperties)
               : undefined
           }
           className={`group/edit relative scroll-mt-bar @5xl:scroll-mt-bar-lg ${fill} ${grow && chosen?.underHeader ? UNDER_HEADER : ""} ${grow ? "flex flex-1 flex-col" : ""}`}
@@ -270,15 +276,12 @@ export const ModularInvitation = memo(function ModularInvitation({
       );
     });
     /*
-     * The hero: the cover and the title, at least the screen less the
-     * header (`--spacing-bar`); an `underHeader` cover is pulled up
-     * over the bar (`UNDER_HEADER`) and fills that height too, so it still
-     * reaches the screen's foot. More when their
-     * content needs it; up to 1440px the cover fills that alone
-     * (`CoverPhoto`). The scroller is the screen; the envelope's copy is
-     * given the same height as `--strip-hero` (`Envelope.tsx`). Past the
-     * column, the cover's gap above the photo (`--cover-top`) matches the
-     * page's margin beside it, up to 80px.
+     * The hero: the cover, at least the screen less the header
+     * (`--spacing-bar`); an `underHeader` cover is pulled up over the bar
+     * (`UNDER_HEADER`) and fills that height too, so it still reaches the
+     * screen's foot. More when its content needs it. The scroller is the
+     * screen; the envelope's copy is given the same height as
+     * `--strip-hero` (`Envelope.tsx`).
      */
     const heroEnd = body.findIndex(
       ({ definition }) => !HERO_IDS.includes(definition.id),
@@ -297,7 +300,7 @@ export const ModularInvitation = memo(function ModularInvitation({
           style={
             hero && !copy ? ({ "--hero": hero } as CSSProperties) : undefined
           }
-          className={`flex min-h-(--hero) flex-col [--cover-top:clamp(0px,(100cqw-var(--invite-column))/2,80px)] ${copy ? "[--hero:var(--strip-hero)]" : hero ? "" : "[--hero:calc(100cqh-var(--spacing-bar))] @5xl:[--hero:calc(100cqh-var(--spacing-bar-lg))]"}`}
+          className={`flex min-h-(--hero) flex-col ${copy ? "[--hero:var(--strip-hero)]" : hero ? "" : "[--hero:calc(100cqh-var(--spacing-bar))] @5xl:[--hero:calc(100cqh-var(--spacing-bar-lg))]"}`}
         >
           {views.slice(0, split)}
         </div>
@@ -359,12 +362,12 @@ export const ModularInvitation = memo(function ModularInvitation({
         className="flex min-h-0 flex-1 flex-col outline-none"
       >
         {/* The page scrolls in here, not the window, so the header stays put. */}
-        {/* A size container, so the hero can read its height (`cqh`); given its hero, neither. */}
+        {/* A size container, so the hero can read its height (`cqh`), named `screen` for `cover-side`; given its hero, neither. */}
         <div
           className={
             hero
               ? undefined
-              : "invite-scroll min-h-0 flex-1 overflow-y-auto scroll-smooth [container-type:size]"
+              : "invite-scroll min-h-0 flex-1 overflow-y-auto scroll-smooth [container:screen/size]"
           }
         >
           {/*
@@ -467,9 +470,9 @@ function EditButton({
   );
 }
 
-/** The sections the hero holds, in page order: the cover takes its spare height. */
+/** The sections the hero holds: the cover, which takes its spare height. */
 const COVER_ID = "cover";
-const HERO_IDS = [COVER_ID, "title"];
+const HERO_IDS = [COVER_ID];
 
 /** Stands in while the bar's variant loads, at the bar's own height. */
 function BarSkeleton() {

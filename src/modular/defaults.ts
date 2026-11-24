@@ -34,8 +34,6 @@ export const DEFAULTS: Record<string, SectionSamples> = {
       ro: "Cina la 19 · Villa Cassis",
       hu: "Vacsora 19-kor · Villa Cassis",
     },
-  },
-  title: {
     names: true,
     namesStart: "Maddie",
     namesMiddle: "&",
@@ -51,11 +49,6 @@ export const DEFAULTS: Record<string, SectionSamples> = {
       en: "Together with our families",
       ro: "Împreună cu familiile noastre",
       hu: "Családjainkkal együtt",
-    },
-    caption: {
-      en: "invite you to celebrate the beginning of our forever",
-      ro: "vă invită să fiți alături de ei la început de drum",
-      hu: "meghívnak, hogy velük ünnepeld közös életük kezdetét",
     },
   },
   textbox: {
