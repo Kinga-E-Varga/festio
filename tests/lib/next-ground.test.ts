@@ -8,7 +8,7 @@ import type { SectionDefinition } from "@/types/modular";
 /*
  * A cover may name the ground the section after it starts on (`nextGround`):
  * Date block's next section is on the second surface, and the turns carry
- * on from there. Another cover (Centred, `11`) restarts them at the surface.
+ * on from there. Another cover (Full centred, `11`) restarts them at the surface.
  * Date `1` and Schedule `1` take their turns.
  */
 function grounds(...sections: [SectionDefinition, string][]) {

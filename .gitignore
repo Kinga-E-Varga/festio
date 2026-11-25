@@ -62,3 +62,6 @@ next-env.d.ts
 
 # superpowers scratch (visual companion mockups, subagent workspaces) — never committed
 /.superpowers/
+
+# template drafts (dev only, read by the template skill)
+/drafts/

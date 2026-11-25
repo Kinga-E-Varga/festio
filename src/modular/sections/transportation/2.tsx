@@ -1,37 +1,21 @@
 import { list } from "@/modular/content";
-import { iconMode, itemMark } from "@/modular/item-marks";
 import { IconHeading } from "@/modular/IconHeading";
-import {
-  PAD,
-  SPLIT,
-  SECTION_GROUND,
-  otherCard,
-  CARD_STACK,
-} from "@/modular/styles";
+import { PAD, SPLIT, SECTION_GROUND } from "@/modular/styles";
 import type { VariantProps } from "@/types/modular";
-import { WayRow } from "./WaysList";
+import { CentredWayCards } from "./WaysList";
 
 /**
  * A bus on its soft disc over the heading — no eyebrow — beside the ways
- * of arriving, stacked, each a card on the other surface holding the
- * lists' row (`WayRow`): its number, eyebrow, title and text.
+ * of arriving as centred cards, no icons or numbers (`CentredWayCards`).
  */
 export function Variant({ values, ground }: VariantProps) {
-  const ways = list(values, "ways").slice(0, 6);
-  const mode = iconMode(values);
-
   return (
     <div className={`${SPLIT} ${SECTION_GROUND[ground]} ${PAD}`}>
       <IconHeading icon="bus" values={values} />
-      {ways.length > 0 ? (
-        <ul className={CARD_STACK}>
-          {ways.map((way, index) => (
-            <li key={index} className={otherCard(ground)}>
-              <WayRow way={way} mark={itemMark(mode, way.icon, index)} />
-            </li>
-          ))}
-        </ul>
-      ) : null}
+      <CentredWayCards
+        ways={list(values, "ways").slice(0, 6)}
+        ground={ground}
+      />
     </div>
   );
 }

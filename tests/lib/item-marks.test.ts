@@ -1,7 +1,7 @@
 import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, test } from "vitest";
-import { iconMode, itemMark } from "@/modular/item-marks";
+import { iconMode, itemMark, numbersMode } from "@/modular/item-marks";
 import { DEFAULT_BASICS } from "@/modular/defaults";
 import { sectionValues } from "@/modular/samples";
 import { section as schedule } from "@/modular/sections/schedule";
@@ -25,6 +25,83 @@ describe("iconMode", () => {
     expect(iconMode({ icons: false })).toBe("none");
     expect(iconMode({ icons: false, numbers: true })).toBe("none");
   });
+});
+
+describe("numbersMode", () => {
+  test("Icon & list before its switch is touched: numbers", () => {
+    expect(numbersMode({})).toBe("numbers");
+  });
+
+  test("Use numbers off: none", () => {
+    expect(numbersMode({ numbered: false })).toBe("none");
+  });
+
+  test("never icons, whatever the icon switches say", () => {
+    expect(numbersMode({ icons: true, numbers: false })).toBe("numbers");
+    expect(numbersMode({ icons: false })).toBe("numbers");
+  });
+});
+
+/* The sections with an Icon & list style and its Use numbers switch. */
+const ICON_LISTS = [
+  "accommodation",
+  "contact",
+  "menu",
+  "notes",
+  "people",
+  "transportation",
+];
+
+describe("Icon & list", () => {
+  for (const id of ICON_LISTS) {
+    test(`${id}: only the Use numbers switch, no icons`, async () => {
+      const { section } = (await import(
+        `@/modular/sections/${id}/index.ts`
+      )) as {
+        section: { variants: { name: { en: string }; shows?: string[] }[] };
+      };
+      const variant = section.variants.find(
+        ({ name }) => name.en === "Icon & list",
+      );
+      const shows = variant?.shows ?? [];
+      expect(variant).toBeDefined();
+      expect(shows).toContain("numbered");
+      expect(shows).not.toContain("icons");
+      expect(shows).not.toContain("numbers");
+      expect(shows.some((path) => path.endsWith(".icon"))).toBe(false);
+    });
+  }
+});
+
+test("a new section starts with Use numbers on", async () => {
+  for (const id of ICON_LISTS) {
+    const { section } = (await import(`@/modular/sections/${id}/index.ts`)) as {
+      section: Parameters<typeof sectionValues>[0];
+    };
+    expect(sectionValues(section, "en").numbered, id).toBe(true);
+  }
+});
+
+describe("Icon & cards and Two-line & cards", () => {
+  // Menu has neither cards style.
+  for (const id of ICON_LISTS.filter((id) => id !== "menu")) {
+    for (const style of ["Icon & cards", "Two-line & cards"]) {
+      test(`${id}, ${style}: no icons or numbers, no switches for them`, async () => {
+        const { section } = (await import(
+          `@/modular/sections/${id}/index.ts`
+        )) as {
+          section: { variants: { name: { en: string }; shows?: string[] }[] };
+        };
+        const variant = section.variants.find(({ name }) => name.en === style);
+        const shows = variant?.shows ?? [];
+        expect(variant).toBeDefined();
+        for (const field of ["icons", "numbers", "numbered"]) {
+          expect(shows).not.toContain(field);
+        }
+        expect(shows.some((path) => path.endsWith(".icon"))).toBe(false);
+      });
+    }
+  }
 });
 
 describe("itemMark", () => {
@@ -100,7 +177,6 @@ describe("Schedule numbers", () => {
       "12",
       "15",
       "4",
-      "6",
     ]);
   });
 

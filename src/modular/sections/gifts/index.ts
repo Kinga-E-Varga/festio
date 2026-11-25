@@ -105,6 +105,19 @@ export const section: SectionDefinition = {
       ],
     },
     {
+      id: "8",
+      name: { en: "Simple", ro: "Simplu", hu: "Egyszerű" },
+      // Accent on the page's surface, in its turn: the heading but its
+      // italic line, then the card's icon, its label, title and text;
+      // the gift buttons under them.
+      shows: [
+        ...HEADING_SHOWS.filter((id) => id !== "headingItalic"),
+        "icon",
+        "label",
+        ...CARD,
+      ],
+    },
+    {
       id: "6",
       name: { en: "Accent", ro: "Accent", hu: "Kiemelt" },
       // On the accent band: the heading but its italic line, then the

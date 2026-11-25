@@ -11,7 +11,8 @@ import { ClockDate, ClockEvents, clockTone } from "./ClockEvents";
  * day's date over its events in its times' colour, in line with their
  * titles (past the time column and its gap), only when there is more
  * than one day. On a phone the list is 350px at most, centred, as the
- * Timeline's (`4`).
+ * Timeline's (`4`). The days' colours take turns from the accent
+ * (`clockTone`), the other way round from the Two-line lists'.
  */
 export function Variant({ values, language, ground }: VariantProps) {
   const days = groups(values, "days");
@@ -23,7 +24,7 @@ export function Variant({ values, language, ground }: VariantProps) {
         <ol className={`${NARROW_LIST} border-t-1 border-[var(--m-line)]`}>
           {days.map((day, index) => {
             const date = scheduleDay(day.values.date ?? "", language);
-            const tone = clockTone(index);
+            const tone = clockTone(index, "accent");
             return (
               <li
                 key={index}

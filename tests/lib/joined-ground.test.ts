@@ -8,7 +8,7 @@ import type { SectionDefinition } from "@/types/modular";
 /*
  * A joined section (Text box `5`, Simple joined) takes the background of the
  * section right before it. After a cover, that is the cover's: Champagne's
- * accent band (`3`), or the page's surface behind a photo (Centred, `11`). The
+ * accent band (`3`), or the page's surface behind a photo (Full centred, `11`). The
  * section after the joined one (Date `8`, no rule of its own) stays apart.
  */
 function grounds(...sections: [SectionDefinition, string][]) {

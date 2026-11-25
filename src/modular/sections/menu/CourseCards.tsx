@@ -14,6 +14,7 @@ import {
   centredWhenStacked,
   cardColumns,
   SECTION_GROUND,
+  turnTone,
 } from "@/modular/styles";
 import type { VariantProps } from "@/types/modular";
 import { Dishes, dishesOf } from "./Dishes";
@@ -48,6 +49,7 @@ export function CourseCards({
             >
               <ItemIcon
                 mark={itemMark(mode, course.icon, index)}
+                tone={turnTone(index, "secondary")}
                 accent={accent}
                 className="mb-5"
               />

@@ -9,7 +9,7 @@ import type { SectionDefinition } from "@/types/modular";
 /*
  * Location's Full card accent (`10`) always sits on the page's surface,
  * whatever its turn would be, and the section after it takes the other
- * one. Photo cover (Centred, `11`), Date `8` and Schedule `1` take their
+ * one. Photo cover (Full centred, `11`), Date `8` and Schedule `1` take their
  * turns.
  */
 function grounds(...sections: [SectionDefinition, string][]) {

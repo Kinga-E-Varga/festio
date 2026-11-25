@@ -37,13 +37,13 @@ export const section: SectionDefinition = {
         ro: "Două rânduri & carduri",
         hu: "Kétsoros & kártyák",
       },
+      // Centred in its cards, no icons.
       shows: [
         ...HEADING_SHOWS,
         "days.date",
         "days.items.time",
         "days.items.title",
         "days.items.note",
-        ...iconShows("days.items"),
       ],
     },
     {

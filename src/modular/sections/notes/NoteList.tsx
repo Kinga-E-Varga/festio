@@ -15,6 +15,7 @@ import {
   CARD_STACK,
   DISC_ROW,
   leadRow,
+  turnTone,
 } from "@/modular/styles";
 import type { SectionGround, VariantProps } from "@/types/modular";
 
@@ -23,7 +24,8 @@ type Note = ReturnType<typeof noteItems>[number];
 /**
  * The notes beside a heading, for Icon & list and the two-line and card
  * styles: rows between hairlines, or with `cards` each a card on that
- * surface, the cards stacked. Each its label, title and text, and for
+ * surface, the cards stacked, no marks, the text centred (Two-line & cards
+ * and Icon & cards). Each its label, title and text, and for
  * Dress code and Gifts their colours or account under them. Each its mark
  * (`itemMark`, Dress code's and Gifts' too): `marks="end"`, the Two-line
  * styles, on a soft disc at the row's end, under the label;
@@ -34,19 +36,21 @@ type Note = ReturnType<typeof noteItems>[number];
  */
 export function NoteList({
   items,
-  mode,
-  marks,
+  mode: given = "none",
+  marks = "start",
   related,
   cards,
 }: {
   items: Note[];
   /** The section's `iconMode`. */
-  mode: IconMode;
-  marks: "start" | "end";
+  mode?: IconMode;
+  marks?: "start" | "end";
   related: VariantProps["related"];
   cards?: SectionGround;
 }) {
   if (items.length === 0) return null;
+  const centred = cards !== undefined;
+  const mode = centred ? "none" : given;
   const dress = related["dress-code"] ?? {};
   const gifts = related.gifts ?? {};
 
@@ -58,7 +62,9 @@ export function NoteList({
             <Row
               key={index}
               cards={cards}
+              centred={centred}
               mark={itemMark(mode, twinIcon(dress), index)}
+              tone={turnTone(index, "secondary")}
               marks={marks}
               label={text(dress, "eyebrow")}
               title={text(dress, "title")}
@@ -73,7 +79,9 @@ export function NoteList({
             <Row
               key={index}
               cards={cards}
+              centred={centred}
               mark={itemMark(mode, twinIcon(gifts), index)}
+              tone={turnTone(index, "secondary")}
               marks={marks}
               label={text(gifts, "eyebrow")}
               title={text(gifts, "title")}
@@ -87,7 +95,9 @@ export function NoteList({
           <Row
             key={index}
             cards={cards}
+            centred={centred}
             mark={itemMark(mode, item.icon, index)}
+            tone={turnTone(index, "secondary")}
             marks={marks}
             label={item.label}
             title={item.title ?? ""}
@@ -105,7 +115,9 @@ export function NoteList({
  */
 function Row({
   cards,
+  centred = false,
   mark,
+  tone,
   marks,
   label,
   title,
@@ -113,7 +125,9 @@ function Row({
   children,
 }: {
   cards?: SectionGround;
+  centred?: boolean;
   mark: ItemMark;
+  tone: "accent" | "secondary";
   marks: "start" | "end";
   label?: string;
   title: string;
@@ -126,13 +140,19 @@ function Row({
     </p>
   ) : null;
   const words = (
-    <div className="flex min-w-0 flex-col items-start">
+    <div
+      className={`flex min-w-0 flex-col ${centred ? "items-center text-center" : "items-start"}`}
+    >
       {title ? <h3 className={ITEM_TITLE}>{title}</h3> : null}
       {body ? (
         <p className={`${BODY_SM} ${MUTED} mt-1 whitespace-pre-line`}>{body}</p>
       ) : null}
       {children ? (
-        <div className="mt-4 flex flex-col items-start gap-3">{children}</div>
+        <div
+          className={`mt-4 flex flex-col gap-3 ${centred ? "items-center" : "items-start"}`}
+        >
+          {children}
+        </div>
       ) : null}
     </div>
   );
@@ -144,7 +164,9 @@ function Row({
           : "border-b-1 border-[var(--m-line)] pt-4 pb-6"
       }
     >
-      <div className={`${label ? "" : "pt-3"} ${cards ? "pb-3" : ""}`}>
+      <div
+        className={`${label ? "" : "pt-3"} ${cards ? "pb-3" : ""} ${centred ? "text-center" : ""}`}
+      >
         {marks === "start" ? (
           <div className={leadRow(mark)}>
             <LeadMark mark={mark} />
@@ -158,7 +180,7 @@ function Row({
             {eyebrow}
             <div className={mark ? `${DISC_ROW} items-center` : ""}>
               {words}
-              <ItemIcon mark={mark} />
+              <ItemIcon mark={mark} tone={tone} />
             </div>
           </>
         )}

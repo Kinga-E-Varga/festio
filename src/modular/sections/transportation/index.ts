@@ -3,7 +3,12 @@ import {
   HEADING_SHOWS,
   ICON_HEADING_SHOWS,
 } from "@/modular/heading";
-import { ITEM_ICON, iconShows, iconSwitches } from "@/modular/item-marks";
+import {
+  ITEM_ICON,
+  NUMBERS_SWITCH,
+  iconShows,
+  iconSwitches,
+} from "@/modular/item-marks";
 import { LABELS } from "@/modular/labels";
 import type { SectionDefinition } from "@/types/modular";
 
@@ -64,13 +69,7 @@ export const section: SectionDefinition = {
         ro: "Două rânduri & carduri",
         hu: "Kétsoros & kártyák",
       },
-      shows: [
-        ...HEADING_SHOWS,
-        ...iconShows("ways"),
-        "ways.label",
-        "ways.title",
-        "ways.text",
-      ],
+      shows: [...HEADING_SHOWS, "ways.label", "ways.title", "ways.text"],
     },
     {
       id: "4",
@@ -82,7 +81,7 @@ export const section: SectionDefinition = {
       // No eyebrow or italic line over the heading.
       shows: [
         ...ICON_HEADING_SHOWS,
-        ...iconShows("ways"),
+        NUMBERS_SWITCH.id,
         "ways.label",
         "ways.title",
         "ways.text",
@@ -96,13 +95,7 @@ export const section: SectionDefinition = {
         hu: "Ikon & kártyák",
       },
       // No italic second line under the heading.
-      shows: [
-        ...ICON_HEADING_SHOWS,
-        ...iconShows("ways"),
-        "ways.label",
-        "ways.title",
-        "ways.text",
-      ],
+      shows: [...ICON_HEADING_SHOWS, "ways.label", "ways.title", "ways.text"],
     },
     {
       id: "7",
@@ -204,6 +197,7 @@ export const section: SectionDefinition = {
   fields: [
     ...HEADING_FIELDS,
     ...iconSwitches("ways"),
+    NUMBERS_SWITCH,
     {
       id: "ways",
       label: {

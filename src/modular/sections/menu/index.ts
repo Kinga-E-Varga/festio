@@ -3,7 +3,12 @@ import {
   HEADING_SHOWS,
   ICON_HEADING_SHOWS,
 } from "@/modular/heading";
-import { ITEM_ICON, iconShows, iconSwitches } from "@/modular/item-marks";
+import {
+  ITEM_ICON,
+  NUMBERS_SWITCH,
+  iconShows,
+  iconSwitches,
+} from "@/modular/item-marks";
 import { LABELS } from "@/modular/labels";
 import type { SectionDefinition } from "@/types/modular";
 
@@ -58,7 +63,7 @@ export const section: SectionDefinition = {
       },
       shows: [
         ...ICON_HEADING_SHOWS,
-        ...iconShows("courses"),
+        NUMBERS_SWITCH.id,
         "courses.label",
         "courses.title",
         "courses.note",
@@ -179,6 +184,7 @@ export const section: SectionDefinition = {
   fields: [
     ...HEADING_FIELDS,
     ...iconSwitches("courses"),
+    NUMBERS_SWITCH,
     {
       id: "courses",
       label: { en: "courses", ro: "feluri", hu: "fogások" },

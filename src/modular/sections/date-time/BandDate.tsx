@@ -7,7 +7,8 @@ import type { VariantProps } from "@/types/modular";
  * The date large, set as `BAND_LINE`, in the format the host picked, and
  * the heading's note under it, centred. The date in the accent role: on
  * the accent that is the accent's ink, on a surface the accent itself. No
- * heading. Simple accent's on its band, the Full card styles' in their card.
+ * heading. Simple's on the surface in turn, Simple accent's on its band, the
+ * Full card styles' in their card.
  */
 export function BandDate({
   values,

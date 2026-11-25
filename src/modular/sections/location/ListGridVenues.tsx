@@ -21,6 +21,7 @@ import {
   TONE_TEXT,
   H3,
   columnsFor,
+  turnTone,
 } from "@/modular/styles";
 import type { ListItem, SectionGround, VariantProps } from "@/types/modular";
 
@@ -89,6 +90,7 @@ export function ListGridVenues({
               <VenueText
                 venue={venue}
                 mark={itemMark(mode, venue.icon, index)}
+                tone={turnTone(index, "secondary")}
                 accent={accent}
               />
             </li>
@@ -132,6 +134,7 @@ export function VenueRow({
       <VenueText
         venue={venue}
         mark={mark}
+        tone={turnTone(index, "secondary")}
         accent={accent}
         className="[direction:ltr] @3xl:self-center"
       />
@@ -141,24 +144,32 @@ export function VenueRow({
 
 /**
  * The venue and the way there: the card's sizes and spacing (`AccentVenue`),
- * in the section's inks, its mark (`itemMark`), when it has one, on the
- * secondary disc over its label; with `accent` the palette's own secondary, as the
+ * in the section's inks, its mark (`itemMark`), when it has one, on its
+ * disc in `tone` over its label; with `accent` the palette's own secondary, as the
  * accent's roles point it at the accent's ink. Also Location's Full card.
  */
 export function VenueText({
   venue,
   mark,
+  tone,
   accent,
   className = "",
 }: {
   venue: ListItem;
   mark: ItemMark;
+  /** Its disc's colour, by its place (`turnTone`); the secondary on the accent. */
+  tone: "accent" | "secondary";
   accent: boolean;
   className?: string;
 }) {
   return (
     <div className={`flex min-w-0 flex-col ${className}`}>
-      <ItemIcon mark={mark} accent={accent} className="mb-5 self-center" />
+      <ItemIcon
+        mark={mark}
+        tone={tone}
+        accent={accent}
+        className="mb-5 self-center"
+      />
       {venue.label ? (
         <p className={`${INNER_EYEBROW} ${TONE_TEXT.secondary} mb-4`}>
           {venue.label}

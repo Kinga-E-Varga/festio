@@ -14,6 +14,7 @@ import {
   STACK,
   cardColumns,
   centredWhenStacked,
+  turnTone,
 } from "@/modular/styles";
 import type { VariantProps } from "@/types/modular";
 import { ContactLines } from "./ContactLines";
@@ -45,6 +46,7 @@ export function PeopleCards({
             >
               <ItemIcon
                 mark={itemMark(mode, person.icon, index)}
+                tone={turnTone(index, "secondary")}
                 accent={accent}
                 className="mb-5"
               />

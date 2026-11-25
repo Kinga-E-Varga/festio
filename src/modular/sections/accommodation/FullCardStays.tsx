@@ -1,4 +1,5 @@
 import { list } from "@/modular/content";
+import { turnTone } from "@/modular/styles";
 import { FULL_CARD_CELL, FullCard, fullCardGrid } from "@/modular/FullCard";
 import type { VariantProps } from "@/types/modular";
 import { StayCell } from "./StayList";
@@ -35,6 +36,7 @@ export function FullCardStays({
             <StayCell place={place} className={CELL}>
               <ItemIcon
                 mark={itemMark(mode, place.icon, index)}
+                tone={turnTone(index, "secondary")}
                 accent={accent}
                 className="mb-5"
               />

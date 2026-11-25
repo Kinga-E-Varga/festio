@@ -2,7 +2,7 @@ import { ItemIcon } from "@/modular/cards/CardIcon";
 import { iconMode, itemMark } from "@/modular/item-marks";
 import { list } from "@/modular/content";
 import { FULL_CARD_CELL, FullCard, fullCardGrid } from "@/modular/FullCard";
-import { H3_ITEM, INNER_EYEBROW } from "@/modular/styles";
+import { H3_ITEM, INNER_EYEBROW, turnTone } from "@/modular/styles";
 import type { VariantProps } from "@/types/modular";
 import { Names } from "./Names";
 
@@ -32,6 +32,7 @@ export function FullCardGroups({
           <li key={index} className={FULL_CARD_CELL}>
             <ItemIcon
               mark={itemMark(mode, group.icon, index)}
+              tone={turnTone(index, "secondary")}
               accent={accent}
               className="mb-5"
             />

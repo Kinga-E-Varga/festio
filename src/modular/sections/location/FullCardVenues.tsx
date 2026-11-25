@@ -1,6 +1,6 @@
 import { isOn, list } from "@/modular/content";
 import { FULL_CARD_CELL, FullCard, fullCardGrid } from "@/modular/FullCard";
-import { SECTION_GROUND, UNLINED_PULL } from "@/modular/styles";
+import { SECTION_GROUND, UNLINED_PULL, turnTone } from "@/modular/styles";
 import type { SectionGround, VariantProps } from "@/types/modular";
 import { iconMode, itemMark } from "@/modular/item-marks";
 import { VenueRow, VenueText } from "./ListGridVenues";
@@ -53,6 +53,7 @@ export function FullCardVenues({
               <VenueText
                 venue={venue}
                 mark={itemMark(mode, venue.icon, index)}
+                tone={turnTone(index, "secondary")}
                 accent={accent}
               />
             </li>

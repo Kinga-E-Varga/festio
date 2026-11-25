@@ -114,10 +114,11 @@ export const section: SectionDefinition = {
         ro: "Pictogramă",
         hu: "Ikon",
       },
-      // Simple with the icon where the label goes.
+      // Simple with the icon where the label goes. Like every icon style,
+      // the icon is always there: no Use icons or Use numbers switch.
       shows: [
         "photos",
-        ...iconShows("venues"),
+        "venues.icon",
         "venues.venue",
         "venues.address",
         "venues.mapsLink",

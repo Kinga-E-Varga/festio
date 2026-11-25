@@ -8,13 +8,13 @@ import {
   CARD_STACK,
 } from "@/modular/styles";
 import type { VariantProps } from "@/types/modular";
-import { iconMode } from "@/modular/item-marks";
 import { DayEvents } from "./DayEvents";
 
 /**
  * Two-line & list (`1`) with each day a card on the other surface instead
- * of between hairlines, the cards stacked: the same rows and icons
- * (`DayEvents`), the day's date in its card. A single day shows no date.
+ * of between hairlines, the cards stacked: each event centred in its card,
+ * no icons (`DayEvents`, `centred`), the day's date over them. A single day
+ * shows no date.
  */
 export function Variant({ values, language, ground }: VariantProps) {
   const days = groups(values, "days");
@@ -31,9 +31,9 @@ export function Variant({ values, language, ground }: VariantProps) {
               <DayEvents
                 day={day}
                 index={index}
-                mode={iconMode(values)}
                 showDate={days.length > 1}
                 language={language}
+                centred
               />
             </li>
           ))}

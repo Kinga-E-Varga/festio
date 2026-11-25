@@ -5,7 +5,7 @@ import { list, text } from "@/modular/content";
 import { iconMode, itemMark } from "@/modular/item-marks";
 import { noteItems, twinIcon } from "@/modular/notes";
 import { SectionHeading } from "@/modular/SectionHeading";
-import { PAD, STACK, SECTION_GROUND, COLUMN } from "@/modular/styles";
+import { PAD, STACK, SECTION_GROUND, COLUMN, turnTone } from "@/modular/styles";
 import type { VariantProps } from "@/types/modular";
 import { otherGround } from "@/modular/ground";
 
@@ -32,7 +32,7 @@ export function Variant({ values, related, ground }: VariantProps) {
                   label={text(dress, "eyebrow")}
                   mark={itemMark(mode, twinIcon(dress), index)}
                   ground={cardGround}
-                  tone="secondary"
+                  tone={turnTone(index, "secondary")}
                 />
               );
             }
@@ -44,7 +44,7 @@ export function Variant({ values, related, ground }: VariantProps) {
                   label={text(gifts, "eyebrow")}
                   mark={itemMark(mode, twinIcon(gifts), index)}
                   ground={cardGround}
-                  tone="secondary"
+                  tone={turnTone(index, "secondary")}
                 />
               );
             }
@@ -52,7 +52,7 @@ export function Variant({ values, related, ground }: VariantProps) {
               <NoteCard
                 key={index}
                 mark={itemMark(mode, item.icon, index)}
-                tone="secondary"
+                tone={turnTone(index, "secondary")}
                 label={item.label ?? ""}
                 title={item.title}
                 body={item.text}

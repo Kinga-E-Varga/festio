@@ -3,7 +3,12 @@ import {
   HEADING_SHOWS,
   ICON_HEADING_SHOWS,
 } from "@/modular/heading";
-import { ITEM_ICON, iconShows, iconSwitches } from "@/modular/item-marks";
+import {
+  ITEM_ICON,
+  NUMBERS_SWITCH,
+  iconShows,
+  iconSwitches,
+} from "@/modular/item-marks";
 import { LABELS } from "@/modular/labels";
 import { GOOD_TO_KNOW, MAX_NOTES, NOTE_SWITCH } from "@/modular/notes";
 import type { SectionDefinition } from "@/types/modular";
@@ -62,13 +67,7 @@ export const section: SectionDefinition = {
         ro: "Două rânduri & carduri",
         hu: "Kétsoros & kártyák",
       },
-      shows: [
-        ...HEADING_SHOWS,
-        ...iconShows("items"),
-        "items.label",
-        "items.title",
-        "items.text",
-      ],
+      shows: [...HEADING_SHOWS, "items.label", "items.title", "items.text"],
     },
     // "2" is retired (Simple, removed): never reuse it.
     {
@@ -80,7 +79,7 @@ export const section: SectionDefinition = {
       },
       shows: [
         ...ICON_HEADING_SHOWS,
-        ...iconShows("items"),
+        NUMBERS_SWITCH.id,
         "items.label",
         "items.title",
         "items.text",
@@ -95,7 +94,6 @@ export const section: SectionDefinition = {
       },
       shows: [
         ...ICON_HEADING_SHOWS,
-        ...iconShows("items"),
         "items.label",
         "items.title",
         "items.text",
@@ -213,6 +211,7 @@ export const section: SectionDefinition = {
   fields: [
     ...HEADING_FIELDS,
     ...iconSwitches("items"),
+    NUMBERS_SWITCH,
     {
       id: NOTE_SWITCH["dress-code"],
       label: { en: "dress code", ro: "ținută", hu: "dresszkód" },

@@ -6,6 +6,7 @@ import {
   useDeferredValue,
   useEffect,
   useMemo,
+  useReducer,
   useRef,
   useState,
 } from "react";
@@ -36,6 +37,8 @@ import type {
 } from "@/types/modular";
 import { contentCardId } from "./content/ContentTab";
 import { designCardId } from "./design/SectionsList";
+import { FinalizeButton } from "./finalize/FinalizeButton";
+import { PhotoUploadContext, uploadSamplePhoto } from "./finalize/photo-upload";
 import { ModularEditPanel } from "./ModularEditPanel";
 import { ModularInvitation } from "./ModularInvitation";
 
@@ -168,6 +171,11 @@ export function ModularEditor({
    * further down.
    */
   const afterOpen = useRef<string | null>(null);
+  /*
+   * A render with nothing changed, so `afterDraw` still runs: the preview's
+   * Design or Content button on a section whose card is already out.
+   */
+  const [, redraw] = useReducer((count: number) => count + 1, 0);
 
   useEffect(() => {
     const caughtUp = preview === state;
@@ -250,8 +258,12 @@ export function ModularEditor({
   function pickTemplate(id: string) {
     const picked = library.templates.find((candidate) => candidate.id === id);
     if (!picked) return;
+    // The template it came from tells the host's own text from its samples.
+    const from = library.templates.find(
+      (candidate) => candidate.id === template,
+    );
     setTemplate(id);
-    change(applyTemplate(state, picked));
+    change(applyTemplate(state, from, picked, library, language));
   }
 
   /*
@@ -290,6 +302,7 @@ export function ModularEditor({
       setTab("content");
       openFields(id);
       afterDraw.current.push({ run: () => scrollToCard(contentCardId(id)) });
+      redraw();
     },
     [openFields, setEditing],
   );
@@ -301,6 +314,7 @@ export function ModularEditor({
       setTab("design");
       setOpenStyles(id);
       afterDraw.current.push({ run: () => scrollToCard(designCardId(id)) });
+      redraw();
     },
     [setEditing],
   );
@@ -322,7 +336,14 @@ export function ModularEditor({
   );
 
   return (
-    <>
+    /* A template's preview, in development: the photo fields take new sample photos. */
+    <PhotoUploadContext
+      value={
+        saving || process.env.NODE_ENV !== "development"
+          ? null
+          : uploadSamplePhoto
+      }
+    >
       <EditorFrame
         backTo={saving && eventPath(saving.eventId)}
         views={views}
@@ -408,6 +429,15 @@ export function ModularEditor({
         </div>
       </EditorFrame>
       {dialog}
-    </>
+      {/* A template's preview, in development: save it as a draft for the `template` skill. */}
+      {saving ? null : (
+        <FinalizeButton
+          state={state}
+          from={template}
+          language={language}
+          onDone={showToast}
+        />
+      )}
+    </PhotoUploadContext>
   );
 }

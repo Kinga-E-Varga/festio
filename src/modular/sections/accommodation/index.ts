@@ -3,7 +3,12 @@ import {
   HEADING_SHOWS,
   ICON_HEADING_SHOWS,
 } from "@/modular/heading";
-import { ITEM_ICON, iconShows, iconSwitches } from "@/modular/item-marks";
+import {
+  ITEM_ICON,
+  NUMBERS_SWITCH,
+  iconShows,
+  iconSwitches,
+} from "@/modular/item-marks";
 import { LABELS } from "@/modular/labels";
 import type { SectionDefinition } from "@/types/modular";
 
@@ -54,7 +59,7 @@ export const section: SectionDefinition = {
       // No italic second line under the heading.
       shows: [
         ...ICON_HEADING_SHOWS,
-        ...iconShows("places"),
+        NUMBERS_SWITCH.id,
         "places.distance",
         "places.name",
         "places.note",
@@ -71,7 +76,6 @@ export const section: SectionDefinition = {
       // No italic second line under the heading.
       shows: [
         ...ICON_HEADING_SHOWS,
-        ...iconShows("places"),
         "places.distance",
         "places.name",
         "places.note",
@@ -197,6 +201,7 @@ export const section: SectionDefinition = {
   fields: [
     ...HEADING_FIELDS,
     ...iconSwitches("places"),
+    NUMBERS_SWITCH,
     {
       id: "places",
       label: { en: "places to stay", ro: "locuri de cazare", hu: "szállások" },

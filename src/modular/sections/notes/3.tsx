@@ -1,5 +1,5 @@
 import { list } from "@/modular/content";
-import { iconMode } from "@/modular/item-marks";
+import { numbersMode } from "@/modular/item-marks";
 import { IconHeading } from "@/modular/IconHeading";
 import { noteItems } from "@/modular/notes";
 import { PAD, SPLIT, SECTION_GROUND } from "@/modular/styles";
@@ -17,7 +17,7 @@ export function Variant({ values, related, ground }: VariantProps) {
       <IconHeading icon="compass" values={values} />
       <NoteList
         items={noteItems(list(values, "items"), values)}
-        mode={iconMode(values)}
+        mode={numbersMode(values)}
         marks="start"
         related={related}
       />

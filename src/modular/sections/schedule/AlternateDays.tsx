@@ -53,7 +53,7 @@ export function AlternateDays({
                 ? scheduleDay(day.values.date ?? "", language)
                 : ""
             }
-            tone={clockTone(index, "secondary")}
+            tone={clockTone(index)}
             first={firstEvent[index]}
             language={language}
             line={EDGE_TONE[turnTone(index, "secondary")]}

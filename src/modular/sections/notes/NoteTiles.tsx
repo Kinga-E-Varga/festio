@@ -31,6 +31,7 @@ import {
   cardColumns,
   centredWhenStacked,
   columnsFor,
+  turnTone,
 } from "@/modular/styles";
 import type { SectionGround, VariantProps } from "@/types/modular";
 
@@ -154,7 +155,7 @@ export function NoteTiles({
           }`,
           tone: accent
             ? `${TONES.secondary} ${PAGE_SECONDARY}`
-            : TONES.secondary,
+            : TONES[turnTone(index, "secondary")],
           place,
         };
         if (item.kind === "dress-code") {

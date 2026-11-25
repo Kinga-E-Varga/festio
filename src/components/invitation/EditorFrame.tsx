@@ -1,7 +1,7 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import type { ReactNode } from "react";
+import type { ComponentProps, ReactNode } from "react";
 import { STRIP_ICON } from "@/components/dashboard/styles";
 import { Toast, type ToastTone } from "@/components/dashboard/Toast";
 import { Icon } from "@/components/icons";
@@ -49,6 +49,28 @@ const STRIP_CIRCLE = `grid ${ITEM_CIRCLE} place-items-center rounded-full transi
 const DIVIDER = "hidden w-btn border-t border-neutral-300 invite:block";
 const STRIP_LABEL = "text-[11px] leading-tight font-medium";
 
+interface StripButtonProps extends ComponentProps<"button"> {
+  icon: IconName;
+  label: string;
+}
+
+/** A strip button: its icon in its circle over its label. The panel's views, and the preview's Finalize. */
+export function StripButton({
+  icon,
+  label,
+  className = "",
+  ...button
+}: StripButtonProps) {
+  return (
+    <button type="button" {...button} className={`${STRIP_ITEM} ${className}`}>
+      <span className={STRIP_CIRCLE}>
+        <Icon name={icon} {...ITEM_ICON} />
+      </span>
+      <span className={STRIP_LABEL}>{label}</span>
+    </button>
+  );
+}
+
 interface EditorStripProps<Id extends string> {
   views: readonly StripView<Id>[];
   view: Id;
@@ -92,19 +114,14 @@ function EditorStrip<Id extends string>({
         {views.map((each) => {
           const current = open && view === each.id;
           return (
-            <button
+            <StripButton
               key={each.id}
-              type="button"
+              icon={each.icon}
+              label={each.label}
               aria-controls={EDITOR_PANEL_ID}
               aria-expanded={current}
               onClick={() => (current ? onClose() : onView(each.id))}
-              className={STRIP_ITEM}
-            >
-              <span className={STRIP_CIRCLE}>
-                <Icon name={each.icon} {...ITEM_ICON} />
-              </span>
-              <span className={STRIP_LABEL}>{each.label}</span>
-            </button>
+            />
           );
         })}
         <button

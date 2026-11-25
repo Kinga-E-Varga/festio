@@ -48,3 +48,6 @@ export const MEMO_MAX_ENTRIES = 1000;
 
 /** The most questions a reply form asks, ours and the host's own; archived ones don't count. */
 export const QUESTIONS_MAX = 10;
+
+/** Dev only: the largest sample photo the template preview takes (`api/dev/sample-photo`). */
+export const SAMPLE_PHOTO_MAX_MB = 10;

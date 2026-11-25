@@ -3,7 +3,7 @@ import { NoteCard } from "@/modular/cards/NoteCard";
 import { otherGround } from "@/modular/ground";
 import { iconMode, itemMark } from "@/modular/item-marks";
 import { SectionHeading } from "@/modular/SectionHeading";
-import { PAD, STACK, SECTION_GROUND, COLUMN } from "@/modular/styles";
+import { PAD, STACK, SECTION_GROUND, COLUMN, turnTone } from "@/modular/styles";
 import type { VariantProps } from "@/types/modular";
 
 /**
@@ -26,7 +26,7 @@ export function Variant({ values, ground }: VariantProps) {
             <li key={index}>
               <NoteCard
                 mark={itemMark(mode, way.icon, index)}
-                tone="secondary"
+                tone={turnTone(index, "secondary")}
                 label={way.label ?? ""}
                 title={way.title}
                 body={way.text}

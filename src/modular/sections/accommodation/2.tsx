@@ -1,5 +1,5 @@
 import { list } from "@/modular/content";
-import { iconMode } from "@/modular/item-marks";
+import { numbersMode } from "@/modular/item-marks";
 import { IconHeading } from "@/modular/IconHeading";
 import { ITEM_TITLE, PAD, SPLIT, SECTION_GROUND } from "@/modular/styles";
 import type { VariantProps } from "@/types/modular";
@@ -17,7 +17,7 @@ export function Variant({ values, ground }: VariantProps) {
       <StayList
         places={places}
         nameClass={ITEM_TITLE}
-        mode={iconMode(values)}
+        mode={numbersMode(values)}
         numbered
       />
     </div>

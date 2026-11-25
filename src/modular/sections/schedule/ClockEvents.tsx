@@ -12,16 +12,16 @@ import {
 import type { Language } from "@/lib/language";
 import type { Group } from "@/types/modular";
 
-/** A day's colour, by its place: the 1st, 3rd… in `first` (the accent unless said), the 2nd, 4th… the other (`turnTone`). */
+/** A day's colour, by its place: the 1st, 3rd… in `first` (the secondary unless said, as the Two-line lists', `DayEvents`), the 2nd, 4th… in the other (`turnTone`). */
 export function clockTone(
   index: number,
-  first: "accent" | "secondary" = "accent",
+  first: "accent" | "secondary" = "secondary",
 ) {
   return TONE_TEXT[turnTone(index, first)];
 }
 
 /**
- * One day's events of Icon & list (`2`) and Icon & cards (`7`): each a row,
+ * One day's events of Icon & list (`2`): each a row,
  * its time large in the body face in the day's colour (`tone`), its title
  * and note beside it, centred on each other. No icons by the events.
  */
@@ -60,9 +60,23 @@ export function ClockEvents({
 /**
  * A day's date over its `ClockEvents` in its times' colour, in line with
  * their titles: an empty time column first. 4px over the first row's
- * padding, 16px from the first title.
+ * padding, 16px from the first title. With `centred`, centred over the
+ * centred events of the card styles (`DayEvents`).
  */
-export function ClockDate({ date, tone }: { date: string; tone: string }) {
+export function ClockDate({
+  date,
+  tone,
+  centred = false,
+}: {
+  date: string;
+  tone: string;
+  centred?: boolean;
+}) {
+  if (centred) {
+    return (
+      <p className={`${INNER_EYEBROW} mb-1 text-center ${tone}`}>{date}</p>
+    );
+  }
   return (
     <p className={`mb-1 grid grid-cols-[auto_minmax(0,1fr)] gap-x-3 ${tone}`}>
       <span aria-hidden="true" className={`${TIME_COLUMN} h-0`} />

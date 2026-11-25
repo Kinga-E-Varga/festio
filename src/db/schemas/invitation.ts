@@ -33,7 +33,7 @@ const sectionValuesSchema = z.record(
 );
 
 /** A modular invitation: today's `ModularState`, ids only plus every section's values. */
-const modularInvitationSchema = z.object({
+export const modularInvitationSchema = z.object({
   kind: z.literal("modular"),
   palette: idSchema,
   fontPair: idSchema,

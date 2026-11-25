@@ -1,6 +1,12 @@
 import { list } from "@/modular/content";
 import { FULL_CARD_CELL, FullCard, fullCardGrid } from "@/modular/FullCard";
-import { BODY, H3_ITEM, INNER_EYEBROW, MUTED } from "@/modular/styles";
+import {
+  BODY,
+  H3_ITEM,
+  INNER_EYEBROW,
+  MUTED,
+  turnTone,
+} from "@/modular/styles";
 import type { VariantProps } from "@/types/modular";
 import { ItemIcon } from "@/modular/cards/CardIcon";
 import { iconMode, itemMark } from "@/modular/item-marks";
@@ -29,6 +35,7 @@ export function FullCardWays({
           <li key={index} className={FULL_CARD_CELL}>
             <ItemIcon
               mark={itemMark(mode, way.icon, index)}
+              tone={turnTone(index, "secondary")}
               accent={accent}
               className="mb-5"
             />

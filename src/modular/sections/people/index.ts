@@ -3,7 +3,12 @@ import {
   HEADING_SHOWS,
   ICON_HEADING_SHOWS,
 } from "@/modular/heading";
-import { ITEM_ICON, iconShows, iconSwitches } from "@/modular/item-marks";
+import {
+  ITEM_ICON,
+  NUMBERS_SWITCH,
+  iconShows,
+  iconSwitches,
+} from "@/modular/item-marks";
 import { LABELS } from "@/modular/labels";
 import type { SectionDefinition } from "@/types/modular";
 
@@ -88,7 +93,7 @@ export const section: SectionDefinition = {
         hu: "Ikon & lista",
       },
       // No eyebrow or italic line over the heading.
-      shows: [...ICON_HEADING_SHOWS, ...iconShows("groups"), ...GROUP_SHOWS],
+      shows: [...ICON_HEADING_SHOWS, NUMBERS_SWITCH.id, ...GROUP_SHOWS],
     },
     {
       id: "5",
@@ -97,8 +102,8 @@ export const section: SectionDefinition = {
         ro: "Două rânduri & carduri",
         hu: "Kétsoros & kártyák",
       },
-      // Two-line & list, each group a card.
-      shows: [...HEADING_SHOWS, ...iconShows("groups"), ...GROUP_SHOWS],
+      // Each group a centred card, as Icon & cards: no icons or numbers.
+      shows: [...HEADING_SHOWS, ...GROUP_SHOWS],
     },
     {
       id: "6",
@@ -107,8 +112,8 @@ export const section: SectionDefinition = {
         ro: "Pictogramă & carduri",
         hu: "Ikon & kártyák",
       },
-      // Icon & list, each group a card.
-      shows: [...ICON_HEADING_SHOWS, ...iconShows("groups"), ...GROUP_SHOWS],
+      // Icon & list, each group a centred card: no icons or numbers.
+      shows: [...ICON_HEADING_SHOWS, ...GROUP_SHOWS],
     },
     {
       id: "7",
@@ -163,6 +168,7 @@ export const section: SectionDefinition = {
   fields: [
     ...HEADING_FIELDS,
     ...iconSwitches("groups"),
+    NUMBERS_SWITCH,
     {
       id: "groups",
       label: { en: "groups", ro: "grupuri", hu: "csoportok" },

@@ -42,13 +42,13 @@ export const section: SectionDefinition = {
     },
     {
       id: "11",
-      name: { en: "Centred", ro: "Centrat", hu: "Középen" },
+      name: { en: "Full centred", ro: "Întreg centrat", hu: "Teljes, középen" },
       group: "photo",
       // The whole screen: the page's width, past the column, and from under
       // the frosted bar.
       wide: true,
       underHeader: true,
-      // The photo fills the cover, and centred in its top 65% the names and
+      // The photo fills the cover, and centred in its top 60% the names and
       // their second line, the date, a divider and a free line, all in one
       // dark colour, for a photo light there.
       shows: [

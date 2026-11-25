@@ -8,6 +8,7 @@ import {
   SECTION_GROUND,
   STACK,
   columnsFor,
+  turnTone,
 } from "@/modular/styles";
 import type { VariantProps } from "@/types/modular";
 import { ItemIcon } from "@/modular/cards/CardIcon";
@@ -37,6 +38,7 @@ export function Variant({ values, ground }: VariantProps) {
             >
               <ItemIcon
                 mark={itemMark(mode, person.icon, index)}
+                tone={turnTone(index, "secondary")}
                 accent={ground === "accent"}
                 className="mb-5"
               />

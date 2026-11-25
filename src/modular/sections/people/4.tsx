@@ -1,5 +1,5 @@
 import { list } from "@/modular/content";
-import { iconMode } from "@/modular/item-marks";
+import { numbersMode } from "@/modular/item-marks";
 import { IconHeading } from "@/modular/IconHeading";
 import { PAD, SECTION_GROUND, SPLIT } from "@/modular/styles";
 import type { VariantProps } from "@/types/modular";
@@ -16,7 +16,7 @@ export function Variant({ values, ground }: VariantProps) {
       <IconHeading icon="heart" values={values} />
       <GroupList
         groups={list(values, "groups").slice(0, 4)}
-        mode={iconMode(values)}
+        mode={numbersMode(values)}
         icons="start"
       />
     </div>

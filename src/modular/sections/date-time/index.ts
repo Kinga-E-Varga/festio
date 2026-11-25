@@ -36,6 +36,12 @@ export const section: SectionDefinition = {
       shows: ["eventDate", ...ICON_HEADING_SHOWS],
     },
     {
+      id: "12",
+      name: { en: "Simple", ro: "Simplu", hu: "Egyszerű" },
+      // Simple accent on the surface in turn.
+      shows: ["eventDate", "dateFormat", "note"],
+    },
+    {
       id: "2",
       name: {
         en: "Simple accent",

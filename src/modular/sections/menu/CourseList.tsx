@@ -6,6 +6,7 @@ import {
   DISC_ROW,
   leadRow,
   NARROW_LIST,
+  turnTone,
 } from "@/modular/styles";
 import type { ListItem } from "@/types/modular";
 import { Dishes, dishesOf } from "./Dishes";
@@ -20,7 +21,7 @@ import { itemMark, type IconMode } from "@/modular/item-marks";
  * over the dishes without one, 16px from the label to the dishes and 24px
  * under. Its mark (`itemMark`), when it has one, on a soft disc at the row's end,
  * centred on the course, every disc in the secondary — as Transportation's Two-line &
- * list. `numbered`: each course's mark (`LeadMark`: its icon, or its number 01, 02…) bare before it, in the accent, in a column as wide as the schedule's times
+ * list. `numbered`: each course's mark (`LeadMark`: its icon, or its number 01, 02…) bare before it, the icon in the muted ink, the number in the accent, in a column as wide as the schedule's times
  * (`TIME_COLUMN`), centred on the course, as Transportation's Icon & list,
  * and on a phone the list 350px at most, centred.
  */
@@ -67,7 +68,9 @@ export function CourseList({
               </p>
             ) : null}
           </div>
-          {!numbered && <ItemIcon mark={marks[index]} />}
+          {!numbered && (
+            <ItemIcon mark={marks[index]} tone={turnTone(index, "secondary")} />
+          )}
         </li>
       ))}
     </ul>

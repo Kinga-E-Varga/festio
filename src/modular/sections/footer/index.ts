@@ -21,6 +21,38 @@ export const section: SectionDefinition = {
       shows: [],
     },
     {
+      id: "6",
+      name: {
+        en: "Colourful accent",
+        ro: "Colorat accent",
+        hu: "Színes kiemelt",
+      },
+      // Colourful with the date in the accent, as the header's Colourful
+      // accent has its Reply button: a band of the surface, as Colourful.
+      band: "surface",
+      shows: [],
+    },
+    {
+      id: "5",
+      name: { en: "Balanced", ro: "Echilibrat", hu: "Kiegyensúlyozott" },
+      // The mark in the ink, its middle and the date in the secondary: a
+      // band of the surface, as Colourful.
+      band: "surface",
+      shows: [],
+    },
+    {
+      id: "4",
+      name: {
+        en: "Balanced accent",
+        ro: "Echilibrat accent",
+        hu: "Kiegyensúlyozott kiemelt",
+      },
+      // Balanced with the mark's middle and the date in the accent: a band
+      // of the surface, as Colourful.
+      band: "surface",
+      shows: [],
+    },
+    {
       id: "2",
       name: { en: "Accent", ro: "Accent", hu: "Kiemelt" },
       ground: "accent",

@@ -33,13 +33,19 @@ function withSwitches(switches: Record<string, boolean>): ModularState {
 }
 
 test("every style offers Dress code's and Gifts' icon", () => {
-  for (const variant of ["1", "3", "4", "5", "6", "7", "8", "9"]) {
+  for (const variant of ["1", "4", "7", "8", "9"]) {
     expect(twinIcons(variant)).toEqual([true, true]);
   }
 });
 
+test("Icon & list and both cards styles offer no Dress code or Gifts icon", () => {
+  for (const variant of ["3", "5", "6"]) {
+    expect(twinIcons(variant)).toEqual([false, false]);
+  }
+});
+
 test("Use icons off or Use numbers on: no Dress code or Gifts icon", () => {
-  for (const variant of ["1", "3", "7"]) {
+  for (const variant of ["1", "7"]) {
     expect(twinIcons(variant, withSwitches({ icons: false }))).toEqual([
       false,
       false,

@@ -3,6 +3,7 @@ import type { ItemMark } from "@/modular/item-marks";
 import {
   CARD_DISC,
   H4,
+  MUTED,
   PAGE_SECONDARY,
   TIME_COLUMN,
   TONE_TEXT,
@@ -27,9 +28,11 @@ export function CardIcon({
 }
 
 /**
- * A list item's mark on its disc (`itemMark`), in `tone` (every item in the
- * secondary unless its list takes turns); nothing without one. `accent`: on the accent, the palette's own secondary
- * disc (`PAGE_SECONDARY`), not the accent's ink.
+ * A list item's mark on its disc (`itemMark`), in `tone`: the lists and
+ * cards take turns, the 1st, 3rd… item in the secondary, the 2nd, 4th… in
+ * the accent (`turnTone`); nothing without one. `accent`: on the accent,
+ * always the palette's own secondary disc (`PAGE_SECONDARY`), not the
+ * accent's ink: an accent disc would not show there.
  */
 export function ItemIcon({
   mark,
@@ -44,7 +47,7 @@ export function ItemIcon({
 }) {
   return mark ? (
     <span
-      className={`${CARD_DISC} ${TONES[tone]} ${accent ? PAGE_SECONDARY : ""} ${className}`}
+      className={`${CARD_DISC} ${accent ? `${TONES.secondary} ${PAGE_SECONDARY}` : TONES[tone]} ${className}`}
     >
       <MarkGlyph mark={mark} iconClass="size-5.5" />
     </span>
@@ -73,7 +76,8 @@ export function MarkGlyph({
 
 /**
  * An Icon & list row's mark, bare in the column a schedule has its times
- * in (`TIME_COLUMN`), in the accent: the icon at 26px, or the number;
+ * in (`TIME_COLUMN`): the icon at 26px in the muted ink, or the number in
+ * the accent;
  * nothing without one, the row then its text alone (`leadRow`).
  */
 export function LeadMark({ mark }: { mark: ItemMark }) {
@@ -81,7 +85,7 @@ export function LeadMark({ mark }: { mark: ItemMark }) {
   return (
     <span className={`${TIME_COLUMN} ${TONE_TEXT.accent}`}>
       {"icon" in mark ? (
-        <Icon name={mark.icon} className="block size-6.5" />
+        <Icon name={mark.icon} className={`block size-6.5 ${MUTED}`} />
       ) : (
         mark.number
       )}

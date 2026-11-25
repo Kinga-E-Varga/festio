@@ -6,19 +6,19 @@ import type { VariantProps } from "@/types/modular";
 
 /*
  * The photo's height below the frosted bar (`pt-bar`, as the cover is drawn
- * from the page's top) in two: the words' box the top 65% (`WORDS`), the
- * photo alone the 35% below (`REST`). Both grow from nothing in those
+ * from the page's top) in two: the words' box the top 60% (`WORDS`), the
+ * photo alone the 40% below (`REST`). Both grow from nothing in those
  * shares, so the split holds whatever the photo's height; when the words
  * need more, their box takes their height and the rest is left below.
  */
-const REST = "flex-[7_1_0]";
+const REST = "flex-[2_1_0]";
 
 /*
  * The words, bunched in the middle of their box, centred, a size container
  * so the names and the date step with its width. Positioned, so drawn over
  * the photo.
  */
-const WORDS = `@container relative flex min-h-fit w-full flex-[13_1_0] flex-col items-center justify-center px-6 py-6 text-center ${PHOTO_DARK}`;
+const WORDS = `@container relative flex min-h-fit w-full flex-[3_1_0] flex-col items-center justify-center px-6 py-6 text-center ${PHOTO_DARK}`;
 
 /*
  * The photo's box, the words in it, so they always sit on the photo: the
@@ -39,7 +39,7 @@ const DIVIDER = "my-5 h-px w-16 bg-current opacity-50";
 
 /**
  * A photo cover: the host's photo filling the whole cover (capped
- * on a very big screen, `STAGE`), and centred in its top 65% the
+ * on a very big screen, `STAGE`), and centred in its top 60% the
  * names and their second line, the event's date, a
  * divider and the host's free line, all in one dark colour (`PHOTO_DARK`),
  * for a photo light where they sit.

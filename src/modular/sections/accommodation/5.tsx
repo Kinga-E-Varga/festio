@@ -6,6 +6,7 @@ import {
   STACK,
   columnsFor,
   SECTION_GROUND,
+  turnTone,
 } from "@/modular/styles";
 import type { VariantProps } from "@/types/modular";
 import { StayCell } from "./StayList";
@@ -39,6 +40,7 @@ export function Variant({ values, ground }: VariantProps) {
               <StayCell place={place} className={CELL}>
                 <ItemIcon
                   mark={itemMark(mode, place.icon, index)}
+                  tone={turnTone(index, "secondary")}
                   accent={ground === "accent"}
                   className="mb-5"
                 />

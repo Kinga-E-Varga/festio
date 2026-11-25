@@ -13,6 +13,7 @@ import {
   centredWhenStacked,
   cardColumns,
   SECTION_GROUND,
+  turnTone,
 } from "@/modular/styles";
 import type { VariantProps } from "@/types/modular";
 import { otherGround } from "@/modular/ground";
@@ -45,6 +46,7 @@ export function WayCards({
             >
               <ItemIcon
                 mark={itemMark(mode, way.icon, index)}
+                tone={turnTone(index, "secondary")}
                 accent={accent}
                 className="mb-5"
               />

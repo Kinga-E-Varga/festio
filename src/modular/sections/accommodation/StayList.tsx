@@ -43,9 +43,11 @@ const DISC = {
 };
 
 /**
- * The stays, one row each between lines — or, with `cards`, each row a card
- * on that surface, the cards stacked. With `numbered`, each stay's mark
- * (`LeadMark`: its icon, or its number 01, 02…) first, in the accent, as
+ * The stays, one row each between lines — or, with `cards`, each a card on
+ * that surface, the cards stacked, no marks, the lines centred and a
+ * link's arrow after the name (as `StayCell`'s): Two-line & cards and Icon
+ * & cards. With `numbered`, each stay's mark
+ * (`LeadMark`: its icon in the muted ink, or its number 01, 02… in the accent) first, as
  * Transportation's Icon & list (`TIME_COLUMN`); without, the arrow on a
  * soft disc as Transportation's Two-line & list's icons, in the secondary, its colours swapping on hover. Spaced as
  * Transportation's lists and cards: 16px from the eyebrow to the name,
@@ -68,14 +70,20 @@ export function StayList({
   numbered?: boolean;
 }) {
   if (places.length === 0) return null;
+  const centred = cards !== undefined;
   return (
     <ol className={cards ? CARD_STACK : `border-t-1 ${RULE}`}>
       {places.map((place, index) => {
         const link = safeLink(place.link);
         // Padded as a schedule's event: 12px under, and over the name when
         // there is no eyebrow (an eyebrow takes the place of a date).
-        const mark = itemMark(mode, place.icon, index);
-        const row = `${numbered ? LEAD_ROW[mark ? "marked" : "bare"] : `${DISC_ROW} items-center`} pb-3 ${place.distance ? "" : "pt-3"}`;
+        const mark = centred ? null : itemMark(mode, place.icon, index);
+        const layout = centred
+          ? "flex flex-col items-center text-center"
+          : numbered
+            ? LEAD_ROW[mark ? "marked" : "bare"]
+            : `${DISC_ROW} items-center`;
+        const row = `${layout} pb-3 ${place.distance ? "" : "pt-3"}`;
         const number = numbered ? <LeadMark mark={mark} /> : null;
         return (
           <li
@@ -94,8 +102,13 @@ export function StayList({
                 className={`group/link ${row}`}
               >
                 {number}
-                <Stay place={place} nameClass={nameClass} />
-                {numbered ? (
+                <Stay
+                  place={place}
+                  nameClass={nameClass}
+                  centred={centred}
+                  arrow={centred}
+                />
+                {centred ? null : numbered ? (
                   ARROW
                 ) : (
                   <span
@@ -108,7 +121,7 @@ export function StayList({
             ) : (
               <div className={row}>
                 {number}
-                <Stay place={place} nameClass={nameClass} />
+                <Stay place={place} nameClass={nameClass} centred={centred} />
               </div>
             )}
           </li>
@@ -118,10 +131,25 @@ export function StayList({
   );
 }
 
-/** A stay's eyebrow (its `distance`), name and note — the cell before the arrow. */
-function Stay({ place, nameClass }: { place: ListItem; nameClass: string }) {
+/**
+ * A stay's eyebrow (its `distance`), name and note — the cell before the
+ * arrow; with `arrow`, the arrow after the name instead.
+ */
+function Stay({
+  place,
+  nameClass,
+  centred = false,
+  arrow = false,
+}: {
+  place: ListItem;
+  nameClass: string;
+  centred?: boolean;
+  arrow?: boolean;
+}) {
   return (
-    <span className="flex min-w-0 flex-col gap-1">
+    <span
+      className={`flex min-w-0 flex-col gap-1 ${centred ? "items-center" : ""}`}
+    >
       {place.distance ? (
         <span
           className={`${INNER_EYEBROW} mb-3 text-[color:var(--m-secondary)]`}
@@ -129,7 +157,12 @@ function Stay({ place, nameClass }: { place: ListItem; nameClass: string }) {
           {place.distance}
         </span>
       ) : null}
-      <span className={nameClass}>{place.name}</span>
+      <span className={nameClass}>
+        {place.name}
+        {arrow ? (
+          <span className="ml-2 inline-block align-middle">{ARROW}</span>
+        ) : null}
+      </span>
       {place.note ? (
         <small className={`${BODY_SM} ${MUTED}`}>{place.note}</small>
       ) : null}

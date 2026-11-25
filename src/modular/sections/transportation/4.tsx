@@ -1,5 +1,5 @@
 import { list } from "@/modular/content";
-import { iconMode } from "@/modular/item-marks";
+import { numbersMode } from "@/modular/item-marks";
 import { IconHeading } from "@/modular/IconHeading";
 import { PAD, SPLIT, SECTION_GROUND } from "@/modular/styles";
 import type { VariantProps } from "@/types/modular";
@@ -15,7 +15,7 @@ export function Variant({ values, ground }: VariantProps) {
       <IconHeading icon="bus" values={values} />
       <WaysList
         ways={list(values, "ways").slice(0, 6)}
-        mode={iconMode(values)}
+        mode={numbersMode(values)}
       />
     </div>
   );

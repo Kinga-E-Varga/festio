@@ -1,5 +1,4 @@
 import { list } from "@/modular/content";
-import { iconMode } from "@/modular/item-marks";
 import { otherGround } from "@/modular/ground";
 import { IconHeading } from "@/modular/IconHeading";
 import { noteItems } from "@/modular/notes";
@@ -9,7 +8,8 @@ import { NoteList } from "./NoteList";
 
 /**
  * Icon & list (`3`) with each note a card on the other surface instead of
- * between hairlines, the cards stacked (`NoteList`); each note's mark bare before it.
+ * between hairlines, the cards stacked (`NoteList`): no icons or numbers,
+ * the text centred.
  */
 export function Variant({ values, related, ground }: VariantProps) {
   return (
@@ -17,8 +17,6 @@ export function Variant({ values, related, ground }: VariantProps) {
       <IconHeading icon="compass" values={values} />
       <NoteList
         items={noteItems(list(values, "items"), values)}
-        mode={iconMode(values)}
-        marks="start"
         related={related}
         cards={otherGround(ground)}
       />

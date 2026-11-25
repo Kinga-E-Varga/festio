@@ -1,12 +1,11 @@
 import { list } from "@/modular/content";
-import { iconMode } from "@/modular/item-marks";
 import { otherGround } from "@/modular/ground";
 import { IconHeading } from "@/modular/IconHeading";
 import { ITEM_TITLE, PAD, SPLIT, SECTION_GROUND } from "@/modular/styles";
 import type { VariantProps } from "@/types/modular";
 import { StayList } from "./StayList";
 
-/** Icon & list (`2`), numbered, with each stay a card on the other surface. */
+/** Icon & cards: the bed heading beside each stay a card on the other surface: no icons or numbers, the text centred. */
 export function Variant({ values, ground }: VariantProps) {
   const places = list(values, "places");
 
@@ -18,9 +17,7 @@ export function Variant({ values, ground }: VariantProps) {
       <StayList
         places={places}
         nameClass={ITEM_TITLE}
-        mode={iconMode(values)}
         cards={otherGround(ground)}
-        numbered
       />
     </div>
   );

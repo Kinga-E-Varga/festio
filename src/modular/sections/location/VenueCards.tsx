@@ -5,6 +5,7 @@ import {
   HAIRLINE_FRAME,
   GROUND,
   SPLIT_COLUMNS,
+  turnTone,
 } from "@/modular/styles";
 import { otherGround } from "@/modular/ground";
 import { INVITE_COLUMN } from "@/modular/vars";
@@ -85,7 +86,7 @@ export function VenueCards({
   return (
     <ul className={`grid gap-4 @3xl:gap-6 ${ROW[venues.length]}`}>
       {venues.map((venue, index) => {
-        const tone = "secondary";
+        const tone = turnTone(index, "secondary");
         const mark = itemMark(mode, venue.icon, index);
         return photos ? (
           <VenueCard

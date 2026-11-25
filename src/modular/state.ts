@@ -69,21 +69,35 @@ export function initialState(
 }
 
 /**
- * A template's look over the state: palette, pattern, corners and pair
- * only. Sections, values and the envelope stay as they are — a template's samples are
- * copied once, by `initialState`, and after that only the host changes them.
+ * The template picked in the Design tab over the invitation: its look and
+ * its sections (on, off and each style) in full, as a template only makes
+ * sense in its own order. Values field by field: one still as `from` (the
+ * template it came from) left it — its sample or `DEFAULTS` — takes the
+ * picked template's; one the host changed (an emptied one too, a list
+ * whole) stays theirs, in a section turned off as well. Without `from`
+ * every value counts as the host's. The envelope stays as it is.
  */
 export function applyTemplate(
   state: ModularState,
-  template: ModularTemplate,
+  from: ModularTemplate | undefined,
+  to: ModularTemplate,
+  library: ModularLibrary,
+  language: Language,
 ): ModularState {
-  return {
-    ...state,
-    palette: template.palette,
-    fontPair: template.fontPair,
-    pattern: template.pattern ?? null,
-    corners: template.corners ?? DEFAULT_CORNERS,
-  };
+  const before = from ? initialState(from, library, language).values : null;
+  const after = initialState(to, library, language);
+  const values = Object.fromEntries(
+    Object.entries(after.values).map(([id, picked]) => {
+      const own = state.values[id] ?? {};
+      const was = before?.[id] ?? {};
+      const kept = Object.entries(own).filter(
+        ([field, value]) =>
+          !before || JSON.stringify(value) !== JSON.stringify(was[field]),
+      );
+      return [id, { ...picked, ...Object.fromEntries(kept) }];
+    }),
+  );
+  return { ...after, envelope: state.envelope, values };
 }
 
 /**

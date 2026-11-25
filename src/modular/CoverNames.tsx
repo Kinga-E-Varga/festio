@@ -21,7 +21,7 @@ const NAMES_SPACE = "mt-6 mb-3 @3xl:mt-7";
  * Date block's in the secondary, the middle part too, the second line in
  * the accent; side by side with the picture they grow with the page, as
  * the picture does, whatever the words' column (`DATE_BLOCK_NAMES_SIZE`).
- * Centred's all in its dark colour (`PHOTO_DARK`).
+ * Full centred's all in its dark colour (`PHOTO_DARK`).
  */
 const LOOKS = {
   dateBlock: {

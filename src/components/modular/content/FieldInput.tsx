@@ -3,12 +3,13 @@
 import { Select } from "@/components/dashboard/event-editor/Select";
 import Image from "next/image";
 import { useLocale, useTranslations } from "next-intl";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { ERROR, SOFT_ACTION, INPUT } from "@/components/dashboard/styles";
 import { PanelSwitch } from "@/components/invitation/PanelSwitch";
 import { localized, type Language } from "@/lib/language";
 import { imageSrc } from "@/modular/content";
 import type { ChoiceField, ItemField, ToggleField } from "@/types/modular";
+import { usePhotoUpload } from "../finalize/photo-upload";
 import { ColorWell } from "./ColorWell";
 import { DrawingPicker } from "./DrawingPicker";
 import { IconPicker } from "./IconPicker";
@@ -119,7 +120,7 @@ export function FieldInput({
           className={`${INPUT} resize-none`}
         />
       ) : field.type === "image" ? (
-        <ImageField id={id} value={current} />
+        <ImageField id={id} value={current} onChange={onChange} />
       ) : field.type === "icon" ? (
         <IconPicker
           labelId={`${id}-label`}
@@ -170,10 +171,39 @@ export function FieldInput({
   );
 }
 
-/** The current photo and a Change button that does nothing yet. */
-function ImageField({ id, value }: { id: string; value: string }) {
+/**
+ * The current photo and Change photo, which does nothing yet for hosts. On
+ * a template's preview in development (`usePhotoUpload`) it picks a file,
+ * saved as a sample photo, and the field takes its path.
+ */
+function ImageField({
+  id,
+  value,
+  onChange,
+}: {
+  id: string;
+  value: string;
+  onChange: (value: string) => void;
+}) {
   const t = useTranslations("ContentTab");
+  const upload = usePhotoUpload();
+  const picker = useRef<HTMLInputElement>(null);
+  const [sending, setSending] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const src = imageSrc(value);
+
+  async function pick(photo: File | undefined) {
+    if (!photo || !upload) return;
+    setSending(true);
+    setError(null);
+    try {
+      onChange(await upload(photo));
+    } catch (failure) {
+      setError(failure instanceof Error ? failure.message : "Not saved.");
+    } finally {
+      setSending(false);
+    }
+  }
 
   return (
     <div className="flex items-center gap-4">
@@ -186,12 +216,33 @@ function ImageField({ id, value }: { id: string; value: string }) {
         <button
           id={id}
           type="button"
-          disabled
+          disabled={!upload || sending}
+          onClick={() => picker.current?.click()}
           className={`${SOFT_ACTION} self-start`}
         >
           {t("changePhoto")}
         </button>
-        <p className="hint-text">{t("photoSoon")}</p>
+        {upload ? (
+          <>
+            <input
+              ref={picker}
+              type="file"
+              accept="image/jpeg,image/png,image/webp"
+              hidden
+              onChange={(event) => {
+                void pick(event.target.files?.[0]);
+                event.target.value = "";
+              }}
+            />
+            {error ? (
+              <p className={ERROR}>{error}</p>
+            ) : (
+              <p className="hint-text">Dev: saved to public/modular/samples/</p>
+            )}
+          </>
+        ) : (
+          <p className="hint-text">{t("photoSoon")}</p>
+        )}
       </div>
     </div>
   );

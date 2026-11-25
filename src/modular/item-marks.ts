@@ -41,6 +41,25 @@ export function iconShows(list: string): string[] {
   return ["icons", "numbers", `${list}.icon`];
 }
 
+/**
+ * Icon & list's one switch over its items' marks: Use numbers (on by
+ * default), each item's number before it, or nothing. No icons there.
+ */
+export const NUMBERS_SWITCH: ToggleField = {
+  id: "numbered",
+  label: {
+    en: "use numbers",
+    ro: "folosește numere",
+    hu: "számok használata",
+  },
+  type: "toggle",
+};
+
+/** How Icon & list draws its items' marks, by its Use numbers switch (`NUMBERS_SWITCH`). */
+export function numbersMode(values: SectionValues): IconMode {
+  return isOn(values, NUMBERS_SWITCH.id) ? "numbers" : "none";
+}
+
 /** An item's own icon field: no "No icon" choice, the switch stands in for it. */
 export const ITEM_ICON: ItemField = {
   id: "icon",

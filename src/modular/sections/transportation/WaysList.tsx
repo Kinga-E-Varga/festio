@@ -1,14 +1,16 @@
 import {
   BODY_SM,
+  CARD_STACK,
   INNER_EYEBROW,
   ITEM_TITLE,
   MUTED,
   NARROW_LIST,
   leadRow,
+  otherCard,
 } from "@/modular/styles";
 import { LeadMark } from "@/modular/cards/CardIcon";
 import { itemMark, type IconMode, type ItemMark } from "@/modular/item-marks";
-import type { ListItem } from "@/types/modular";
+import type { ListItem, SectionGround } from "@/types/modular";
 
 /**
  * The ways of arriving for Icon & list: a hairline above and below and
@@ -43,16 +45,27 @@ export function WaysList({
 }
 
 /**
- * One way: its mark (`LeadMark`: its icon, or its number 01, 02… large), in the accent, in
+ * One way: its mark (`LeadMark`: its icon, or its number 01, 02… large; the icon in the muted ink, the number in the accent), in
  * a column as wide as the schedule's times (`TIME_COLUMN`), its eyebrow,
  * title and note beside it, centred on each other. The lists' rows and
  * Icon & cards' cards, padded as a schedule's event: 12px under the note,
  * and over the title when there is no eyebrow (an eyebrow takes the
  * place of a schedule's date).
  */
-export function WayRow({ way, mark }: { way: ListItem; mark: ItemMark }) {
+export function WayRow({
+  way,
+  mark,
+  centred = false,
+}: {
+  way: ListItem;
+  mark: ItemMark;
+  /** Icon & cards: no mark, the text centred. */
+  centred?: boolean;
+}) {
   return (
-    <div className={`${leadRow(mark)} pb-3 ${way.label ? "" : "pt-3"}`}>
+    <div
+      className={`${leadRow(mark)} pb-3 ${way.label ? "" : "pt-3"} ${centred ? "text-center" : ""}`}
+    >
       <LeadMark mark={mark} />
       <div className="min-w-0">
         {way.label ? (
@@ -70,5 +83,29 @@ export function WayRow({ way, mark }: { way: ListItem; mark: ItemMark }) {
         ) : null}
       </div>
     </div>
+  );
+}
+
+/**
+ * The ways stacked, each a card on the other surface from `ground` holding
+ * the lists' row (`WayRow`), no icon or number, centred: its eyebrow, title
+ * and text. Icon & cards (`2`) and Two-line & cards (`5`).
+ */
+export function CentredWayCards({
+  ways,
+  ground,
+}: {
+  ways: ListItem[];
+  ground: SectionGround;
+}) {
+  if (ways.length === 0) return null;
+  return (
+    <ul className={CARD_STACK}>
+      {ways.map((way, index) => (
+        <li key={index} className={otherCard(ground)}>
+          <WayRow way={way} mark={null} centred />
+        </li>
+      ))}
+    </ul>
   );
 }

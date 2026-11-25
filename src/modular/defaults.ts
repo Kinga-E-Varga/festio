@@ -54,14 +54,14 @@ export const DEFAULTS: Record<string, SectionSamples> = {
   textbox: {
     italic: true,
     largeText: {
-      en: "Love is patient, love is kind. It always protects, always trusts, always hopes, always perseveres.",
-      ro: "Dragostea este îndelung răbdătoare, este binevoitoare. Acoperă totul, crede totul, nădăjduiește totul, suferă totul.",
-      hu: "A szeretet türelmes, a szeretet jóságos. Mindent elfedez, mindent hisz, mindent remél, mindent elvisel.",
+      en: "Two families, one celebration.\n\nWe would be delighted if you could join us\nas we marry and begin our life together.",
+      ro: "Două familii, o singură sărbătoare.\n\nNe-am bucura nespus să fiți alături de noi\nîn ziua în care ne căsătorim și ne începem viața împreună.",
+      hu: "Két család, egy ünnep.\n\nNagy örömünkre szolgálna, ha velünk lennétek,\namikor összeházasodunk, és elkezdjük közös életünket.",
     },
     smallText: {
-      en: "1 Corinthians 13:4–7",
-      ro: "1 Corinteni 13:4–7",
-      hu: "1Korinthus 13:4–7",
+      en: "Your presence means the world to us.",
+      ro: "Prezența voastră înseamnă enorm pentru noi.",
+      hu: "A jelenlétetek mindent jelent nekünk.",
     },
   },
   "date-time": {
@@ -97,6 +97,7 @@ export const DEFAULTS: Record<string, SectionSamples> = {
   },
   people: {
     icons: true,
+    numbered: true,
     eyebrow: {
       en: "With the blessing of",
       ro: "Cu binecuvântarea",
@@ -237,7 +238,7 @@ export const DEFAULTS: Record<string, SectionSamples> = {
           hu: "A hivatalos eskü az anyakönyvvezetővel és a legszűkebb családdal",
         },
         photo: "/modular/samples/townhall.jpg",
-        icon: "pin",
+        icon: "rings",
       },
       {
         label: {
@@ -260,7 +261,7 @@ export const DEFAULTS: Record<string, SectionSamples> = {
           hu: "Rövid szertartás, aztán transzfer a part menti úton",
         },
         photo: "/modular/samples/church.jpg",
-        icon: "heart",
+        icon: "church",
       },
       {
         label: {
@@ -282,7 +283,7 @@ export const DEFAULTS: Record<string, SectionSamples> = {
           hu: "Aperitif, vacsora és tánc a tenger fölött",
         },
         photo: "/modular/samples/venue.jpg",
-        icon: "meal",
+        icon: "cheers",
       },
     ],
   },
@@ -326,7 +327,7 @@ export const DEFAULTS: Record<string, SectionSamples> = {
               ro: "Rosé, câteva gustări și primul toast lângă bărci",
               hu: "Rosé, pár falat és az első koccintás a hajók mellett",
             },
-            icon: "meal",
+            icon: "cheers",
           },
         ],
       },
@@ -347,7 +348,7 @@ export const DEFAULTS: Record<string, SectionSamples> = {
               ro: "La primărie, cu ofițerul de stare civilă și familia apropiată",
               hu: "A városházán, az anyakönyvvezetővel és a legszűkebb családdal",
             },
-            icon: "heart",
+            icon: "rings",
           },
           {
             time: "15:30",
@@ -361,7 +362,7 @@ export const DEFAULTS: Record<string, SectionSamples> = {
               ro: "În capela cea mică, cu voi alături",
               hu: "A kis kápolnában, veletek az oldalunkon",
             },
-            icon: "heart",
+            icon: "church",
           },
           {
             time: "17:00",
@@ -375,7 +376,7 @@ export const DEFAULTS: Record<string, SectionSamples> = {
               ro: "Rosé rece, gustări și lumina de apus",
               hu: "Hideg rosé, falatkák és az aranyóra",
             },
-            icon: "sparkle",
+            icon: "cocktail",
           },
           {
             time: "19:30",
@@ -418,6 +419,7 @@ export const DEFAULTS: Record<string, SectionSamples> = {
   },
   transportation: {
     icons: true,
+    numbered: true,
     eyebrow: {
       en: "Finding your way",
       ro: "Cum ne găsești",
@@ -497,6 +499,7 @@ export const DEFAULTS: Record<string, SectionSamples> = {
   },
   accommodation: {
     icons: true,
+    numbered: true,
     eyebrow: {
       en: "Make a weekend of it",
       ro: "Fă din asta un weekend",
@@ -567,6 +570,7 @@ export const DEFAULTS: Record<string, SectionSamples> = {
   },
   menu: {
     icons: true,
+    numbered: true,
     eyebrow: {
       en: "At the table",
       ro: "La masă",
@@ -664,6 +668,7 @@ export const DEFAULTS: Record<string, SectionSamples> = {
   },
   notes: {
     icons: true,
+    numbered: true,
     eyebrow: {
       en: "The little things",
       ro: "Lucrurile mărunte",
@@ -724,7 +729,7 @@ export const DEFAULTS: Record<string, SectionSamples> = {
     ],
   },
   "dress-code": {
-    icon: "sparkle",
+    icon: "bow-tie",
     label: {
       en: "What to wear",
       ro: "Ce să porți",
@@ -955,6 +960,7 @@ export const DEFAULTS: Record<string, SectionSamples> = {
   },
   contact: {
     icons: true,
+    numbered: true,
     eyebrow: {
       en: "Need a hand?",
       ro: "Ai nevoie de ajutor?",
@@ -973,21 +979,21 @@ export const DEFAULTS: Record<string, SectionSamples> = {
     },
     people: [
       {
-        icon: "heart",
+        icon: "dress",
         role: { en: "The bride", ro: "Mireasa", hu: "A menyasszony" },
         name: "Maddie",
         phone: "+40 722 123 456",
         email: "maddie@example.com",
       },
       {
-        icon: "rings",
+        icon: "bow-tie",
         role: { en: "The groom", ro: "Mirele", hu: "A vőlegény" },
         name: "Claude",
         phone: "+40 733 654 321",
         email: "claude@example.com",
       },
       {
-        icon: "phone",
+        icon: "question",
         role: {
           en: "On the day",
           ro: "În ziua evenimentului",

@@ -56,7 +56,7 @@ test("with Use names off, Champagne offers the two plain lines in the names' pla
 
 for (const [name, variant] of [
   ["Date block", "10"],
-  ["Centred", "11"],
+  ["Full centred", "11"],
 ]) {
   test(`${name}'s card offers the names and their line, then the details, the photo last`, () => {
     expect(fields(variant)).toEqual([

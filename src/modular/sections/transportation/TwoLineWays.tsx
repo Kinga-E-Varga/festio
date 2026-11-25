@@ -12,6 +12,7 @@ import {
   PAD,
   SPLIT,
   SECTION_GROUND,
+  turnTone,
 } from "@/modular/styles";
 import type { SectionGround, SectionValues } from "@/types/modular";
 
@@ -20,18 +21,14 @@ import type { SectionGround, SectionValues } from "@/types/modular";
  * Two-line & list spaces a day: each way's eyebrow where the date goes, its
  * title and note as an event, its icon, when it has one, on a soft disc at
  * the row's end, centred on it, every disc in the secondary.
- * No numbers. Between hairlines (Two-line & list, `3`), or with `cards`
- * each way a card on the other surface, stacked as Schedule's Two-line &
- * cards' days (Two-line & cards, `5`).
+ * No numbers. Between hairlines: Two-line & list (`3`).
  */
 export function TwoLineWays({
   values,
   ground,
-  cards = false,
 }: {
   values: SectionValues;
   ground: SectionGround;
-  cards?: boolean;
 }) {
   const ways = list(values, "ways").slice(0, 6);
   const mode = iconMode(values);
@@ -41,7 +38,7 @@ export function TwoLineWays({
       <div>
         <SectionHeading values={values} align="start" />
       </div>
-      <Rows items={ways} cards={cards ? ground : undefined}>
+      <Rows items={ways}>
         {(way, index) => (
           <>
             {way.label ? (
@@ -62,6 +59,7 @@ export function TwoLineWays({
               </div>
               <ItemIcon
                 mark={itemMark(mode, way.icon, index)}
+                tone={turnTone(index, "secondary")}
                 className="self-center"
               />
             </div>

@@ -1,4 +1,4 @@
-import { groups, scheduleDay } from "@/modular/content";
+import { groups } from "@/modular/content";
 import { IconHeading } from "@/modular/IconHeading";
 import {
   PAD,
@@ -8,13 +8,12 @@ import {
   NARROW_LIST,
 } from "@/modular/styles";
 import type { VariantProps } from "@/types/modular";
-import { ClockDate, ClockEvents, clockTone } from "./ClockEvents";
+import { DayEvents } from "./DayEvents";
 
 /**
- * Icon & list (`2`) with each day a card on the other surface instead of
- * between hairlines, the cards stacked: the same rows (`ClockEvents`), the
- * day's date at the top of its card, as Icon & list's (`ClockDate`), only
- * when there is more than one day. On a phone the cards are 350px at
+ * Icon & list's (`2`) heading, the clock over it, beside the days, each a
+ * card on the other surface, the cards stacked: the same cards as Two-line
+ * & cards' (`6`, `DayEvents`, `centred`). On a phone the cards are 350px at
  * most, centred.
  */
 export function Variant({ values, language, ground }: VariantProps) {
@@ -25,18 +24,17 @@ export function Variant({ values, language, ground }: VariantProps) {
       <IconHeading icon="clock" values={values} />
       {days.length > 0 ? (
         <ol className={`${NARROW_LIST} flex flex-col gap-3 @3xl:gap-4`}>
-          {days.map((day, index) => {
-            const date = scheduleDay(day.values.date ?? "", language);
-            const tone = clockTone(index);
-            return (
-              <li key={index} className={otherCard(ground)}>
-                {date && days.length > 1 ? (
-                  <ClockDate date={date} tone={tone} />
-                ) : null}
-                <ClockEvents day={day} tone={tone} language={language} />
-              </li>
-            );
-          })}
+          {days.map((day, index) => (
+            <li key={index} className={otherCard(ground)}>
+              <DayEvents
+                day={day}
+                index={index}
+                showDate={days.length > 1}
+                language={language}
+                centred
+              />
+            </li>
+          ))}
         </ol>
       ) : null}
     </div>

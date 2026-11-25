@@ -23,9 +23,10 @@ import { CardIcon, ItemIcon } from "./CardIcon";
  * under them, what the section adds (the colours, the gift buttons). In one
  * card, no lines (`FullCard`): Full card (`4`); with
  * `accent`, the card on the accent and the icon on the palette's secondary
- * disc (`ItemIcon`'s `accent`), Full card accent (`5`). With `band` (Accent,
- * `6`, on the accent band): no card, the heading straight over the note,
- * `STACK`'s gap under it, as in any section, as wide as the card's content.
+ * disc (`ItemIcon`'s `accent`), Full card accent (`5`). With `band`: no
+ * card, the heading straight over the note, `STACK`'s gap under it, as in
+ * any section, as wide as the card's content — on the accent band with
+ * `accent` (Accent, `6`), on the page's surface without (Simple, `8`).
  */
 export function FullCardNote({
   values,

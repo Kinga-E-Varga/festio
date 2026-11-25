@@ -43,7 +43,7 @@ one) — see the comments in `[locale]/layout.tsx` and `invite/[invite]/layout.t
 | `invite/[invite]/layout.tsx` | Its own root layout — same fonts/chrome; `lang` and the message catalog come from the invitation's own `language`             |
 | `invite/[invite]/page.tsx`   | Public guest-facing invitation. URL is its subdomain (`maria-birthday.festio.eu`) — `src/proxy.ts` rewrites it here invisibly |
 
-**Dev only:** `api/dev/db-count/route.ts` — the read and write counts `npm run cost` takes after each page (`src/db/count.ts`); 404 unless counting is on, which needs the emulators.
+**Dev only:** `api/dev/db-count/route.ts` — the read and write counts `npm run cost` takes after each page (`src/db/count.ts`); 404 unless counting is on, which needs the emulators. `api/dev/template-draft/route.ts` — the template preview's Finalize: writes `drafts/templates/<id>.json` (git-ignored) for the `template` skill; `api/dev/sample-photo/route.ts` — the preview's Change photo: saves a picked photo into `public/modular/samples/`, answers its path; both 404 outside development.
 
 `[locale]/not-found.tsx` — a host page's `notFound()` (`MissingPage`, in the host's language).
 
@@ -82,7 +82,7 @@ Two folders: `simple/` (basic invitations) and `modular/` (custom invitations). 
 
 - `Invitation.tsx` — owns both the card and the reply panel (one tree per panel).
 - `HostInvitationEditor.tsx` — host editing wrapper; `EditPanel.tsx` — the edit surface.
-- `EditorFrame.tsx` — the editors' page: the invitation or sheet, and the labelled strip at its right edge (Save or Export, the panel's views, Quit editor; Save last in the phone's top bar); the side panel opens beside it. Shared by the simple and modular editors and the print page. `SidePanel.tsx` — the panel itself: the open view's title and an X, then the caller's fields.
+- `EditorFrame.tsx` — the editors' page: the invitation or sheet, and the labelled strip at its right edge (Save or Export, the panel's views, Quit editor; Save last in the phone's top bar); the side panel opens beside it. Shared by the simple and modular editors and the print page; `StripButton` is one strip button (also the preview's Finalize). `SidePanel.tsx` — the panel itself: the open view's title and an X, then the caller's fields.
 - `RsvpPanel.tsx` / `RsvpForm.tsx` / `useRsvpForm.ts` — guest RSVP. `RsvpQuestion.tsx` — one question in the form, suggested or the host's own (text, yes/no, choice).
 - `InviteNotice.tsx` — a guest page in the invitation's look standing in for it: `PasswordGate.tsx` (Protected), `CancelledNotice.tsx` (cancelled). A link whose event's data is deleted gets `MissingPage` (`src/components/MissingPage.tsx`, Festio's look) instead; an unknown or Hidden one, `invite/[invite]/not-found.tsx` (the same page).
 - `ScaledStage.tsx` — scales the invitation to its container.

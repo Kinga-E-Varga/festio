@@ -25,7 +25,7 @@ export const HEADING = `${SERIF} text-balance [overflow-wrap:anywhere]`;
 /**
  * A cover's date, in the names' voice, the second thing read: italic
  * in the heading face, growing with the width, 20px to 26px on a phone, to
- * 34px from `@3xl`. Champagne's, Wildflower's and Centred's.
+ * 34px from `@3xl`. Champagne's, Wildflower's and Full centred's.
  */
 export const COVER_DATE = `${HEADING} text-[clamp(20px,6.5cqw,26px)] @3xl:text-[clamp(22px,2.3cqw,34px)] leading-[1.3] italic`;
 
@@ -57,7 +57,7 @@ export const ITALIC_LINE = `${HEADING} text-[20px] leading-[1.4] italic`;
  * Important, so it beats the colour of a shared style it is added to (the
  * names' accent); written out here, as Tailwind only builds a class it can
  * read whole in the source, never a `!` added in a template.
- * The Centred cover's.
+ * The Full centred cover's.
  */
 export const PHOTO_DARK =
   "[--photo-dark:var(--m-ink)] dark-palette:[--photo-dark:var(--m-surface)] text-[color:var(--photo-dark)]!";
@@ -258,15 +258,20 @@ export const BELOW_BAR = "top-bar @5xl:top-bar-lg";
 /** A section's side padding: 24px on a phone, 64px from `@3xl`, 100px from `@5xl`. */
 export const PAD_X = "px-6 @3xl:px-16 @5xl:px-25";
 
-/** A section's top and bottom padding, apart so a section may drop one: 64px on a phone, 100px from `@3xl`. */
-export const PAD_TOP = "pt-16 @3xl:pt-25";
-export const PAD_BOTTOM = "pb-16 @3xl:pb-25";
+/*
+ * A section's top and bottom padding, apart so a section may drop one,
+ * growing with the column: 96px on a phone, 112px from `@3xl`, 128px from
+ * `@5xl` (a laptop), and 160px only once the column is its full 1440px
+ * (`INVITE_COLUMN`), on a large screen.
+ */
+export const PAD_TOP = "pt-24 @3xl:pt-28 @5xl:pt-32 @min-[90rem]:pt-40";
+export const PAD_BOTTOM = "pb-24 @3xl:pb-28 @5xl:pb-32 @min-[90rem]:pb-40";
 
 /** A section's padding. */
 export const PAD = `${PAD_X} ${PAD_TOP} ${PAD_BOTTOM}`;
 
-/** A heading over its content. */
-export const STACK = "flex flex-col gap-8 @3xl:gap-11";
+/** A heading over its content: 48px between them on a phone, 64px from `@3xl`. */
+export const STACK = "flex flex-col gap-12 @3xl:gap-16";
 
 /** A timeline: 350px at most and centred on a phone, 960px from `@3xl`, its line down the middle. */
 export const TIMELINE = "mx-auto w-full max-w-[350px] @3xl:max-w-240";

@@ -14,6 +14,7 @@ import {
   STACK,
   cardColumns,
   centredWhenStacked,
+  turnTone,
 } from "@/modular/styles";
 import type { VariantProps } from "@/types/modular";
 import { Names } from "./Names";
@@ -44,6 +45,7 @@ export function GroupCards({
             >
               <ItemIcon
                 mark={itemMark(mode, group.icon, index)}
+                tone={turnTone(index, "secondary")}
                 accent={accent}
                 className="mb-5"
               />

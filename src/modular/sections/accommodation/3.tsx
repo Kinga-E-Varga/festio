@@ -1,11 +1,11 @@
 import { list } from "@/modular/content";
 import { otherGround } from "@/modular/ground";
 import { SectionHeading } from "@/modular/SectionHeading";
-import { PAD, SPLIT, SECTION_GROUND } from "@/modular/styles";
+import { ITEM_TITLE, PAD, SPLIT, SECTION_GROUND } from "@/modular/styles";
 import type { VariantProps } from "@/types/modular";
 import { StayList } from "./StayList";
 
-/** Two-line & list (`1`) with each stay a card on the other surface. */
+/** The two-line heading beside the stays as Icon & cards' (`4`) cards: centred, no icons or numbers. */
 export function Variant({ values, ground }: VariantProps) {
   const places = list(values, "places");
 
@@ -16,7 +16,11 @@ export function Variant({ values, ground }: VariantProps) {
       <div>
         <SectionHeading values={values} align="start" />
       </div>
-      <StayList places={places} cards={otherGround(ground)} />
+      <StayList
+        places={places}
+        nameClass={ITEM_TITLE}
+        cards={otherGround(ground)}
+      />
     </div>
   );
 }

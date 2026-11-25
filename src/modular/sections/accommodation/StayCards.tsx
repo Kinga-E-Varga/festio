@@ -10,6 +10,7 @@ import {
   centredWhenStacked,
   cardColumns,
   SECTION_GROUND,
+  turnTone,
 } from "@/modular/styles";
 import type { VariantProps } from "@/types/modular";
 import { StayCell } from "./StayList";
@@ -52,6 +53,7 @@ export function StayCards({
               >
                 <ItemIcon
                   mark={itemMark(mode, place.icon, index)}
+                  tone={turnTone(index, "secondary")}
                   accent={accent}
                   className="mb-5"
                 />
