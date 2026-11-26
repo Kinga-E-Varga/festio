@@ -2,9 +2,8 @@ import type { ReactNode } from "react";
 import { SectionHeading } from "./SectionHeading";
 import {
   CARD_FILL,
-  COLUMN,
-  CORNER,
   GROUND_FILL,
+  HAIRLINE_FRAME,
   PAD,
   SECTION_GROUND,
   STACK,
@@ -15,8 +14,14 @@ import type { SectionGround, SectionValues } from "@/types/modular";
 /** A full card's padding. */
 export const FULL_CARD_PAD = "px-6 py-12 @3xl:px-12 @3xl:py-16";
 
-/** The card: as wide as the section's content, 960px at most (`COLUMN`), with the host's corners; its fill the caller's. Text box's card styles too. */
-export const FULL_CARD = `${COLUMN} ${CORNER} ${FULL_CARD_PAD}`;
+/**
+ * The card: the section's whole content width, as wide as three cards side
+ * by side in the Cards styles (up to 1240px), with the host's corners, a
+ * hairline round it with the pattern off and none with it on
+ * (`HAIRLINE_FRAME`); its fill the caller's. The Text box's card styles
+ * too: its Full cards as wide, its Card styles 960px at most (`COLUMN`).
+ */
+export const FULL_CARD = `w-full ${HAIRLINE_FRAME} ${FULL_CARD_PAD}`;
 
 /**
  * The full card alone, on the section's padding: `FullCard`'s frame, and

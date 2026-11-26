@@ -9,7 +9,7 @@ import type { SectionDefinition } from "@/types/modular";
  * A joined section (Text box `5`, Simple joined) takes the background of the
  * section right before it. After a cover, that is the cover's: Champagne's
  * accent band (`3`), or the page's surface behind a photo (Full centred, `11`). The
- * section after the joined one (Date `8`, no rule of its own) stays apart.
+ * section after the joined one (Date `9`, no rule of its own) stays apart.
  */
 function grounds(...sections: [SectionDefinition, string][]) {
   return sectionGrounds(
@@ -18,7 +18,7 @@ function grounds(...sections: [SectionDefinition, string][]) {
 }
 
 test("after Champagne, a joined text box is on the accent and the Date on the surface", () => {
-  expect(grounds([cover, "3"], [textbox, "5"], [date, "8"])).toEqual([
+  expect(grounds([cover, "3"], [textbox, "5"], [date, "9"])).toEqual([
     "accent",
     "accent",
     "surface",
@@ -26,7 +26,7 @@ test("after Champagne, a joined text box is on the accent and the Date on the su
 });
 
 test("after a photo cover, a joined text box is on the surface and the Date on the other one", () => {
-  expect(grounds([cover, "11"], [textbox, "5"], [date, "8"])).toEqual([
+  expect(grounds([cover, "11"], [textbox, "5"], [date, "9"])).toEqual([
     "surface",
     "surface",
     "surface-alt",

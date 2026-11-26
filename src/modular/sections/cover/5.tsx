@@ -2,7 +2,7 @@ import { isOn, longDate, text } from "@/modular/content";
 import { Mark, markParts } from "@/modular/Mark";
 import {
   AMPERSAND,
-  CORNER,
+  HAIRLINE_FRAME,
   EYEBROW,
   HEADING,
   COVER_DATE,
@@ -31,7 +31,7 @@ const CORNER_SIZE =
  * The host's engraved flower corner, a file of its own (large, so it stays
  * out of the page's code), painted in the secondary through a mask, over its
  * filled-in shape in the surface colour (`wildflower-fill.svg`, the host's
- * fill layer: each flower and leaf solid), so the border and the card don't
+ * fill layer: each flower and leaf solid), so the card doesn't
  * show through the petals. On a dark palette (`dark-palette`) the drawing in
  * the surface colour over a fill in the secondary, its outline much thinner
  * (`wildflower-fill-dark.svg`: a stroke of 0.75, not 2). Each file has 5 units
@@ -45,14 +45,11 @@ const FLOWERS = `absolute aspect-[251.95/212.19] w-(--corner-w) ${CORNER_GAP} ${
 /*
  * A card in the second surface colour, in from the cover's edges by its
  * shorter side, and by 5% of its width more at the sides, 4% of its height
- * more at the top and bottom, so a pattern shows only round it. No line
- * round it: its own edge, then 10px in, one hairline in a soft mix of the
- * accent (`FRAME`).
+ * more at the top and bottom, so a pattern shows only round it. Its edge
+ * as every card's (`HAIRLINE_FRAME`): a hairline with the pattern off, none
+ * with it on.
  */
-const CARD = `absolute inset-x-[calc(min(5cqw,4.5cqh)+5cqw)] inset-y-[calc(min(5cqw,4.5cqh)+4cqh)] p-2.5 ${CORNER} bg-(--m-surface-alt)`;
-
-/* The card's hairline: the accent mixed into the card's colour. */
-const FRAME = `h-full ${CORNER} border-1 border-[color:color-mix(in_oklab,var(--m-accent)_45%,var(--m-surface-alt))]`;
+const CARD = `absolute inset-x-[calc(min(5cqw,4.5cqh)+5cqw)] inset-y-[calc(min(5cqw,4.5cqh)+4cqh)] ${HAIRLINE_FRAME} bg-(--m-surface-alt)`;
 
 /* The names, growing with the width, never past 80px. */
 const COVER_NAMES = `${HEADING} text-[min(48px,11.5cqw)] @3xl:text-[min(80px,6cqw)] leading-[1.1] tracking-[-0.03em] italic`;
@@ -83,7 +80,7 @@ function Divider() {
 /**
  * A drawn cover, no photo, for a wedding, an engagement or a baptism: the
  * host's flower corner at the bottom left and, turned, at the top right, over
- * a thick-and-thin border, and the names and their lines centred between them
+ * a card, and the names and their lines centred between them
  *, then the date and the host's free line. On the page's
  * surface, so a pattern shows round it.
  */
@@ -102,9 +99,7 @@ export function Variant({ values, basics, language }: VariantProps) {
     /* The hero's whole spare height, never shorter than a phone's 440px. `data-cover` for the envelope's strip. */
     <div data-cover className="relative flex min-h-110 grow overflow-hidden">
       <div className="absolute inset-0 [container-type:size]">
-        <div className={CARD}>
-          <div className={FRAME} />
-        </div>
+        <div className={CARD} />
         <div
           className={`${FLOWERS} top-[2cqmin] right-(--corner-x) rotate-180`}
         />

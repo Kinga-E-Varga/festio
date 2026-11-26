@@ -1,7 +1,7 @@
 import type { VariantProps } from "@/types/modular";
 import { DayCards } from "./DayCards";
 
-/** Each day a card on the other surface (`DayCards`). */
+/** Cards hard: each day a card on the second surface, the page's pattern round them (`DayCards`). */
 export function Variant(props: VariantProps) {
-  return <DayCards {...props} />;
+  return <DayCards {...props} card="surface-alt" />;
 }

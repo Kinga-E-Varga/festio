@@ -2,6 +2,7 @@ import {
   HEADING_FIELDS,
   HEADING_SHOWS,
   ICON_HEADING_SHOWS,
+  EYEBROW_HEADING_SHOWS,
 } from "@/modular/heading";
 import { ITEM_ICON, iconShows, iconSwitches } from "@/modular/item-marks";
 import { LABELS } from "@/modular/labels";
@@ -18,9 +19,9 @@ export const section: SectionDefinition = {
   required: false,
   order: 42,
   stylesHint: {
-    en: "Two-line, Icon, the Full cards and Accent can leave the photo out: switch Use a photo off in the Content tab.",
-    ro: "Două rânduri, Pictogramă, cardurile întregi și Accent pot fi fără fotografie: dezactivează Folosește o fotografie în fila Conținut.",
-    hu: "A Kétsoros, az Ikon, a teljes kártyák és a Kiemelt mehetnek fotó nélkül: kapcsold ki a Fotó használata kapcsolót a Tartalom fülön.",
+    en: "The photo can be switched off in the Content tab.",
+    ro: "Fotografia se poate dezactiva în fila Conținut.",
+    hu: "A fotó kikapcsolható a Tartalom fülön.",
   },
   variants: [
     {
@@ -57,15 +58,7 @@ export const section: SectionDefinition = {
       },
       // The eyebrow and heading only, over the photo and the story.
       bare: true,
-      shows: [
-        "photos",
-        ...HEADING_SHOWS.filter(
-          (id) => id !== "headingItalic" && id !== "note",
-        ),
-        "story",
-        "photo",
-        "photoAlt",
-      ],
+      shows: ["photos", ...EYEBROW_HEADING_SHOWS, "story", "photo", "photoAlt"],
       card: "surface",
     },
     {
@@ -77,15 +70,7 @@ export const section: SectionDefinition = {
       },
       // The eyebrow and heading only, over the photo and the story.
       bare: true,
-      shows: [
-        "photos",
-        ...HEADING_SHOWS.filter(
-          (id) => id !== "headingItalic" && id !== "note",
-        ),
-        "story",
-        "photo",
-        "photoAlt",
-      ],
+      shows: ["photos", ...EYEBROW_HEADING_SHOWS, "story", "photo", "photoAlt"],
       card: "surface-alt",
     },
     {
@@ -99,11 +84,15 @@ export const section: SectionDefinition = {
       // whatever its turn.
       ground: "surface",
       bare: true,
+      shows: ["photos", ...EYEBROW_HEADING_SHOWS, "story", "photo", "photoAlt"],
+    },
+    {
+      id: "10",
+      name: { en: "Simple", ro: "Simplu", hu: "Egyszerű" },
+      // Accent on its turn of the surfaces.
       shows: [
         "photos",
-        ...HEADING_SHOWS.filter(
-          (id) => id !== "headingItalic" && id !== "note",
-        ),
+        ...HEADING_SHOWS.filter((id) => id !== "headingItalic"),
         "story",
         "photo",
         "photoAlt",
@@ -129,9 +118,7 @@ export const section: SectionDefinition = {
       name: { en: "Moments", ro: "Momente", hu: "Pillanatok" },
       // Simple's heading, eyebrow and heading only, over Schedule's Timeline, each moment's icon on its disc.
       shows: [
-        ...HEADING_SHOWS.filter(
-          (id) => id !== "headingItalic" && id !== "note",
-        ),
+        ...EYEBROW_HEADING_SHOWS,
         ...iconShows("moments"),
         "moments.year",
         "moments.title",

@@ -34,9 +34,19 @@ export const section: SectionDefinition = {
       shows: [],
     },
     {
+      id: "12",
+      name: { en: "Cards soft", ro: "Carduri discrete", hu: "Kártyák, lágy" },
+      // Cards hard, the cards on the surface: bare too, the pattern round them.
+      bare: true,
+      shows: [],
+    },
+    {
       id: "2",
-      name: { en: "Cards", ro: "Carduri", hu: "Kártyák" },
-      shows: ["eyebrow"],
+      name: { en: "Cards hard", ro: "Carduri marcate", hu: "Kártyák, erős" },
+      // The page's pattern round the cards, as the Text box's Card; the
+      // cards on the second surface.
+      bare: true,
+      shows: [],
     },
     {
       id: "10",
@@ -45,8 +55,9 @@ export const section: SectionDefinition = {
         ro: "Carduri accent",
         hu: "Kiemelt kártyák",
       },
-      // Cards, the cards on the accent.
-      shows: ["eyebrow"],
+      // Cards, the cards on the accent: bare too, the pattern round them.
+      bare: true,
+      shows: [],
     },
     {
       id: "3",
@@ -55,32 +66,40 @@ export const section: SectionDefinition = {
         ro: "Simplu alăturat",
         hu: "Egyszerű csatolt",
       },
-      // In the date's band, whatever its colour.
+      // In the date's band, whatever its colour; no eyebrow.
       ground: "joined",
-      shows: ["eyebrow"],
+      shows: [],
     },
     {
       id: "11",
-      name: {
-        en: "Sticker joined",
-        ro: "Autocolant alăturat",
-        hu: "Csatolt matrica",
-      },
+      name: { en: "Sticker", ro: "Autocolant", hu: "Matrica" },
       // Simple joined as the Text box's stickers, no eyebrow.
       ground: "joined",
       bare: true,
       shows: [],
     },
     {
+      id: "13",
+      name: {
+        en: "Cards joined soft",
+        ro: "Carduri alăturate discrete",
+        hu: "Csatolt kártyák, lágy",
+      },
+      // Cards joined hard, the cards on the surface.
+      ground: "joined",
+      shows: [],
+    },
+    {
       id: "7",
       name: {
-        en: "Cards joined",
-        ro: "Carduri alăturate",
-        hu: "Csatolt kártyák",
+        en: "Cards joined hard",
+        ro: "Carduri alăturate marcate",
+        hu: "Csatolt kártyák, erős",
       },
-      // Cards in the date's band, whatever its colour.
+      // Cards in the date's band, whatever its colour; the cards on the
+      // second surface.
       ground: "joined",
-      shows: ["eyebrow"],
+      shows: [],
     },
     {
       id: "8",
@@ -91,28 +110,40 @@ export const section: SectionDefinition = {
       },
       // Cards joined, the cards on the accent.
       ground: "joined",
-      shows: ["eyebrow"],
+      shows: [],
     },
     {
       id: "4",
-      name: {
-        en: "Sentence joined",
-        ro: "Propoziție alăturată",
-        hu: "Csatolt mondat",
-      },
+      name: { en: "Sentence", ro: "Propoziție", hu: "Mondat" },
       // In the date's band, whatever its colour.
       ground: "joined",
       shows: [],
     },
     {
-      id: "6",
+      id: "15",
       name: {
-        en: "Clock joined",
-        ro: "Ceas alăturat",
-        hu: "Csatolt óra",
+        en: "Sentence sticker",
+        ro: "Propoziție autocolant",
+        hu: "Matricás mondat",
       },
+      // Sentence as Sticker's stickers: bare, the pattern round them.
+      ground: "joined",
+      bare: true,
+      shows: [],
+    },
+    {
+      id: "6",
+      name: { en: "Clock", ro: "Ceas", hu: "Óra" },
       // In the date's band, whatever its colour.
       ground: "joined",
+      shows: [],
+    },
+    {
+      id: "14",
+      name: { en: "Clock sticker", ro: "Ceas autocolant", hu: "Matricás óra" },
+      // Clock as Sticker's stickers: bare, the pattern round them.
+      ground: "joined",
+      bare: true,
       shows: [],
     },
   ],

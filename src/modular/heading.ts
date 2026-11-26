@@ -20,6 +20,11 @@ export const HEADING_FIELDS: readonly ScalarField[] = [
 /** Every heading field: what a variant drawing `SectionHeading` shows. */
 export const HEADING_SHOWS = HEADING_FIELDS.map(({ id }) => id);
 
+/** The eyebrow and the heading only: no italic line, no note. The bare Cards styles, Story's full cards and Moments. */
+export const EYEBROW_HEADING_SHOWS = HEADING_SHOWS.filter(
+  (id) => id !== "headingItalic" && id !== "note",
+);
+
 /** `IconHeading` leaves the eyebrow and the italic heading out. */
 export const ICON_HEADING_SHOWS = HEADING_SHOWS.filter(
   (id) => id !== "eyebrow" && id !== "headingItalic",

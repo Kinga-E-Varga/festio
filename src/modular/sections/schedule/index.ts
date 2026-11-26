@@ -2,6 +2,7 @@ import {
   HEADING_FIELDS,
   HEADING_SHOWS,
   ICON_HEADING_SHOWS,
+  EYEBROW_HEADING_SHOWS,
 } from "@/modular/heading";
 import { ITEM_ICON, iconShows, iconSwitches } from "@/modular/item-marks";
 import { LABELS } from "@/modular/labels";
@@ -78,15 +79,27 @@ export const section: SectionDefinition = {
       ],
     },
     {
-      id: "5",
-      name: {
-        en: "Cards",
-        ro: "Carduri",
-        hu: "Kártyák",
-      },
-      // Grid's (`3`) fields: every heading field but the italic heading.
+      id: "16",
+      name: { en: "Cards soft", ro: "Carduri discrete", hu: "Kártyák, lágy" },
+      // Cards hard, the cards on the surface.
+      // Bare: the page's pattern round the cards; no note, the heading a sticker.
+      bare: true,
       shows: [
-        ...HEADING_SHOWS.filter((id) => id !== "headingItalic"),
+        ...EYEBROW_HEADING_SHOWS,
+        "days.date",
+        "days.items.time",
+        "days.items.title",
+        "days.items.note",
+      ],
+    },
+    {
+      id: "5",
+      name: { en: "Cards hard", ro: "Carduri marcate", hu: "Kártyák, erős" },
+      // Grid's (`3`) fields: every heading field but the italic heading.
+      // Bare: the page's pattern round the cards; no note, the heading a sticker.
+      bare: true,
+      shows: [
+        ...EYEBROW_HEADING_SHOWS,
         "days.date",
         "days.items.time",
         "days.items.title",
@@ -101,8 +114,10 @@ export const section: SectionDefinition = {
         hu: "Kiemelt kártyák",
       },
       // Cards, the cards on the accent.
+      // Bare: the page's pattern round the cards; no note, the heading a sticker.
+      bare: true,
       shows: [
-        ...HEADING_SHOWS.filter((id) => id !== "headingItalic"),
+        ...EYEBROW_HEADING_SHOWS,
         "days.date",
         "days.items.time",
         "days.items.title",
@@ -268,7 +283,6 @@ export const section: SectionDefinition = {
       ],
       card: "surface-alt",
     },
-    // "9" is retired (Full card & timeline): never reuse it.
   ],
   fields: [
     ...HEADING_FIELDS,

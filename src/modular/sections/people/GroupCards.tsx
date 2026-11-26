@@ -12,36 +12,44 @@ import {
   PAD,
   SECTION_GROUND,
   STACK,
+  CARD_GRID,
   cardColumns,
-  centredWhenStacked,
+  CARD_CENTRED,
   turnTone,
 } from "@/modular/styles";
-import type { VariantProps } from "@/types/modular";
+import type { SectionGround, VariantProps } from "@/types/modular";
 import { Names } from "./Names";
 
 /**
  * As Transportation's Cards: a card per group on the other surface, side
  * by side, its icon, when it has one, on a soft disc over its label, every disc in the secondary, then its names. Cards
- * (`2`); with `accent`, the cards on the accent, every disc in the
- * palette's secondary (`ItemIcon`'s `accent`): Cards accent (`8`).
+ * (Cards hard `2`, its `card` `surface-alt`; Cards soft `12`, `surface`; bare: the page's pattern round
+ * the cards); with `accent`, the cards on the accent, every disc in the
+ * palette's secondary (`ItemIcon`'s `accent`): Cards accent (`8`), bare too. Both bare, so
+ * the heading is a sticker (`SectionHeading`'s `sticker`).
  */
 export function GroupCards({
   values,
   ground,
   accent = false,
-}: VariantProps & { accent?: boolean }) {
+  card = otherGround(ground),
+}: VariantProps & {
+  accent?: boolean;
+  /** The cards' ground when not on the accent: the other surface from `ground` unless given. */
+  card?: SectionGround;
+}) {
   const groups = list(values, "groups").slice(0, 4);
   const mode = iconMode(values);
 
   return (
     <div className={`${STACK} ${SECTION_GROUND[ground]} ${PAD}`}>
-      <SectionHeading values={values} />
+      <SectionHeading values={values} sticker />
       {groups.length > 0 ? (
-        <ul className={`grid gap-3 @3xl:gap-4 ${cardColumns(groups.length)}`}>
+        <ul className={`${CARD_GRID} ${cardColumns(groups.length)}`}>
           {groups.map((group, index) => (
             <li
               key={index}
-              className={`${CARD} flex flex-col ${centredWhenStacked(groups.length)} ${COLUMN} ${GROUND[accent ? "accent" : otherGround(ground)]}`}
+              className={`${CARD} flex flex-col ${CARD_CENTRED} ${COLUMN} ${GROUND[accent ? "accent" : card]}`}
             >
               <ItemIcon
                 mark={itemMark(mode, group.icon, index)}

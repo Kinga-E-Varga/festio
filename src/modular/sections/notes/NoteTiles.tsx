@@ -28,8 +28,9 @@ import {
   SECTION_GROUND,
   STACK,
   TONES,
+  CARD_GRID,
   cardColumns,
-  centredWhenStacked,
+  CARD_CENTRED,
   columnsFor,
   turnTone,
 } from "@/modular/styles";
@@ -70,8 +71,9 @@ export function NoteFullCard({
 
 /**
  * A section of note tiles: the heading centred — no italic line — over the
- * notes (`NoteTiles`). Grid (`7`), Cards (`8`), Cards accent (`10`) and
- * Accent (`11`).
+ * notes (`NoteTiles`). Grid (`7`), Cards hard (`8`), Cards soft (`14`),
+ * Cards accent (`10`) and Accent (`11`). The Cards styles are bare, the
+ * page's pattern round the cards, so their heading is a sticker.
  */
 export function NoteTilesSection({
   values,
@@ -79,10 +81,16 @@ export function NoteTilesSection({
   ground,
   look,
   accent = false,
-}: VariantProps & { look: "grid" | "cards"; accent?: boolean }) {
+  card,
+}: VariantProps & {
+  look: "grid" | "cards";
+  accent?: boolean;
+  /** The cards' ground when not on the accent (`NoteTiles`). */
+  card?: SectionGround;
+}) {
   return (
     <div className={`${STACK} ${SECTION_GROUND[ground]} ${PAD}`}>
-      <SectionHeading values={values} />
+      <SectionHeading values={values} sticker={look === "cards"} />
       <NoteTiles
         items={noteItems(list(values, "items"), values)}
         mode={iconMode(values)}
@@ -90,6 +98,7 @@ export function NoteTilesSection({
         ground={ground}
         look={look}
         accent={accent}
+        card={card}
       />
     </div>
   );
@@ -99,7 +108,7 @@ export function NoteTilesSection({
  * The notes side by side under a centred heading, for Grid and Cards, as
  * Transportation's: `grid`, cells side by side, no lines, each note
  * centred down its cell, its icon as on the cards; `cards`, a card on the other
- * surface each (`cardColumns`), centred while they stack, its icon on a
+ * surface each (`cardColumns`), centred, its icon on a
  * soft disc over its label — Dress code's and Gifts' their own (`twinIcon`) — every disc in the secondary; `list`, Full card (`9`): one under another, a line
  * across between each, each centred, its icon as on the cards, the gift
  * buttons side by side while they fit. Each its
@@ -117,6 +126,7 @@ export function NoteTiles({
   ground,
   look,
   accent = false,
+  card = otherGround(ground),
 }: {
   items: Note[];
   /** The section's `iconMode`: each note's mark, Dress code's and Gifts' too. */
@@ -125,38 +135,36 @@ export function NoteTiles({
   ground: SectionGround;
   look: "grid" | "cards" | "list";
   accent?: boolean;
+  /** `cards`' ground when not on the accent: the other surface from `ground` unless given. */
+  card?: SectionGround;
 }) {
   if (items.length === 0) return null;
   const dress = related["dress-code"] ?? {};
   const gifts = related.gifts ?? {};
-  const place =
-    look === "cards"
-      ? centredWhenStacked(items.length)
-      : "items-center text-center";
 
   return (
     <ul
       className={
         {
           grid: `grid ${UNLINED_PULL} ${columnsFor(items.length)}`,
-          cards: `grid gap-3 @3xl:gap-4 ${cardColumns(items.length)}`,
+          cards: `${CARD_GRID} ${cardColumns(items.length)}`,
           list: UNLINED_PULL,
         }[look]
       }
     >
       {items.map((item, index) => {
         const tile = {
-          className: `flex flex-col ${place} ${
+          className: `flex flex-col ${CARD_CENTRED} ${
             {
               grid: `${SECTION_GROUND[ground]} px-6 py-8 @3xl:px-8 @3xl:py-10`,
-              cards: `${CARD} ${COLUMN} ${GROUND[accent ? "accent" : otherGround(ground)]}`,
+              cards: `${CARD} ${COLUMN} ${GROUND[accent ? "accent" : card]}`,
               list: "py-8 @3xl:py-10",
             }[look]
           }`,
           tone: accent
             ? `${TONES.secondary} ${PAGE_SECONDARY}`
             : TONES[turnTone(index, "secondary")],
-          place,
+          place: CARD_CENTRED,
         };
         if (item.kind === "dress-code") {
           return (

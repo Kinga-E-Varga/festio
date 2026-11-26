@@ -1,12 +1,13 @@
 import { daysAround, monthName, weekday, yearOf } from "@/modular/content";
-import { SectionHeading } from "@/modular/SectionHeading";
 import {
   BAND_LINE,
   CAPS,
-  CARD_FILL,
   CORNER,
+  CUT_DIVIDER,
   DISPLAY,
   GROUND_FILL,
+  HAIRLINE_FRAME,
+  SHAPE_CUT,
   MUTED,
   PAD,
   SECTION_GROUND,
@@ -28,11 +29,12 @@ const DAY_NUMBER = "text-[94px] @min-[1300px]:text-[128px]";
 const SIDE_PAGE = "w-27.5 @min-[1300px]:w-42.5";
 
 /**
- * Every page's frame; filled as the full cards are (`CARD_FILL`): the plain
- * surface once a pattern is on, the second surface without one. The section
+ * Every page's frame: a card's edge (`HAIRLINE_FRAME`), a hairline with the
+ * pattern off and none with it on; filled with the second surface
+ * (`GROUND_FILL`), with or without a pattern. The section
  * draws no ground of its own (`bare`), so the page's surface is behind it.
  */
-const PAGE = `${CORNER} flex-none overflow-hidden border-1 border-[var(--m-line)] text-center`;
+const PAGE = `${HAIRLINE_FRAME} flex-none overflow-hidden text-center`;
 
 /*
  * The days beside it, by their distance: the nearest from `@3xl`, the
@@ -46,27 +48,25 @@ const NEIGHBOUR = {
 
 /**
  * The event's day as a tear-off calendar page in the middle — its weekday
- * on an accent strip, the day large, the month and year under it — with
+ * on an accent strip, a divider under it (`CUT_DIVIDER`), the day large, the month and year under it — with
  * the two days before and after as smaller pages fading out beside it.
- * Only the eyebrow over it, no other heading part. A phone shows the day
- * alone.
+ * No heading at all. A phone shows the day alone.
  */
-export function Variant({ values, basics, language, ground }: VariantProps) {
+export function Variant({ basics, language, ground }: VariantProps) {
   const days = daysAround(basics.date, language, 2);
 
   return (
     <div className={`${STACK} items-center ${SECTION_GROUND[ground]} ${PAD}`}>
-      <SectionHeading values={values} />
       <div className="flex items-center justify-center gap-4">
         {days.map((day) =>
           day.offset === 0 ? (
             <time
               key={day.offset}
               dateTime={basics.date}
-              className={`${PAGE} ${DAY_PAGE} ${CARD_FILL}`}
+              className={`${PAGE} ${DAY_PAGE} ${GROUND_FILL["surface-alt"]} ${SHAPE_CUT}`}
             >
               <span
-                className={`${STRIP} block bg-[var(--m-accent)] py-3 text-[color:var(--m-accent-ink)]`}
+                className={`${STRIP} block ${CUT_DIVIDER} bg-[var(--m-accent)] py-3 text-[color:var(--m-accent-ink)]`}
               >
                 {weekday(basics.date, language)}
               </span>
@@ -92,7 +92,9 @@ export function Variant({ values, basics, language, ground }: VariantProps) {
 }
 
 /**
- * A day beside the event's: its short weekday on a plain strip, its number
+ * A day beside the event's: its short weekday on a plain strip, a line
+ * under it (`CUT_DIVIDER`: the ring's surface with a pattern on),
+ * its number
  * muted. The page is faded (`fade`), which fades its fill too, so the
  * surface is painted behind it: the section draws no ground of its own
  * (`bare`), and the page's pattern must not show through the day.
@@ -111,11 +113,11 @@ function SmallPage({
   return (
     <div
       aria-hidden="true"
-      className={`${CORNER} ${SIDE_PAGE} flex-none ${GROUND_FILL.surface} ${at}`}
+      className={`${CORNER} ${SIDE_PAGE} flex-none ${GROUND_FILL.surface} ${SHAPE_CUT} ${at}`}
     >
-      <div className={`${PAGE} w-full ${CARD_FILL} ${fade}`}>
+      <div className={`${PAGE} w-full ${GROUND_FILL["surface-alt"]} ${fade}`}>
         <span
-          className={`${CAPS} ${MUTED} block border-b-1 border-[var(--m-line)] py-2 font-medium`}
+          className={`${CAPS} ${MUTED} block ${CUT_DIVIDER} py-2 font-medium`}
         >
           {weekday}
         </span>

@@ -8,7 +8,7 @@ import { UNITS, type useCountdown } from "@/modular/countdown";
  * The live numbers in a row, each over its unit: spread across a phone,
  * centred from `@3xl`; spread across the column after a section in two
  * (`afterSplit`). Dashes until the first tick. Simple, Simple joined and
- * Sticker joined (`1`, `3`, `11`); their looks in `number` and `unit`.
+ * Sticker (`1`, `3`, `11`); their looks in `number` and `unit`.
  */
 export function NumberRow({
   left,

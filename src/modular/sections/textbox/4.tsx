@@ -4,7 +4,7 @@ import { CardText } from "./CardText";
 import { hasText } from "./TextBoxWords";
 
 /**
- * Card (`3`) in the band of the section right before, whatever its
+ * The words in a card (`CardText`) in the band of the section right before, whatever its
  * colour, as the countdown's joined styles share the date's: no top
  * padding of its own; on the accent band its ground turns every colour to
  * the band's ink. The card in the other surface from the band, as Card's
@@ -15,7 +15,7 @@ export function Variant({ values, ground }: VariantProps) {
 
   return (
     <div className={`${SECTION_GROUND[ground]} ${PAD_X} ${PAD_BOTTOM}`}>
-      <CardText values={values} ground={ground} framed />
+      <CardText values={values} ground={ground} />
     </div>
   );
 }

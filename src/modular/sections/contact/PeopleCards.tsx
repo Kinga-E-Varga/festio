@@ -12,11 +12,12 @@ import {
   PAD,
   SECTION_GROUND,
   STACK,
+  CARD_GRID,
   cardColumns,
-  centredWhenStacked,
+  CARD_CENTRED,
   turnTone,
 } from "@/modular/styles";
-import type { VariantProps } from "@/types/modular";
+import type { SectionGround, VariantProps } from "@/types/modular";
 import { ContactLines } from "./ContactLines";
 
 /**
@@ -25,24 +26,32 @@ import { ContactLines } from "./ContactLines";
  * every disc in the secondary, then the name, the number and the email (`ContactLines`). Cards
  * (`1`); with `accent`, the cards on the accent, every disc in the
  * palette's secondary (`ItemIcon`'s `accent`): Cards accent (`8`).
+ * Cards hard (`1`, its `card` `surface-alt`), Cards soft (`12`,
+ * `surface`), Cards accent (`8`): all bare, the page's pattern round
+ * the cards, so the heading is a sticker (`SectionHeading`'s `sticker`).
  */
 export function PeopleCards({
   values,
   ground,
   accent = false,
-}: VariantProps & { accent?: boolean }) {
+  card = otherGround(ground),
+}: VariantProps & {
+  accent?: boolean;
+  /** The cards' ground when not on the accent: the other surface from `ground` unless given. */
+  card?: SectionGround;
+}) {
   const people = list(values, "people").slice(0, 4);
   const mode = iconMode(values);
 
   return (
     <div className={`${STACK} ${SECTION_GROUND[ground]} ${PAD}`}>
-      <SectionHeading values={values} />
+      <SectionHeading values={values} sticker />
       {people.length > 0 ? (
-        <ul className={`grid gap-3 @3xl:gap-4 ${cardColumns(people.length)}`}>
+        <ul className={`${CARD_GRID} ${cardColumns(people.length)}`}>
           {people.map((person, index) => (
             <li
               key={index}
-              className={`${CARD} flex flex-col ${centredWhenStacked(people.length)} ${COLUMN} ${GROUND[accent ? "accent" : otherGround(ground)]}`}
+              className={`${CARD} flex flex-col ${CARD_CENTRED} ${COLUMN} ${GROUND[accent ? "accent" : card]}`}
             >
               <ItemIcon
                 mark={itemMark(mode, person.icon, index)}

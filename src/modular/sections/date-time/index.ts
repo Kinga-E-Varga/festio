@@ -7,8 +7,8 @@ import type { SectionDefinition } from "@/types/modular";
 
 /**
  * The event's date; the id stays `date-time`, as ids are permanent. Every
- * variant but Calendar, the calendar under its eyebrow, and Framed day and
- * the stickers, the date alone, shows the heading's `note`.
+ * variant but Calendar, Framed day and the stickers, the date alone, shows
+ * the heading's `note`.
  */
 export const section: SectionDefinition = {
   id: "date-time",
@@ -44,30 +44,20 @@ export const section: SectionDefinition = {
     {
       id: "2",
       name: {
-        en: "Simple accent",
-        ro: "Accent simplu",
-        hu: "Egyszerű kiemelés",
+        en: "Simple on accent",
+        ro: "Simplu pe accent",
+        hu: "Egyszerű kiemelt alapon",
       },
       ground: "accent",
       shows: ["eventDate", "dateFormat", "note"],
     },
-    {
-      id: "8",
-      name: {
-        en: "Sticker simple",
-        ro: "Autocolant simplu",
-        hu: "Matrica egyszerű",
-      },
-      // The date alone, as the title's stickers, in the ink.
-      bare: true,
-      shows: ["eventDate", "dateFormat"],
-    },
+    // "8" is retired (Sticker simple, the sticker in the ink): never reuse it.
     {
       id: "9",
       name: {
-        en: "Sticker colourful",
-        ro: "Autocolant colorat",
-        hu: "Matrica színes",
+        en: "Sticker",
+        ro: "Autocolant",
+        hu: "Matrica",
       },
       // The date alone, as the title's stickers, in the accent.
       bare: true,
@@ -118,7 +108,7 @@ export const section: SectionDefinition = {
         hu: "Naptár",
       },
       bare: true,
-      shows: ["eventDate", "eyebrow"],
+      shows: ["eventDate"],
     },
     {
       id: "7",

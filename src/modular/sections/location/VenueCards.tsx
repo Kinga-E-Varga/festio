@@ -1,24 +1,35 @@
-import { imageSrc } from "@/modular/content";
+import { imageSrc, isOn, list } from "@/modular/content";
+import { SectionHeading } from "@/modular/SectionHeading";
 import { WashedPhoto } from "@/modular/WashedPhoto";
 import {
+  CARD_GRID,
   COLUMN,
+  cardColumns,
   HAIRLINE_FRAME,
   GROUND,
+  PAD,
+  SECTION_GROUND,
   SPLIT_COLUMNS,
+  STACK,
   turnTone,
 } from "@/modular/styles";
 import { otherGround } from "@/modular/ground";
 import { INVITE_COLUMN } from "@/modular/vars";
-import type { ListItem, SectionGround } from "@/types/modular";
-import { itemMark, type IconMode, type ItemMark } from "@/modular/item-marks";
-import { AccentVenue, ROW } from "./AccentVenue";
+import type { ListItem, SectionGround, SectionValues } from "@/types/modular";
+import {
+  iconMode,
+  itemMark,
+  type IconMode,
+  type ItemMark,
+} from "@/modular/item-marks";
+import { AccentVenue } from "./AccentVenue";
 
 type Tone = "accent" | "secondary";
 
 /*
  * The photo, inside the full column less its 100px side padding (`PAD_X` on a
  * wide page): the wide 3fr of `SPLIT_COLUMNS` beside a venue, the card's
- * width (`ROW`'s 480px at most) under one.
+ * width (`cardColumns`' 480px at most) under one.
  */
 const PHOTO_SIZES = `(min-width: ${INVITE_COLUMN}px) ${((INVITE_COLUMN - 200) * 3) / 5}px, (min-width: 768px) 60vw, 100vw`;
 const PHOTO_SIZES_UNDER = "(min-width: 768px) 480px, 100vw";
@@ -57,6 +68,36 @@ type CardLayout = keyof typeof CARD_LAYOUT;
 const LAYOUT_FOR: CardLayout[] = ["beside", "beside", "under", "turns"];
 
 /**
+ * The section's heading as a sticker over the location cards (`VenueCards`):
+ * every Cards style is bare, the page's pattern round the cards. The
+ * venues on `fill`: the second surface in Cards hard (`6`), the surface in
+ * Cards soft (`13`), the accent in Cards accent (`1`). No italic heading,
+ * even one kept from another variant.
+ */
+export function VenueCardsSection({
+  values,
+  ground,
+  fill,
+}: {
+  values: SectionValues;
+  ground: SectionGround;
+  fill: SectionGround;
+}) {
+  return (
+    <div className={`${STACK} ${SECTION_GROUND[ground]} ${PAD}`}>
+      <SectionHeading values={values} sticker />
+      <VenueCards
+        venues={list(values, "venues")}
+        mode={iconMode(values)}
+        ground={ground}
+        photos={isOn(values, "photos")}
+        fill={fill}
+      />
+    </div>
+  );
+}
+
+/**
  * The locations as cards, for Cards accent and Cards: the venue on `fill`
  * beside a photo of it. Several stand in
  * one row on a wide page, each photo under its venue, as on a phone; three
@@ -84,7 +125,7 @@ export function VenueCards({
 }) {
   if (venues.length === 0) return null;
   return (
-    <ul className={`grid gap-4 @3xl:gap-6 ${ROW[venues.length]}`}>
+    <ul className={`${CARD_GRID} ${cardColumns(venues.length)}`}>
       {venues.map((venue, index) => {
         const tone = turnTone(index, "secondary");
         const mark = itemMark(mode, venue.icon, index);
@@ -138,7 +179,7 @@ function VenueCard({
         mark={mark}
         fill={fill}
         tone={tone}
-        className={`@3xl:items-start @3xl:text-left ${look.text}`}
+        className={look.text}
       />
       <div className={`relative ${look.photo} ${GROUND[otherGround(ground)]}`}>
         {photo ? (
@@ -151,19 +192,19 @@ function VenueCard({
 
 /*
  * A card without a photo's text from `@3xl`, by how many cards: while a card
- * has the row to itself, centred with a photo card's roomier padding; once
- * they stand side by side, left-aligned and at the top with the phone's, so
- * the icons and labels line up across the row.
+ * has the row to itself, a photo card's roomier padding; once they stand
+ * side by side, at the top with the phone's, so the icons and labels line
+ * up across the row. Centred always, as every Cards style.
  */
 const TEXT_ONLY = [
   "",
   "@3xl:px-12 @3xl:py-10",
-  "@3xl:items-start @3xl:justify-start @3xl:text-left",
-  "@3xl:px-12 @3xl:py-10 @5xl:p-8 @5xl:items-start @5xl:justify-start @5xl:text-left",
+  "@3xl:justify-start",
+  "@3xl:px-12 @3xl:py-10 @5xl:p-8 @5xl:justify-start",
 ];
 
 /**
- * A location card without a photo, one of `count` in a `ROW`: photos
+ * A location card without a photo, one of `count` in a `cardColumns` row: photos
  * switched off.
  */
 function TextCard({

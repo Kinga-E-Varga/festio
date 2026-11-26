@@ -3,7 +3,7 @@ import type { VariantProps } from "@/types/modular";
 import { hasText, TextBoxWords } from "./TextBoxWords";
 
 /**
- * Simple joined (`5`) with the large text as the title's stickers: medium,
+ * Simple joined (`5`) with the large text as stickers,
  * in the ink, an outline in the surface round each letter, shown
  * with a pattern on (`TEXT_CUT`). In the band of the section right before,
  * no top padding of its own; on the accent band its ground turns every

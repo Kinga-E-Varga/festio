@@ -17,19 +17,6 @@ import {
 import type { ListItem, SectionGround } from "@/types/modular";
 
 /**
- * Several cards, one to a row at full width until they stand side by
- * side: two from `@3xl`, 480px each at most; three only from `@5xl`,
- * 380px each at most, where each still has room for a venue's name — never
- * two and one. Either way the room left is shared evenly around them.
- */
-export const ROW = [
-  "",
-  "",
-  "@3xl:justify-evenly @3xl:grid-cols-[repeat(2,minmax(0,480px))]",
-  "@5xl:justify-evenly @5xl:grid-cols-[repeat(3,minmax(0,380px))]",
-];
-
-/**
  * A location card's text on `fill` — the accent for Cards accent, a
  * surface for Cards: label, venue, address, detail and the way there, in
  * the roles that read on it (`GROUND`; on the accent all are its ink). The

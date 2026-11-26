@@ -85,11 +85,7 @@ export const section: SectionDefinition = {
       ground: "joined",
       shows: ["largeText", "italic", "smallText"],
     },
-    {
-      id: "3",
-      name: { en: "Card", ro: "Card", hu: "Kártya" },
-      shows: ["largeText", "italic", "smallText"],
-    },
+    // "3" is retired (Card, now Full card hard): never reuse it.
     {
       id: "4",
       name: {
@@ -104,9 +100,9 @@ export const section: SectionDefinition = {
     {
       id: "11",
       name: {
-        en: "Accent & card",
-        ro: "Accent & card",
-        hu: "Kiemelt & kártya",
+        en: "Card on accent",
+        ro: "Card pe accent",
+        hu: "Kártya kiemelt alapon",
       },
       // Card on the accent band, the card on the surface.
       ground: "accent",

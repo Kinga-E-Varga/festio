@@ -282,7 +282,7 @@ export interface VariantInfo {
    * it needs itself, so the page's pattern is seen around what it draws.
    * The Full card styles (the card filled with the ground, so it reads as a
    * card) and the sticker ones (their text cut out of the pattern,
-   * `STICKER_TEXT`).
+   * `STICKER`).
    */
   bare?: boolean;
   /**

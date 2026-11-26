@@ -1,13 +1,5 @@
 import { isOn, text } from "@/modular/content";
-import {
-  COLUMN,
-  EYEBROW,
-  H2_SMALL,
-  MUTED,
-  SMALL_STICKER,
-  STICKER_TEXT,
-  TEXT_CUT_THICK,
-} from "@/modular/styles";
+import { COLUMN, EYEBROW, H2_SMALL, MUTED, STICKER } from "@/modular/styles";
 import type { SectionValues } from "@/types/modular";
 
 /** Whether there is anything to draw: the variants draw nothing without it. */
@@ -29,8 +21,10 @@ interface LargeProps extends WordsProps {
 /**
  * The large text in the heading face, a section heading a step smaller
  * (`H2_SMALL`), in the ink, centred, in italic unless its switch is off.
- * With `sticker`, as the title's stickers, medium (`STICKER_TEXT`), the
- * outline a little thicker (`TEXT_CUT_THICK`). Nothing when empty.
+ * With `sticker`, cut out of a pattern (`STICKER`). Every space
+ * and line break as the host typed it, at the end too (`break-spaces`): a
+ * last line break gets a zero-width space after it, as a browser draws no
+ * empty last line. Nothing when empty.
  */
 export function LargeText({
   values,
@@ -42,16 +36,17 @@ export function LargeText({
 
   return (
     <p
-      className={`${H2_SMALL} ${isOn(values, "italic") ? "italic" : ""} ${sticker ? `${STICKER_TEXT} ${TEXT_CUT_THICK}` : ""} text-center whitespace-pre-line text-[color:var(--m-ink)] ${className}`}
+      className={`${H2_SMALL} ${isOn(values, "italic") ? "italic" : ""} ${sticker ? STICKER.normal : ""} text-center whitespace-break-spaces text-[color:var(--m-ink)] ${className}`}
     >
-      {large}
+      {large.endsWith("\n") ? `${large}\u200B` : large}
     </p>
   );
 }
 
 /**
- * The small text as a muted eyebrow, centred. With `sticker`, bold, its
- * outline thicker still (`SMALL_STICKER`). Nothing when empty.
+ * The small text as a muted eyebrow, centred. With `sticker`, a little
+ * cut out of a pattern too (`STICKER`).
+ * Nothing when empty.
  */
 export function SmallText({ values, sticker = false }: WordsProps) {
   const small = text(values, "smallText");
@@ -59,7 +54,7 @@ export function SmallText({ values, sticker = false }: WordsProps) {
 
   return (
     <p
-      className={`${EYEBROW} ${MUTED} ${sticker ? SMALL_STICKER : ""} text-center`}
+      className={`${EYEBROW} ${MUTED} ${sticker ? STICKER.semibold : ""} text-center`}
     >
       {small}
     </p>

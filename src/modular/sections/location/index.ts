@@ -1,4 +1,8 @@
-import { HEADING_FIELDS, HEADING_SHOWS } from "@/modular/heading";
+import {
+  HEADING_FIELDS,
+  HEADING_SHOWS,
+  EYEBROW_HEADING_SHOWS,
+} from "@/modular/heading";
 import { ITEM_ICON, iconShows, iconSwitches } from "@/modular/item-marks";
 import { LABELS } from "@/modular/labels";
 import type { SectionDefinition } from "@/types/modular";
@@ -14,9 +18,9 @@ export const section: SectionDefinition = {
   required: true,
   order: 50,
   stylesHint: {
-    en: "Every style can leave the photos out: switch Use photos off in the Content tab.",
-    ro: "Orice stil poate fi fără fotografii: dezactivează Folosește fotografii în fila Conținut.",
-    hu: "Bármelyik stílus mehet fotók nélkül: kapcsold ki a Fotók használata kapcsolót a Tartalom fülön.",
+    en: "The photos can be switched off in the Content tab.",
+    ro: "Fotografiile se pot dezactiva în fila Conținut.",
+    hu: "A fotók kikapcsolhatók a Tartalom fülön.",
   },
   variants: [
     {
@@ -27,9 +31,29 @@ export const section: SectionDefinition = {
         hu: "Kiemelt kártyák",
       },
       // Every heading field but the italic heading.
+      // Bare: the page's pattern round the cards; no note, the heading a sticker.
+      bare: true,
       shows: [
         "photos",
-        ...HEADING_SHOWS.filter((id) => id !== "headingItalic"),
+        ...EYEBROW_HEADING_SHOWS,
+        "venues.label",
+        "venues.venue",
+        "venues.address",
+        "venues.mapsLink",
+        "venues.detail",
+        "venues.photo",
+        ...iconShows("venues"),
+      ],
+    },
+    {
+      id: "13",
+      name: { en: "Cards soft", ro: "Carduri discrete", hu: "Kártyák, lágy" },
+      // Cards hard, the cards on the surface.
+      // Bare: the page's pattern round the cards; no note, the heading a sticker.
+      bare: true,
+      shows: [
+        "photos",
+        ...EYEBROW_HEADING_SHOWS,
         "venues.label",
         "venues.venue",
         "venues.address",
@@ -41,11 +65,13 @@ export const section: SectionDefinition = {
     },
     {
       id: "6",
-      name: { en: "Cards", ro: "Carduri", hu: "Kártyák" },
+      name: { en: "Cards hard", ro: "Carduri marcate", hu: "Kártyák, erős" },
       // Cards accent on a surface: every heading field but the italic heading.
+      // Bare: the page's pattern round the cards; no note, the heading a sticker.
+      bare: true,
       shows: [
         "photos",
-        ...HEADING_SHOWS.filter((id) => id !== "headingItalic"),
+        ...EYEBROW_HEADING_SHOWS,
         "venues.label",
         "venues.venue",
         "venues.address",

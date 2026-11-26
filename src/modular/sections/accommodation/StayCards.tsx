@@ -7,12 +7,13 @@ import {
   GROUND,
   PAD,
   STACK,
-  centredWhenStacked,
+  CARD_CENTRED,
+  CARD_GRID,
   cardColumns,
   SECTION_GROUND,
   turnTone,
 } from "@/modular/styles";
-import type { VariantProps } from "@/types/modular";
+import type { SectionGround, VariantProps } from "@/types/modular";
 import { StayCell } from "./StayList";
 import { ItemIcon } from "@/modular/cards/CardIcon";
 import { iconMode, itemMark } from "@/modular/item-marks";
@@ -28,29 +29,34 @@ const CELL = "flex h-full flex-col";
  * address is a link, the whole card, with the arrow after its name.
  * Cards (`6`); with `accent`, the cards on the accent, every disc in the
  * palette's secondary (`ItemIcon`'s `accent`): Cards accent (`8`).
+ * Cards hard (`6`, its `card` `surface-alt`), Cards soft (`12`,
+ * `surface`), Cards accent (`8`): all bare, the page's pattern round
+ * the cards, so the heading is a sticker (`SectionHeading`'s `sticker`).
  */
 export function StayCards({
   values,
   ground,
   accent = false,
-}: VariantProps & { accent?: boolean }) {
+  card = otherGround(ground),
+}: VariantProps & {
+  accent?: boolean;
+  /** The cards' ground when not on the accent: the other surface from `ground` unless given. */
+  card?: SectionGround;
+}) {
   const places = list(values, "places").slice(0, 6);
   const mode = iconMode(values);
 
   return (
     <div className={`${STACK} ${SECTION_GROUND[ground]} ${PAD}`}>
-      <SectionHeading values={values} />
+      <SectionHeading values={values} sticker />
       {places.length > 0 ? (
-        <ol className={`grid gap-3 @3xl:gap-4 ${cardColumns(places.length)}`}>
+        <ol className={`${CARD_GRID} ${cardColumns(places.length)}`}>
           {places.map((place, index) => (
             <li
               key={index}
-              className={`${CARD} ${COLUMN} ${GROUND[accent ? "accent" : otherGround(ground)]}`}
+              className={`${CARD} ${COLUMN} ${GROUND[accent ? "accent" : card]}`}
             >
-              <StayCell
-                place={place}
-                className={`${CELL} ${centredWhenStacked(places.length)}`}
-              >
+              <StayCell place={place} className={`${CELL} ${CARD_CENTRED}`}>
                 <ItemIcon
                   mark={itemMark(mode, place.icon, index)}
                   tone={turnTone(index, "secondary")}

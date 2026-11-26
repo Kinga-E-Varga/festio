@@ -5,6 +5,7 @@ import {
   BODY_SM,
   CARD,
   COLUMN,
+  CARD_GRID,
   cardColumns,
   EYEBROW,
   GROUND,
@@ -15,39 +16,45 @@ import {
   TONE_TEXT,
   SECTION_GROUND,
 } from "@/modular/styles";
-import type { VariantProps } from "@/types/modular";
+import type { SectionGround, VariantProps } from "@/types/modular";
 
 /**
  * The section's heading centred, the eyebrow over it and the note under
  * it — no italic line — and each day a card on the other surface, side by
- * side from `@3xl` (`cardColumns`). In each card, centred: the day's date in
+ * side once there is room (`cardColumns`). In each card, centred: the day's date in
  * the accent, only when there is more than one day, then its events one
  * under another, each its time as an eyebrow in the secondary over its
  * title and note. No icons by the events. Cards (`5`); with `accent`, the
  * cards on the accent, everything in them in the accent's ink: Cards
  * accent (`9`).
+ * Cards hard (`5`, its `card` `surface-alt`), Cards soft (`16`,
+ * `surface`), Cards accent (`9`): all bare, the page's pattern round
+ * the cards, so the heading is a sticker (`SectionHeading`'s `sticker`).
  */
 export function DayCards({
   values,
   language,
   ground,
   accent = false,
-}: VariantProps & { accent?: boolean }) {
+  card = otherGround(ground),
+}: VariantProps & {
+  accent?: boolean;
+  /** The cards' ground when not on the accent: the other surface from `ground` unless given. */
+  card?: SectionGround;
+}) {
   const days = groups(values, "days");
 
   return (
     <div className={`${STACK} ${SECTION_GROUND[ground]} ${PAD}`}>
-      <SectionHeading values={values} />
+      <SectionHeading values={values} sticker />
       {days.length > 0 ? (
-        <ol
-          className={`grid gap-3 text-center @3xl:gap-4 ${cardColumns(days.length)}`}
-        >
+        <ol className={`${CARD_GRID} text-center ${cardColumns(days.length)}`}>
           {days.map((day, index) => {
             const date = scheduleDay(day.values.date ?? "", language);
             return (
               <li
                 key={index}
-                className={`${CARD} ${COLUMN} ${GROUND[accent ? "accent" : otherGround(ground)]}`}
+                className={`${CARD} ${COLUMN} ${GROUND[accent ? "accent" : card]}`}
               >
                 {date && days.length > 1 ? (
                   <p className={`${EYEBROW} ${TONE_TEXT.accent} mb-6`}>

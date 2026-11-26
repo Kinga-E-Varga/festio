@@ -2,6 +2,7 @@ import {
   HEADING_FIELDS,
   HEADING_SHOWS,
   ICON_HEADING_SHOWS,
+  EYEBROW_HEADING_SHOWS,
 } from "@/modular/heading";
 import {
   ITEM_ICON,
@@ -53,14 +54,20 @@ export const section: SectionDefinition = {
       ],
     },
     {
+      id: "12",
+      name: { en: "Cards soft", ro: "Carduri discrete", hu: "Kártyák, lágy" },
+      // Cards hard, the cards on the surface.
+      bare: true,
+      shows: [...EYEBROW_HEADING_SHOWS, ...iconShows("groups"), ...GROUP_SHOWS],
+    },
+    {
       id: "2",
-      name: { en: "Cards", ro: "Carduri", hu: "Kártyák" },
-      // No italic second line under the heading.
-      shows: [
-        ...HEADING_SHOWS.filter((id) => id !== "headingItalic"),
-        ...iconShows("groups"),
-        ...GROUP_SHOWS,
-      ],
+      name: { en: "Cards hard", ro: "Carduri marcate", hu: "Kártyák, erős" },
+      // No italic second line or note under the heading. Bare, as the
+      // countdown's Cards: the page's pattern round the cards, on the
+      // second surface.
+      bare: true,
+      shows: [...EYEBROW_HEADING_SHOWS, ...iconShows("groups"), ...GROUP_SHOWS],
     },
     {
       id: "8",
@@ -69,12 +76,10 @@ export const section: SectionDefinition = {
         ro: "Carduri accent",
         hu: "Kiemelt kártyák",
       },
-      // Cards, the cards on the accent, every disc in the secondary.
-      shows: [
-        ...HEADING_SHOWS.filter((id) => id !== "headingItalic"),
-        ...iconShows("groups"),
-        ...GROUP_SHOWS,
-      ],
+      // Cards, the cards on the accent, every disc in the secondary; bare
+      // too, the pattern round them, and no note.
+      bare: true,
+      shows: [...EYEBROW_HEADING_SHOWS, ...iconShows("groups"), ...GROUP_SHOWS],
     },
     {
       id: "3",

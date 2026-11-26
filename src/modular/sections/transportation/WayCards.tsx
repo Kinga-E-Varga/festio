@@ -10,12 +10,13 @@ import {
   MUTED,
   PAD,
   STACK,
-  centredWhenStacked,
+  CARD_CENTRED,
+  CARD_GRID,
   cardColumns,
   SECTION_GROUND,
   turnTone,
 } from "@/modular/styles";
-import type { VariantProps } from "@/types/modular";
+import type { SectionGround, VariantProps } from "@/types/modular";
 import { otherGround } from "@/modular/ground";
 import { ItemIcon } from "@/modular/cards/CardIcon";
 import { iconMode, itemMark } from "@/modular/item-marks";
@@ -25,24 +26,32 @@ import { iconMode, itemMark } from "@/modular/item-marks";
  * over its eyebrow, every disc in the secondary — then its title and note. Cards (`1`);
  * with `accent`, the cards on the accent, every disc in the palette's
  * secondary (`ItemIcon`'s `accent`): Cards accent (`9`).
+ * Cards hard (`1`, its `card` `surface-alt`), Cards soft (`13`,
+ * `surface`), Cards accent (`9`): all bare, the page's pattern round
+ * the cards, so the heading is a sticker (`SectionHeading`'s `sticker`).
  */
 export function WayCards({
   values,
   ground,
   accent = false,
-}: VariantProps & { accent?: boolean }) {
+  card = otherGround(ground),
+}: VariantProps & {
+  accent?: boolean;
+  /** The cards' ground when not on the accent: the other surface from `ground` unless given. */
+  card?: SectionGround;
+}) {
   const ways = list(values, "ways").slice(0, 6);
   const mode = iconMode(values);
 
   return (
     <div className={`${STACK} ${SECTION_GROUND[ground]} ${PAD}`}>
-      <SectionHeading values={values} />
+      <SectionHeading values={values} sticker />
       {ways.length > 0 ? (
-        <ul className={`grid gap-3 @3xl:gap-4 ${cardColumns(ways.length)}`}>
+        <ul className={`${CARD_GRID} ${cardColumns(ways.length)}`}>
           {ways.map((way, index) => (
             <li
               key={index}
-              className={`${CARD} flex flex-col ${centredWhenStacked(ways.length)} ${COLUMN} ${GROUND[accent ? "accent" : otherGround(ground)]}`}
+              className={`${CARD} flex flex-col ${CARD_CENTRED} ${COLUMN} ${GROUND[accent ? "accent" : card]}`}
             >
               <ItemIcon
                 mark={itemMark(mode, way.icon, index)}

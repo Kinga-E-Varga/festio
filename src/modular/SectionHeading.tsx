@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 import type { SectionValues } from "@/types/modular";
 import { text } from "./content";
-import { EYEBROW, H2, BODY, MUTED } from "./styles";
+import { EYEBROW, H2, BODY, MUTED, STICKER } from "./styles";
 
 interface SectionHeadingProps {
   values: SectionValues;
@@ -19,6 +19,8 @@ interface SectionHeadingProps {
   below?: ReactNode;
   /** The heading's type: `H2` unless a variant sets a smaller one. */
   headingClass?: string;
+  /** Every part as a sticker (`STICKER`), cut out of the page's pattern: for a bare variant, the pattern round it. */
+  sticker?: boolean;
 }
 
 /**
@@ -32,11 +34,16 @@ export function SectionHeading({
   mark,
   below,
   headingClass = H2,
+  sticker = false,
 }: SectionHeadingProps) {
   const eyebrow = text(values, "eyebrow");
   const heading = text(values, "heading");
   const italic = text(values, "headingItalic");
   const note = text(values, "note");
+  /* Each part's sticker look, by its plain weight: the eyebrow semibold, the heading and note regular. */
+  const cut = sticker
+    ? { eyebrow: STICKER.semibold, text: STICKER.normal }
+    : { eyebrow: "", text: "" };
   // With no heading at all, what comes below still shows, without the mark.
   if (!eyebrow && !heading && !italic && !note) return below ?? null;
 
@@ -53,7 +60,7 @@ export function SectionHeading({
   const inlineMark = mark && align === "center";
   const title =
     heading || italic ? (
-      <h2 className={`${headingClass} text-[color:var(--m-ink)]`}>
+      <h2 className={`${headingClass} ${cut.text} text-[color:var(--m-ink)]`}>
         {inlineMark ? <span className="mr-4">{mark}</span> : null}
         {heading}
         {heading && italic ? <br /> : null}
@@ -72,13 +79,19 @@ export function SectionHeading({
           "start-late": "text-balance @6xl:text-wrap",
         }[align];
   const lead = note ? (
-    <p className={`${BODY} whitespace-pre-line ${balance} ${MUTED}`}>{note}</p>
+    <p
+      className={`${BODY} whitespace-pre-line ${balance} ${MUTED} ${cut.text}`}
+    >
+      {note}
+    </p>
   ) : null;
 
   return (
     <div className={`flex w-full flex-col gap-4 ${place}`}>
       {eyebrow ? (
-        <p className={`${EYEBROW} text-[color:var(--m-secondary)]`}>
+        <p
+          className={`${EYEBROW} ${cut.eyebrow} text-[color:var(--m-secondary)]`}
+        >
           {eyebrow}
         </p>
       ) : null}

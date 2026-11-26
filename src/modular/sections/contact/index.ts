@@ -2,6 +2,7 @@ import {
   HEADING_FIELDS,
   HEADING_SHOWS,
   ICON_HEADING_SHOWS,
+  EYEBROW_HEADING_SHOWS,
 } from "@/modular/heading";
 import {
   ITEM_ICON,
@@ -31,9 +32,26 @@ export const section: SectionDefinition = {
   order: 142,
   variants: [
     {
+      id: "12",
+      name: { en: "Cards soft", ro: "Carduri discrete", hu: "Kártyák, lágy" },
+      // Bare: the page's pattern round the cards; no note, the heading a sticker.
+      bare: true,
+      shows: [
+        ...EYEBROW_HEADING_SHOWS,
+        ...iconShows("people"),
+        ...PERSON_SHOWS,
+      ],
+    },
+    {
       id: "1",
-      name: { en: "Cards", ro: "Carduri", hu: "Kártyák" },
-      shows: [...PLAIN_HEADING, ...iconShows("people"), ...PERSON_SHOWS],
+      name: { en: "Cards hard", ro: "Carduri marcate", hu: "Kártyák, erős" },
+      // Bare: the page's pattern round the cards; no note, the heading a sticker.
+      bare: true,
+      shows: [
+        ...EYEBROW_HEADING_SHOWS,
+        ...iconShows("people"),
+        ...PERSON_SHOWS,
+      ],
     },
     {
       id: "8",
@@ -43,7 +61,13 @@ export const section: SectionDefinition = {
         hu: "Kiemelt kártyák",
       },
       // Cards, the cards on the accent, every disc in the secondary.
-      shows: [...PLAIN_HEADING, ...iconShows("people"), ...PERSON_SHOWS],
+      // Bare: the page's pattern round the cards; no note, the heading a sticker.
+      bare: true,
+      shows: [
+        ...EYEBROW_HEADING_SHOWS,
+        ...iconShows("people"),
+        ...PERSON_SHOWS,
+      ],
     },
     {
       id: "2",

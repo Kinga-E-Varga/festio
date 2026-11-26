@@ -29,7 +29,8 @@ export const HEADING = `${SERIF} text-balance [overflow-wrap:anywhere]`;
  */
 export const COVER_DATE = `${HEADING} text-[clamp(20px,6.5cqw,26px)] @3xl:text-[clamp(22px,2.3cqw,34px)] leading-[1.3] italic`;
 
-const H2_FACE = `${HEADING} leading-[1.15] tracking-[-0.03em]`;
+/** A section heading's face without its size: Framed day's month, at its own. */
+export const H2_FACE = `${HEADING} leading-[1.15] tracking-[-0.03em]`;
 
 /** A section's main heading. */
 export const H2 = `${H2_FACE} text-[34px] @3xl:text-[44px] @5xl:text-[48px]`;
@@ -91,34 +92,55 @@ export const NAMES_SIZE =
   "text-[48px] @md:text-[56px] @3xl:text-[68px] @5xl:text-[80px]";
 
 /**
- * Large text cut out of a pattern: an outline in the surface round each
- * letter, drawn behind its fill, so only its outer half shows (half of
- * `--m-text-cut`, set by the page: 0.1em with a pattern on, none without),
- * times `--m-text-cut-scale` where a use sets one (`TEXT_CUT_THICK`).
- * Part of `STICKER_TEXT`.
+ * Text cut out of a pattern: an outline in the surface round each letter,
+ * drawn behind its fill, so only its outer half shows. The rule for every
+ * sticker: the outline shows 1.5px plus 5% of the text's size (the stroke
+ * twice that), so the smaller the text, the thicker its outline for its
+ * size — small text reads worst on a pattern. Only with a pattern on
+ * (`--m-text-cut`, set by the page: 1 or 0). Part of `STICKER`.
  */
 export const TEXT_CUT =
-  "[-webkit-text-stroke:calc(var(--m-text-cut,0)*var(--m-text-cut-scale,1))_var(--m-surface)] [paint-order:stroke_fill]";
-
-/** `TEXT_CUT` a little thicker: the Text box's Sticker joined, its text smaller than the title's names. */
-export const TEXT_CUT_THICK = "[--m-text-cut-scale:1.6]";
+  "[-webkit-text-stroke:calc(var(--m-text-cut,0)*(3px_+_0.1em))_var(--m-surface)] [paint-order:stroke_fill]";
 
 /**
- * The sticker look for large heading-face text: medium, cut out of a pattern
- * (`TEXT_CUT`). Forced medium, as the heading face sets regular. The title's
- * stickers' names, the Text box's Sticker joined.
+ * A shape cut out of a pattern, as `TEXT_CUT` cuts letters: a ring in the
+ * surface round it, `--m-card-cut` wide (set by the page: 4px with a
+ * pattern on, none without). A shadow, so it follows the corners and leaves
+ * the shape's size alone. Calendar's pages.
  */
-export const STICKER_TEXT = `${TEXT_CUT} font-medium!`;
+export const SHAPE_CUT =
+  "shadow-[0_0_0_var(--m-card-cut,0px)_var(--m-surface)]";
 
 /**
- * Small caps text as a sticker: bold, a step over the eyebrow's semibold,
- * its outline thicker still, so it shows at its size. The Text box's
- * stickers' small text, the countdown's Sticker joined's units.
+ * A line across a shape cut out of a pattern (`SHAPE_CUT`), under what it
+ * divides: with a pattern on, the ring's surface at the ring's width, as if
+ * the shape were cut there too; without, a hairline (`--m-cut-line`, set by
+ * the page). Calendar's side pages, under the weekday.
  */
-export const SMALL_STICKER = `${TEXT_CUT} [--m-text-cut-scale:2.5] font-bold!`;
+export const CUT_DIVIDER =
+  "border-b-[length:max(1px,var(--m-card-cut,0px))] border-(--m-cut-line)";
+
+/**
+ * Text as a sticker: cut out of a pattern (`TEXT_CUT`), its weight the
+ * rule for every sticker: 50 over its plain version's, so it holds up
+ * against the pattern. Both only with a pattern on: the weight is
+ * `--m-text-cut` (1 or 0) times 50 over the plain one, so without a pattern
+ * a sticker is its plain text exactly. Keyed by that plain weight: `normal`
+ * (the heading face's numbers, dates and large text), `medium` (the
+ * countdown's units), `semibold` (eyebrows). A font without the weight
+ * takes its next heavier one.
+ */
+export const STICKER = {
+  normal: `${TEXT_CUT} [font-weight:calc(400_+_50*var(--m-text-cut,0))]!`,
+  medium: `${TEXT_CUT} [font-weight:calc(500_+_50*var(--m-text-cut,0))]!`,
+  semibold: `${TEXT_CUT} [font-weight:calc(600_+_50*var(--m-text-cut,0))]!`,
+};
+
+/** The names' face without their size: `DISPLAY` a touch looser, in the accent. Framed day's day, at its own size. */
+export const NAMES_FACE = `${DISPLAY} tracking-[-0.03em]!`;
 
 /** The title's names, in the accent, a touch looser than `DISPLAY`: also Date's big day. */
-export const NAMES = `${DISPLAY} ${NAMES_SIZE} tracking-[-0.03em]!`;
+export const NAMES = `${NAMES_FACE} ${NAMES_SIZE}`;
 
 /** One large plain line: the band date, Heading & date's date, the date box's date, Days first's days, the calendar's side days, the bold reply's heading. Colour is the variant's. */
 export const BAND_LINE = `${DISPLAY_PLAIN} text-[40px] @md:text-[48px] @3xl:text-[54px] @5xl:text-[60px]`;
@@ -267,6 +289,13 @@ export const PAD_X = "px-6 @3xl:px-16 @5xl:px-25";
 export const PAD_TOP = "pt-24 @3xl:pt-28 @5xl:pt-32 @min-[90rem]:pt-40";
 export const PAD_BOTTOM = "pb-24 @3xl:pb-28 @5xl:pb-32 @min-[90rem]:pb-40";
 
+/**
+ * A joined section's pull up: half the section before's bottom padding
+ * (`PAD_BOTTOM`), at every width, so it stands closer to what it joins.
+ * The joined countdowns.
+ */
+export const JOINED_PULL = "-mt-12 @3xl:-mt-14 @5xl:-mt-16 @min-[90rem]:-mt-20";
+
 /** A section's padding. */
 export const PAD = `${PAD_X} ${PAD_TOP} ${PAD_BOTTOM}`;
 
@@ -315,8 +344,13 @@ export const FIELD_CORNER = "rounded-(--m-corner-field)";
 /** A card's padding. */
 const CARD_PAD = "p-6 @3xl:px-8 @3xl:py-7";
 
-/** A hairline frame with the corners step: a card's edge. */
-export const HAIRLINE_FRAME = `${CORNER} border-1 border-[var(--m-line)]`;
+/**
+ * A card's edge, with the corners step: a hairline with the pattern off,
+ * none with it on (`--m-card-line`, set by the page), where the pattern
+ * sets the card apart. The 1px is kept either way, so a card's size doesn't
+ * change. Every card, full cards (`FULL_CARD`) too.
+ */
+export const HAIRLINE_FRAME = `${CORNER} border-1 border-(--m-card-line)`;
 
 /** A card: a hairline edge, the corners and its padding. Its ground is the variant's. */
 export const CARD = `${HAIRLINE_FRAME} ${CARD_PAD}`;
@@ -404,19 +438,24 @@ export function columnsFor(count: number): string {
   return COLUMNS[Math.min(count, COLUMNS.length - 1)];
 }
 
-/** A grid of cards: as `columnsFor`, but two side by side are 520px each at most, centred. */
+/** The Cards styles' grid and its gap: 16px, 24px from `@3xl`. */
+export const CARD_GRID = "grid gap-4 @3xl:gap-6";
+
+/**
+ * The Cards styles' columns: one to a row at full width until they stand
+ * side by side. Two from `@3xl`, 480px each at most, the room left shared
+ * evenly around them; three only from `@5xl`, where each still has room
+ * for a long name, never two and one; four and more as `columnsFor`.
+ */
 export function cardColumns(count: number): string {
-  return count === 2
-    ? "@3xl:grid-cols-[repeat(2,minmax(0,520px))] @3xl:justify-center"
-    : columnsFor(count);
+  if (count === 2)
+    return "@3xl:justify-evenly @3xl:grid-cols-[repeat(2,minmax(0,480px))]";
+  if (count === 3) return "@5xl:grid-cols-3";
+  return columnsFor(count);
 }
 
-/** A card's content in a `columnsFor` grid: centred while the cards stack, from the left once they sit side by side. */
-export function centredWhenStacked(count: number): string {
-  return count > 1
-    ? "items-center text-center @3xl:items-start @3xl:text-left"
-    : "items-center text-center";
-}
+/** A card's content in the Cards styles: centred, at every width. */
+export const CARD_CENTRED = "items-center text-center";
 
 /**
  * A grid or list without its lines (the Accent and Full card accent

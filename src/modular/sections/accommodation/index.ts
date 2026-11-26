@@ -2,6 +2,7 @@ import {
   HEADING_FIELDS,
   HEADING_SHOWS,
   ICON_HEADING_SHOWS,
+  EYEBROW_HEADING_SHOWS,
 } from "@/modular/heading";
 import {
   ITEM_ICON,
@@ -83,11 +84,28 @@ export const section: SectionDefinition = {
       ],
     },
     {
-      id: "6",
-      name: { en: "Cards", ro: "Carduri", hu: "Kártyák" },
-      // Transportation's Cards; no italic second line under the heading.
+      id: "12",
+      name: { en: "Cards soft", ro: "Carduri discrete", hu: "Kártyák, lágy" },
+      // Cards hard, the cards on the surface.
+      // Bare: the page's pattern round the cards; no note, the heading a sticker.
+      bare: true,
       shows: [
-        ...HEADING_SHOWS.filter((id) => id !== "headingItalic"),
+        ...EYEBROW_HEADING_SHOWS,
+        ...iconShows("places"),
+        "places.distance",
+        "places.name",
+        "places.note",
+        "places.link",
+      ],
+    },
+    {
+      id: "6",
+      name: { en: "Cards hard", ro: "Carduri marcate", hu: "Kártyák, erős" },
+      // Transportation's Cards; no italic second line under the heading.
+      // Bare: the page's pattern round the cards; no note, the heading a sticker.
+      bare: true,
+      shows: [
+        ...EYEBROW_HEADING_SHOWS,
         ...iconShows("places"),
         "places.distance",
         "places.name",
@@ -103,8 +121,10 @@ export const section: SectionDefinition = {
         hu: "Kiemelt kártyák",
       },
       // Cards, the cards on the accent, every disc in the secondary.
+      // Bare: the page's pattern round the cards; no note, the heading a sticker.
+      bare: true,
       shows: [
-        ...HEADING_SHOWS.filter((id) => id !== "headingItalic"),
+        ...EYEBROW_HEADING_SHOWS,
         ...iconShows("places"),
         "places.distance",
         "places.name",

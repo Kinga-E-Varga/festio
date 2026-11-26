@@ -160,8 +160,14 @@ export const ModularInvitation = memo(function ModularInvitation({
      * without one, where only its colour tells it from the page.
      */
     "--m-card": design.pattern ? "var(--m-surface)" : "var(--m-surface-alt)",
-    /* An outline in the surface round large text (`TEXT_CUT`), only with a pattern on, so it reads over it. */
-    "--m-text-cut": design.pattern ? "0.1em" : "0",
+    /* A card's edge where it follows the pattern (`HAIRLINE_FRAME`): the hairline without one, none with one, where the pattern sets the card apart. */
+    "--m-card-line": design.pattern ? "transparent" : "var(--m-line)",
+    /* A ring in the surface round a shape cut out of a pattern (`SHAPE_CUT`), as the stickers' outline, only with a pattern on. */
+    "--m-card-cut": design.pattern ? "4px" : "0px",
+    /* A divider inside such a shape (`CUT_DIVIDER`): the ring's surface with a pattern on, the hairline without. */
+    "--m-cut-line": design.pattern ? "var(--m-surface)" : "var(--m-line)",
+    /* The sticker look (`TEXT_CUT`, `STICKER`): the outline in the surface and 50 more weight, only with a pattern on, so they read over it. */
+    "--m-text-cut": design.pattern ? "1" : "0",
   } as CSSProperties;
   const face = `invite font-[family-name:var(--font-primary)] text-[color:var(--m-ink)] ${fontClasses(design.fontPair)}`;
 

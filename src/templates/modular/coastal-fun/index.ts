@@ -21,7 +21,7 @@ export const template: ModularTemplate = {
     { section: "cover", variant: "11" }, // full centred
     { section: "textbox", variant: "1" }, // simple
     { section: "date-time", variant: "2" }, // simple accent
-    { section: "countdown", variant: "4" }, // sentence joined
+    { section: "countdown", variant: "4" }, // sentence
     { section: "location", variant: "5" }, // icon
     { section: "schedule", variant: "2" }, // icon & list
     { section: "transportation", variant: "2" }, // icon & cards
