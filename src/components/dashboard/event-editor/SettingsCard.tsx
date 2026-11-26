@@ -193,7 +193,7 @@ export function EditRow({
   /** The field's id, so the label points at it; a group of controls has none. */
   htmlFor?: string;
   hint?: ReactNode;
-  error?: string | null;
+  error?: ReactNode;
   /** Under the hint: the change warning this field raises. */
   warning?: ReactNode;
   children: ReactNode;

@@ -5,7 +5,12 @@ import {
   guestChangesSchema,
   type GuestChanges,
 } from "@/db/schemas/guest-changes";
-import { setGuestListOn, writeGuestChanges } from "@/db/writes/guests";
+import { sentMarkSchema, type SentMark } from "@/db/schemas/guest-list";
+import {
+  setGuestListOn,
+  writeGuestChanges,
+  writeSentMark,
+} from "@/db/writes/guests";
 import type { SaveError } from "@/db/writes/save";
 import { hostSave } from "@/actions/host-save";
 import type { ActionResult } from "@/types/actions";
@@ -35,5 +40,18 @@ export async function saveGuestListOn(
     on,
     (hostId, data) => setGuestListOn(hostId, eventId, data),
     { refresh: false },
+  );
+}
+
+/** One pre-loaded name ticked sent or not; counted apart from saves. The list's version after it. */
+export async function markNameSent(
+  eventId: string,
+  mark: SentMark,
+): Promise<ActionResult<{ listVersion: number }, SaveError>> {
+  return hostSave(
+    sentMarkSchema,
+    mark,
+    (hostId, data) => writeSentMark(hostId, eventId, data),
+    { refresh: false, limit: "sent" },
   );
 }

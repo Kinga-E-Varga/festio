@@ -28,3 +28,11 @@ export const guestListSchema = z.object({
 });
 
 export type GuestListDoc = z.infer<typeof guestListSchema>;
+
+/** One name ticked sent or not, as the guest list page sends it. */
+export const sentMarkSchema = z.object({
+  nameId: idSchema,
+  sent: z.boolean(),
+});
+
+export type SentMark = z.infer<typeof sentMarkSchema>;

@@ -1,5 +1,6 @@
 import { beforeAll, expect, test } from "vitest";
 import { auth, db } from "@/db/admin";
+import { paths } from "@/db/paths";
 import { countDbUse, NO_DB_COUNT as NONE, takeDbCount } from "@/db/count";
 import type { GuestChanges, ReplyInput } from "@/db/schemas/guest-changes";
 import { DIRECT, readChangeGroup } from "@/db/writes/counts";
@@ -21,6 +22,7 @@ import {
   NOW,
   readEvent,
   recount,
+  refusedWith,
   storedCounts,
   TEST_HOST,
 } from "../helpers/events";
@@ -194,6 +196,38 @@ test("separate keeps the counters and the sent time", async () => {
     stored(event.id, split.id),
   ]);
   expect(now.sentAt).toEqual(was.sentAt);
+});
+
+test("a separate that leaves out its source card is refused", async () => {
+  const event = await withList([]);
+  const first = await guest(event, ["Ana Pop", "Ion Rusu"]);
+  const before = await storedCounts(event.id);
+  const source = await asInput(event.id, first);
+  const split: ReplyInput = {
+    ...source,
+    id: newId(),
+    isNew: true,
+    from: first,
+    people: source.people.slice(1),
+  };
+  /* Only the new card: Ion would be on both. */
+  expect(
+    await refusedWith(
+      writeGuestChanges(
+        TEST_HOST,
+        event.id,
+        { replies: { put: [split], remove: [] }, list: null },
+        NOW,
+      ),
+    ),
+  ).toBe("invalid");
+  expect(await storedCounts(event.id)).toEqual(before);
+  expect(
+    await db
+      .doc(paths.reply(event.id, split.id))
+      .get()
+      .then((snap) => snap.exists),
+  ).toBe(false);
 });
 
 test("marking sent changes nothing and reads two cards", async () => {

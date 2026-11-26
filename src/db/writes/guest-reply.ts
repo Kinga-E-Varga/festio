@@ -71,7 +71,7 @@ export async function writeGuestReply(
 ): Promise<void> {
   await db.runTransaction(async (tx) => {
     const ref = db.doc(paths.event(eventId));
-    const limit = limitFor("reply", eventId, visitor.key, now);
+    const limit = limitFor("reply", [eventId, visitor.key], now);
     const [snap, attempts, existing] = await Promise.all([
       tx.get(ref),
       readAttempts(tx, limit),

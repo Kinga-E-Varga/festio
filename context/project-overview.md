@@ -94,8 +94,8 @@ Standard and Custom only. Full spec in `context/features/seating-chart.md`. Not 
 - Links are guessable. Privacy comes from Protected mode; the link editor tells the host so.
 - The guest list is never shown on the invitation page.
 - `noindex` headers — invitations must never be indexed.
-- Hosts must enter their expected guests (people), shown to them as **Guests invited**: every person a reply is for counts against it, coming or not. Replies are shown against it and may pass 100%. The form pauses at a hidden reply cap: the larger of expected + 50% or expected + 20, both set in `src/lib/config.ts`. Hosts are told only that the form pauses if far more replies come in than expected, and that they can raise the number anytime.
-- Rate limiting by IP, by the server, on RSVP submissions (e.g. 5 per link per hour) and wrong passwords. Invitation page views are not limited: the page's records are cached on the server, so repeated views cost little; if abuse shows up, a limit goes in front of the site.
+- Hosts must enter their expected guests (people), shown to them as **Guests invited**: every person a reply is for counts against it, coming or not. Replies are shown against it and may pass 100%. The form pauses at a hidden reply cap: the larger of expected + 50% or expected + 20, both set in `src/lib/config.ts`. The cap stops the host too: they can't add people past it, only edit or delete. Guests invited is at most 600; bigger events contact us. Hosts are told only that the form pauses if far more replies come in than expected, and that they can raise the number anytime.
+- Rate limiting by IP, by the server, on RSVP submissions (e.g. 5 per link per hour) and wrong passwords; host saves per account (150 an hour). Invitation page views are not limited: the page's records are cached on the server, so repeated views cost little; if abuse shows up, a limit goes in front of the site.
 
 ## GDPR
 

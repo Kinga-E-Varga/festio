@@ -127,8 +127,11 @@ who hasn't replied yet (`waiting`), `seatingWarnings`. Replied = coming + not co
   one step. Two guests sending at the same second are handled one after the other, so the
   second is checked against the new number and can be told the form is paused.
 - The same for the host adding, editing, deleting or separating a reply.
-- **The cap is for safety only.** It pauses the guest form; the host can always add replies,
-  paused or not, and the counts keep going up.
+- **The cap stops the host too.** It pauses the guest form, and a host save that adds people
+  past it is refused (`refuseOverCap`, judged on the result, so one save of many replies
+  can't jump it). Edits and deletes that keep or lower the number always save. Closed or
+  Hidden, the host can still add, up to the cap. Guests invited is at most 600
+  (`EXPECTED_GUESTS_MAX`), so the cap is at most 900; bigger events contact us.
 - **A reply is checked against the count before it**, like the form's pause: one reply that
   arrives just under the cap is saved whole, so it can pass the cap by up to 9 people. A family
   replying together is never cut off halfway.
@@ -357,16 +360,19 @@ several copies of the server and restarts them, so the count lives in Firestore.
   by clearing. If it happens, a
   page-view limit goes in front of the site (e.g. Cloudflare's free plan).
 
-**Host side: not limited yet.** Anyone can make a free account, and a host's own event has
-no ceiling: the host can add unlimited replies (no cap in `writeGuestChanges`), and every
-open of the guest list reads them all. 10,000 replies opened 1,000 times is 10 million
-reads, about $3: not ruinous, but unbounded. Live updates make it cheaper (a reopened
-listener reads only what changed), not bounded. To add (Do later, item 7):
+**Host side** (Do later, item 7). Anyone can make a free account, so a host's own event
+needs limits too, or the guest list's reads have no upper end:
 
-- **A ceiling on replies per event**, for the host's own as well: a number in
-  `src/lib/config.ts`, well above any real event (e.g. a few times the largest reply cap).
-- **A rate limit on host saves per account**, counted like the guests' (`rateLimits/`, by
-  host ID instead of IP), high enough that no real host meets it.
+- **The reply cap stops the host too** (see Counters), and Guests invited is at most 600:
+  an event holds at most about 900 people, so one open of the guest list is bounded.
+- **150 host saves an hour per account** (`HOST_SAVE_LIMIT_PER_HOUR`), every save counted
+  in `hostSave` (`countHostSave`, `rateLimits/` by host ID); the link check while typing
+  isn't a save and doesn't count. Past it: "too many saves". A sent tick on a pre-loaded
+  name is its own small save (`markNameSent`, the list card alone) with its own count,
+  600 an hour (`SENT_MARK_LIMIT_PER_HOUR`), so ticking a long list never blocks the rest.
+- **The cost report** counts the limit's read and write with every host save
+  (`hostHere` in `tests/cost/measure.test.ts`): +1 read, +1 write each.
+- Warnings to the owner when a limit is hit: `context/features/pending/admin-page.md`.
 
 ## Previews
 
@@ -645,6 +651,6 @@ Work steps 1–5 left open, in the order to build them. Load one at a time
    `dateLocked`, `deletionDate` in `src/lib/event.ts`) use the server's clock, not the
    event's `timeZone`. Today only the countdown's "today" and the save's date lock
    (`todayIn`) use it.
-7. **To do — host-side limits** (`fix/`, any time before `festio-prod`): a ceiling on
+7. **Done (`fix: host-side limits`) — host-side limits** (`fix/`, any time before `festio-prod`): a ceiling on
    replies per event and a rate limit on host saves per account, so one account can't run
    up unbounded reads. See Rate limiting → Host side.

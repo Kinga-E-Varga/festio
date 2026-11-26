@@ -1,6 +1,4 @@
-# Current Feature
-
-Modular sections — cards, stickers and countdown styles (`fix/modular-sections`)
+# Current Feature: Host-side limits (`fix/host-limits`)
 
 ## Status
 
@@ -8,19 +6,47 @@ Completed
 
 ## Goals
 
-- **Cards soft / hard everywhere:** every Cards style (Accommodation, Contact, Location, Menu, Helpful notes, Schedule, Transportation, Special people, Countdown, Countdown joined) is now Cards hard (old id, second surface) plus a new Cards soft (surface). Cards soft, hard and accent are bare (the pattern round the cards), with no note and a sticker heading (`SectionHeading`'s `sticker`); card content always centred (`CARD_CENTRED` replaces `centredWhenStacked`)
-- **Card edges follow the pattern:** `HAIRLINE_FRAME` (a hairline with the pattern off, none with it on) on the full cards (`FULL_CARD`), countdown cards, the Calendar's pages and the Playlist's Card soft / hard. Calendar's cut ring and dividers: `SHAPE_CUT`, `CUT_DIVIDER`
-- **Sticker rule:** one `STICKER` (`normal` / `medium` / `semibold`) for every sticker: the outline 1.5px + 5% of the text size (`TEXT_CUT`), the weight 50 over the plain version's, both only with a pattern on (`--m-text-cut` 1 / 0). `STICKER_TEXT`, `SMALL_STICKER`, `TEXT_CUT_THICK` gone
-- **Countdown:** renamed to Sticker, Clock, Sentence; new Clock sticker (`14`) and Sentence sticker (`15`) (`ClockRow`, `Sentence`); Simple joined and Cards joined lose the eyebrow; numbers in non-accent cards in the accent; joined styles pulled up (`JOINED_PULL`)
-- **Date & time:** Sticker simple (`8`) retired, Sticker colourful renamed Sticker (no eyebrow); Simple accent → Simple on accent; Framed day's month restyled
-- **Text box:** Card (`3`) retired; Accent & card → Card on accent; Sticker joined keeps its name
-- **Story:** Two-line / Icon put the heading and story left, photo right; new Simple (`10`); Simple, Accent and the three Full cards share one layout (`WideStory`): heading, a wide 3:2 photo (narrower in the cards), the story centred under it. Photo note shortened (Story, Location)
-- **Full cards as wide as three Cards:** `FULL_CARD` drops the 960px cap and takes the section's whole content width (up to 1240px); the Text box's Full cards too (`CardText`'s `wide`), its Card styles keep 960px
-- **One card layout for every Cards style** (`cardColumns`, `CARD_GRID`; Location's `ROW` gone): two side by side from `@3xl`, 480px each, spaced evenly; three from `@5xl` across the whole width; gaps 16 / 24px
-- **Cover Wildflower:** the hairline inside the card removed; the card's edge `HAIRLINE_FRAME`, as every card's
-- Schedule: a stale "`9` is retired" comment removed (Cards accent uses `9`)
+From `context/features/pending/database.md`, Do later item 7. Today a host has no limits:
+anyone can make a free account, add unlimited replies to their own event, and every open of
+the guest list reads them all. The reads it can cost us have no upper end. Two limits no
+real host reaches:
+
+- **Guests invited has a maximum: 600** (`EXPECTED_GUESTS_MAX` in `src/lib/config.ts`), in
+  the event schema and the event form. Past it, the field says that for more guests the
+  host should contact us, with a link to `/contact`.
+- **The reply cap stops the host too.** The cap stays as it is (the larger of expected +
+  50% or expected + 20, so at most 900). A host save that raises the event's people
+  (coming + not coming) is refused if the result passes the cap. Edits and deletes that
+  keep or lower the number are always allowed, so deleting fake replies makes room. When
+  replies are closed (closing time) or the invitation is Hidden, the host can still add,
+  up to the cap.
+- **The host's refusal says what to do:** the event reached its limit of N people: raise
+  Guests invited in Event settings, or check for fake replies. At 600 Guests invited:
+  contact us (`/contact`) instead.
+- **A rate limit on host saves: 150 an hour per account** (`HOST_SAVE_LIMIT_PER_HOUR`),
+  counted in `hostSave` (`src/actions/host-save.ts`), so every host save counts and none
+  can forget it. One card per account per hour in `rateLimits/` (a new `save` action,
+  keyed by host ID), deleted by the same TTL. Past it: "Too many saves, please try again
+  in a few minutes."
+- **Sent ticks counted apart:** ticking a pre-loaded name as sent is its own small save
+  (`markNameSent` → `writeSentMark`: that name's mark, the list's version up, no counter
+  changes) with its own count, 600 an hour (`SENT_MARK_LIMIT_PER_HOUR`), so a host ticking
+  a long list never runs out of saves.
+- **A "coming soon" `/contact` page** in the host app (`[locale]/contact`), in the three
+  languages, so the links lead somewhere. The real page and form are their own feature:
+  `context/features/pending/contact-page.md`.
 
 ## Notes
 
-- Simplify: ran 2026-11-26
-- New variant ids are permanent: countdown `12`–`15`, people `12`, accommodation / contact `12`, location / menu / transportation `13`, notes `14`, schedule `16`, story `10`
+- **A decided rule changes:** "the host can always add replies, paused or not" becomes
+  "the host can add replies up to the cap". Update `context/project-overview.md` (Security)
+  and `database.md` (Counters: "The cap is for safety only"; Rate limiting → Host side;
+  `writeGuestChanges`'s comment "no cap").
+- The guest's rule stays: a reply is checked against the count before it, so a family
+  arriving just under the cap is saved whole (up to 9 over). The host's check is on the
+  result, so one save with many replies can't jump past the cap.
+- The host save limit costs one read and one write per save: check `npm run cost` and
+  accept the rise with `COST_UPDATE=1` if it's only that.
+- No real data yet: no script. Seed events are all under 600 Guests invited.
+- At `/feature complete`, mark item 7 in `database.md` as Done.
+- Simplify: ran 2026-11-26 (with /code-review)

@@ -65,33 +65,33 @@
     "authChecks": 2
   },
   "save: event settings": {
-    "reads": 1,
-    "writes": 1,
+    "reads": 2,
+    "writes": 2,
     "authChecks": 0
   },
   "save: invitation": {
-    "reads": 2,
-    "writes": 2,
+    "reads": 3,
+    "writes": 3,
     "authChecks": 0
   },
   "save: guest list, one reply edited": {
-    "reads": 6,
-    "writes": 2,
+    "reads": 7,
+    "writes": 3,
     "authChecks": 0
   },
   "save: guest list, mark sent": {
-    "reads": 2,
-    "writes": 1,
-    "authChecks": 0
-  },
-  "save: guest list, add names": {
-    "reads": 5,
+    "reads": 3,
     "writes": 2,
     "authChecks": 0
   },
+  "save: guest list, add names": {
+    "reads": 6,
+    "writes": 3,
+    "authChecks": 0
+  },
   "save: list switch": {
-    "reads": 1,
-    "writes": 1,
+    "reads": 2,
+    "writes": 2,
     "authChecks": 0
   },
   "save: mark replies seen": {
@@ -115,8 +115,8 @@
     "authChecks": 0
   },
   "save: guest list, match an unknown": {
-    "reads": 10,
-    "writes": 2,
+    "reads": 11,
+    "writes": 3,
     "authChecks": 0
   }
 }

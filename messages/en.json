@@ -396,7 +396,8 @@
     "protectedWarning": "Guests will need the password to see the invitation and reply. Cards printed before now don't have it on them — passing it on is yours to do.",
     "closeWarningTitle": "Closing replies earlier",
     "closeWarning": "The reply form closes at the time you pick. Guests who haven't replied by then can't any more, and Festio will not tell them.",
-    "closeInPast": "Pick a time that hasn't passed yet."
+    "closeInPast": "Pick a time that hasn't passed yet.",
+    "expectedTooHigh": "Festio is made for events of up to {max} guests. For a bigger one, <link>contact us</link>."
   },
   "HostEditor": {
     "quit": "Quit editor",
@@ -641,7 +642,8 @@
     "guests": "{title} · Guests · Festio",
     "signIn": "Sign in · Festio",
     "signUp": "Create your account · Festio",
-    "invited": "You're invited"
+    "invited": "You're invited",
+    "contact": "Contact · Festio"
   },
   "GuestList": {
     "sectionSummary": "Summary",
@@ -815,6 +817,12 @@
     "expectedTooLow": "Guests invited can't be fewer than the guests who have already answered.",
     "closeTooLate": "Replies must close by the day before the event.",
     "wrongPassword": "That password isn't right.",
-    "notAllowed": "This can't be done for this event."
+    "notAllowed": "This can't be done for this event.",
+    "full": "This event has reached its reply limit. Check for fake replies, or raise Guests invited in Event settings (up to {max}; for more, contact us).",
+    "tooMany": "Too many saves in a short time. Please try again in a few minutes."
+  },
+  "Contact": {
+    "title": "Contact us",
+    "soon": "Our contact form is on its way. Please check back soon."
   }
 }

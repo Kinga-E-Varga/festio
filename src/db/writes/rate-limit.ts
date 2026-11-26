@@ -7,10 +7,14 @@ import { db } from "@/db/admin";
 import { paths } from "@/db/paths";
 import { parseSnap } from "@/db/reads/parse";
 import { rateLimitSchema, type RateLimitDoc } from "@/db/schemas/rate-limit";
-import { PASSWORD_LIMIT_PER_HOUR } from "@/lib/config";
+import {
+  HOST_SAVE_LIMIT_PER_HOUR,
+  PASSWORD_LIMIT_PER_HOUR,
+  SENT_MARK_LIMIT_PER_HOUR,
+} from "@/lib/config";
 import { HOUR_MS } from "@/lib/event";
 
-/** One visitor's count of one kind of try, on one link, in one hour. */
+/** One count of one kind of try, for one visitor on one link (or one host), in one hour. */
 export interface Limit {
   ref: DocumentReference;
   action: RateLimitDoc["action"];
@@ -21,14 +25,13 @@ function hourOf(now: Date): number {
   return Math.floor(now.getTime() / HOUR_MS);
 }
 
-/** This visitor's card for this kind of try, this link and this hour. */
+/** The card for this kind of try, by whom (e.g. link and visitor), in this hour. */
 export function limitFor(
   action: RateLimitDoc["action"],
-  eventId: string,
-  visitor: string,
+  who: string[],
   now: Date,
 ): Limit {
-  const key = `${action}_${eventId}_${visitor}_${hourOf(now)}`;
+  const key = [action, ...who, hourOf(now)].join("_");
   return { ref: db.doc(paths.rateLimit(key)), action };
 }
 
@@ -66,11 +69,38 @@ export async function unlockAttempt(
   now: Date,
 ): Promise<"ok" | "wrong" | "tooMany"> {
   return db.runTransaction(async (tx) => {
-    const limit = limitFor("password", eventId, visitor, now);
+    const limit = limitFor("password", [eventId, visitor], now);
     const count = await readAttempts(tx, limit);
     if (count >= PASSWORD_LIMIT_PER_HOUR) return "tooMany";
     if (correct) return "ok";
     countAttempt(tx, limit, count, now);
     return "wrong";
+  });
+}
+
+/** What a host's try is counted as: a save, or a sent tick (cheap, so more of them). */
+export type HostLimit = "save" | "sent";
+
+const HOST_LIMITS: Record<HostLimit, number> = {
+  save: HOST_SAVE_LIMIT_PER_HOUR,
+  sent: SENT_MARK_LIMIT_PER_HOUR,
+};
+
+/**
+ * One host save (or sent tick), counted per account and hour before it runs.
+ * Over the limit, it is turned away. Refused saves count too: a script trying
+ * again and again is what this stops.
+ */
+export async function countHostSave(
+  hostId: string,
+  now: Date,
+  kind: HostLimit = "save",
+): Promise<"ok" | "tooMany"> {
+  return db.runTransaction(async (tx) => {
+    const limit = limitFor(kind, [hostId], now);
+    const count = await readAttempts(tx, limit);
+    if (count >= HOST_LIMITS[kind]) return "tooMany";
+    countAttempt(tx, limit, count, now);
+    return "ok";
   });
 }

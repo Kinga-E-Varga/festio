@@ -8,7 +8,12 @@ import { paths } from "@/db/paths";
 import { eventSettingsSchema } from "@/db/schemas/event";
 import { writeEventSettings } from "@/db/writes/event";
 import { writeGuestReply } from "@/db/writes/guest-reply";
-import { setGuestListOn, writeGuestChanges } from "@/db/writes/guests";
+import {
+  setGuestListOn,
+  writeGuestChanges,
+  writeSentMark,
+} from "@/db/writes/guests";
+import { countHostSave, type HostLimit } from "@/db/writes/rate-limit";
 import { writeInvitation } from "@/db/writes/invitation";
 import { fromGuestReplies, toGuestReplies } from "@/lib/guests";
 import { newId } from "@/lib/id";
@@ -68,6 +73,18 @@ async function here(name: string, call: () => Promise<unknown>) {
   measured[name] = takeDbCount();
 }
 
+/** A host save in this process, with the save count `hostSave` adds before it. */
+function hostHere(
+  name: string,
+  call: () => Promise<unknown>,
+  kind: HostLimit = "save",
+) {
+  return here(name, async () => {
+    await countHostSave(SEED_HOST.uid, new Date(), kind);
+    await call();
+  });
+}
+
 beforeAll(async () => {
   countDbUse(db, auth);
   /*
@@ -115,7 +132,7 @@ test("what each page and save costs, against the baseline", async () => {
 
   const { event, replies, list } = await readEvent(BIG);
   const now = new Date();
-  await here("save: event settings", () =>
+  await hostHere("save: event settings", () =>
     writeEventSettings(
       SEED_HOST.uid,
       BIG,
@@ -123,7 +140,7 @@ test("what each page and save costs, against the baseline", async () => {
       now,
     ),
   );
-  await here("save: invitation", () =>
+  await hostHere("save: invitation", () =>
     writeInvitation(SEED_HOST.uid, BIG, async () => ({
       kind: "simple",
       values: { title1: "Cost check" },
@@ -134,7 +151,7 @@ test("what each page and save costs, against the baseline", async () => {
   );
   const edited = fromGuestReplies(toGuestReplies([replies[0]]), [])[0];
   edited.status = edited.status === "going" ? "not_going" : "going";
-  await here("save: guest list, one reply edited", () =>
+  await hostHere("save: guest list, one reply edited", () =>
     writeGuestChanges(
       SEED_HOST.uid,
       BIG,
@@ -153,15 +170,17 @@ test("what each page and save costs, against the baseline", async () => {
       },
       now,
     );
-  let { listVersion } = await readEvent(BIG);
-  await here("save: guest list, mark sent", () =>
-    listSave(
-      names.map((name, i) => (i === 0 ? { ...name, sent: !name.sent } : name)),
-      listVersion,
-    ),
+  await hostHere(
+    "save: guest list, mark sent",
+    () =>
+      writeSentMark(SEED_HOST.uid, BIG, {
+        nameId: names[0].id,
+        sent: !names[0].sent,
+      }),
+    "sent",
   );
-  ({ listVersion } = await readEvent(BIG));
-  await here("save: guest list, add names", () =>
+  const { listVersion } = await readEvent(BIG);
+  await hostHere("save: guest list, add names", () =>
     listSave(
       [
         ...names,
@@ -171,7 +190,7 @@ test("what each page and save costs, against the baseline", async () => {
       listVersion,
     ),
   );
-  await here("save: list switch", () =>
+  await hostHere("save: list switch", () =>
     setGuestListOn(SEED_HOST.uid, BIG, !event.preloaded),
   );
   await setGuestListOn(SEED_HOST.uid, BIG, event.preloaded);
@@ -195,7 +214,7 @@ test("what each page and save costs, against the baseline", async () => {
   if (!unknown) throw new Error("The newcomer's reply is missing");
   const matched = fromGuestReplies(toGuestReplies([unknown]), [])[0];
   matched.people[0].listNameId = listNow[1].id;
-  await here("save: guest list, match an unknown", () =>
+  await hostHere("save: guest list, match an unknown", () =>
     writeGuestChanges(
       SEED_HOST.uid,
       BIG,

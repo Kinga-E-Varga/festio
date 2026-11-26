@@ -396,7 +396,8 @@
     "protectedWarning": "A vendégeknek jelszó kell a meghívó megtekintéséhez és a válaszhoz. Az eddig nyomtatott kártyákon nincs rajta — a továbbadása a te feladatod.",
     "closeWarningTitle": "A válaszadás korábbi lezárása",
     "closeWarning": "A válaszűrlap a választott időpontban lezárul. Aki addig nem válaszolt, utána már nem tud, és a Festio nem értesíti őket.",
-    "closeInPast": "Olyan időpontot válassz, amely még nem múlt el."
+    "closeInPast": "Olyan időpontot válassz, amely még nem múlt el.",
+    "expectedTooHigh": "A Festio legfeljebb {max} vendéges eseményekhez készült. Nagyobbhoz <link>írj nekünk</link>."
   },
   "HostEditor": {
     "quit": "Szerkesztő elhagyása",
@@ -641,7 +642,8 @@
     "guests": "{title} · Vendégek · Festio",
     "signIn": "Bejelentkezés · Festio",
     "signUp": "Fiók létrehozása · Festio",
-    "invited": "Meghívót kaptál"
+    "invited": "Meghívót kaptál",
+    "contact": "Kapcsolat · Festio"
   },
   "GuestList": {
     "sectionSummary": "Összegzés",
@@ -815,6 +817,12 @@
     "expectedTooLow": "A meghívott vendégek száma nem lehet kevesebb azoknál, akik már válaszoltak.",
     "closeTooLate": "A válaszadásnak legkésőbb az esemény előtti napon le kell zárulnia.",
     "wrongPassword": "A jelszó nem helyes.",
-    "notAllowed": "Ez ennél az eseménynél nem lehetséges."
+    "notAllowed": "Ez ennél az eseménynél nem lehetséges.",
+    "full": "Az esemény elérte a válaszok felső határát. Nézd meg, nincsenek-e hamis válaszok, vagy emeld meg a meghívott vendégek számát az Esemény beállításaiban (legfeljebb {max}; ennél többhöz írj nekünk).",
+    "tooMany": "Túl sok mentés rövid idő alatt. Kérjük, próbáld újra néhány perc múlva."
+  },
+  "Contact": {
+    "title": "Írj nekünk",
+    "soon": "A kapcsolatfelvételi űrlap hamarosan elkészül. Nézz vissza később."
   }
 }

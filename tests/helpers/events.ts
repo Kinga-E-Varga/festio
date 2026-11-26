@@ -45,7 +45,7 @@ export async function createEvent(
     timeZone: "Europe/Bucharest",
     slug: freshSlug(),
     visibility: "public",
-    expectedGuests: 1000,
+    expectedGuests: 600,
     preloaded: false,
     package: "free",
     templateId: "wolf-dance",

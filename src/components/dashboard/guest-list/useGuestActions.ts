@@ -46,6 +46,7 @@ export function useGuestActions(
   apply: Apply,
   notify: (message: string) => void,
   shown: Shown,
+  markSent: (nameId: string, sent: boolean) => Promise<boolean>,
 ) {
   const t = useTranslations("GuestList");
 
@@ -113,12 +114,7 @@ export function useGuestActions(
   }
 
   async function toggleSent(listName: ListName) {
-    const saved = await apply((current) => ({
-      ...current,
-      list: current.list.map((entry) =>
-        entry.id === listName.id ? { ...entry, sent: !entry.sent } : entry,
-      ),
-    }));
+    const saved = await markSent(listName.id, !listName.sent);
     if (saved) notify(t(listName.sent ? "toastNotSent" : "toastSent"));
   }
 

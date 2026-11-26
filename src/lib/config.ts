@@ -30,6 +30,18 @@ export const REPLY_LIMIT_PER_HOUR = 5;
 /** Wrong passwords one visitor can try on one Protected link in an hour. */
 export const PASSWORD_LIMIT_PER_HOUR = 10;
 
+/** Saves one host account can make in an hour, every kind counted; more get "too many saves". */
+export const HOST_SAVE_LIMIT_PER_HOUR = 150;
+
+/** Sent ticks on pre-loaded names one host can make in an hour, counted apart from saves. */
+export const SENT_MARK_LIMIT_PER_HOUR = 600;
+
+/**
+ * The most guests a host can invite, so the reply cap, which stops guests and
+ * host alike, is at most 900 people. Bigger events contact us.
+ */
+export const EXPECTED_GUESTS_MAX = 600;
+
 /** How long a browser keeps a Protected invitation open once its password is typed. */
 export const UNLOCK_DAYS = 30;
 

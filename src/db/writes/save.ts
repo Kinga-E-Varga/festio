@@ -15,11 +15,14 @@ export type SaveError =
   | "closeTooLate"
   | "wrongPassword"
   | "notAllowed"
+  /* A host save past the reply cap. */
+  | "full"
+  /* Too many tries in an hour: a guest's reply (words in `Rsvp`) or any host save. */
+  | "tooMany"
   /* A guest's reply only: their words are in `Rsvp`, not `SaveErrors`. */
   | "locked"
   | "closed"
-  | "paused"
-  | "tooMany";
+  | "paused";
 
 /** Thrown inside a save to stop it with a reason; nothing it was about to write is written. */
 export class SaveRefused extends Error {

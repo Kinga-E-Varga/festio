@@ -3,7 +3,7 @@ import { db } from "@/db/admin";
 import { paths } from "@/db/paths";
 import type { GuestChanges } from "@/db/schemas/guest-changes";
 import { parseCards } from "@/db/reads/parse";
-import type { GuestListDoc } from "@/db/schemas/guest-list";
+import type { GuestListDoc, SentMark } from "@/db/schemas/guest-list";
 import { replySchema } from "@/db/schemas/reply";
 import {
   affectedKeys,
@@ -13,8 +13,9 @@ import {
 import { ownEvent } from "@/db/writes/event";
 import { replyRef } from "@/db/writes/reply-ref";
 import { expectVersion, SaveRefused } from "@/db/writes/save";
-import type { Question } from "@/db/schemas/event";
+import type { EventDoc, Question } from "@/db/schemas/event";
 import { HOST_RULES, markAnswered } from "@/lib/answers";
+import { replyCap } from "@/lib/event";
 import { checkedAnswers } from "@/db/writes/answers";
 import { summaryAfter, type StoredReply } from "@/lib/guests";
 import { resolveQuestions } from "@/lib/suggested";
@@ -23,17 +24,23 @@ import { resolveQuestions } from "@/lib/suggested";
  * The reply cards to write. Replies keep when they came in and who sent
  * them. A card split off from another (`from`) takes that card's; a brand
  * new one is the host's. A card edited here but deleted on another device is
- * not brought back.
+ * not brought back. A split comes with its source card, saved or deleted in
+ * the same save, else its people would be on both.
  */
 function replyCards(
   replies: GuestChanges["replies"],
   stored: Map<string, StoredReply>,
   at: Timestamp,
 ): StoredReply[] {
+  const sent = new Set([
+    ...replies.put.filter(({ isNew }) => !isNew).map(({ id }) => id),
+    ...replies.remove,
+  ]);
   return replies.put.map(({ isNew, from, ...input }): StoredReply => {
     const own = stored.get(input.id);
     if (isNew ? own : !own) throw new SaveRefused("stale");
     if (!isNew && from) throw new SaveRefused("invalid");
+    if (from && !sent.has(from)) throw new SaveRefused("invalid");
     const source = own ?? (from ? stored.get(from) : undefined);
     if (from && !source) throw new SaveRefused("stale");
     /* Separate only moves people who were on the card it names. */
@@ -72,6 +79,28 @@ function withCheckedAnswers(
   };
 }
 
+/** Everyone on these cards, coming or not. */
+function peopleOn(cards: StoredReply[]): number {
+  return cards.reduce((sum, card) => sum + card.people.length, 0);
+}
+
+/**
+ * The reply cap stops the host too: a save that adds people is refused if
+ * the event then holds more than the cap. Judged on the result, unlike a
+ * guest's reply, so one save of many replies can't jump past it. Edits and
+ * deletes that keep or lower the number are always saved.
+ */
+function refuseOverCap(
+  event: Pick<EventDoc, "counts" | "expectedGuests">,
+  before: StoredReply[],
+  after: StoredReply[],
+): void {
+  const added = peopleOn(after) - peopleOn(before);
+  const now = event.counts.coming + event.counts.notComing;
+  if (added > 0 && now + added > replyCap(event.expectedGuests))
+    throw new SaveRefused("full");
+}
+
 /**
  * The cards a host save starts from: the list card, and the reply cards it
  * names (written, split from or deleted) by ID. A save of the list alone
@@ -106,9 +135,9 @@ async function readChanged(
  * in one transaction. Only the replies the change can reach are counted
  * (`countsWithHostChange`); marking list names sent changes no counter, so
  * it writes the list alone. The list is saved from the version the page
- * read; reply cards have none, the last save wins. The host can always add
- * replies: no cap. Returns the list's version and the event's `dataVersion`
- * after the save.
+ * read; reply cards have none, the last save wins. The reply cap stops the
+ * host too (`refuseOverCap`). Returns the list's version and the event's
+ * `dataVersion` after the save.
  */
 export async function writeGuestChanges(
   hostId: string,
@@ -158,6 +187,7 @@ export async function writeGuestChanges(
       listAfter: list?.names ?? listCard.names,
       remove,
     };
+    refuseOverCap(doc, change.before, replies);
     const keys = affectedKeys(change);
     const counted =
       (keys.length > 0 || replies.length > 0 || remove.length > 0) &&
@@ -197,5 +227,31 @@ export async function setGuestListOn(
   await db.runTransaction(async (tx) => {
     const { ref, doc } = await ownEvent(tx, hostId, eventId);
     tx.update(ref, { preloaded: on, version: doc.version + 1 });
+  });
+}
+
+/**
+ * One pre-loaded name ticked sent or not: the list card alone, its version
+ * raised (an editor open elsewhere is told it's stale). No counter changes.
+ * Its own save, so it is counted apart from the others (`sent` in `hostSave`).
+ * A name deleted on another device is refused as stale.
+ */
+export async function writeSentMark(
+  hostId: string,
+  eventId: string,
+  { nameId, sent }: SentMark,
+): Promise<{ listVersion: number }> {
+  return db.runTransaction(async (tx) => {
+    await ownEvent(tx, hostId, eventId);
+    const ref = db.doc(paths.guestList(eventId));
+    const list = guestListOf(await tx.get(ref));
+    if (!list.names.some((name) => name.id === nameId))
+      throw new SaveRefused("stale");
+    const names = list.names.map((name) =>
+      name.id === nameId ? { ...name, sent } : name,
+    );
+    const version = list.version + 1;
+    tx.set(ref, { names, version });
+    return { listVersion: version };
   });
 }

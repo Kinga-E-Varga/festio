@@ -61,6 +61,7 @@ export async function checkSlug(
       }
       return { free: false, suggestions };
     },
-    { refresh: false },
+    /* Asked while the host types: a lookup, not one of their saves. */
+    { refresh: false, limit: false },
   );
 }

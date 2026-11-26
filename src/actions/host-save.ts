@@ -1,6 +1,7 @@
 import { refresh } from "next/cache";
 import type { z } from "zod";
 import { requireHostId } from "@/db/reads/session";
+import { countHostSave, type HostLimit } from "@/db/writes/rate-limit";
 import { refusal, type SaveError } from "@/db/writes/save";
 import type { ActionResult } from "@/types/actions";
 
@@ -14,21 +15,28 @@ import type { ActionResult } from "@/types/actions";
 type Saved<T> = T extends void ? undefined : T;
 
 /**
- * One host save: signed in (else to sign-in), the input checked by its
- * schema, then `save`. A refusal becomes its reason, anything else `failed`.
- * On success the page is read again, unless `refresh: false`.
+ * One host save: signed in (else to sign-in), within the account's saves
+ * this hour (`countHostSave`: `limit` is what it counts as, `save` unless
+ * said; `false` for a lookup that is no save), the input checked by its schema, then `save`. A refusal becomes its
+ * reason, anything else `failed`. On success the page is read again, unless
+ * `refresh: false`.
  */
 export async function hostSave<S extends z.ZodType, T>(
   schema: S,
   input: unknown,
   save: (hostId: string, data: z.infer<S>) => Promise<T>,
-  { refresh: again = true }: { refresh?: boolean } = {},
+  {
+    refresh: again = true,
+    limit = "save",
+  }: { refresh?: boolean; limit?: HostLimit | false } = {},
 ): Promise<ActionResult<Saved<T>, SaveError>> {
   const hostId = await requireHostId();
-  const parsed = schema.safeParse(input);
-  if (!parsed.success) return { success: false, error: "invalid" };
 
   try {
+    if (limit && (await countHostSave(hostId, new Date(), limit)) === "tooMany")
+      return { success: false, error: "tooMany" };
+    const parsed = schema.safeParse(input);
+    if (!parsed.success) return { success: false, error: "invalid" };
     const data = await save(hostId, parsed.data);
     if (again) refresh();
     return { success: true, data: data as Saved<T> };

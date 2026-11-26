@@ -15,7 +15,7 @@ import {
   ageGroupSchema,
   dietNeedSchema,
 } from "@/db/schemas/reply";
-import { QUESTIONS_MAX } from "@/lib/config";
+import { EXPECTED_GUESTS_MAX, QUESTIONS_MAX } from "@/lib/config";
 import { SLUG_MAX, SLUG_MIN, SLUG_PATTERN } from "@/lib/slug";
 import {
   countSchema,
@@ -237,7 +237,7 @@ export const eventFieldsSchema = z.object({
   visibility: visibilitySchema,
   /** Stored as typed: the host sees it and it's printed on the card. Only the server reads it. */
   password: z.string().regex(PASSWORD_PATTERN).optional(),
-  expectedGuests: z.number().int().positive(),
+  expectedGuests: z.number().int().positive().max(EXPECTED_GUESTS_MAX),
   /** A guest list is pre-loaded. */
   preloaded: z.boolean(),
   /** What has been bought. Paid for = the template's package is no higher. */

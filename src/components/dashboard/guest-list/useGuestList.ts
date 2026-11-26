@@ -2,7 +2,11 @@
 
 import { useLocale } from "next-intl";
 import { useRef, useState } from "react";
-import { saveGuestChanges, saveGuestListOn } from "@/actions/guests";
+import {
+  markNameSent,
+  saveGuestChanges,
+  saveGuestListOn,
+} from "@/actions/guests";
 import type { SaveError } from "@/db/writes/save";
 import { orFailed } from "@/lib/action";
 import {
@@ -125,6 +129,28 @@ export function useGuestList(
     return once(() => save(recipe));
   }
 
+  /** One name ticked sent or not: its own small save, counted apart from the others. */
+  function markSent(nameId: string, sent: boolean): Promise<boolean> {
+    return once(async () => {
+      const result = await orFailed(markNameSent(eventId, { nameId, sent }));
+      if (!result.success) {
+        fail(result.error);
+        return false;
+      }
+      const current = saved.current;
+      saved.current = {
+        ...current,
+        list: current.list.map((entry) =>
+          entry.id === nameId ? { ...entry, sent } : entry,
+        ),
+        listVersion: result.data.listVersion,
+      };
+      remember();
+      setGuests(saved.current);
+      return true;
+    });
+  }
+
   /** The list switch, saved as the event's own before it shows. */
   function switchList(on: boolean): Promise<boolean> {
     return once(async () => {
@@ -166,6 +192,7 @@ export function useGuestList(
       setAddOpen(true);
     },
     apply,
+    markSent,
   };
 }
 

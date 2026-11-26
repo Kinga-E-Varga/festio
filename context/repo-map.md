@@ -20,21 +20,22 @@ one) — see the comments in `[locale]/layout.tsx` and `invite/[invite]/layout.t
 **Host app**, locale-routed via `next-intl` (EN unprefixed, RO/HU under
 `/ro`, `/hu`):
 
-| Path                                              | Purpose                                                                       |
-| ------------------------------------------------- | ----------------------------------------------------------------------------- |
-| `[locale]/layout.tsx`                             | Root layout for the host app — fonts, `NextIntlClientProvider`, global chrome |
-| `[locale]/page.tsx`                               | Landing page                                                                  |
-| `globals.css`                                     | **All** Tailwind v4 theme config lives here (`@theme`). No JS config file.    |
-| `[locale]/invitations/[id]/page.tsx`              | Host-side invitation view/editor                                              |
-| `[locale]/prints/[id]/page.tsx`                   | Host-side printable invitation                                                |
-| `[locale]/templates/[id]/page.tsx`                | Template preview                                                              |
-| `[locale]/dashboard/page.tsx`                     | Dashboard home                                                                |
-| `[locale]/dashboard/layout.tsx`                   | Dashboard shell wrapper                                                       |
-| `[locale]/dashboard/events/[id]/page.tsx`         | Event Overview — the event's own home (no events list: Home lists them all)   |
-| `[locale]/dashboard/events/[id]/details/page.tsx` | Event editor (Event details)                                                  |
-| `[locale]/dashboard/events/[id]/guests/page.tsx`  | Event guest list                                                              |
-| `[locale]/dashboard/events/[id]/report/page.tsx`  | Draft: report a flood of unexpected replies                                   |
-| `[locale]/sign-in/page.tsx`, `sign-up/page.tsx`   | Sign in / sign up (`AuthPage`); signed in, they go to the dashboard           |
+| Path                                              | Purpose                                                                             |
+| ------------------------------------------------- | ----------------------------------------------------------------------------------- |
+| `[locale]/layout.tsx`                             | Root layout for the host app — fonts, `NextIntlClientProvider`, global chrome       |
+| `[locale]/page.tsx`                               | Landing page                                                                        |
+| `globals.css`                                     | **All** Tailwind v4 theme config lives here (`@theme`). No JS config file.          |
+| `[locale]/invitations/[id]/page.tsx`              | Host-side invitation view/editor                                                    |
+| `[locale]/prints/[id]/page.tsx`                   | Host-side printable invitation                                                      |
+| `[locale]/templates/[id]/page.tsx`                | Template preview                                                                    |
+| `[locale]/dashboard/page.tsx`                     | Dashboard home                                                                      |
+| `[locale]/dashboard/layout.tsx`                   | Dashboard shell wrapper                                                             |
+| `[locale]/dashboard/events/[id]/page.tsx`         | Event Overview — the event's own home (no events list: Home lists them all)         |
+| `[locale]/dashboard/events/[id]/details/page.tsx` | Event editor (Event details)                                                        |
+| `[locale]/dashboard/events/[id]/guests/page.tsx`  | Event guest list                                                                    |
+| `[locale]/dashboard/events/[id]/report/page.tsx`  | Draft: report a flood of unexpected replies                                         |
+| `[locale]/sign-in/page.tsx`, `sign-up/page.tsx`   | Sign in / sign up (`AuthPage`); signed in, they go to the dashboard                 |
+| `[locale]/contact/page.tsx`                       | Contact: a "coming soon" notice until the form (`features/pending/contact-page.md`) |
 
 **Guest invitation**, outside next-intl entirely, no language switch:
 
@@ -108,12 +109,12 @@ Geometry (`.sheet`, `.sheet-view`, `.leaf`, `.flip`, `.fold`, `.sheet-form`) liv
 
 ## Server Actions — `src/actions/`
 
-Host actions go through `host-save.ts` (`hostSave`: signed in, the card's schema, the save, refusal, refresh) and return `ActionResult`; ownership is checked by `ownEvent` inside the write's transaction. The saves themselves are in `src/db/writes/`.
+Host actions go through `host-save.ts` (`hostSave`: signed in, within the account's saves this hour (`countHostSave`; `limit: "sent"` for a sent tick, `false` for `checkSlug`, a lookup), the card's schema, the save, refusal, refresh) and return `ActionResult`; ownership is checked by `ownEvent` inside the write's transaction. The saves themselves are in `src/db/writes/`.
 
 - `event.ts` — `saveEventSettings`, `savePrintSettings`, `cancelEvent`, `reopenEvent`, `deleteEventNow`.
 - `slug.ts` — `checkSlug` (is the link free).
 - `invitation.ts` — `saveInvitation` (simple and modular).
-- `guests.ts` — `saveGuestChanges` (the replies), `saveGuestListOn` (the pre-loaded names).
+- `guests.ts` — `saveGuestChanges` (the replies), `saveGuestListOn` (the pre-loaded names), `markNameSent` (one name ticked sent, counted apart from saves).
 - `host.ts` — `markRepliesSeen` (sets `lastVisit`), `loadLatestReplies` (the side panel's latest replies, when it opens).
 - `auth.ts` — see Auth.
 - `guest.ts` — the guest's own, no sign-in: `unlockInvitation` (a Protected password → the `unlock-<slug>` cookie), `sendReply` (the reply, checked in `writeGuestReply`).
@@ -140,7 +141,7 @@ Vitest on its own emulator: `lib/` (plain functions), `writes/` (the saves), `ap
 - `src/types/` — `actions.ts` (`ActionResult`, every Server Action's return), `envelope.ts` (the envelope's colour roles), `invitation.ts` (incl. `TemplateModule`, a union of simple and modular), `modular.ts` (sections, palettes, pairs, modular templates), `dashboard.ts`, `print.ts`, `guests.ts` (the guest list's view shapes)
 - `src/mock/dashboard.ts` — the nav, account and footer keys only; `src/mock/inv-img/` — the print preview's placeholder front
 - `src/components/icons.tsx` — app-wide icons
-- `src/components/MissingPage.tsx` — a page that isn't there, in Festio's look: an invitation link that opens nothing, one no longer available, any other address
+- `src/components/MissingPage.tsx` — a page that isn't there, in Festio's look: an invitation link that opens nothing, one no longer available, any other address. Drawn by `NoticeCard.tsx` (the logo over a small card with a title and a line), which the contact page uses too
 - `art/` — Inkscape sources of the drawn art, outside `public/` so they're never served and outside Tailwind's scan: `covers/` (a cover's own, Wildflower's corners) and `drawings/` (the drawings hosts pick, `src/modular/drawings/`). Built into `public/modular/cover/` and `public/modular/drawings/` by `.claude/skills/cover/svg.py`
 - `scripts/look.mjs` — `npm run look`: measure or screenshot a page of the dev server (Playwright), `context/dev-tools/look.md`
 - Config: `next.config.ts` (no invite rewrite: the proxy routes invitations; one `afterFiles` rewrite sends a missing file name to the 404 page), `tsconfig.json`, `eslint.config.mjs`, `postcss.config.mjs`

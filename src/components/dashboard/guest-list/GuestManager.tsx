@@ -4,6 +4,7 @@ import { useTranslations } from "next-intl";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useEffectEvent, useState } from "react";
 import { Toast, useToast } from "@/components/dashboard/Toast";
+import { EXPECTED_GUESTS_MAX } from "@/lib/config";
 import { CONTENT_WIDTH } from "@/components/dashboard/styles";
 import { AddNamesBox } from "@/components/dashboard/guest-list/AddNamesBox";
 import { SearchField } from "@/components/dashboard/SearchField";
@@ -42,12 +43,14 @@ export function GuestManager({ event, initial }: GuestManagerProps) {
     initial,
     event.preloaded,
     event.dataVersion,
-    (error) => toast.show(tError(error), "error"),
+    (error) => toast.show(tError(error, { max: EXPECTED_GUESTS_MAX }), "error"),
   );
-  const actions = useGuestActions(list.apply, toast.show, {
-    guests: list.guests,
-    useList: list.useList,
-  });
+  const actions = useGuestActions(
+    list.apply,
+    toast.show,
+    { guests: list.guests, useList: list.useList },
+    list.markSent,
+  );
   const editor = useRowEditor(list.rows, startEditing, holdForBox);
   /* The list box's draft, as the page-leave warning needs it; gone with the box. */
   const [boxDirty, setBoxDirty] = useState(false);

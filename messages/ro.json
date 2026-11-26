@@ -396,7 +396,8 @@
     "protectedWarning": "Invitații vor avea nevoie de parolă ca să vadă invitația și să răspundă. Cardurile tipărite până acum nu o au — trimiterea ei rămâne în grija ta.",
     "closeWarningTitle": "Închiderea mai devreme a răspunsurilor",
     "closeWarning": "Formularul de răspuns se închide la ora aleasă. Invitații care nu au răspuns până atunci nu mai pot răspunde, iar Festio nu le va spune.",
-    "closeInPast": "Alege o oră care nu a trecut încă."
+    "closeInPast": "Alege o oră care nu a trecut încă.",
+    "expectedTooHigh": "Festio este făcut pentru evenimente de până la {max} de invitați. Pentru unul mai mare, <link>contactează-ne</link>."
   },
   "HostEditor": {
     "quit": "Ieși din editor",
@@ -641,7 +642,8 @@
     "guests": "{title} · Invitați · Festio",
     "signIn": "Autentificare · Festio",
     "signUp": "Creează-ți contul · Festio",
-    "invited": "Ai primit o invitație"
+    "invited": "Ai primit o invitație",
+    "contact": "Contact · Festio"
   },
   "GuestList": {
     "sectionSummary": "Rezumat",
@@ -815,6 +817,12 @@
     "expectedTooLow": "Numărul de invitați nu poate fi mai mic decât al celor care au răspuns deja.",
     "closeTooLate": "Răspunsurile trebuie să se închidă cel târziu în ziua dinaintea evenimentului.",
     "wrongPassword": "Parola nu este corectă.",
-    "notAllowed": "Acest lucru nu se poate face pentru acest eveniment."
+    "notAllowed": "Acest lucru nu se poate face pentru acest eveniment.",
+    "full": "Evenimentul a atins limita de răspunsuri. Verifică dacă sunt răspunsuri false sau mărește numărul de invitați în Setările evenimentului (până la {max}; pentru mai mult, contactează-ne).",
+    "tooMany": "Prea multe salvări într-un timp scurt. Te rugăm să încerci din nou în câteva minute."
+  },
+  "Contact": {
+    "title": "Contactează-ne",
+    "soon": "Formularul de contact este pe drum. Te rugăm să revii în curând."
   }
 }

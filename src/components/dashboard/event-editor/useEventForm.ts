@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { useForm, useWatch } from "react-hook-form";
 import { saveEventSettings } from "@/actions/event";
 import { checkSlug } from "@/actions/slug";
+import { EXPECTED_GUESTS_MAX } from "@/lib/config";
 import {
   dateLocked,
   defaultReplyClose,
@@ -31,6 +32,10 @@ import type { DashboardEvent, EventKind, Visibility } from "@/types/dashboard";
  * warning the host has to take in before the save unlocks — Festio never
  * notifies guests, so acknowledging it is the whole point.
  */
+
+/** Why Guests invited can't be saved: empty, past `EXPECTED_GUESTS_MAX`, or below the replies. */
+export type ExpectedError = "required" | "tooHigh" | "tooLow";
+
 export type WarningId =
   "date" | "address" | "password" | "language" | "visibility" | "close";
 
@@ -203,15 +208,18 @@ export function useEventForm(event: DashboardEvent) {
   }
 
   const expectedValue = Number.parseInt(expected, 10) || 0;
-  let expectedError: string | null = null;
+  let expectedError: ExpectedError | null = null;
   if (expectedValue < 1) {
-    expectedError = t("expectedRequired");
+    expectedError = "required";
+  } else if (expectedValue > EXPECTED_GUESTS_MAX) {
+    /* Past the most Festio takes: the field says so, with a way to contact us. */
+    expectedError = "tooHigh";
   } else if (
     /* Raised or left alone is fine, even under the replies; lowered below them isn't. */
     expectedValue < event.expectedGuests &&
     expectedValue < event.rsvp.replied
   ) {
-    expectedError = t("expectedTooLow", { count: event.rsvp.replied });
+    expectedError = "tooLow";
   }
 
   /* Only a new, well-formed link is worth asking about. */
@@ -277,6 +285,7 @@ export function useEventForm(event: DashboardEvent) {
     formState.isDirty &&
     pending === 0 &&
     !titleError &&
+    !expectedError &&
     !closeInPast &&
     !saving;
 
@@ -380,6 +389,7 @@ export function useEventForm(event: DashboardEvent) {
       closeInPast,
       titleError,
       expectedValue,
+      /** What's wrong with Guests invited, put in words by the field; keeps Save shut. */
       expectedError,
       slugError,
       /** Free slugs to offer while the typed one is taken or reserved. */

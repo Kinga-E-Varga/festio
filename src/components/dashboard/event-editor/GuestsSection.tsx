@@ -14,7 +14,11 @@ import { RepliesMeter } from "@/components/dashboard/RepliesMeter";
 import { TEXT_LINK, INPUT } from "@/components/dashboard/styles";
 import { Switch } from "@/components/invitation/PanelSwitch";
 import { Link } from "@/i18n/navigation";
-import type { EventForm } from "@/components/dashboard/event-editor/useEventForm";
+import type {
+  EventForm,
+  ExpectedError as ExpectedErrorKind,
+} from "@/components/dashboard/event-editor/useEventForm";
+import { EXPECTED_GUESTS_MAX } from "@/lib/config";
 import { eventPath, formatDeadline, isRealDate } from "@/lib/event";
 import type { DashboardEvent } from "@/types/dashboard";
 
@@ -49,7 +53,14 @@ export function GuestsSection({
           <EditRow
             htmlFor="event-expected"
             label={t("readExpectedLabel")}
-            error={derived.expectedError}
+            error={
+              derived.expectedError && (
+                <ExpectedError
+                  error={derived.expectedError}
+                  replied={event.rsvp.replied}
+                />
+              )
+            }
             hint={t("expectedHint")}
           >
             <div className="flex flex-wrap items-center gap-x-6 gap-y-3.5">
@@ -58,7 +69,7 @@ export function GuestsSection({
                 type="number"
                 required
                 min={1}
-                max={1000}
+                max={EXPECTED_GUESTS_MAX}
                 step={1}
                 value={values.expected}
                 onChange={(control) => set.expected(control.target.value)}
@@ -188,4 +199,25 @@ export function GuestsSection({
       )}
     </SettingsCard>
   );
+}
+
+/** Guests invited's error in words; too many links to the contact page. */
+function ExpectedError({
+  error,
+  replied,
+}: {
+  error: ExpectedErrorKind;
+  replied: number;
+}) {
+  const t = useTranslations("EventEditor");
+  if (error === "required") return t("expectedRequired");
+  if (error === "tooLow") return t("expectedTooLow", { count: replied });
+  return t.rich("expectedTooHigh", {
+    max: EXPECTED_GUESTS_MAX,
+    link: (chunks) => (
+      <Link href="/contact" className={TEXT_LINK}>
+        {chunks}
+      </Link>
+    ),
+  });
 }
