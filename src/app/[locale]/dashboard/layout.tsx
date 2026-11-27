@@ -3,7 +3,9 @@ import { DashboardShell } from "@/components/dashboard/DashboardShell";
 import { AccountList } from "@/components/dashboard/AccountList";
 import { AlertsList } from "@/components/dashboard/AlertsList";
 import { CartList } from "@/components/dashboard/CartList";
+import { LiveRefresh } from "@/components/dashboard/LiveRefresh";
 import { SideNav } from "@/components/dashboard/SideNav";
+import { eventStamp, stampWithoutData } from "@/lib/event-stamp";
 import { orderEvents } from "@/lib/event";
 import { PICKED_EVENT_COOKIE, toPickerEvent } from "@/lib/picked-event";
 import { loadHostSummary } from "@/db/reads/dashboard";
@@ -29,6 +31,14 @@ export default async function DashboardLayout({
       account={<AccountList />}
       bar={bar}
     >
+      <LiveRefresh
+        stamps={Object.fromEntries(
+          all.map((e) => [
+            e.id,
+            { all: eventStamp(e), noData: stampWithoutData(e) },
+          ]),
+        )}
+      />
       {children}
     </DashboardShell>
   );

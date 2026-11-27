@@ -8,6 +8,7 @@ import { auth, db } from "@/db/admin";
 import { paths } from "@/db/paths";
 import {
   FRESH_SIGN_IN_SECONDS,
+  loadHostId,
   PRIVATE_COOKIE,
   SESSION_COOKIE,
 } from "@/db/reads/session";
@@ -105,4 +106,19 @@ export async function startSession(
 export async function signOut(): Promise<void> {
   (await cookies()).delete(SESSION_COOKIE);
   redirect({ href: "/", locale: await getLocale() });
+}
+
+/**
+ * A custom token for the signed-in host, so the browser can sign in to
+ * Firebase and read its own data live. Null when signed out or on any error.
+ * Not a save: never counted against the save limit.
+ */
+export async function firebaseToken(): Promise<string | null> {
+  try {
+    const uid = await loadHostId();
+    return uid ? await auth.createCustomToken(uid) : null;
+  } catch (error) {
+    console.error("Making the Firebase token failed", error);
+    return null;
+  }
 }

@@ -1,11 +1,37 @@
 rules_version = '2';
 
-// Closed to every browser for now; the real rules come with festio-staging
-// (database step 6). The server's Admin SDK skips rules.
+// Browsers only ever read, and only their own host's data; every write goes
+// through the server (the Admin SDK skips these rules). Anything not named
+// below is closed: `payments`, `slugs`, `rateLimits` and the rest.
 service cloud.firestore {
   match /databases/{database}/documents {
-    match /{document=**} {
-      allow read, write: if false;
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    // A host reads their own event.
+    match /events/{eventId} {
+      allow read: if signedIn() && resource.data.hostId == request.auth.uid;
+    }
+
+    // A reply carries its event's `hostId`, so it is checked on its own
+    // field with no extra read. A reply query must filter on `hostId`.
+    match /events/{eventId}/replies/{replyId} {
+      allow read: if signedIn() && resource.data.hostId == request.auth.uid;
+    }
+
+    // The event's other cards: read when the event is the host's. Not
+    // `replies`: this rule needs a get(), and would let an unfiltered
+    // reply query through.
+    match /events/{eventId}/{card}/{doc} {
+      allow read: if signedIn()
+        && card != "replies"
+        && get(/databases/$(database)/documents/events/$(eventId)).data.hostId == request.auth.uid;
+    }
+
+    // A user reads only their own card.
+    match /users/{uid} {
+      allow read: if signedIn() && uid == request.auth.uid;
     }
   }
 }

@@ -3,9 +3,13 @@
     "rules": "firestore.rules",
     "indexes": "firestore.indexes.json"
   },
+  "storage": {
+    "rules": "storage.rules"
+  },
   "emulators": {
     "firestore": { "port": 8180, "websocketPort": 9160 },
     "auth": { "port": 9189 },
+    "storage": { "port": 9289 },
     "hub": { "port": 4410 },
     "logging": { "port": 4510 },
     "ui": { "enabled": false },

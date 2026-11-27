@@ -15,4 +15,4 @@ Every page reads it (server only). The host's saves write it through `src/db/wri
 - `src/db/count.ts` — dev only: `countDbUse` counts every Firestore read and write the way Firestore bills them, and session checks; `takeDbCount`. On only with `FESTIO_COUNT_DB=true` on the emulators (the test app copy).
 - `src/db/admin.ts` — the Admin SDK (`db`, `auth`). With `NEXT_PUBLIC_USE_EMULATORS=true` (`.env.development`) it talks to the local emulators, ports from `firebase.json`.
 - `seed/` — the emulators' seed data and runner: `npm run emulators` starts Firestore, Auth and Storage and seeds them; `npm run seed` resets the data. Host login `maria@festio.test` / `festio-dev`.
-- Root: `firebase.json` (emulator ports), `.firebaserc` (`demo-festio`), `firestore.rules` / `storage.rules` (closed until step 6), `firestore.indexes.json`.
+- Root: `firebase.json` (emulator ports), `.firebaserc` (`demo-festio`), `firestore.rules` / `storage.rules` (a host reads their own data and uploads or deletes their event's photos; the rest is closed), `firestore.indexes.json`.

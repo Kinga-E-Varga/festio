@@ -9,24 +9,28 @@ import {
 import firebaseConfig from "../../firebase.json";
 
 /*
- * The browser's way into Firebase Auth, for signing in only. The signed-in
- * user is kept in memory, never in the browser's storage: the server's
- * session cookie is what keeps the host signed in.
+ * The browser's way into Firebase: Auth (Firestore is in `firebase-live.ts`). The
+ * signed-in user is kept in memory, never in the browser's storage: the
+ * server's session cookie is what keeps the host signed in.
  */
 
 let clientAuthInstance: Auth | undefined;
 
-/** One Auth per tab; on `npm run dev` it talks to the local emulator. */
-export function clientAuth(): Auth {
-  if (clientAuthInstance) return clientAuthInstance;
-  const app =
+export function clientApp() {
+  return (
     getApps()[0] ??
     initializeApp({
       apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
       authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
       projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
-    });
-  clientAuthInstance = initializeAuth(app, {
+    })
+  );
+}
+
+/** One Auth per tab; on `npm run dev` it talks to the local emulator. */
+export function clientAuth(): Auth {
+  if (clientAuthInstance) return clientAuthInstance;
+  clientAuthInstance = initializeAuth(clientApp(), {
     persistence: inMemoryPersistence,
     popupRedirectResolver: browserPopupRedirectResolver,
   });

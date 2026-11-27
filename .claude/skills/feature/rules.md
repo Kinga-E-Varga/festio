@@ -26,6 +26,7 @@ Every feature/fix, in this order. The actions in `actions/` hold the how-to for 
 - Never commit until `npm test` and `npm run build` pass, and `npm run test:app` too when the
   change touches `src/db/reads/`, `src/db/secret.ts`, `src/app/`, `src/components/invitation/`, `src/templates/`, `src/modular/`, `src/lib/slug.ts`, `src/i18n/`, `messages/`, `src/proxy.ts` or `next.config.ts`. If any
   fails, fix it first.
+- Also `npm run test:rules` when `firestore.rules` or `storage.rules` change.
 - **No tests or build** when the change touches nothing but files outside the app:
   `.claude/`, `context/`, `.vscode/`, `README.md`, `CLAUDE.md`, `AGENTS.md`, `.gitignore`,
   `.prettierignore`. Check `git diff --name-only develop...HEAD` and the uncommitted

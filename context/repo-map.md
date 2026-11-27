@@ -104,7 +104,7 @@ Geometry (`.sheet`, `.sheet-view`, `.leaf`, `.flip`, `.fold`, `.sheet-form`) liv
 
 - `AuthPage.tsx` — the sign-in and sign-up pages' card. `AuthForm.tsx` — email + password and Google, the Terms step for a new Google account.
 - `src/actions/auth.ts` — `startSession` (ID token → `users` card if new → `__session` cookie), `signOut`.
-- The browser signs in through `src/lib/firebase-client.ts`, in memory only; the cookie keeps the host signed in.
+- The browser signs in through `src/lib/firebase-client.ts` (auth only; Firestore for live updates is `firebase-live.ts`), in memory only; the cookie keeps the host signed in.
 - `src/lib/reauth.ts` — `confirmIdentity(login)`: asks for the password (or Google's popup) before a step that can't be undone, returns a fresh ID token. The server checks it with `freshSignIn`.
 
 ## Server Actions — `src/actions/`

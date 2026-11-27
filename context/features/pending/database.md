@@ -296,9 +296,9 @@ skip `refresh()` (`src/actions/guests.ts`); live updates also keep the nav count
 
 - **Dashboard:** listens only to the host's event cards; the counters there update for one
   read per change.
-- **Guest list page:** listens to that event's replies while it's open.
+- **Guest list page:** listens to that event's replies while it's open. The reply listener filters on `hostId` (`where("hostId", "==", uid)`): the rules only let a query through that does.
 - Cost: one read per card when the page opens, one per changed card after, nothing while
-  idle. Cheaper than refreshing.
+  idle. Cheaper than refreshing. A guest list page load reads every reply twice (the server render and the listener's first snapshot).
 
 **Firestore rules:**
 
@@ -306,9 +306,10 @@ skip `refresh()` (`src/actions/guests.ts`); live updates also keep the nav count
 - A logged-in host can **read** their own events and everything inside them. Never write.
 - `users`: a host can read only their own card.
 - `payments` and `slugs`: no browser access at all.
+- Cost: a card under an event (the guest list) costs one extra rules read when its listener attaches; events and replies cost none.
 
 **Storage rules:** the host uploads photos straight from the browser, so only the event's
-host can upload into its folder, images only, at most 1 MB a file.
+host can upload into its folder, images only, at most 1 MB a file. Each signed-in Storage request reads the event card once, billed as one Firestore read.
 
 **Tested in CI** against the emulator on every push to `main`: a guest can't read replies, host A
 can't read host B's event, nobody writes from the browser, uploads over the limit fail.
@@ -541,6 +542,9 @@ Steps 1–5 run fully on your machine; the first big handoff is step 6.
    - Who is waiting is now a counter too (`counts.waiting`, `fix: keep who hasn't replied
      as a counter`), so the dashboard no longer reads closing events' guest lists.
 6. **`festio-staging`**, Firestore and Storage rules, and rules tests.
+   - **Built (`feat: security rules and live updates for hosts`):** the rules and their
+     tests (`npm run test:rules`), and live updates for hosts (below). Left: the
+     `festio-staging` project and every check below that needs it.
    - **Live updates for hosts** (see Security rules): the dashboard listens to the host's
      event cards, the guest list page to its event's replies (`onSnapshot`). Needs the
      browser signed in to Firebase on every page load (today in memory only, lost on

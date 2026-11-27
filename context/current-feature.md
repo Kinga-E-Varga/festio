@@ -1,4 +1,4 @@
-# Current Feature: Host-side limits (`fix/host-limits`)
+# Current Feature: Security rules and live updates (database step 6, part 1)
 
 ## Status
 
@@ -6,47 +6,52 @@ Completed
 
 ## Goals
 
-From `context/features/pending/database.md`, Do later item 7. Today a host has no limits:
-anyone can make a free account, add unlimited replies to their own event, and every open of
-the guest list reads them all. The reads it can cost us have no upper end. Two limits no
-real host reaches:
+From `context/features/pending/database.md`, Order step 6, the part that runs fully on the
+local machine. The `festio-staging` project and the checks on it are the next feature.
 
-- **Guests invited has a maximum: 600** (`EXPECTED_GUESTS_MAX` in `src/lib/config.ts`), in
-  the event schema and the event form. Past it, the field says that for more guests the
-  host should contact us, with a link to `/contact`.
-- **The reply cap stops the host too.** The cap stays as it is (the larger of expected +
-  50% or expected + 20, so at most 900). A host save that raises the event's people
-  (coming + not coming) is refused if the result passes the cap. Edits and deletes that
-  keep or lower the number are always allowed, so deleting fake replies makes room. When
-  replies are closed (closing time) or the invitation is Hidden, the host can still add,
-  up to the cap.
-- **The host's refusal says what to do:** the event reached its limit of N people: raise
-  Guests invited in Event settings, or check for fake replies. At 600 Guests invited:
-  contact us (`/contact`) instead.
-- **A rate limit on host saves: 150 an hour per account** (`HOST_SAVE_LIMIT_PER_HOUR`),
-  counted in `hostSave` (`src/actions/host-save.ts`), so every host save counts and none
-  can forget it. One card per account per hour in `rateLimits/` (a new `save` action,
-  keyed by host ID), deleted by the same TTL. Past it: "Too many saves, please try again
-  in a few minutes."
-- **Sent ticks counted apart:** ticking a pre-loaded name as sent is its own small save
-  (`markNameSent` → `writeSentMark`: that name's mark, the list's version up, no counter
-  changes) with its own count, 600 an hour (`SENT_MARK_LIMIT_PER_HOUR`), so a host ticking
-  a long list never runs out of saves.
-- **A "coming soon" `/contact` page** in the host app (`[locale]/contact`), in the three
-  languages, so the links lead somewhere. The real page and form are their own feature:
-  `context/features/pending/contact-page.md`.
+**A. Firestore and Storage rules, with tests** (`firestore.rules`, `storage.rules`, until
+now closed to everyone)
+
+- Firestore: closed by default. A signed-in host can **read** their own event cards
+  (`hostId` = their uid) and everything inside them (replies, guest list, seating,
+  invitation). No browser writes anywhere.
+- `users/<uid>`: readable only by that user. `payments`, `slugs`, `rateLimits`: no browser
+  access at all.
+- Storage: only the event's host can upload into `events/<event>/`, images only (WebP,
+  JPEG, PNG; never SVG), at most 1 MB a file. Guests get photos through download-token URLs.
+- Rules tests on the emulator (`@firebase/rules-unit-testing`, `npm run test:rules`),
+  written by a separate agent from the spec before the rules: a guest can't read replies,
+  host A can't read host B's event or its cards, nobody writes from the browser,
+  `payments` / `slugs` / `rateLimits` are closed, uploads over 1 MB or not images fail.
+
+**B. Live updates for hosts** (`onSnapshot`)
+
+- The browser stays signed in to Firebase across page loads: a custom token the server
+  makes from the session cookie (the cookie decides who the host is). Log out signs the
+  browser out too.
+- Dashboard: listens to the host's event cards and calls `router.refresh()` when one
+  really changed; the host's own save causes no second refresh.
+- Guest list page: listens to its event's replies and list card and redraws in the
+  browser; a row being edited keeps its draft. While it's open, the dashboard listener
+  ignores that event's replies count, and catches up when the page closes.
 
 ## Notes
 
-- **A decided rule changes:** "the host can always add replies, paused or not" becomes
-  "the host can add replies up to the cap". Update `context/project-overview.md` (Security)
-  and `database.md` (Counters: "The cap is for safety only"; Rate limiting → Host side;
-  `writeGuestChanges`'s comment "no cap").
-- The guest's rule stays: a reply is checked against the count before it, so a family
-  arriving just under the cap is saved whole (up to 9 over). The host's check is on the
-  result, so one save with many replies can't jump past the cap.
-- The host save limit costs one read and one write per save: check `npm run cost` and
-  accept the rise with `COST_UPDATE=1` if it's only that.
-- No real data yet: no script. Seed events are all under 600 Guests invited.
-- At `/feature complete`, mark item 7 in `database.md` as Done.
-- Simplify: ran 2026-11-26 (with /code-review)
+- Plan: `context/plans/festio-staging-rules-and-live-updates.md` (Phase 1 = this feature;
+  Phase 2 = the next one).
+- Decided 2026-11-27: the dashboard listens, then refreshes; the guest list redraws in
+  the browser.
+- Checked in the browser by the owner, 2026-11-27: live updates on the dashboard and the
+  guest list, drafts kept, one refresh per save.
+- Expected costs: switching the guest list on or off, or leaving a guest list after a save
+  on it, causes one refresh; a guest list page load reads every reply twice (server and
+  listener). Noted in `database.md`.
+- Left for later: the landing page still loads Firestore through the Log out form (a
+  speed pass before launch).
+- **Next feature** (`chore/festio-staging`): step 6's parts C and D, the plan's Phase 2
+  (Tasks 7–11): the `festio-staging` project with the owner, rules and indexes deployed,
+  App Hosting, `FESTIO_SECRET`, and the checks only the real project answers. Email
+  verification after it (`context/fixes/pending/email-verification.md`).
+- At `/feature complete`: **don't** mark step 6 done in `database.md`; add under step 6
+  that the rules, their tests and the live updates are built (this commit).
+- Simplify: ran 2026-11-27

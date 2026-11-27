@@ -1,11 +1,20 @@
 rules_version = '2';
 
-// Closed to every browser for now; the real rules come with festio-staging
-// (database step 6). The server's Admin SDK skips rules.
+// Only an event's host touches `events/<event>/`: reads and deletes their
+// files, uploads images (webp, jpeg or png, never SVG) of at most 1 MB.
+// Everything else is closed. The server's Admin SDK skips these rules.
 service firebase.storage {
   match /b/{bucket}/o {
-    match /{allPaths=**} {
-      allow read, write: if false;
+    match /events/{eventId}/{file=**} {
+      function isHost() {
+        return request.auth != null
+          && firestore.get(/databases/(default)/documents/events/$(eventId)).data.hostId == request.auth.uid;
+      }
+
+      allow read, delete: if isHost();
+      allow create, update: if isHost()
+        && request.resource.size <= 1024 * 1024
+        && request.resource.contentType.matches('image/(webp|jpeg|png)');
     }
   }
 }

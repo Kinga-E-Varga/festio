@@ -2,6 +2,7 @@
 
 import { useLocale } from "next-intl";
 import { useRef, useState } from "react";
+import { useLiveGuests } from "@/components/dashboard/guest-list/useLiveGuests";
 import {
   markNameSent,
   saveGuestChanges,
@@ -91,6 +92,14 @@ export function useGuestList(
       useList: listOn.current,
     });
   }
+
+  /* A change another tab or a guest made replaces the list. Dropped while a save runs; a change that arrives then shows with the next snapshot. */
+  useLiveGuests(eventId, initial.questions, (live) => {
+    if (busy.current) return;
+    saved.current = live;
+    setGuests(live);
+    remember();
+  });
 
   /** Runs one save unless another is running; false when it didn't save. */
   async function once(run: () => Promise<boolean>): Promise<boolean> {

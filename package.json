@@ -14,6 +14,7 @@
     "seed": "node --env-file=.env.development --import tsx seed/index.ts",
     "test:app": "firebase emulators:exec --config firebase.test.json --only firestore,auth --project demo-festio-test \"vitest run --config vitest.app.config.mts tests/app\"",
     "cost": "firebase emulators:exec --config firebase.test.json --only firestore,auth --project demo-festio-test \"vitest run --config vitest.app.config.mts tests/cost\"",
+    "test:rules": "firebase emulators:exec --config firebase.test.json --only firestore,storage --project demo-festio-rules \"vitest run --config vitest.rules.config.mts\"",
     "test": "firebase emulators:exec --config firebase.test.json --only firestore --project demo-festio-test \"vitest run $TESTS\""
   },
   "dependencies": {
@@ -30,6 +31,7 @@
     "zod": "^4.6.7"
   },
   "devDependencies": {
+    "@firebase/rules-unit-testing": "^6.0.0",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
     "@types/react": "^19",

@@ -9,8 +9,8 @@ export default defineConfig({
   resolve: { tsconfigPaths: true },
   test: {
     include: ["tests/**/*.test.ts"],
-    /* They need the app running: `npm run test:app` and `npm run cost`. */
-    exclude: ["tests/app/**", "tests/cost/measure.test.ts"],
+    /* The rules tests have their own run: `npm run test:rules`. The next two need the app running: `npm run test:app` and `npm run cost`. */
+    exclude: ["tests/app/**", "tests/rules/**", "tests/cost/measure.test.ts"],
     globalSetup: "tests/setup/global.ts",
     /* One emulator: files run side by side make its transactions wait on each other until tests time out. */
     fileParallelism: false,

@@ -63,3 +63,6 @@ export const QUESTIONS_MAX = 10;
 
 /** Dev only: the largest sample photo the template preview takes (`api/dev/sample-photo`). */
 export const SAMPLE_PHOTO_MAX_MB = 10;
+
+/** How long the dashboard waits after a change from another tab or a guest before it asks the server again. */
+export const LIVE_REFRESH_QUIET_MS = 1000;
