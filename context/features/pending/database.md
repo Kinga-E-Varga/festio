@@ -341,8 +341,11 @@ several copies of the server and restarts them, so the count lives in Firestore.
   policy deletes them by itself after the hour.
 - **GDPR:** only a scrambled (hashed) IP is stored, never the real one, and it's gone within
   the hour.
-- **Which IP:** the last `x-forwarded-for` entry, the one Google's front end adds
-  (`visitorKey`, `src/db/reads/visitor.ts`). Earlier entries are whatever the caller sent.
+- **Which IP:** App Hosting's `x-fah-client-ip`, which it writes over whatever the caller
+  sent (`clientIp`, `src/lib/client-ip.ts`, used by `visitorKey`). Measured on
+  `festio-staging`: `x-forwarded-for` ends in Google's own proxies, a different one per
+  request, and starts with whatever the caller wrote; `x-real-ip` passes the caller's value
+  through. Off App Hosting (local dev) the last `x-forwarded-for` entry.
 - **The hour is the clock's hour**, not the last 60 minutes, so someone can get about twice the
   tries across an hour boundary (10 at 10:59, 10 more at 11:00). Fine at these limits; if abuse
   shows up, also check the previous hour's card.
@@ -541,10 +544,32 @@ Steps 1–5 run fully on your machine; the first big handoff is step 6.
      (`guestChanges`). Switch to sending each action only if the comparing causes a real bug.
    - Who is waiting is now a counter too (`counts.waiting`, `fix: keep who hasn't replied
      as a counter`), so the dashboard no longer reads closing events' guest lists.
-6. **`festio-staging`**, Firestore and Storage rules, and rules tests.
+6. **Done (`feat: security rules and live updates for hosts`, `chore: festio-staging and
+   the caller's IP on App Hosting`) — `festio-staging`**, Firestore and Storage rules, and
+   rules tests.
    - **Built (`feat: security rules and live updates for hosts`):** the rules and their
-     tests (`npm run test:rules`), and live updates for hosts (below). Left: the
-     `festio-staging` project and every check below that needs it.
+     tests (`npm run test:rules`), and live updates for hosts (below).
+   - **`festio-staging` (2026-11-27):** Firestore `(default)` and Storage in
+     `europe-west4`, Standard edition, free tier; email/password and Google sign-in; rules,
+     indexes and the TTL deployed; the Storage service agent has Firebase Rules Firestore
+     Service Agent (the deploy didn't offer it: granted by hand). App Hosting backend
+     `festio-staging` (`europe-west4`, Node 24, automatic rollouts off, environment
+     `staging`), `apphosting.yaml` + `apphosting.staging.yaml`, `FESTIO_SECRET` in Secret
+     Manager, the backend's service account Token Creator on itself. Sign-up and live
+     updates work at the backend URL. Its live branch moves to `develop`.
+   - **Results of the checks below (2026-11-27):** Google on a Gmail password account with
+     an unverified email: Firebase lets Google in and removes the password (same uid),
+     `passwordAccount` never shows; Firebase's rule, left to email verification. Login check:
+     median 161 ms, see Do later. Rate limits' IP: wrong, fixed (see Rate limiting → Which
+     IP). Refused reads: 50 refused `GetDocument`s added 50 PERMISSION_DENIED requests and no
+     document reads (Monitoring's counter; the invoice not checked). Prices: europe-west4's
+     in `PRICES`.
+   - **For `festio-prod`:** the console suggested the database ID `default`, a named
+     database the SDKs don't find (they use `(default)`). Create it with the CLI
+     (`firestore:databases:create "(default)" --location europe-west4`). The free tier goes
+     to the first database created while no free one exists, whatever its name: check
+     `freeTier: true` (Firestore Admin API). Run `deploy --only storage` interactively, or
+     grant the Storage service agent's Firestore role by hand.
    - **Live updates for hosts** (see Security rules): the dashboard listens to the host's
      event cards, the guest list page to its event's replies (`onSnapshot`). Needs the
      browser signed in to Firebase on every page load (today in memory only, lost on
@@ -658,3 +683,15 @@ Work steps 1–5 left open, in the order to build them. Load one at a time
 7. **Done (`fix: host-side limits`) — host-side limits** (`fix/`, any time before `festio-prod`): a ceiling on
    replies per event and a rate limit on host saves per account, so one account can't run
    up unbounded reads. See Rate limiting → Host side.
+8. **To do — the login check's cost** (`chore/`, before `festio-prod`). Measured on
+   `festio-staging`: `verifySessionCookie(…, true)` in `loadHostId` takes a median 161 ms
+   (21 dashboard loads; 329 cold), as the revocation check (`true`) asks Firebase Auth over
+   the network on every host page. Without it the cookie is checked on the server. Check
+   revocation only on saves and steps that can't be undone, or remember the answer per uid
+   for a minute.
+9. **To do — Google on a password account** (with
+   `context/fixes/pending/email-verification.md`). Today a Gmail password account with an
+   unverified email loses its password on its first Google sign-in (Firebase's rule), and
+   the old password then fails as "wrong email or password" with no hint. Once emails are
+   verified, check that Google is linked and the password kept. The owner wants purchases
+   and sensitive steps to need a verified email.

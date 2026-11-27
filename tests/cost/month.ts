@@ -45,15 +45,13 @@ export const USE: { situation: string; times: number; reloads?: string }[] = [
 /**
  * Firestore (Standard edition). The free allowance is per project, per day
  * (firebase.google.com/docs/firestore/pricing, checked 2026-10-24). The prices
- * are the US list prices (cloud.google.com/firestore/pricing, 2026-10-24):
- * europe-west4's could not be read from the page, so confirm them in the
- * console at step 6.
+ * are europe-west4's (cloud.google.com/firestore/pricing, checked 2026-11-27).
  */
 export const PRICES = {
   freeReadsPerDay: 50_000,
   freeWritesPerDay: 20_000,
-  usdPer100kReads: 0.03,
-  usdPer100kWrites: 0.09,
+  usdPer100kReads: 0.034,
+  usdPer100kWrites: 0.102,
 };
 
 const DAYS = 30;
@@ -104,7 +102,7 @@ export function monthInWords(result: MonthResult): string {
   return [
     `One event like the seed's big one costs about ${result.reads.toLocaleString("en")} reads and ${result.writes.toLocaleString("en")} writes a month.`,
     `About ${result.eventsFreePerDay.toLocaleString("en")} such events can be active at once before Festio pays.`,
-    `After that, one costs about $${result.costPerEventUsd.toFixed(3)} a month (US list prices; confirm europe-west4's).`,
+    `After that, one costs about $${result.costPerEventUsd.toFixed(3)} a month (europe-west4 prices).`,
     "Saves include the page they reload; not counted: what the Server Actions read before a save (e.g. a guest reply's link lookup, 1 read).",
   ].join("\n");
 }

@@ -11,7 +11,7 @@ import type { Measured } from "./report";
  * Reloads after a save: settings 3, invitation 5, guest list 10 → 18 pages, 180 reads.
  * A month: 5,998 reads, 236 writes; a day: 199.93 reads, 7.87 writes.
  * Free a day: 50,000 / 199.93 = 250.08 events (writes allow 2,542) → 250.
- * Paid: 5,998 × $0.03 + 236 × $0.09, per 100,000 → $0.0020118.
+ * Paid (europe-west4): 5,998 × $0.034 + 236 × $0.102, per 100,000 → $0.00228004.
  */
 function madeUp(): Measured {
   return Object.fromEntries(
@@ -37,7 +37,7 @@ test("a month adds up every situation times how often it happens, reloads includ
 test("events that fit the free allowance, and what one costs after", () => {
   const result = month(madeUp());
   expect(result.eventsFreePerDay).toBe(250);
-  expect(result.costPerEventUsd).toBeCloseTo(0.0020118, 7);
+  expect(result.costPerEventUsd).toBeCloseTo(0.00228004, 8);
 });
 
 test("a situation the month needs but nobody measured is an error", () => {

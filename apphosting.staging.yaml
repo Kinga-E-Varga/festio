@@ -1,0 +1,11 @@
+# The `staging` environment (the backend's Environment name), over `apphosting.yaml`.
+
+runConfig:
+  # A cap, so a flood of traffic can't run up many servers on staging.
+  maxInstances: 2
+
+env:
+  # The host app at the backend's own address. Invitations need a wildcard
+  # domain (`<slug>.…`), so they don't open on staging yet.
+  - variable: NEXT_PUBLIC_BASE_DOMAIN
+    value: festio-staging--festio-staging.europe-west4.hosted.app

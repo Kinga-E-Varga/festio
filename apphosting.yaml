@@ -1,0 +1,19 @@
+# Firebase App Hosting, shared by every environment. An environment's own file
+# (`apphosting.<environment>.yaml`) wins over this one, variable by variable.
+# Values here are public: they reach every visitor's browser anyway.
+# The Firebase values are festio-staging's: production's own file overrides all three.
+
+env:
+  - variable: NEXT_PUBLIC_FIREBASE_API_KEY
+    value: AIzaSyDPHoMJdYdZjQgqrklJG10tm-Bo70iUpy0
+  - variable: NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN
+    value: festio-staging.firebaseapp.com
+  - variable: NEXT_PUBLIC_FIREBASE_PROJECT_ID
+    value: festio-staging
+
+  # Signs the Protected-password cookie and scrambles visitors' IPs. Lives in
+  # Secret Manager; only the server reads it, when a request needs it.
+  - variable: FESTIO_SECRET
+    secret: FESTIO_SECRET
+    availability:
+      - RUNTIME
